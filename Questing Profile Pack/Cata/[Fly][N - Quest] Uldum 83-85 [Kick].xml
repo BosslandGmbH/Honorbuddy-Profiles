@@ -1915,10 +1915,39 @@
 			<PickUp QuestName="See You on the Other Side!" GiverName="Harrison Jones" QuestId="28613" GiverId="48698" X="-8258.542" Y="-120.4269" Z="324.6645" />
 			<CustomBehavior File="WaitTimer" WaitTime="50000" />
 		</If>
-		<TurnIn QuestName="See You on the Other Side!" TurnInName="Harrison Jones" QuestId="28613" TurnInId="47158"
-                X="-8680.61" Y="203.859" Z="338.8123" />
-
+		<TurnIn QuestName="See You on the Other Side!" TurnInName="Harrison Jones" QuestId="28613" TurnInId="47158" X="-8680.61" Y="203.859" Z="338.8123" />
 		<PickUp QuestName="Fortune and Glory" QuestId="27748" GiverName="Harrison Jones" GiverId="47158" />
+		
+		<If Condition="Me.Level >= 85">
+
+			<!-- Check if MoP active on this Account -->
+			<If Condition="Lua.GetReturnVal&lt;int&gt;(&quot;return GetAccountExpansionLevel()&quot;, 0) &gt; 3">
+				<!-- Alliance -->
+				<If Condition="Me.IsAlliance">
+					<If Condition="Me.MapId == 1">
+						<CustomBehavior File="FlyTo" DestName="Ratchet" Land="true" X="-994.8082" Y="-3823.235" Z="5.594241" />
+						<CustomBehavior File="UseTransport" TransportId="20808"
+										WaitAtX="-996.8669" WaitAtY="-3826.07" WaitAtZ="5.536246"
+										TransportStartX="-1005.613" TransportStartY="-3841.648" TransportStartZ="0.03330701"
+										StandOnX="-998.4902" StandOnY="-3843.29" StandOnZ="6.0914"
+										TransportEndX="-14277.75" TransportEndY="582.8661" TransportEndZ="0.01553879"
+										GetOffX="-14280.88" GetOffY="566.6268" GetOffZ="6.979454" />
+					</If>
+					<If Condition="Me.MapId == 0">
+						<CustomBehavior File="FlyTo" DestName="Stormwind" Land="true" X="-8832.983" Y="622.6318" Z="93.92791" />
+						<CustomBehavior File="LoadProfile" ProfileName="..\MoP\[A - Quest] 85-86 The Jade Forest [Kick]" RememberProfile="true" />
+					</If>
+				</If>
+				<!-- Horde -->
+				<If Condition="Me.IsHorde &amp;&amp; (Me.MapId == 1)">
+					<CustomBehavior File="FlyTo" DestName="Orgrimmar" Land="true" X="1596.113" Y="-4415.456" Z="14.5409" />
+					<CustomBehavior File="LoadProfile" ProfileName="..\MoP\[H - Quest] 85-86 The Jade Forest [Kick]" RememberProfile="true" />
+				</If>
+				<CustomBehavior File="UserDialog" Title="title" AllowBotStop="true" SoundCue="Asterisk" SoundCueInterval="5"
+								Text="Something went wrong and we couldn't load The Jade Forest profile!" />
+			</If>
+		</If>
+		
 		<While Condition="HasQuest(27748) &amp;&amp; !IsQuestCompleted(27748)">
 			<CustomBehavior File="FlyTo" X="-8680.61" Y="203.859" Z="338.8123" />
 			<!-- CJ: We need to guard against another player talking to Harrison Jones...
