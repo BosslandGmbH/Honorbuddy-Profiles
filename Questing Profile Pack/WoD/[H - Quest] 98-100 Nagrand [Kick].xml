@@ -2180,6 +2180,11 @@
 				<MoveTo DestName="And Justice for Thrall: Start Location" X="2298.406" Y="5071.601" Z="207.7882"  />
 			</If>
 			<UseMount Value="false" />
+			<While Condition="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber == 0"> <!-- 0 -->
+				<CustomBehavior File="InteractWith" MobId="81414" GossipOptions="1" NonCompeteDistance="0" X="2293.427" Y="5074.999" Z="207.3559" 
+				TerminateWhen="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber > 1" />
+				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for Stage 1 to Complete {TimeRemaining}" />
+			</While>
 			<While Condition="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber == 1"> <!-- 1 -->
 				<CustomBehavior File="InteractWith" MobId="81414" GossipOptions="1" NonCompeteDistance="0" X="2293.427" Y="5074.999" Z="207.3559" 
 				TerminateWhen="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber > 1" />
@@ -2265,7 +2270,10 @@
 			<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteButton:Click()" WaitTime="500" />	
 			<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click()" WaitTime="500" />	
 		</While>
-
+		
+		<If Condition="Me.MapId == 1116"> <!-- Draenor -->
+			<CustomBehavior File="ForceSetVendor" DoSell="True" DoRepair="True" DoMail="True" />
+		</If>
 
 		<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" 
 										Text="End of WoD Profiles - There's nothing more!\n\nIf you enjoyed this questing pack, please feel free to donate!
