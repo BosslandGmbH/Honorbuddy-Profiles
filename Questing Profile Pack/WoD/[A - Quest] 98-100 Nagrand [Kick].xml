@@ -1238,7 +1238,8 @@
 		<TurnIn QuestName="... and My Hammer" QuestId="34719" TurnInName="Vindicator Momor" TurnInId="79743" X="2325.116" Y="5519.208" Z="166.8117" />
 		<PickUp QuestName="Shields Down!" QuestId="34746" GiverName="Vindicator Momor" GiverId="79743" X="2325.116" Y="5519.208" Z="166.8117" />
 		<While Condition="HasQuest(34746) &amp;&amp; !IsQuestCompleted(34746)" > <!-- Shields Down! -->
-			<CustomBehavior File="InteractWith" QuestId="34746" MobId="79919" Range="6" NonCompeteDistance="0" TerminateWhen="IsObjectiveComplete(1, 34746)" X="2447.384" Y="5517.563" Z="151.172" />
+			<CustomBehavior File="InteractWith" QuestId="34746" MobId="79919" Range="6" NonCompeteDistance="0" WaitTime="2000" TerminateWhen="IsObjectiveComplete(1, 34746)" X="2447.384" Y="5517.563" Z="151.172" />
+			<CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for objective to complete {TimeRemaining}" />
 		</While>
 		<Objective QuestName="Shields Down!" QuestId="34746" Type="CollectItem" ItemId="111619" CollectCount="1" />
 		<Objective QuestName="Operation: Just Arrowhead" QuestId="34717" Type="KillMob" MobId="79744" KillCount="15" />
@@ -1529,7 +1530,9 @@
 		<If Condition="!HasQuest(35332) &amp;&amp; !IsQuestCompleted(35332) &amp;&amp; !HasQuest(35331) &amp;&amp; !IsQuestCompleted(35331)" > <!-- Nobundo Sends Word -->
 			<PickUp QuestName="Nobundo Sends Word" QuestId="35332" GiverName="Rangari Dkaan" GiverId="79576" X="2581.239" Y="5703.557" Z="101.3143" />
 		</If>
+		<If Condition="!HasQuest(35060) &amp;&amp; !IsQuestCompleted(35060)" > <!-- Along the Riverside Pickup -->
 		<PickUp QuestName="Along the Riverside" QuestId="35059" GiverName="Rangari Dkaan" GiverId="79576" X="2581.239" Y="5703.557" Z="101.3143" />
+		</If>
 		<If Condition="!HasQuest(34747) &amp;&amp; !IsQuestCompleted(34747)" > <!-- Lantresor / Follower -->
 			<MoveTo DestName="Lantresor of the Blade" X="2670.017" Y="5662.378" Z="89.51691" />
 			<CustomBehavior File="InteractWith" MobId="81790" WaitForNpcs="False" WaitTime="3000" X="2670.017" Y="5662.378" Z="89.51691" />
@@ -1619,7 +1622,9 @@
 		<!-- End of Ring of Trials -->
 
 		<!-- Yrel's Watch / Lok-rath -->
+		<If Condition="HasQuest(35059)" > <!-- Along the Riverside Turnin -->
 		<TurnIn QuestName="Along the Riverside" QuestId="35059" TurnInName="Vindicator Yrel" TurnInId="81039" X="3388.595" Y="5791.837" Z="37.65806" />
+		</If>
 		<PickUp QuestName="Terms of Surrender" QuestId="35060" GiverName="Vindicator Yrel" GiverId="81039" X="3388.595" Y="5791.837" Z="37.65806" />
 		<TurnIn QuestName="Terms of Surrender" QuestId="35060" TurnInName="Uruk Foecleaver" TurnInId="81086" X="3330.818" Y="6158.694" Z="19.80286" />
 		<PickUp QuestName="The Pride of Lok-rath" QuestId="35061" GiverName="Uruk Foecleaver" GiverId="81086" X="3330.818" Y="6158.694" Z="19.80286" />
@@ -1689,7 +1694,7 @@
 					</Hotspots>
 				</GrindArea>
 			</SetGrindArea>
-			<GrindUntil Condition="HasItem(113080)" />
+			<GrindUntil Condition="HasItem(113080)" GoalText="Getting drop quest Item for quest A Wrong of Earth and Fire" />
 		</While>
 		<If Condition="HasItem(113080)">
 			<PickUp QuestName="A Wrong of Earth and Fire" QuestId="33928" GiverType="Item" GiverId="113080" />
@@ -2023,7 +2028,7 @@
 			-->
 
 		<!-- Bonus Objective: Ironfist Harbor -->
-		<While Condition="!IsQuestCompleted(34723)">
+		<While Condition="!IsQuestCompleted(34723) &amp;&amp; Me.Level < 100">
 			<If Condition="!HasQuest(34723)">
 				<MoveTo DestName="Outside of Bonus Area 1" X="2034.087" Y="6678.708" Z="4.044489" /> <!-- Outside of Bonus Area - In case we have issues with it completing -->
 				<MoveTo DestName="Middle of Bonus Area" X="2083.428" Y="6989.918" Z="6.692083" /> <!-- Middle of area -->
