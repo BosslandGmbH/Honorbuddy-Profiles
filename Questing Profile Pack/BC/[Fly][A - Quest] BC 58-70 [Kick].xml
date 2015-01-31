@@ -12,7 +12,7 @@
 	<SellGrey>true</SellGrey>
 	<SellWhite>true</SellWhite>
 	<SellGreen>true</SellGreen>
-	<SellBlue>false</SellBlue>
+	<SellBlue>true</SellBlue>
 	<SellPurple>false</SellPurple>
 
 	<MailGrey>false</MailGrey>
@@ -6089,14 +6089,38 @@ X="-1945.773" Y="4687.774" Z="-2.231679" />
 				<PickUp QuestName="HELP!" QuestId="9923" GiverName="Corki" GiverId="18369"
                         X="-2563.891" Y="6288.289" Z="15.21196" />
 			</If>
-			<While Condition="HasQuest(9923) &amp;&amp; !IsQuestCompleted(9923)">
-				<CustomBehavior File="FlyTo" DestName="Corki" X="-2563.891" Y="6288.289" Z="15.21196" />
-				<Objective QuestName="HELP!" QuestId="9923" Type="CollectItem" ItemId="25490" CollectCount="1" />
-				<CustomBehavior File="FlyTo" DestName="Destination" QuestId="9923" X="-2561.774" Y="6287.741" Z="15.34327" />
-				<If Condition="HasItem(25490)">
-				<CustomBehavior File="InteractWith" QuestId="9923" PreInteractMountStrategy="Dismount" NonCompeteDistance="0" MobId="182349" X="-2561.18" Y="6287.326" Z="15.02709" />
-				</If>
-				<CustomBehavior File="WaitTimer" WaitTime="12000" GoalText="Waiting for quest to complete {TimeRemaining}" />
+			<While Condition="HasQuest(9923) &amp;&amp; !IsQuestCompleted(9923)"> <!-- HELP! -->
+			 <If Condition="GetItemCount(25490) &lt; 1">
+				<CustomBehavior File="FlyTo" DestName="Get Corki's Key" X="-2563.891" Y="6288.289" Z="15.21196" />
+				<!--<Objective QuestName="HELP!" QuestId="9923" Type="CollectItem" ItemId="25490" CollectCount="1" />-->
+				<CustomBehavior File="KillUntilComplete" QuestId="35379" TerminateWhen="GetItemCount(25490) &gt;= 1" MobId="17134" MobId2="17135" NonCompeteDistance="0" >
+					<HuntingGrounds>
+						<Hotspot X="2640.173" Y="6215.435" Z="8.705751" />
+						<Hotspot X="2611.62" Y="6232.532" Z="11.15716" />
+						<Hotspot X="2570.565" Y="6249.515" Z="11.73398" />
+						<Hotspot X="2529.351" Y="6281.611" Z="13.6255" />
+						<Hotspot X="2442.482" Y="6329.781" Z="10.67388" />
+						<Hotspot X="2523.727" Y="6340.905" Z="2.166779" />
+						<Hotspot X="2500.027" Y="6470.685" Z="-7.90773" />
+						<Hotspot X="2502.483" Y="6531.58" Z="-2.205939" />
+						<Hotspot X="2499.595" Y="6534.091" Z="-1.816762" />
+						<Hotspot X="2504.125" Y="6535.934" Z="-1.591759" />
+						<Hotspot X="2504.436" Y="6578.505" Z="0.4353044" />
+						<Hotspot X="2453.912" Y="6575.258" Z="1.140793" />
+						<Hotspot X="2382.032" Y="6556.487" Z="3.37904" />
+						<Hotspot X="2359.255" Y="6669.567" Z="16.73465" />
+						<Hotspot X="2502.394" Y="6663.218" Z="3.48747" />
+						<Hotspot X="2570.757" Y="6565.774" Z="2.491154" />
+						<Hotspot X="2642.989" Y="6529.862" Z="0.8357096" />
+					</HuntingGrounds>
+				</CustomBehavior>
+				<CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for quest to update - HELP! Save Corki! {TimeRemaining}" />
+			 </If>
+			 <If Condition="GetItemCount(25490) &gt;= 1">
+				<CustomBehavior File="FlyTo" DestName="Free Corki!" QuestId="9923" X="-2561.774" Y="6287.741" Z="15.34327" />
+				<CustomBehavior File="InteractWith" QuestId="9923" PreInteractMountStrategy="Dismount" NonCompeteDistance="0" Range="5" MobId="182349" X="-2561.18" Y="6287.326" Z="15.02709" />
+				<CustomBehavior File="WaitTimer" WaitTime="12000" GoalText="Waiting for quest to complete - HELP! Save Corki! {TimeRemaining}" />
+			 </If>
 			</While>
 			<Objective QuestName="The Ruins of Burning Blade" QuestId="9921" Type="KillMob" KillCount="8"
                        MobId="17134" />
