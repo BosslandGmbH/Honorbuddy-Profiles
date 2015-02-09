@@ -39,6 +39,9 @@
 
         <LootMobs Value="true" />
         <UseMount Value="true" />
+		
+		
+		
 		<!-- Barn - has issues -->
 		<If Condition="HasQuest(36345)" > <!-- Breaking into the Trap Game -->
 		 <While Condition="!IsObjectiveComplete(1, 36345)" > <!-- Trap Wolf, bot @ lvl 100 is having some issues -->
@@ -53,7 +56,7 @@
 		 </While>
 		 <While Condition="!IsObjectiveComplete(2, 36345)" > <!-- Place work order -->
 			<CustomBehavior File="InteractWith" QuestId="36345" MobId="85048" Range="4" GossipOptions="2" WaitTime="3000" PreInteractMountStrategy="DismountOrCancelShapeshift" X="5542.544" Y="4512.914" Z="131.7186"  />
-			<CustomBehavior File="Misc\RunLua" Lua="GarrisonCapacitiveDisplayFrame.StartWorkOrderButton:Click()" WaitTime="10000" />
+			<CustomBehavior File="Misc\RunLua" Lua="C_Garrison.RequestShipmentCreation()" WaitTime="10000" />
 			<!-- I'm sure there's a lua command here for a work order, find it later, but this works! -->
 			<CustomBehavior File="Misc\RunLua" Lua="GarrisonCapacitiveDisplayFrame.CloseButton:Click()" WaitTime="1000" />
 		 </While>
@@ -66,7 +69,7 @@
 			<MoveTo DestName="Tai'tasi" X="5745.917" Y="4572.544" Z="138.7822" />
 			<CustomBehavior File="InteractWith" QuestId="37062" MobId="87259" InteractByUsingItemId="118418" WaitTime="5000" NonCompeteDistance="0" PreInteractMountStrategy="DismountOrCancelShapeshift" X="5745.963" Y="4572.392" Z="138.7658" />
 		 </While>
-	<TurnIn QuestName="Tricks of the Trade" QuestId="37062" TurnInName="Fayla Fairfeather" TurnInId="87121" X="5537.497" Y="4526.092" Z="132.3" />
+	<TurnIn QuestName="Tricks of the Trade" QuestId="37062" TurnInName="Fayla Fairfeather" TurnInId="87117" X="5537.497" Y="4526.092" Z="132.3" />
 		</If>
 		
 		<!-- Lumber Mill -->
@@ -103,7 +106,7 @@
 			<!-- Garrison Hearth? -->
 		 <While Condition="!IsObjectiveComplete(2, 36138)" > <!-- Place work order -->
 			<CustomBehavior File="InteractWith" QuestId="36138" MobId="84247" Range="4" GossipOptions="1" WaitTime="3000" PreInteractMountStrategy="DismountOrCancelShapeshift" X="5525.295" Y="4521.025" Z="132.6968" />
-			<CustomBehavior File="Misc\RunLua" Lua="GarrisonCapacitiveDisplayFrame.StartWorkOrderButton:Click()" WaitTime="10000" />
+			<CustomBehavior File="Misc\RunLua" Lua="C_Garrison.RequestShipmentCreation()" WaitTime="10000" />
 			<!-- I'm sure there's a lua command here for a work order, find it later, but this works! -->
 			<CustomBehavior File="Misc\RunLua" Lua="GarrisonCapacitiveDisplayFrame.CloseButton:Click()" WaitTime="1000" />
 		 </While>
@@ -111,7 +114,15 @@
 		</If>
 		
 
+		<!-- Tavern / Inn x2 quests require dungeons -->
+		<If Condition="HasQuest(37151) || HasQuest(37151)" > <!-- Cold Steel or And No Maces! -->
+			<CustomBehavior File="UserDialog" AllowBotStop="true" SoundCue="Exclamation" SoundCueInterval="1" Text="Your quest requires dungeons!" />
+		</If>
 		
+		<!-- Gladiator's Sanctum quest requires PvP -->
+		<If Condition="HasQuest(36874)" > <!-- Warlord of Draenor -->
+			<CustomBehavior File="UserDialog" AllowBotStop="true" SoundCue="Exclamation" SoundCueInterval="1" Text="Your quest requires PvP!!" />
+		</If>
 		
 
     <CustomBehavior File="UserDialog" AllowBotStop="true" SoundCue="Exclamation" SoundCueInterval="1" Text="End of Horde Garrison" />
