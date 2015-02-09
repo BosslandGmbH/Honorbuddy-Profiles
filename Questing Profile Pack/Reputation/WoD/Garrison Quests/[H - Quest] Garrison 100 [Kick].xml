@@ -32,32 +32,6 @@
 
     </Vendors>
 
-	<Quest Id="36138" Name="Turning Timber into Profit">
-		<Objective Type="CollectItem" ItemId="114781" CollectCount="10">
-			<CollectFrom>
-				<GameObject Name="Small Timber" Entry="234080" />
-				<GameObject Name="Small Timber" Entry="233604" />
-			</CollectFrom>
-			<Hotspots>
-				<Hotspot X="5905.528" Y="1053.781" Z="116.1401" />
-				<Hotspot X="5985.677" Y="1099.724" Z="124.4348" />
-				<Hotspot X="5522.827" Y="1157.563" Z="94.11676" />
-				<Hotspot X="5909.05" Y="752.9149" Z="41.25207" />
-				<Hotspot X="6140.069" Y="839.9445" Z="76.39095" />
-				<Hotspot X="6678.009" Y="281.8559" Z="45.1442" />
-				<Hotspot X="6494.808" Y="344.1302" Z="73.93446" />
-				<Hotspot X="6555.16" Y="457.8524" Z="92.27547" />
-				<Hotspot X="6650.347" Y="141.4931" Z="73.73669" />
-				<Hotspot X="6612.418" Y="-40.65104" Z="74.3989" />
-				<Hotspot X="6926.486" Y="498.6493" Z="88.7056" />
-				<Hotspot X="6094.032" Y="-120.4653" Z="45.19744" />
-				<Hotspot X="6011.458" Y="-6.470486" Z="48.74438" />
-				<Hotspot X="5206.944" Y="1467.014" Z="86.31461" />
-				<Hotspot X="5369.877" Y="946.5382" Z="99.49236" />
-			</Hotspots>
-		</Objective>
-	</Quest>
-
 	
     <QuestOrder>
 	
@@ -81,6 +55,7 @@
 			<CustomBehavior File="InteractWith" QuestId="36345" MobId="85048" Range="4" GossipOptions="2" WaitTime="3000" PreInteractMountStrategy="DismountOrCancelShapeshift" X="5542.544" Y="4512.914" Z="131.7186"  />
 			<CustomBehavior File="Misc\RunLua" Lua="GarrisonCapacitiveDisplayFrame.StartWorkOrderButton:Click()" WaitTime="10000" />
 			<!-- I'm sure there's a lua command here for a work order, find it later, but this works! -->
+			<CustomBehavior File="Misc\RunLua" Lua="GarrisonCapacitiveDisplayFrame.CloseButton:Click()" WaitTime="1000" />
 		 </While>
 	<TurnIn QuestName="Breaking into the Trap Game" QuestId="36345" TurnInName="Farmer Lok'lub" TurnInId="85048" X="5539.382" Y="4516.655" Z="131.2322" />
 		</If>
@@ -104,7 +79,7 @@
 	<PickUp QuestName="Turning Timber into Profit" QuestId="36138" GiverName="Lumber Lord Oktron" GiverId="84247" X="5525.295" Y="4521.025" Z="132.6968" />
 		</If>
 		<If Condition="HasQuest(36138)" > <!-- Turning Timber into Profit -->
-		 <While Condition="!IsObjectiveComplete(1, 36138)" > <!-- Trap Wolf, bot @ lvl 100 is having some issues -->
+		 <While Condition="!IsObjectiveComplete(1, 36138)" > <!-- Collect 10 Small Timbers -->
 			<CustomBehavior File="InteractWith" QuestId="36138" MobId1="234080" MobId2="233604" WaitTime="8000" Range="5" NonCompeteDistance="0" PreInteractMountStrategy="DismountOrCancelShapeshift" >
 				<HuntingGrounds>
 					<Hotspot X="5905.528" Y="1053.781" Z="116.1401" />
@@ -126,6 +101,12 @@
 			</CustomBehavior>
 		 </While>
 			<!-- Garrison Hearth? -->
+		 <While Condition="!IsObjectiveComplete(2, 36138)" > <!-- Place work order -->
+			<CustomBehavior File="InteractWith" QuestId="36138" MobId="84247" Range="4" GossipOptions="1" WaitTime="3000" PreInteractMountStrategy="DismountOrCancelShapeshift" X="5525.295" Y="4521.025" Z="132.6968" />
+			<CustomBehavior File="Misc\RunLua" Lua="GarrisonCapacitiveDisplayFrame.StartWorkOrderButton:Click()" WaitTime="10000" />
+			<!-- I'm sure there's a lua command here for a work order, find it later, but this works! -->
+			<CustomBehavior File="Misc\RunLua" Lua="GarrisonCapacitiveDisplayFrame.CloseButton:Click()" WaitTime="1000" />
+		 </While>
 	<TurnIn QuestName="Turning Timber into Profit" QuestId="36138" TurnInName="Lumber Lord Oktron" TurnInId="84247" X="5525.295" Y="4521.025" Z="132.6968" />
 		</If>
 		
@@ -195,15 +176,6 @@
 	plotID = 22
 	texPrefix="GarrBuilding_Barn_1_H"
 
-	<Quest Id="36345" Name="Breaking into the Trap Game">
-		<Objective Type="KillMob" MobId="84882" KillCount="1">
-			<Hotspots>
-			</Hotspots>
-		</Objective>
-	</Quest>
-
-	<Vendor Name="Farmer Lok'lub" Entry="85048" X="5539.382" Y="4516.655" Z="131.2322" />
-
 	<PickUp QuestName="Breaking into the Trap Game" QuestId="36345" GiverName="Farmer Lok'lub" GiverId="85048" X="5539.382" Y="4516.655" Z="131.2322" />
 	<Objective QuestName="Breaking into the Trap Game" QuestId="36345" Type="KillMob" MobId="84882" KillCount="1" />
 	<TurnIn QuestName="Breaking into the Trap Game" QuestId="36345" TurnInName="Farmer Lok'lub" TurnInId="85048" X="5539.382" Y="4516.655" Z="131.2322" />
@@ -216,20 +188,9 @@
 	plotID = 22
 	texPrefix="GarrBuilding_SparringArena_1_H"
 
-	<Quest Id="36874" Name="Warlord of Draenor">
-		<Objective Type="CollectItem" ItemId="118043" CollectCount="10">
-			<CollectFrom>
-			</CollectFrom>
-			<Hotspots>
-			</Hotspots>
-		</Objective>
-	</Quest>
-
-	<Vendor Name="Raza'kul" Entry="86629" X="5536.027" Y="4522.98" Z="133.615" />		
-
-	<PickUp QuestName="Warlord of Draenor" QuestId="36874" GiverName="" GiverId="" />
+	<PickUp QuestName="Warlord of Draenor" QuestId="36874" GiverName="Raza'kul" GiverId="86629" X="5536.027" Y="4522.98" Z="133.615" />
 	<Objective QuestName="Warlord of Draenor" QuestId="36874" Type="CollectItem" ItemId="118043" CollectCount="10" />
-	<TurnIn QuestName="Warlord of Draenor" QuestId="36874" TurnInName="" TurnInId="" />
+	<TurnIn QuestName="Warlord of Draenor" QuestId="36874" TurnInName="Raza'kul" TurnInId="86629" X="5536.027" Y="4522.98" Z="133.615" />
 
 
 	Lumber Mill lvl 1:
@@ -238,15 +199,6 @@
 	buildingID = 40
 	plotID = 22
 	texPrefix="GarrBuilding_LumberMill_1_H"
-
-	<Quest Id="36137" Name="Easing into Lumberjacking">
-		<Objective Type="CollectItem" ItemId="114827" CollectCount="1">
-			<CollectFrom>
-			</CollectFrom>
-			<Hotspots>
-			</Hotspots>
-		</Objective>
-	</Quest>
 
 	<PickUp QuestName="Easing into Lumberjacking" QuestId="36137" GiverName="Lumber Lord Oktron" GiverId="84247" X="5525.295" Y="4521.025" Z="132.6968" />
 	<Objective QuestName="Easing into Lumberjacking" QuestId="36137" Type="CollectItem" ItemId="114827" CollectCount="1" />
@@ -260,18 +212,9 @@
 	plotID = 22
 	texPrefix="GarrBuilding_TradingPost_1_H"
 
-	<Quest Id="37062" Name="Tricks of the Trade">
-		<Objective Type="KillMob" MobId="87254" KillCount="1">
-			<Hotspots>
-			</Hotspots>
-		</Objective>
-	</Quest>
-			
-	<Vendor Name="Fayla Fairfeather" Entry="87121" X="5537.497" Y="4526.092" Z="132.3" />		
-
-	<PickUp QuestName="Tricks of the Trade" QuestId="37062" GiverName="" GiverId="" />
+	<PickUp QuestName="Tricks of the Trade" QuestId="37062" GiverName="Fayla Fairfeather" GiverId="87121" X="5537.497" Y="4526.092" Z="132.3" />	
 	<Objective QuestName="Tricks of the Trade" QuestId="37062" Type="KillMob" MobId="87254" KillCount="1" />
-	<TurnIn QuestName="Tricks of the Trade" QuestId="37062" TurnInName="" TurnInId="" />
+	<TurnIn QuestName="Tricks of the Trade" QuestId="37062" TurnInName="Fayla Fairfeather" TurnInId="87121" X="5537.497" Y="4526.092" Z="132.3" />	
 
 
 	Tavern lvl 1:
@@ -281,46 +224,17 @@
 	plotID = 22
 	texPrefix="GarrBuilding_Inn_1_H"
 
-	<Quest Id="37151" Name="Cold Steel">
-		<Objective Type="CollectItem" ItemId="118653" CollectCount="1">
-			<CollectFrom>
-			</CollectFrom>
-			<Hotspots>
-			</Hotspots>
-		</Objective>
-		<Objective Type="KillMob" MobId="80005" KillCount="1">
-			<Hotspots>
-			</Hotspots>
-		</Objective>
-	</Quest>
-
-	<Vendor Name="John J. Keeshan" Entry="88026" X="5531.563" Y="4520.916" Z="132.4872" />
-
-	<PickUp QuestName="Cold Steel" QuestId="37151" GiverName="" GiverId="" />
+	<PickUp QuestName="Cold Steel" QuestId="37151" GiverName="John J. Keeshan" GiverId="88026" X="5531.563" Y="4520.916" Z="132.4872" />
 	<Objective QuestName="Cold Steel" QuestId="37151" Type="CollectItem" ItemId="118653" CollectCount="1" />
 	<Objective QuestName="Cold Steel" QuestId="37151" Type="KillMob" MobId="80005" KillCount="1" />
-	<TurnIn QuestName="Cold Steel" QuestId="37151" TurnInName="" TurnInId="" />
+	<TurnIn QuestName="Cold Steel" QuestId="37151" TurnInName="John J. Keeshan" TurnInId="88026" X="5531.563" Y="4520.916" Z="132.4872" />
 
 	+
 
-	<Quest Id="37167" Name="And No Maces!">
-		<Objective Type="CollectItem" ItemId="118643" CollectCount="1">
-			<CollectFrom>
-			</CollectFrom>
-			<Hotspots>
-			</Hotspots>
-		</Objective>
-		<Objective Type="KillMob" MobId="80005" KillCount="1">
-			<Hotspots>
-			</Hotspots>
-		</Objective>
-	</Quest>
-
-	<Vendor Name="Lonika Stillblade" Entry="88006" X="5534.25" Y="4527.528" Z="132.4856" />
-	<PickUp QuestName="And No Maces!" QuestId="37167" GiverName="" GiverId="" />
+	<PickUp QuestName="And No Maces!" QuestId="37167" GiverName="Lonika Stillblade" GiverId="88006" X="5534.25" Y="4527.528" Z="132.4856" />
 	<Objective QuestName="And No Maces!" QuestId="37167" Type="CollectItem" ItemId="118643" CollectCount="1" />
 	<Objective QuestName="And No Maces!" QuestId="37167" Type="KillMob" MobId="80005" KillCount="1" />
-	<TurnIn QuestName="And No Maces!" QuestId="37167" TurnInName="" TurnInId="" />
+	<TurnIn QuestName="And No Maces!" QuestId="37167" TurnInName="Lonika Stillblade" TurnInId="88006" X="5534.25" Y="4527.528" Z="132.4856" />
 
 			
 			
