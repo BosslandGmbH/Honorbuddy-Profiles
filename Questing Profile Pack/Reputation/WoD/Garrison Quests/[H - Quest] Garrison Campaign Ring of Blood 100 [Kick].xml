@@ -1,0 +1,135 @@
+﻿<HBProfile xsi:noNamespaceSchemaLocation="../../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Name>[H - Quest] Garrison 100 [Kick] ($Rev: 3547 $)</Name>
+
+    <MinLevel>90</MinLevel>
+    <MaxLevel>1001</MaxLevel>
+
+    <MinDurability>0.2</MinDurability>
+    <MinFreeBagSlots>2</MinFreeBagSlots>
+
+    <MailGrey>false</MailGrey>
+    <MailWhite>false</MailWhite>
+    <MailGreen>false</MailGreen>
+    <MailBlue>true</MailBlue>
+    <MailPurple>true</MailPurple>
+
+    <SellGrey>true</SellGrey>
+    <SellWhite>true</SellWhite>
+    <SellGreen>true</SellGreen>
+    <SellBlue>false</SellBlue>
+    <SellPurple>false</SellPurple>
+
+    <TargetElites>true</TargetElites>
+
+    <AvoidMobs>
+        <!--<Vendor Name="Bloodied Slayer" Entry="84765" Type="Repair" X="4261.436" Y="6201.667" Z="100.1521" />-->
+    </AvoidMobs>
+    <Blackspots>
+    </Blackspots>
+    <Mailboxes>
+
+    </Mailboxes>
+    <Vendors>
+
+    </Vendors>
+
+
+    <Quest Id="36220" Name="How Tough Are You?">
+        <Objective Type="CollectItem" ItemId="114976" CollectCount="1">
+            <CollectFrom>
+                <Mob Name="Lug'dol" Entry="84675" />
+            </CollectFrom>
+            <Hotspots>
+                <Hotspot X="4053.07" Y="5668.821" Z="71.41292" />
+            </Hotspots>
+        </Objective>
+    </Quest>    
+    <Quest Id="36221" Name="Entry Fee">
+        <Objective Type="CollectItem" ItemId="114996" CollectCount="50">
+            <CollectFrom>
+                <Mob Name="Drunken Scrapper" Entry="87310"/>
+                <Mob Name="Nascent Brawler" Entry="84760" />
+                <Mob Name="Bloodring Slaver" Entry="88207" />
+                <Mob Name="Rampant Gladiator" Entry="84764" />
+                <Mob Name="Bloodied Slayer" Entry="84765" />
+            </CollectFrom>
+            <Hotspots>
+                <Hotspot X="4246.684" Y="6045.808" Z="78.05524" />
+                <Hotspot X="4263.386" Y="6170.346" Z="96.7753" />
+                <Hotspot X="4301.186" Y="6135.546" Z="92.12634" />
+                <Hotspot X="4196.206" Y="5986.752" Z="84.68084" />
+                <Hotspot X="4295.772" Y="5911.909" Z="116.0996" />
+                <Hotspot X="4315.121" Y="5986.097" Z="116.2171" />
+                <Hotspot X="4395.384" Y="5972.303" Z="116.2138" />
+                <Hotspot X="4448.752" Y="5991.75" Z="120.4633" />              
+            </Hotspots>
+        </Objective>
+    </Quest>
+
+
+    <QuestOrder>
+	
+		<!-- User settings - Kill between hotspots false -->
+
+        <LootMobs Value="true" />
+        <UseMount Value="true" />
+		
+		
+    
+		<!-- Pick up at garrison, turn in at Thunder Pass -->
+        <PickUp QuestName="Garrison Campaign: The Ring of Blood" QuestId="36281" GiverName="Overly Gaudy Note" GiverId="234243" X="5578.497" Y="4584.999" Z="142.9237" GiverType="GameObject" />
+        <TurnIn QuestName="Garrison Campaign: The Ring of Blood" QuestId="36281" TurnInName="Gurgthock" TurnInId="84637" X="3560.866" Y="5734.757" Z="48.2908" />
+        <PickUp QuestName="How Tough Are You?" QuestId="36220" GiverName="Gurgthock" GiverId="84637" X="3560.866" Y="5734.757" Z="48.2908" />
+ 			<While Condition="HasQuest(36220) &amp;&amp; !IsQuestCompleted(36220)" > <!-- How Tough Are You? -->
+                <Objective QuestName="How Tough Are You?" QuestId="36220" Type="CollectItem" ItemId="114976" CollectCount="1" />
+                <MoveTo DestName="Lug'dol's Head" X="4195.893" Y="6080.302" Z="76.04204" />
+                <CustomBehavior File="InteractWith" QuestId="36220" MobId="84750" TerminateWhen="IsObjectiveComplete(2, 36220)" Range="5" NonCompeteDistance="0" X="4195.893" Y="6080.302" Z="76.04204" />
+			</While>
+        <TurnIn QuestName="How Tough Are You?" QuestId="36220" TurnInName="Kroggol the Wall" TurnInId="84720" X="4199.892" Y="6079.109" Z="76.61183" />
+        <PickUp QuestName="Entry Fee" QuestId="36221" GiverName="Kroggol the Wall" GiverId="84720" X="4199.892" Y="6079.109" Z="76.61183" />
+           <Objective QuestName="Entry Fee" QuestId="36221" Type="CollectItem" ItemId="114996" CollectCount="50" />
+        <TurnIn QuestName="Entry Fee" QuestId="36221" TurnInName="Wodin the Troll-Servant" TurnInId="84784" X="4434.916" Y="6086.365" Z="107.4313" />
+        <PickUp QuestName="The Champion of Blood" QuestId="36222" GiverName="Wodin the Troll-Servant" GiverId="84784" X="4434.916" Y="6086.365" Z="107.4313" />
+ 	
+	<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="dev progression from here" />
+
+  			<While Condition="HasQuest(36222) &amp;&amp; !IsQuestCompleted(36222)" > <!-- The Champion of Blood -->
+                <CustomBehavior File="InteractWith" QuestId="36222" MobId="84783" Range="5" NonCompeteDistance="0" WaitTime="10000" X="4426.681" Y="6082.228" Z="107.3944" />
+                
+                <!-- then kill -->
+                <Objective QuestName="The Champion of Blood" QuestId="36222" Type="KillMob" MobId="84800" KillCount="1" />
+			</While>
+        <TurnIn QuestName="The Champion of Blood" QuestId="36222" TurnInName="Wodin the Troll-Servant" TurnInId="84784" X="4434.916" Y="6086.365" Z="107.4313" />
+
+       
+        
+        
+        
+        
+
+	<!-- 
+
+    
+
+        
+    
+	-->		
+
+        
+
+
+	
+	<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Garrison Campaign completed" />
+
+    </QuestOrder>
+
+	<!-- 
+
+    
+    
+
+    
+	-->		
+
+
+</HBProfile>
