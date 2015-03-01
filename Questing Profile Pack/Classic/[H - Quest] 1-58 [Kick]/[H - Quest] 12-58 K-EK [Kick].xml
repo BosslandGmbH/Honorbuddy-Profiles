@@ -3199,6 +3199,16 @@
 		<LootMobs Value="true" />
 		<UseMount Value="true" />
 		<CustomBehavior File="Hooks\MountHook" state="true" />
+
+		<CustomBehavior File="Hooks\DoWhen" ActivityName="Oozing Bag" UseWhen="HasItem(20768)" >
+			<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:20768&quot;)" />
+			<CustomBehavior File="WaitTimer" WaitTime="1000" GoalText="Waiting for Oozing Bag loot {TimeRemaining}" />
+		</CustomBehavior>
+
+		<CustomBehavior File="Hooks\DoWhen" ActivityName="Scum Covered Bag" UseWhen="HasItem(20767)" >
+			<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:20767&quot;)" />
+			<CustomBehavior File="WaitTimer" WaitTime="1000" GoalText="Waiting for Scum Covered Bag loot {TimeRemaining}" />
+		</CustomBehavior>
 		<!-- CHECKPOINT BLOCK END -->
 
 		<ClearVendor />
@@ -9230,13 +9240,8 @@
 		<TurnIn QuestName="Twilight Geolords" QuestId="8320" TurnInName="Huum Wildmane" TurnInId="15270" />
 		<PickUp QuestName="Vyral the Vile" QuestId="8321" GiverName="Huum Wildmane" GiverId="15270" />
 
-		<While Condition="HasQuest(8321) &amp;&amp; !IsQuestCompleted(8321)">
-			<MoveTo QuestId="8321" DestName="Vyral the Vile" X="-6325.47" Y="7.681579" Z="6.509269" />
-			<CustomBehavior File="WaitTimer" WaitTime="120000" GoalText="Waiting for Vyral the Vile {TimeRemaining}" />
-			<CustomBehavior File="InteractWith" QuestId="8321" MobId="15202" X="-6325.47" Y="7.681579" Z="6.509269" />
-		</While>
-
-		<Objective QuestName="Vyral the Vile" QuestId="8321" Type="CollectItem" ItemId="20466" CollectCount="1" />
+		<LootMobs Value="true" />
+		<CustomBehavior File="KillUntilComplete" QuestId="8321" MobId="15202" X="-6325.47" Y="7.681579" Z="6.509269" />		
 		<TurnIn QuestName="Vyral the Vile" QuestId="8321" TurnInName="Huum Wildmane" TurnInId="15270" />
 		<PickUp QuestName="The Twilight Mystery" QuestId="8284" GiverName="Geologist Larksbane" GiverId="15183" />
 		<PickUp QuestName="Dearest Natalia" QuestId="8304" GiverName="Commander Mar'alith" GiverId="15181" X="-6752.384" Y="823.8355" Z="57.36497" />
