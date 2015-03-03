@@ -4979,7 +4979,14 @@
 				<!-- mobstate isn't working on this behavior.  i need to use it on alive ones only, as it doesn't blacklist where it last used it at.  temp work around below
         <CustomBehavior File="UseItemTargetLocation" QuestId="26076" UseType="ToObject" ItemId="56800" ObjectId="42035" Range="5" MobState="Alive" X="1751.485" Y="810.5716" Z="130.9548" /> -->
 				<While Condition="HasQuest(26076) &amp;&amp; !IsQuestCompleted(26076)">
-					<CustomBehavior File="InteractWith" MobId="42035" CollectionDistance="500" MobState="Alive" X="1751.485" Y="810.5716" Z="130.9548" />
+					<CustomBehavior File="InteractWith" MobId="42035" CollectionDistance="500" MobState="Alive" >
+						<HuntingGrounds>
+							<Hotspot Name="0" X="1723.293" Y="841.1492" Z="127.9951" />
+							<Hotspot Name="1" X="1664.451" Y="774.5997" Z="131.9281" />
+							<Hotspot Name="2" X="1750.826" Y="746.3301" Z="135.4293" />
+							<Hotspot Name="3" X="1712.982" Y="783.2817" Z="131.7243" />
+						</HuntingGrounds>
+					</CustomBehavior>
 					<CustomBehavior File="UseItemTargetLocation" UseType="ToObject" ItemId="56800" MobId="42035" MinRange="3" Range="5" X="1751.485" Y="810.5716" Z="130.9548" />
 					<CustomBehavior File="WaitTimer" WaitTime="1500" GoalText="Waiting for quest to complete {TimeRemaining}" />
 				</While>
@@ -7405,6 +7412,15 @@
 			<LootMobs Value="true" />
 			<UseMount Value="true" />
 			<CustomBehavior File="Hooks\MountHook" state="true" />
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="Oozing Bag" UseWhen="HasItem(20768)" >
+				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:20768&quot;)" />
+				<CustomBehavior File="WaitTimer" WaitTime="1000" GoalText="Waiting for Oozing Bag loot {TimeRemaining}" />
+			</CustomBehavior>
+
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="Scum Covered Bag" UseWhen="HasItem(20767)" >
+				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:20767&quot;)" />
+				<CustomBehavior File="WaitTimer" WaitTime="1000" GoalText="Waiting for Scum Covered Bag loot {TimeRemaining}" />
+			</CustomBehavior>
 			<!-- CHECKPOINT BLOCK END -->
 
 			<If Condition="Me.ZoneId == 139">
@@ -8541,6 +8557,15 @@
 		</If>
 
 		<CustomBehavior File="Message" Text="Compiling Dawnrise Expedition Quests" LogColor="Green" />
+		<CustomBehavior File="Hooks\DoWhen" ActivityName="Oozing Bag" UseWhen="HasItem(20768)" >
+			<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:20768&quot;)" />
+			<CustomBehavior File="WaitTimer" WaitTime="1000" GoalText="Waiting for Oozing Bag loot {TimeRemaining}" />
+		</CustomBehavior>
+
+		<CustomBehavior File="Hooks\DoWhen" ActivityName="Scum Covered Bag" UseWhen="HasItem(20767)" >
+			<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:20767&quot;)" />
+			<CustomBehavior File="WaitTimer" WaitTime="1000" GoalText="Waiting for Scum Covered Bag loot {TimeRemaining}" />
+		</CustomBehavior>
 
 		<If Condition="!HasQuest(28526) || IsQuestCompleted(28526)">
 			<!-- "Tropical Paradise Beckons" if user has "Warchief's Command: Un'Goro Crater!"
@@ -8966,7 +8991,7 @@
 
 		<Objective QuestName="The Evil Dragons of Un'Goro Crater" QuestId="24704" Type="KillMob" MobId="38252" KillCount="15" />
 
-		<If Condition="HasQuest(24704) &amp;&amp; IsQuestCompleted(24704)">
+		<If Condition="HasQuest(24704) &amp;&amp; IsQuestCompleted(24704)">a
 			<TurnIn QuestId="24704" />
 		</If>
 
@@ -8979,16 +9004,20 @@
 			</Else>
 		</If>
 
-		<If Condition="HasQuest(24706) &amp;&amp; !IsQuestCompleted(24706)">
-			<CustomBehavior File="Hooks\DoWhen" ActivityName="GetMaxFollower" UseWhen="Unit(38343) == null &amp;&amp; !Me.HasAura(71710) &amp;&amp; !IsQuestCompleted(24706)" >
+		<While Condition="HasQuest(24706) &amp;&amp; !IsQuestCompleted(24706)">
+			<If Condition="!Me.HasAura(71710)" >
+				<CustomBehavior File="InteractWith" NonCompeteDistance="0" MobId="38237" GossipOptions="1" Range="2" WaitTime="2000" X="-7228.146" Y="-599.6198" Z="-271.2461" />
+			</If>
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="GetMaxFollower" UseWhen="Me.IsAlive &amp;&amp; Unit(38343) == null &amp;&amp; !Me.HasAura(71710) &amp;&amp; !IsQuestCompleted(24706)" >
 				<CustomBehavior File="InteractWith" NonCompeteDistance="0" MobId="38237" GossipOptions="1" Range="2" WaitTime="2000" X="-7228.146" Y="-599.6198" Z="-271.2461" />
 			</CustomBehavior>
 
-			<While Condition="HasQuest(24706) &amp;&amp; !IsQuestCompleted(24706)">
+
+			<While Condition="Me.HasAura(71710) &amp;&amp; HasQuest(24706) &amp;&amp; !IsQuestCompleted(24706)">
 				<DisableBehavior Name="Pull, Combat" />
 				<MoveTo DestName="The Spirits of Golakka Hot Springs" QuestId="24706" X="-7228.146" Y="-599.6198" Z="-271.2461" />
 
-				<While Condition="HasQuest(24706) &amp;&amp; !IsQuestCompleted(24706)">
+				<While Condition="Me.HasAura(71710) &amp;&amp; HasQuest(24706) &amp;&amp; !IsQuestCompleted(24706)">
 					<CustomBehavior QuestId="24706" File="TargetAndMoveToMob" MobId="38254" TargetOnlyIfHealthPercentAbove="1" MoveWithinMaxRangeOfMob="2" WaitForNpcs="False" WaitTime="25000" >
 						<HuntingGrounds>
 							<Hotspot X="-7286.739" Y="-788.6278" Z="-269.7741" />
@@ -9007,7 +9036,7 @@
 					<!--<CustomBehavior QuestId="24706" File="WaitTimer" WaitTime="25000" />-->
 				</While>
 			</While>
-		</If>
+		</While>
 
 		<If Condition="HasQuest(24706) &amp;&amp; IsQuestCompleted(24706)">
 			<CustomBehavior File="Hooks\DoWhen" ActivityName="GetMaxFollower" Command="Remove" />
@@ -9059,7 +9088,9 @@
 		<PickUp QuestName="The Western Pylon" QuestId="24723" GiverName="Spark Nilminer" GiverId="9272" />
 		<CustomBehavior File="InteractWith" QuestId="24723" MobId="164956" InteractByGossipOptions="1" Range="5" NonCompeteDistance="0" X="-7199.983" Y="-334.9223" Z="-226.1769" />
 		<TurnIn QuestName="The Western Pylon" QuestId="24723" TurnInName="J.D. Collie" TurnInId="9117" />
-		<PickUp QuestName="The Dunes of Silithus" QuestId="28859" GiverName="Zen'Aliri" GiverId="38269" X="-7461.412" Y="-1528.385" Z="-268.8134" />
+		<If Condition="Me.Level &gt; 53">
+			<PickUp QuestName="The Dunes of Silithus" QuestId="28859" GiverName="Zen'Aliri" GiverId="38269" X="-7461.412" Y="-1528.385" Z="-268.8134" />
+		</If>
 
 
 
@@ -9162,6 +9193,15 @@
 		<LootMobs Value="true" />
 		<UseMount Value="true" />
 		<CustomBehavior File="Hooks\MountHook" state="true" />
+		<CustomBehavior File="Hooks\DoWhen" ActivityName="Oozing Bag" UseWhen="HasItem(20768)" >
+			<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:20768&quot;)" />
+			<CustomBehavior File="WaitTimer" WaitTime="1000" GoalText="Waiting for Oozing Bag loot {TimeRemaining}" />
+		</CustomBehavior>
+
+		<CustomBehavior File="Hooks\DoWhen" ActivityName="Scum Covered Bag" UseWhen="HasItem(20767)" >
+			<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:20767&quot;)" />
+			<CustomBehavior File="WaitTimer" WaitTime="1000" GoalText="Waiting for Scum Covered Bag loot {TimeRemaining}" />
+		</CustomBehavior>
 		<!-- CHECKPOINT BLOCK END -->
 
 		<CustomBehavior File="Message" Text="Move to Silithus" LogColor="Green" />
@@ -9240,6 +9280,7 @@
 		<TurnIn QuestName="Twilight Geolords" QuestId="8320" TurnInName="Huum Wildmane" TurnInId="15270" />
 		<PickUp QuestName="Vyral the Vile" QuestId="8321" GiverName="Huum Wildmane" GiverId="15270" />
 
+		<!-- Just in case -->
 		<LootMobs Value="true" />
 		<CustomBehavior File="KillUntilComplete" QuestId="8321" MobId="15202" X="-6325.47" Y="7.681579" Z="6.509269" />		
 		<TurnIn QuestName="Vyral the Vile" QuestId="8321" TurnInName="Huum Wildmane" TurnInId="15270" />
