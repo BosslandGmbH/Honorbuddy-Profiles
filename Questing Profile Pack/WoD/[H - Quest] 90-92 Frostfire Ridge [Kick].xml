@@ -1008,11 +1008,6 @@
 			<PickUp QuestName="The Dark Portal" QuestId="34398" GiverName="Warchiefs Command Board" GiverId="206109" X="1596.325" Y="-4365.863" Z="21.06839" />
 		</If>
 		<If Condition="HasQuest(34398) &amp;&amp; !IsQuestCompleted(34398)" >
-			<If Condition="Me.ZoneId == 4"> <!-- Blasted Lands -->
-				<MoveTo DestName="near Khadgar" X="-11806.83" Y="-3203.989" Z="-28.92494" />
-				<CustomBehavior File="InteractWith" MobId="78423" GossipOptions="1" ProactiveCombatStrategy="ClearMobsTargetingUs" NonCompeteDistance="0" KeepTargetSelected="True" Range="6" X="-11812.26" Y="-3205.597" Z="-29.56283" /> <!-- Khadgar -->
-				<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click()" WaitTime="1000" />
-			</If>
 			<If Condition="Me.ZoneId == 1637"> <!-- Org -->
 				<ClearVendor />
 				<SetVendor>
@@ -1026,22 +1021,26 @@
 						<Mailbox X="1550.458" Y="-4364.466" Z="17.52338" />
 					</Mailboxes>
 				</SetMailbox>
-				<CustomBehavior File="ForceSetVendor" DoSell="True" DoRepair="True"  />
+				<CustomBehavior File="ForceSetVendor" DoSell="True" DoRepair="True" DoMail="True" />
 				<ClearVendor />
 				<ClearMailbox />
+				
+				<MoveTo X="1772.603" Y="-4327.352" Z="-8.197061" />
+				<CustomBehavior File="InteractWith" MobId="235877" NonCompeteDistance="0" Range="4" WaitTime="10000" X="-11812.26" Y="-3205.597" Z="-29.56283" /> <!-- BL Portal -->
 			</If>
-			<If Condition="Me.ZoneId != 1265"> <!-- Tanaan -->
-				<UseMount Value="false" />
-
-				<CustomBehavior File="FlyTo" DestName="Khadgar port to Tanaan" X="1585.265" Y="-4370.585" Z="20.78289" />
-				<MoveTo DestName="The Dark Portal" X="1585.265" Y="-4370.585" Z="20.78289" /> <!-- The Dark Portal -->
-				<CustomBehavior File="InteractWith" MobId="78423" KeepTargetSelected="True" PreInteractMountStrategy="DismountOrCancelShapeshift" 
-                                                GossipOptions="1" NonCompeteDistance="0" Range="5" WaitTime="5000" X="1592.226" Y="-4373.335" Z="20.77822" /> <!-- Khadgar -->
-				<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click()" WaitTime="3000" />
+			<If Condition="Me.ZoneId == 4"> <!-- Blasted Lands -->
+				<CustomBehavior File="FlyTo" DestName="Near Khadgar" X="-11777.56" Y="-3178.056" Z="-28.61928" />
+				<MoveTo DestName="near Khadgar" X="-11806.83" Y="-3203.989" Z="-28.92494" />
+			
+				<CustomBehavior File="InteractWith" MobId="78423" GossipOptions="1" ProactiveCombatStrategy="ClearMobsTargetingUs" NonCompeteDistance="0" KeepTargetSelected="True" Range="6" X="-11812.26" Y="-3205.597" Z="-29.56283" /> <!-- Khadgar -->
+				<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click()" WaitTime="1000" />
 			</If>
 			<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for port {TimeRemaining}" />
-			<!-- kill cinematic -->
 			<CustomBehavior File="Misc\RunLua" Lua="if MovieFrame and MovieFrame:IsVisible() then MovieFrame:StopMovie() elseif CinematicFrame and CinematicFrame:IsVisible() then CinematicFrame_CancelCinematic() end" WaitTime="3000" />
+				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for movie {TimeRemaining}" />
+			<If Condition="Me.ZoneId != 1265"> <!-- Tanaan -->
+				<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" StopOnContinue="True" SoundCueInterval="1" Text="Go to Org or Blasted Lands and push start" />
+			</If>
 		</If>
 		<If Condition="HasQuest(34398)" >
 			<TurnIn QuestName="The Dark Portal" QuestId="34398" TurnInName="Archmage Khadgar" TurnInId="78558" X="4066.427" Y="-2372.571" Z="94.59667" />
