@@ -1024,20 +1024,20 @@
 				<CustomBehavior File="ForceSetVendor" DoSell="True" DoRepair="True" DoMail="True" />
 				<ClearVendor />
 				<ClearMailbox />
-				
+
 				<MoveTo X="1772.603" Y="-4327.352" Z="-8.197061" />
 				<CustomBehavior File="InteractWith" MobId="235877" NonCompeteDistance="0" Range="4" WaitTime="10000" X="-11812.26" Y="-3205.597" Z="-29.56283" /> <!-- BL Portal -->
 			</If>
 			<If Condition="Me.ZoneId == 4"> <!-- Blasted Lands -->
 				<CustomBehavior File="FlyTo" DestName="Near Khadgar" X="-11777.56" Y="-3178.056" Z="-28.61928" />
 				<MoveTo DestName="near Khadgar" X="-11806.83" Y="-3203.989" Z="-28.92494" />
-			
+
 				<CustomBehavior File="InteractWith" MobId="78423" GossipOptions="1" ProactiveCombatStrategy="ClearMobsTargetingUs" NonCompeteDistance="0" KeepTargetSelected="True" Range="6" X="-11812.26" Y="-3205.597" Z="-29.56283" /> <!-- Khadgar -->
 				<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click()" WaitTime="1000" />
 			</If>
 			<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for port {TimeRemaining}" />
 			<CustomBehavior File="Misc\RunLua" Lua="if MovieFrame and MovieFrame:IsVisible() then MovieFrame:StopMovie() elseif CinematicFrame and CinematicFrame:IsVisible() then CinematicFrame_CancelCinematic() end" WaitTime="3000" />
-				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for movie {TimeRemaining}" />
+			<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for movie {TimeRemaining}" />
 			<If Condition="Me.ZoneId != 1265"> <!-- Tanaan -->
 				<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" StopOnContinue="True" SoundCueInterval="1" Text="Go to Org or Blasted Lands and push start" />
 			</If>
@@ -1477,9 +1477,14 @@
 			<TurnIn QuestName="Bonus Objective: Forbidden Glacier" QuestId="34505" TurnInName="" TurnInId="" />
 			 -->
 
-		<While Condition="HasQuest(33784) &amp;&amp; !IsQuestCompleted(33784)" > <!-- Gormaul Tower -->
-			<CustomBehavior File="InteractWith" QuestId="33784" MobId="76240" Range="4" NonCompeteDistance="0" TerminateWhen="IsObjectiveComplete(1, 33784)" X="6476.128" Y="6203.583" Z="221.3367" />
-		</While>
+		<!-- Gormaul Tower -->
+		<MoveTo DestName="Gormaul Tower" QuestId="33784" X="6496.121" Y="6213.34" Z="223.3424" />
+		<CustomBehavior File="EscortGroup" QuestId="33784" EscortNpcId1="76240" EscortNpcId2="76233" EscortNpcId3="76242" >
+			<SearchPath>
+				<Hotspot Name="Gormaul Tower 0" X="6496.121" Y="6213.34" Z="223.3424" />
+				<Hotspot Name="Gormaul Tower 1" X="6431.833" Y="6351.709" Z="227.9465" />
+			</SearchPath>
+		</CustomBehavior>
 		<TurnIn QuestName="Gormaul Tower" QuestId="33784" TurnInName="Durotan" TurnInId="76240" X="6476.128" Y="6203.583" Z="221.3367" />
 		<PickUp QuestName="These Colors Don't Run" QuestId="33526" GiverName="Durotan" GiverId="70860" X="6449.916" Y="6299.063" Z="228.0325" />
 		<While Condition="HasQuest(33526) &amp;&amp; !IsQuestCompleted(33526)" >
