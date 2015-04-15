@@ -1611,18 +1611,25 @@
 					</HuntingGrounds>
 				</CustomBehavior>
 
-				<MoveTo QuestId="34879" X="1666.802" Y="1721.84" Z="293.6602" /> <!-- 2 -->
-				<If Condition="HasQuest(34879) &amp;&amp; IsQuestCompleted(34879)">
+				<While Condition="!IsObjectiveComplete(2, 34879)" >
+					<MoveTo QuestId="34879" X="1666.802" Y="1721.84" Z="293.6602" /> <!-- 2 -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for Magister Krelas" />
+				</While>
+				<If Condition="!IsObjectiveComplete(3, 34879)" >
 					<CustomBehavior File="InteractWith" QuestId="34879" MobId="235824" Range="4" NonCompeteDistance="0" WaitTime="5000" X="1657.755" Y="1742.325" Z="300.7884" />
+				</If>
+				<If Condition="HasQuest(34879) &amp;&amp; IsQuestCompleted(34879)">
 					<CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for Port to Turn in Quest" />
 					<TurnIn QuestName="Dropping In" QuestId="34879" TurnInName="Magister Krelas" TurnInId="80390" X="1633.623" Y="1760.865" Z="311.516" />
 				</If>
-				<If Condition="Unit(80390) == null || (HasQuest(34879) &amp;&amp; !IsQuestCompleted(34879))"> <!-- Dropping In -->
+				<!-- Dropping In 	-->
+				<If Condition="Unit(80390) == null || (HasQuest(34879) &amp;&amp; !IsQuestCompleted(34879))"> 
 					<CustomBehavior File="AbandonQuest" QuestId="34879" Type="All" />
 					<CustomBehavior File="WaitTimer" WaitTime="3000" GoalText="Waiting for quest to abandon {TimeRemaining}" />
 					<PickUp QuestName="Dropping In" QuestId="34879" GiverName="Magister Krelas" GiverId="80396" X="1714.684" Y="2121.399" Z="139.1736" />
 					<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for bot {TimeRemaining}" />
 				</If>
+			
 
 			</While>
 
