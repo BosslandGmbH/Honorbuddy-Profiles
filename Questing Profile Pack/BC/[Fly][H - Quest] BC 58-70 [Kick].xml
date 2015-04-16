@@ -2098,7 +2098,7 @@
 					<CustomBehavior File="WaitTimer" WaitTime="2000" />
 					<MoveTo X="-369.1657" Y="2700.713" Z="35.15621" />
 					<CustomBehavior File="WaitTimer" WaitTime="2000" />
-					<UseItem ItemId="27479" QuestId="10087" X="-369.1657" Y="2700.713" Z="35.15621" />
+			        <CustomBehavior File="RunCode" Code="await ThrowTorchOnTank(new WoWPoint(-362.937683, 2705.43066, 32.9075))" />
 				</While>
 				<While Condition="HasQuest(10087) &amp;&amp; !IsObjectiveComplete(1,10087)">
 					<MoveTo X="-318.5592" Y="2384.184" Z="45.67851" />
@@ -2106,8 +2106,24 @@
 					<MoveTo X="-318.5592" Y="2384.184" Z="45.67851" />
 					<CustomBehavior File="WaitTimer" WaitTime="2000" />
 					<MoveTo X="-314.0688" Y="2395.841" Z="45.14435" />
-					<UseItem ItemId="27479" QuestId="10087" X="-314.0688" Y="2395.841" Z="45.14435" />
+			        <CustomBehavior File="RunCode" Code="await ThrowTorchOnTank(new WoWPoint(-300.644348, 2402.09155, 45.6317444))" />
 				</While>
+		        <CustomBehavior File="RunCode" Type="Definition"><![CDATA[ 
+	                private async Task ThrowTorchOnTank(WoWPoint faceLoc)
+	                {
+	                	await CommonCoroutines.LandAndDismount();
+			    		await CommonCoroutines.StopMoving();
+						if (!Me.IsSafelyFacing(faceLoc))
+						{
+							Me.SetFacing(faceLoc);
+							await CommonCoroutines.SleepForLagDuration();
+						}
+						var torch = Me.BagItems.FirstOrDefault(i => i.Entry == 27479);
+						if (torch == null) return;
+						torch.UseContainerItem();
+						await Coroutine.Sleep(3000);
+	                }
+	            ]]></CustomBehavior>
 			</If>
 			<If Condition="HasQuest(10087) &amp;&amp; IsQuestCompleted(10087)" >
 				<If Condition="!CanFly()" >
