@@ -2328,9 +2328,6 @@
                     TurnInId="39858" />
 			<CustomBehavior File="WaitTimer" WaitTime="55000"
                             GoalText="Waiting for Arch Druid to think {TimeRemaining}" />
-			<PickUp QuestName="Tortolla's Revenge" QuestId="25843" GiverName="Arch Druid Hamuul Runetotem"
-                    GiverId="41480"
-                    X="5125.255" Y="-1758.526" Z="1334.464" />
 		</If>
 		<While Condition="!HasQuest(25843) &amp;&amp; !IsQuestCompleted(25843)">
 			<CustomBehavior File="FlyTo" DestName="Pickup: Tortolla's Revenge" Land="true" X="5120.336" Y="-1766.116" Z="1333.958" />
@@ -3219,19 +3216,29 @@
 			<TurnIn QuestName="Brood of Evil" QuestId="25552" TurnInName="Aronus" TurnInId="40816" />
 			<PickUp QuestName="Death to the Broodmother" QuestId="25553" GiverName="Aronus" GiverId="40816" />
 		</If>
+		<!-- Desperiona is bugged. 	-->
 		<If Condition="!HasQuest(25553) &amp;&amp; !IsQuestCompleted(25553)">
 			<CustomBehavior File="FlyTo" DestName="Pickup Quest" X="4101.964" Y="-3994.722" Z="970.7802" />
 			<PickUp QuestName="Death to the Broodmother" QuestId="25553" GiverName="Aronus" GiverId="40816" />
 		</If>
+	
 		<While Condition="HasQuest(25553) &amp;&amp; !IsQuestCompleted(25553)">
 			<CustomBehavior File="FlyTo" DestName="Desperiona" ArrivalTolerance="2" X="3752.322" Y="-3260.478" Z="981.9627" />
 			<CustomBehavior File="ForcedDismount" />
-
-			<MoveTo X="3774.15" Y="-3228.275" Z="971.3578" />
+			<!-- Try normal combat with IinteractWith -->
+			<MoveTo DestName="The Ledge" X="3774.15" Y="-3228.275" Z="971.3578" />
 			<CustomBehavior File="WaitTimer" WaitTime="1000" />
 			<UseItem QuestId="25553" ItemId="55173" X="3774.15" Y="-3228.275" Z="971.3578" />
-			<MoveTo X="3758.404" Y="-3217.764" Z="974.2463" />
-			<CustomBehavior File="WaitTimer" WaitTime="20000" />
+			<CustomBehavior File="WaitTimer" WaitTime="15000" />
+			<MoveTo DestName="Desperiona" X="3774.15" Y="-3228.275" Z="971.3578" />
+			<CustomBehavior File="InteractWith" QuestId="25553" MobId="40974" MobState="dead" X="3774.15" Y="-3228.275" Z="971.3578" />
+			<MoveTo DestName="Away from ledge" QuestId="25553" X="3758.404" Y="-3217.764" Z="974.2463" />
+			<!-- Try StandAndKill -->
+			<MoveTo DestName="The Ledge" X="3774.15" Y="-3228.275" Z="971.3578" />
+			<CustomBehavior File="WaitTimer" WaitTime="1000" />
+			<UseItem QuestId="25553" ItemId="55173" X="3774.15" Y="-3228.275" Z="971.3578" />
+			<MoveTo DestName="Away from ledge" X="3758.404" Y="-3217.764" Z="974.2463" />
+			<CustomBehavior File="WaitTimer" WaitTime="10000" />
 			<CustomBehavior File="StandAndKill" QuestId="25553" MobId="40974" X="3774.15" Y="-3228.275" Z="971.3578" />
 		</While>
 		<While Condition="HasQuest(25550) &amp;&amp; !IsQuestCompleted(25550)">
