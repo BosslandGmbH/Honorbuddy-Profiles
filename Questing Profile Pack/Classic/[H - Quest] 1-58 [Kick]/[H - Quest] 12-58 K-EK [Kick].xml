@@ -3972,24 +3972,24 @@
                  We opt to take advantage of the Windrider, which simplifies the profile considerably
                  for completing this quest.
             -->
-		<While Condition="HasQuest(13712) &amp;&amp; !IsQuestCompleted(13712)">
-			<MoveTo DestName="Kadrak" X="1236.776" Y="-2251.217" Z="91.92881" />
-			<CustomBehavior File="ForcedDismount" />
-			<CustomBehavior File="WaitTimer" WaitTime="2000" />
-			<CustomBehavior File="InteractWith" QuestId="13712" MobId="8582"
+			<While Condition="HasQuest(13712) &amp;&amp; !IsQuestCompleted(13712)">
+				<MoveTo DestName="Kadrak" X="1236.776" Y="-2251.217" Z="91.92881" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="WaitTimer" WaitTime="2000" />
+				<CustomBehavior File="InteractWith" QuestId="13712" MobId="8582"
                                 InteractByGossipOptions="1" X="1236.776" Y="-2251.217" Z="91.92881" />
-			<CustomBehavior File="WaitTimer" QuestId="13712" WaitTime="5000"
+				<CustomBehavior File="WaitTimer" QuestId="13712" WaitTime="5000"
                                 GoalText="Waiting {TimeRemaining} to enter vehicle" />
 
 
-			<If Condition="!Me.InVehicle &amp;&amp; Object(8582) != null" >
-				<CustomBehavior File="InteractWith" QuestId="13712" MobId="8582"
+				<If Condition="!Me.InVehicle &amp;&amp; Object(8582) != null" >
+					<CustomBehavior File="InteractWith" QuestId="13712" MobId="8582"
                                 InteractByGossipOptions="2" X="1236.776" Y="-2251.217" Z="91.92881" TerminateWhen="Me.InVehicle" />
-			</If>
+				</If>
 
-			<CustomBehavior File="WaitTimer" QuestId="13712" WaitTime="115000"
+				<CustomBehavior File="WaitTimer" QuestId="13712" WaitTime="115000"
                                 GoalText="Waiting {TimeRemaining} for journey to end" />
-		</While>
+			</While>
 			<!-- End of Warsong Labor Camp Quests -->
 
 			<!-- Splintertree Post Quests -->
@@ -4112,13 +4112,14 @@
 				<CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for agro to clear {TimeRemaining}" />
 				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:45710&quot;)" />
 				<CustomBehavior File="WaitTimer" WaitTime="8000" GoalText="Waiting for npc to spawn {TimeRemaining}" />
+				<TurnIn QuestName="Mission Improbable" QuestId="13808" TurnInName="Krokk" TurnInId="33889" X="2611.031" Y="-3058.034" Z="156.4043" />
+				<PickUp QuestName="Making Stumps" QuestId="13815" GiverName="Krokk" GiverId="33889" X="2611.031" Y="-3058.034" Z="156.4043" />
+				<PickUp QuestName="Wet Work" QuestId="13865" GiverName="Krokk" GiverId="33889" X="2611.031" Y="-3058.034" Z="156.4043" />
 			</If>
-			<TurnIn QuestName="Mission Improbable" QuestId="13808" TurnInName="Krokk" TurnInId="33889" X="2611.031" Y="-3058.034" Z="156.4043" />
-			<PickUp QuestName="Making Stumps" QuestId="13815" GiverName="Krokk" GiverId="33889" X="2611.031" Y="-3058.034" Z="156.4043" />
-			<PickUp QuestName="Wet Work" QuestId="13865" GiverName="Krokk" GiverId="33889" X="2611.031" Y="-3058.034" Z="156.4043" />
-			<CustomBehavior File="Halt" />
+
+
 			<While Condition="HasQuest(13815) &amp;&amp; !IsQuestCompleted(13815)">
-				<CustomBehavior File="InteractWith" QuestId="13815" InteractByUsingItemId="45807" MobId="34167" NumOfTimes="20" WaitTime="4000" MobState="Alive" >
+				<CustomBehavior File="InteractWith" QuestId="13815" InteractByUsingItemId="45807" MobId="34167" NumOfTimes="20" WaitTime="4000" MobState="Alive" Range="4" >
 					<HuntingGrounds>
 						<Hotspot X="2460.057" Y="-3266.886" Z="114.6126" />
 						<Hotspot X="2631.882" Y="-3293.847" Z="136.3377" />
@@ -4127,37 +4128,65 @@
 					</HuntingGrounds>
 				</CustomBehavior>
 			</While>
-			<Objective QuestName="Wet Work" QuestId="13865" Type="KillMob" MobId="34208" KillCount="1" />
-			<Objective QuestName="Wet Work" QuestId="13865" Type="KillMob" MobId="34294" KillCount="1" />
-			<Objective QuestName="Wet Work" QuestId="13865" Type="KillMob" MobId="34204" KillCount="1" />
-			<Objective QuestName="Wet Work" QuestId="13865" Type="KillMob" MobId="34177" KillCount="12" />
-			<!-- Summon Krokk for TurnIn -->
-			<While Condition="HasQuest(13815) &amp;&amp; IsQuestCompleted(13815) &amp;&amp; ( Unit(33889) == null )">
-				<While Condition="!HasItem(45710)">
-					<CustomBehavior File="InteractWith" MobId="33837" 
+			<If Condition="HasQuest(13865)" >
+				<Objective QuestName="Wet Work" QuestId="13865" Type="KillMob" MobId="34208" KillCount="1" />
+				<Objective QuestName="Wet Work" QuestId="13865" Type="KillMob" MobId="34294" KillCount="1" />
+				<Objective QuestName="Wet Work" QuestId="13865" Type="KillMob" MobId="34204" KillCount="1" />
+				<Objective QuestName="Wet Work" QuestId="13865" Type="KillMob" MobId="34177" KillCount="12" />
+			</If>
+
+			<If Condition="HasQuest(13815)" >
+				<!-- Summon Krokk -->
+				<MoveTo DestName="The Brazier" X="2611.031" Y="-3058.034" Z="156.4043" />
+				<While Condition="Unit(33889) == null">
+					<While Condition="!HasItem(45710)">
+						<MoveTo DestName="Kadrak" X="2284.792" Y="-2544.701" Z="98.3289" />
+						<CustomBehavior File="InteractWith" MobId="33837" 
                                         InteractByGossipOptions="1" WaitTime="5000"
                                         X="2284.792" Y="-2544.701" Z="98.3289" />
-					<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for Secret Signal Powder {TimeRemaining}" />
+						<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for Secret Signal Powder {TimeRemaining}" />
+					</While>
+					<MoveTo DestName="The Brazier" X="2611.031" Y="-3058.034" Z="156.4043" />
+					<CustomBehavior File="ForcedDismount" />
+					<CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for agro to clear {TimeRemaining}" />
+					<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:45710&quot;)" />
+					<CustomBehavior File="WaitTimer" WaitTime="8000" GoalText="Waiting for npc to spawn {TimeRemaining}" />
 				</While>
-				<MoveTo X="2611.031" Y="-3058.034" Z="156.4043" />
-				<CustomBehavior File="ForcedDismount" />
-				<CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for agro to clear {TimeRemaining}" />
-				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:45710&quot;)" />
-				<CustomBehavior File="WaitTimer" WaitTime="8000" GoalText="Waiting for npc to spawn {TimeRemaining}" />
-			</While>
+				<TurnIn QuestName="Making Stumps" QuestId="13815" TurnInName="Krokk" TurnInId="33889" X="2611.031" Y="-3058.034" Z="156.4043" />
+			</If>
 
 
 			<If Condition="HasQuest(13865)" >
+				<!-- Summon Krokk -->
+				<MoveTo DestName="The Brazier" X="2611.031" Y="-3058.034" Z="156.4043" />
+				<While Condition="Unit(33889) == null">
+					<While Condition="!HasItem(45710)">
+						<MoveTo DestName="Kadrak" X="2284.792" Y="-2544.701" Z="98.3289" />
+						<CustomBehavior File="InteractWith" MobId="33837" 
+                                        InteractByGossipOptions="1" WaitTime="5000"
+                                        X="2284.792" Y="-2544.701" Z="98.3289" />
+						<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for Secret Signal Powder {TimeRemaining}" />
+					</While>
+					<MoveTo DestName="The Brazier" X="2611.031" Y="-3058.034" Z="156.4043" />
+					<CustomBehavior File="ForcedDismount" />
+					<CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for agro to clear {TimeRemaining}" />
+					<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:45710&quot;)" />
+					<CustomBehavior File="WaitTimer" WaitTime="8000" GoalText="Waiting for npc to spawn {TimeRemaining}" />
+				</While>
 				<TurnIn QuestName="Wet Work" QuestId="13865" TurnInName="Krokk" TurnInId="33889" X="2611.031" Y="-3058.034" Z="156.4043" />
+				<PickUp QuestName="As Good as it Gets" QuestId="13870" GiverName="Krokk" GiverId="33889" X="2611.031" Y="-3058.034" Z="156.4043" />
+				<TurnIn QuestName="As Good as it Gets" QuestId="13870" TurnInName="Overseer Gorthak" TurnInId="17304" />
 			</If>
-			<TurnIn QuestName="Making Stumps" QuestId="13815" TurnInName="Krokk" TurnInId="33889" X="2611.031" Y="-3058.034" Z="156.4043" />
-			<PickUp QuestName="As Good as it Gets" QuestId="13870" GiverName="Krokk" GiverId="33889" X="2611.031" Y="-3058.034" Z="156.4043" />
-			<TurnIn QuestName="As Good as it Gets" QuestId="13870" TurnInName="Overseer Gorthak" TurnInId="17304" />
-			<PickUp QuestName="Security!" QuestId="13871" GiverName="Overseer Gorthak" GiverId="17304" />
-			<Objective QuestName="Security!" QuestId="13871" Type="CollectItem" ItemId="46147" CollectCount="1" />
-			<TurnIn QuestName="Security!" QuestId="13871" TurnInName="Overseer Gorthak" TurnInId="17304" />
-			<PickUp QuestName="Sheelah's Last Wish" QuestId="13873" GiverName="Guardian Menerin" GiverId="34233" />
-			<TurnIn QuestName="Sheelah's Last Wish" QuestId="13873" TurnInName="Guardian Gurtar" TurnInId="34242" />
+
+			<If Condition="IsQuestCompleted(13865)" >
+				<PickUp QuestName="Security!" QuestId="13871" GiverName="Overseer Gorthak" GiverId="17304" />
+				<Objective QuestName="Security!" QuestId="13871" Type="CollectItem" ItemId="46147" CollectCount="1" />
+				<TurnIn QuestName="Security!" QuestId="13871" TurnInName="Overseer Gorthak" TurnInId="17304" />
+			</If>
+			<If Condition="IsQuestCompleted(13865)" >
+				<PickUp QuestName="Sheelah's Last Wish" QuestId="13873" GiverName="Guardian Menerin" GiverId="34233" />
+				<TurnIn QuestName="Sheelah's Last Wish" QuestId="13873" TurnInName="Guardian Gurtar" TurnInId="34242" />
+			</If>
 			<PickUp QuestName="Gurtar's Request" QuestId="13875" GiverName="Guardian Gurtar" GiverId="34242" X="2802.91" Y="-3466.646" Z="115.8374" />
 			<If Condition="HasQuest(13875) &amp;&amp; !IsQuestCompleted(13875)">
 				<Objective QuestName="Gurtar's Request" QuestId="13875" Type="CollectItem" ItemId="46315" CollectCount="8" />
@@ -4168,13 +4197,15 @@
 				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:46316&quot;)" />
 				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for  {TimeRemaining}" />
 			</If>
-			<While Condition="HasQuest(13806) &amp;&amp; !IsQuestCompleted(13806)">
-				<CustomBehavior File="InteractWith" QuestId="13806" MobId="194612" NumOfTimes="20" Range="5" CollectionDistance="500" X="2913.082" Y="-2827.083" Z="209.0692" />
-			</While>
+
+			<CustomBehavior File="InteractWith" QuestId="13806" MobId="194612" NumOfTimes="20" Range="5" CollectionDistance="500" X="2913.082" Y="-2827.083" Z="209.0692" />
 			<Objective QuestName="Satyr Horns" QuestId="6441" Type="CollectItem" ItemId="5481" CollectCount="16" />
-			<TurnIn QuestName="Gurtar's Request" QuestId="13875" TurnInName="Splintertree Demolisher" TurnInId="33726" />
 			<TurnIn QuestName="Demon Duty" QuestId="13806" TurnInName="Locke Okarr" TurnInId="11820" />
 			<TurnIn QuestName="Satyr Horns" QuestId="6441" TurnInName="Pixel" TurnInId="12724" />
+
+			<TurnIn QuestName="Gurtar's Request" QuestId="13875" TurnInName="Splintertree Demolisher" TurnInId="33726" />
+
+
 			<!-- End of Splintertree Post Quests -->
 
 
