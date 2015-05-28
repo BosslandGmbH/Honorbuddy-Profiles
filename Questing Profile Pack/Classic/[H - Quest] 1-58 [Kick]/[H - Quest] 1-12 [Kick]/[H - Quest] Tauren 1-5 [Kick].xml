@@ -446,6 +446,7 @@
 
 		<PickUp QuestName="Poison Water" QuestId="20440" GiverName="Mull Thunderhorn" GiverId="2948" X="-2341.405" Y="-445.4486" Z="-6.500385" />
 		<PickUp QuestName="Swoop Hunting" QuestId="761" GiverName="Harken Windtotem" GiverId="2947" X="-2304.791" Y="-454.8085" Z="-5.438182" />
+		<MoveTo DestName="Bloodhoof Village FP" QuestId="20440" X="-2302.551" Y="-379.9283" Z="-9.112409" />
 		<MoveTo DestName="Poison Water" QuestId="20440" X="-2428.916" Y="-668.1937" Z="-4.229686" />
 		<CustomBehavior File="InteractWith" QuestName="Poison Water" QuestId="20440" MobIds="2956" MobState="Dead" Range="5" NumOfTimes="100" TerminateWhen="IsObjectiveComplete(2, 20440)" >
 			<HuntingGrounds WaypointVisitStrategy="InOrder">
@@ -476,21 +477,32 @@
 		</CustomBehavior>
 
 		<TurnIn QuestName="Swoop Hunting" QuestId="761" TurnInName="Harken Windtotem" TurnInId="2947" X="-2304.791" Y="-454.8085" Z="-5.438182" />
+		<If Condition="HasQuest(20440)" >
+			<CustomBehavior File="ForceSetVendor" DoSell="true" DoRepair="true" DoMail="true" />
+		</If>
 		<TurnIn QuestName="Poison Water" QuestId="20440" TurnInName="Mull Thunderhorn" TurnInId="2948" X="-2341.405" Y="-445.4486" Z="-6.500385" />
-		<CustomBehavior File="ForceSetVendor" DoSell="true" DoRepair="true" DoMail="true" />
-		<MoveTo DestName="Bloodhoof Village FP" X="-2302.551" Y="-379.9283" Z="-9.112409" />
+
+		<!-- Mulgore = 215 -->
+		<If Condition="Me.ZoneId == 215 &amp;&amp; Me.Copper &lt; 94" >
+			<SetGrindArea>
+				<GrindArea>
+					<Factions>124</Factions>
+					<Hotspots>
+						<Hotspot Name="Swoop Hunting 0" X="-2615.647" Y="-903.8238" Z="-6.055056" />
+						<Hotspot Name="Swoop Hunting 1"  X="-2536.37" Y="-1066.707" Z="-7.341474" />
+						<Hotspot Name="Swoop Hunting 2" X="-2428.916" Y="-668.1937" Z="-4.229686" />
+						<Hotspot Name="Swoop Hunting 3"  X="-2677.542" Y="-653.0386" Z="-0.42738" />
+					</Hotspots>
+				</GrindArea>
+			</SetGrindArea>
+			<GrindUntil Condition="Me.Copper &gt;= 94" GoalText="Getting fare for Orgrimmar flight" />
+
+
+		</If>
 
 		<If Condition="Me.Copper &gt;= 94" >
 			<MoveTo DestName="Moving to set hearth to Valley of Strength" X="1568.057" Y="-4416.994" Z="15.5093" />
 			<CustomBehavior File="InteractWith" MobId="6929" InteractByGossipOptions="1" X="1573.266" Y="-4439.158" Z="16.05643" />
-		</If>
-
-		<If Condition="Me.ZoneId == 215" >
-			<!-- Mulgore = 215 -->
-			<If Condition="Me.Copper &gt;= 94" >
-				<MoveTo DestName="Moving to set hearth to Valley of Strength" X="1568.057" Y="-4416.994" Z="15.5093" />
-				<CustomBehavior File="InteractWith" MobId="6929" InteractByGossipOptions="1" X="1573.266" Y="-4439.158" Z="16.05643" />
-			</If>
 		</If>
 
 		<If Condition="Me.ZoneId == 1638" >
