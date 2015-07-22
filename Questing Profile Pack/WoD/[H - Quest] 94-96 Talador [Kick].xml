@@ -1207,13 +1207,13 @@
 				<CustomBehavior File="InteractWith" QuestId="34860" MobId="80323" NumOfTimes="20" Range="8" WaitForNpcs="false"
 								CollectionDistance="1000" PreInteractMountStrategy="DismountOrCancelShapeshift" >
 					<HuntingGrounds WaypointVisitStrategy="InOrder" >
-						<Hotspot X="1439.089" Y="1733.406" Z="306.4536" ArrivalTolerance="15" />	
-						<Hotspot X="1553.752" Y="1645.648" Z="311.4187" ArrivalTolerance="15" />	
-						<Hotspot X="1392.044" Y="1765.341" Z="318.1375" ArrivalTolerance="15" />	
-						<Hotspot X="1264.333" Y="1696.34" Z="314.2447" ArrivalTolerance="15" />	
-						<Hotspot X="1328.266" Y="1808.996" Z="344.0413" ArrivalTolerance="15" />	
-						<Hotspot X="1320.432" Y="1896.656" Z="337.1228" ArrivalTolerance="15" />	
-						<Hotspot X="1165.507" Y="1722.994" Z="330.7602" ArrivalTolerance="15" />	
+						<Hotspot X="1439.089" Y="1733.406" Z="306.4536" />	
+						<Hotspot X="1553.752" Y="1645.648" Z="311.4187" />
+						<Hotspot X="1392.044" Y="1765.341" Z="318.1375" />
+						<Hotspot X="1264.333" Y="1696.34" Z="314.2447" />
+						<Hotspot X="1328.266" Y="1808.996" Z="344.0413" />
+						<Hotspot X="1320.432" Y="1896.656" Z="337.1228" />
+						<Hotspot X="1165.507" Y="1722.994" Z="330.7602" />
 					</HuntingGrounds>
 				</CustomBehavior>
 			</While>
@@ -1629,7 +1629,7 @@
 					<PickUp QuestName="Dropping In" QuestId="34879" GiverName="Magister Krelas" GiverId="80396" X="1714.684" Y="2121.399" Z="139.1736" />
 					<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for bot {TimeRemaining}" />
 				</If>
-			
+
 
 			</While>
 
@@ -2191,22 +2191,39 @@
 		</SetGrindArea>
 		<GrindTo Condition="Me.Level >= 96" GoalText="Grinding to level 96" /> <!-- 96 -->
 
-		<If Condition="!HasQuest(34653) &amp;&amp; !IsQuestCompleted(34653)"> <!-- News from Spires of Arak Pickup -->
-			<PickUp QuestName="News from Spires of Arak" QuestId="35537" GiverName="Shadow Hunter Kajassa" GiverId="79627" X="3238.862" Y="1585.594" Z="163.224" />
-		</If>
-		<If Condition="HasQuest(35537) &amp;&amp; Me.ZoneId == 6662" > <!-- Talador -->
-			<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:110560&quot;)" WaitTime="12000" /> <!-- HS to Frostwall Garrison -->
-		</If>
-		<If Condition="HasQuest(35537)"> <!-- News from Spires of Arak Turnin -->
-			<TurnIn QuestName="News from Spires of Arak" QuestId="35537" TurnInName="Rokhan" TurnInId="78487" X="5614.007" Y="4563.16" Z="135.1946" />
-		</If>
-		<!-- End of Talador -->
+		<If Condition="!IsQuestCompleted(34653) &amp;&amp; !IsQuestCompleted(36951)"> <!-- Arrakoa Exodus - there are 2 versions of this quest -->
+			<If Condition="!IsQuestCompleted(35537)" > <!-- News from Spires of Arak -->
+				<If Condition="HasQuest(34653)" >
+					<CustomBehavior File="AbandonQuest" QuestId="34653" Type="All" /> <!-- Arrakoa Exodus - Version picked up from Command Board in Garrison -->
+				</If>
+				<PickUp QuestName="News from Spires of Arak" QuestId="35537" GiverName="Shadow Hunter Kajassa" GiverId="79627" X="3238.862" Y="1585.594" Z="163.224" />
+			</If>
+			<If Condition="HasQuest(35537) &amp;&amp; Me.ZoneId == 6662" > <!-- Talador -->
+				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:110560&quot;)" WaitTime="12000" /> <!-- HS to Frostwall Garrison -->
+			</If>
+			<If Condition="HasQuest(35537)"> <!-- News from Spires of Arak Turnin -->
+				<TurnIn QuestName="News from Spires of Arak" QuestId="35537" TurnInName="Rokhan" TurnInId="78487" X="5614.007" Y="4563.16" Z="135.1946" />
+			</If>
+			<!-- End of Talador -->
 
-		<!-- To Arak -->
-		<PickUp QuestName="Arakkoa Exodus" QuestId="34653" GiverName="Rokhan" GiverId="78487" X="5614.007" Y="4563.16" Z="135.1946" />
+			<!-- To Arak -->
+			<If Condition="HasQuest(36951)"> <!-- Arakkoa Exodus - Version picked up from Command Board in Garrison -->
+				<CustomBehavior File="AbandonQuest" QuestId="36951" Type="All" />
+			</If>
+			<If Condition="!IsQuestCompleted(34653) &amp;&amp; !IsQuestCompleted(36951)" > <!-- Arakkoa Exodus - there are 2 versions of this quest -->
+				<PickUp QuestName="Arakkoa Exodus" QuestId="34653" GiverName="Rokhan" GiverId="78487" X="5614.007" Y="4563.16" Z="135.1946" />
+			</If>
+		</If>
 		<While Condition="!HasQuest(36522) &amp;&amp; !IsQuestCompleted(36522)" > <!-- Solidarity in Death / Ahm Follower -->
-			<MoveTo DestName="Ahm" X="5741.167" Y="4531.684" Z="138.0303" />
+			<!-- Ahm moves depending on Garrison level -->
+			<If Condition="Me.MapId == 1153" > <!-- Level 3 Horde Garrison -->
+				<MoveTo DestName="Ahm" X="5390.259" Y="4403.425" Z="153.7785" />
+			</If>
+			<If Condition="Me.MapId == 1330" > <!-- Level 2 Horde Garrison -->
+				<MoveTo DestName="Ahm" X="5741.167" Y="4531.684" Z="138.0303" />
+			</If>
 			<CustomBehavior File="InteractWith" MobId="85777" WaitTime="3000" X="5741.167" Y="4531.684" Z="138.0303" />
+
 			<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click()" />
 			<CustomBehavior File="WaitTimer" WaitTime="3000" GoalText="Waiting for quest to complete {TimeRemaining}" />
 		</While>
@@ -2220,10 +2237,6 @@
 		<TurnIn QuestName="Arakkoa Exodus" QuestId="34653" TurnInName="Azik" TurnInId="79539" X="655.0746" Y="2384.804" Z="203.7571" />
 		<PickUp QuestName="The Shadows of Skettis" QuestId="34655" GiverName="Azik" GiverId="79539" X="655.0746" Y="2384.804" Z="203.7571" />
 
-
 		<CustomBehavior File="LoadProfile" RememberProfile="True" ProfileName="[H - Quest] 96-98 Arak [Kick]" />
-
-
 	</QuestOrder>
-
 </HBProfile>
