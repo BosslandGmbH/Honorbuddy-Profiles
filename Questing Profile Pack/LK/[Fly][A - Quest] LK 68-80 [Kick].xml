@@ -5528,24 +5528,27 @@
 				<CustomBehavior File="WaitTimer" WaitTime="5000"
                                 GoalText="Waiting for quest to complete {TimeRemaining}" />
 			</While>
-			<While Condition="HasQuest(11919) &amp;&amp; !IsQuestCompleted(11919)">
-				<CustomBehavior File="FlyTo" DestName="get a drake" X="4066.958" Y="7071.041" Z="167.2539" />
+			<While Condition="HasQuest(11919) &amp;&amp; !IsQuestCompleted(11919) &amp;&amp; !Me.HasAura(46691)">
+				<CustomBehavior File="FlyTo" DestName="get a drake" X="3989.713" Y="7300.822" Z="256.5251" />
 				<CustomBehavior File="ForcedDismount" />
+				<DisableBehavior Name="Combat" />
+				<CustomBehavior File="Misc\RunLua" Lua="PetPassiveMode();" />
 				<CustomBehavior File="InteractWith" QuestId="11919" MobId="26127" InteractByUsingItemId="35506"
-                                NumOfTimes="5" WaitTime="23000" Range="60" CollectionDistance="500"
-                                PreInteractMountStrategy="Dismount" X="4066.958" Y="7071.041" Z="167.2539" />
-				<CustomBehavior File="RunMacro" Macro="/cleartarget" NumOfTimes="5" WaitTime="500" />
-
-				<CustomBehavior File="FlyTo" DestName="Transitus Shield" X="3572.097" Y="6650.867" Z="195.1819" />
-				<CustomBehavior File="ForcedDismount" />
-				<CustomBehavior File="WaitTimer" WaitTime="5000"
-                                GoalText="Waiting for quest to complete {TimeRemaining}" />
+                                Range="80" CollectionDistance="80" TerminateWhen="Me.HasAura(46691)" MobState="Alive"
+                                PreInteractMountStrategy="DismountOrCancelShapeshift" X="3989.713" Y="7300.822" Z="256.5251" />
+				<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="!Me.Combat" />
+				<EnableBehavior Name="Combat" />
+				<If Condition="Me.HasAura(46691)" >
+					<CustomBehavior File="FlyTo" DestName="Turnin Quest" X="3573.125" Y="6651.071" Z="195.1808" />
+					<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="IsQuestCompleted(11919)" />
+				</If>
 			</While>
+
 			<If Condition="HasQuest(11919) &amp;&amp; IsQuestCompleted(11919)">
-				<CustomBehavior File="FlyTo" DestName="Turnin: Drake Hunt" X="3578.918" Y="6655.438" Z="195.3858" />
+				<CustomBehavior File="FlyTo" DestName="Turnin Quest" X="3578.918" Y="6655.438" Z="195.3858" />
 				<CustomBehavior File="ForcedDismount" />
-				<TurnIn QuestName="Drake Hunt" QuestId="11919" TurnInName="Raelorasz" TurnInId="26117" />
-				<PickUp QuestName="Cracking the Code" QuestId="11931" GiverName="Raelorasz" GiverId="26117" />
+				<TurnIn QuestName="Drake Hunt" QuestId="11919" TurnInName="Raelorasz" TurnInId="26117" Nav="Fly" />
+				<PickUp QuestName="Cracking the Code" QuestId="11931" GiverName="Raelorasz" GiverId="26117" Nav="Fly" />
 				<MoveTo X="3584.352" Y="6660.842" Z="195.4667" />
 			</If>
 			<If Condition="!HasQuest(11931) &amp;&amp; !IsQuestCompleted(11931)">
