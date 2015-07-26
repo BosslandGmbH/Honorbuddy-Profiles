@@ -1679,7 +1679,13 @@
 			<!-- <CustomBehavior File="Vehicles\MountVehOnly" VehicleMountId="40190"
                  X="5264.356" Y="-1510.762" Z="1365.41" /> -->
 			<If Condition="Me.Class == WoWClass.Druid">
-				<CustomBehavior File="RunMacro" Macro="/cancelaura cat form\n/cancelaura moonkin form" />
+				<!-- Remove Form: Cat, Travel, Bear, SWolf, Moonkin -->
+				<CustomBehavior File="RunCode" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
 			</If>
 			<CustomBehavior File="InteractWith" QuestId="25462" MobId="40190" Range="8" CollectionDistance="2" NonCompeteDistance="0" WaitForNpc="true"
                             X="5254.562" Y="-1536.917" Z="1361.341" />
@@ -2809,8 +2815,13 @@
 			<While Condition="HasQuest(25308) &amp;&amp; !IsQuestCompleted(25308)">
 				<UseMount Value="false" />
 				<MoveTo QuestId="25308" X="4833.147" Y="-4218.988" Z="894.0121" />
-				<CustomBehavior QuestId="25308" File="RunMacro"
-                                Macro="/cancelaura cat form\n/cancelaura bear form\n/cancelaura travel form\n/cancelaura ghost wolf" />
+				<!-- Remove Form: Cat, Travel, Bear, SWolf, Moonkin -->
+				<CustomBehavior File="RunCode" QuestId="25308" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
 				<CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for {TimeRemaining}" />
 				<!-- CJ: Disable the Combat Routine between costume application, and ready to pick fight...
                      Otherwise, Druids have a problem with this quest.  Many Combat Routines will put a

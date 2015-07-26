@@ -2394,9 +2394,14 @@
 			<If Condition="HasQuest(11961) &amp;&amp; !IsQuestCompleted(11961)">
 				<CustomBehavior File="FlyTo" DestName="Objective 'Spirits Watch Over Us'" X="2957.734" Y="4670.674"
                                 Z="2.674987" />
-				<!-- <CustomBehavior File="ForcedDismount" /> -->
-				<CustomBehavior File="RunMacro"
-                                Macro="/dismount\n/cancelaura Flight Form\n/cancelaura Swift Flight Form" />
+				<CustomBehavior File="ForcedDismount" />
+				<!-- Remove Form: Cat, Travel, Bear, SWolf, Moonkin -->
+				<CustomBehavior File="RunCode" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
 				<CustomBehavior File="MyCTM" X="2960.394" Y="4671.321" Z="-32.58078" />
 				<CustomBehavior File="InteractWith" QuestId="11961" MobId="26219" MovementBy="ClickToMoveOnly"
                                 InteractByGossipOptions="1" 
@@ -6737,8 +6742,13 @@
 			<While Condition="HasQuest(12028) &amp;&amp; !IsQuestCompleted(12028)">
 				<MoveTo X="2740.105" Y="881.537" Z="6.693972" />
 				<CustomBehavior File="ForcedDismount" />
-				<CustomBehavior File="RunMacro"
-                                Macro="/cancelaura cat form\n/cancelaura bear form\n/cancelaura travel form\n/cancelaura ghost wolf" />
+				<!-- Remove Form: Cat, Travel, Bear, SWolf, Moonkin -->
+				<CustomBehavior File="RunCode" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
 				<UseItem QuestId="12028" ItemId="35907" X="2740.105" Y="881.537" Z="6.693972" />
 				<CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for  {TimeRemaining}" />
 			</While>

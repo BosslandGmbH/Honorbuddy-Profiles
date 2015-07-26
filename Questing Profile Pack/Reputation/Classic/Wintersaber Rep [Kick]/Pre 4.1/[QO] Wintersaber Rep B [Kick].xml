@@ -110,7 +110,13 @@
             <!-- If you don't have the quest, fly there and get the quest -->
             <If Condition="(!HasQuest(4970))" >
                 <CustomBehavior File="FlyTo" X="8067.484" Y="-3862.439" Z="763.0035" />
-                <CustomBehavior File="RunMacro" Macro="/dismount\n/cancelaura Swift Flight Form\n/cancelaura Flight Form" />
+				<!-- Remove Form: Cat, Travel, Bear, SWolf, Moonkin -->
+				<CustomBehavior File="RunCode" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
                 <PickUp QuestName="Frostsaber Provisions" QuestId="4970" GiverName="Rivern Frostwind" GiverId="10618" GiverType="NPC" X="8067.484" Y="-3862.439" Z="763.0035" />
             </If>
             <!-- HB doesn't like to get 4970 sometimes, so I have to put a lot of PickUp's for it -->

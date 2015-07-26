@@ -197,7 +197,13 @@
         <PickUp QuestName="&quot;Scoodles&quot;" QuestId="11510" GiverName="&quot;Silvermoon&quot; Harry" GiverId="24539" />
             <If Condition="((HasQuest(11510)) &amp;&amp; (!IsQuestCompleted(11510)))" >
                 <CustomBehavior File="FlyTo" X="-332.6303" Y="-3743.387" Z="30.11348" />
-                <CustomBehavior File="RunMacro" Macro="/dismount\n/cancelaura Flight Form\n/cancelaura Swift Flight Form" />
+				<!-- Remove Form: Cat, Travel, Bear, SWolf, Moonkin -->
+				<CustomBehavior File="RunCode" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
                 <Objective QuestName="&quot;Scoodles&quot;" QuestId="11510" Type="CollectItem" ItemId="34235" CollectCount="1" />
             </If>
             <If Condition="((HasQuest(11510)) &amp;&amp; (IsQuestCompleted(11510)))" >

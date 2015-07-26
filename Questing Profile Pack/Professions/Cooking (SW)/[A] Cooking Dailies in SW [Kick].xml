@@ -135,7 +135,13 @@
             </While>
             <If Condition="((HasQuest(26177)) &amp;&amp; (!IsQuestCompleted(26177)))" >
                 <CustomBehavior File="FlyTo" X="-8897.132" Y="715.9642" Z="102.0343" />
-                <CustomBehavior File="RunMacro" Macro="/dismount\n/cancelaura Flight Form\n/cancelaura Swift Flight Form" />
+				<!-- Remove Form: Cat, Travel, Bear, SWolf, Moonkin -->
+				<CustomBehavior File="RunCode" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
              <While Condition="((HasQuest(26177)) &amp;&amp; (!IsQuestCompleted(26177)))" >
                  <CustomBehavior File="InteractWith" QuestId="26177" MobId="42339" NumOfTimes="3"
                                  CollectionDistance="500" X="-8744.308" Y="780.3948" Z="92.96433" />
