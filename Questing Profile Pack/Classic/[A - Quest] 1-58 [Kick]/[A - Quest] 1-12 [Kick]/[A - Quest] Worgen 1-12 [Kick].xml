@@ -449,6 +449,7 @@
             <CustomBehavior File="Misc\RunLua" Lua="if MovieFrame:IsVisible() then MovieFrame:StopMovie() else CinematicFrame_CancelCinematic() end" />
         </If>
         <If Condition="!IsQuestCompleted(14375) &amp;&amp; !IsQuestCompleted(14313)" >
+            <CustomBehavior File="WaitTimer" WaitTime="60000" />
             <CustomBehavior File="InteractWith" TerminateWhen="IsQuestCompleted(14375)" NonCompeteDistance="0"
                             InteractByQuestFrameDisposition="Complete" MobId="36332" Range="8"
                             X="-1821.09" Y="2292.597" Z="42.10082" />
@@ -768,7 +769,7 @@
         <Objective QuestName="Slaves to No One" QuestId="24674" Type="KillMob" MobId="37802" KillCount="1" />
         <While Condition="HasQuest(24575) &amp;&amp; !IsQuestCompleted(24575)">
             <Objective QuestName="Liberation Day" QuestId="24575" Type="CollectItem" ItemId="49881" CollectCount="5" />
-            <CustomBehavior File="InteractWith" QuestId="24575" MobId="201775" MobType="GameObject" NumOfTimes="5" CollectionDistance="200" />
+            <CustomBehavior File="InteractWith" QuestId="24575" MobId="201775" ObjectType="GameObject" NumOfTimes="5" CollectionDistance="200" />
             <CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for quest to complete {TimeRemaining}" />
         </While>
         <TurnIn QuestName="Liberation Day" QuestId="24575" TurnInName="Lorna Crowley" TurnInId="37783" />
@@ -781,12 +782,17 @@
         <TurnIn QuestName="Push Them Out" QuestId="24676" TurnInName="Lorna Crowley" TurnInId="37783" />
         <PickUp QuestName="The Battle for Gilneas City" QuestId="24904" GiverName="Lorna Crowley" GiverId="37783" />
         <While Condition="HasQuest(24904) &amp;&amp; !IsQuestCompleted(24904)">
+            <RunTo X="-1390.441" Y="1231.996" Z="35.55811" />
             <CustomBehavior File="InteractWith" MobId="38553" InteractByGossipOptions="1" WaitForNpcs="false"
                             CollectionDistance="200" />
             <DisableBehavior Name="Pull" />
             <CustomBehavior File="EscortGroup" QuestId="24904" EscortNpcId="38218" EscortCountMax="1"
-                            EscortMaxFightDistance="5" EscortMaxFollowDistance="5" />
-            <CustomBehavior File="WaitTimer" WaitTime="3000" GoalText="Waiting for quest to complete {TimeRemaining}" />
+                            EscortMaxFightDistance="5" EscortMaxFollowDistance="5" TerminateWhen="Unit(38218) == null" />
+            <If Condition="Unit(38469) != null" > <!-- If Sylvanas is near us, event finished properly. -->
+                <RunTo X="-1675.245" Y="1616.768" Z="20.4879" />
+                <CustomBehavior File="EscortGroup" QuestId="24904" EscortNpcId="38470" EscortCountMax="1"
+                            EscortMaxFightDistance="5" EscortMaxFollowDistance="5" TerminateWhen="Me.X &gt; -1500" /> <!-- Assist Genn, terminate if event fails -->
+            </If>
             <EnableBehavior Name="Pull" />
         </While>
         <TurnIn QuestName="The Battle for Gilneas City" QuestId="24904" TurnInName="Lorna Crowley" TurnInId="38611" />
