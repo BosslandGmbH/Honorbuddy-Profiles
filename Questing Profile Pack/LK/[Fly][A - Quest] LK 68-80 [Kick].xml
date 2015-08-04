@@ -2681,6 +2681,7 @@
 				<PickUp QuestName="The Hunt is On" QuestId="11794" GiverId="25826" GiverName="Vindicator Yaala" />
 			</If>
 			<While Condition="HasQuest(11794) &amp;&amp; !IsQuestCompleted(11794)">
+				<!-- aura: <Aura Name="Righteous Vision" SpellId="46078" /> -->
 				<If Condition="HasQuest(11794) &amp;&amp; !IsObjectiveComplete(3,11794)">
 					<MoveTo DestName="Kitchen" X="2317.156" Y="5194.126" Z="12.49885" />
 					<CustomBehavior File="ForcedDismount" />
@@ -3509,9 +3510,10 @@
 			<While Condition="HasQuest(11956) &amp;&amp; !IsQuestCompleted(11956)">
 				<CustomBehavior File="FlyTo" DestName="Finding the Phylactery" X="3609.906" Y="3656.442" Z="50.99" />
 				<CustomBehavior File="MyCTM" X="3616.241" Y="3647.823" Z="24.25698" />
-				<CustomBehavior File="WaitTimer" WaitTime="1000" />
+				<CustomBehavior File="WaitTimer" WaitTime="2000" />
 				<CustomBehavior File="InteractWith" QuestId="11956" MobId="188141" MovementBy="ClickToMoveOnly"
-                                Range="8" CollectionDistance="1000" X="3603.233" Y="3652.758" Z="27.69" />
+                                Range="5" CollectionDistance="100" X="3603.233" Y="3652.758" Z="27.69" />
+				<CustomBehavior File="WaitTimer" WaitTime="5000" />
 			</While>
 			<If Condition="HasQuest(11956) &amp;&amp; IsQuestCompleted(11956)">
 				<CustomBehavior File="FlyTo" DestName="Turnin: Finding the Phylactery" X="3365.138" Y="3720.199" Z="27.72594" />
@@ -5674,8 +5676,15 @@
 			<If Condition="HasQuest(11951) &amp;&amp; IsQuestCompleted(11951)">
 				<CustomBehavior File="FlyTo" DestName="Turnin: Bait and Switch" X="3614.556" Y="6970.033" Z="170.109" />
 				<CustomBehavior File="ForcedDismount" />
+				<!-- MOODLES AURA: 51623 -->
 				<While Condition="Unit(26206) == null">
 					<MoveTo X="3614.556" Y="6970.033" Z="170.109" />
+				<CustomBehavior File="RunCode" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
 					<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:35671&quot;)" WaitTime="30000" />
 				</While>
 				<TurnIn QuestName="Bait and Switch" QuestId="11951" TurnInName="Keristrasza" TurnInId="26206"
@@ -5688,6 +5697,12 @@
 				<CustomBehavior File="ForcedDismount" />
 				<While Condition="Unit(26206) == null">
 					<MoveTo X="3614.556" Y="6970.033" Z="170.109" />
+				<CustomBehavior File="RunCode" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
 					<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:35671&quot;)" WaitTime="30000" />
 				</While>
 				<PickUp QuestName="Saragosa's End" QuestId="11957" GiverName="Keristrasza" GiverId="26206" X="3614.556"
@@ -10393,6 +10408,12 @@
                          But, we need the testbed to verify this is a valid qualifier.
                      -->
 					<If Condition="Object(27017) == null">
+				<CustomBehavior File="RunCode" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
 						<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:36936&quot;)" />
 					</If>
 					<!-- Kill Lightning Sentry! -->
@@ -12235,6 +12256,12 @@
 			<CustomBehavior File="WaitTimer" WaitTime="5000"
 							GoalText="Waiting for NPC Lafoo to Spawn {TimeRemaining}" />
 			<If Condition="Unit(28120) == null">
+				<CustomBehavior File="RunCode" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
 				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:38622&quot;)" />
 			</If>
 			<PickUp QuestName="Gods like Shiny Things" QuestId="12572" GiverName="Lafoo" GiverId="28120" />
@@ -12250,6 +12277,12 @@
 			<CustomBehavior File="FlyTo" DestName="Pickup: " X="5651.868" Y="4560.372" Z="-134.7812" />
 			<CustomBehavior File="ForcedDismount" />
 			<If Condition="Unit(28120) == null">
+				<CustomBehavior File="RunCode" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
 				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:38622&quot;)" />
 			</If>
 			<PickUp QuestName="Gods like Shiny Things" QuestId="12572" GiverName="Lafoo" GiverId="28120" />
@@ -12266,6 +12299,12 @@
 
 			<While Condition="HasQuest(12572) &amp;&amp; !IsQuestCompleted(12572)">
 				<If Condition="Object(28120) == null">
+				<CustomBehavior File="RunCode" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
 					<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:38622&quot;)" WaitTime="1503" />
 				</If>
 				<CustomBehavior File="InteractWith" PreInteractMountStrategy="Dismount"
@@ -12456,6 +12495,12 @@
 			<CustomBehavior File="FlyTo" DestName="Turnin: " X="5804.352" Y="3684.366" Z="-20.47348" />
 			<CustomBehavior File="ForcedDismount" />
 			<If Condition="Object(28122) == null">
+				<CustomBehavior File="RunCode" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
 				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:38624&quot;)" WaitTime="1503" />
 			</If>
 			<TurnIn QuestName="The Angry Gorloc" QuestId="12578" TurnInName="Moodle" TurnInId="28122" X="5654.102"
@@ -12466,6 +12511,12 @@
 			<CustomBehavior File="FlyTo" DestName="Pickup: " X="5804.352" Y="3684.366" Z="-20.47348" />
 			<CustomBehavior File="ForcedDismount" />
 			<If Condition="Object(28122) == null">
+				<CustomBehavior File="RunCode" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
 				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:38624&quot;)" WaitTime="1504" />
 			</If>
 			<PickUp QuestName="The Mosswalker Savior" QuestId="12580" GiverName="Moodle" GiverId="28122" />
@@ -12474,10 +12525,15 @@
 			<CustomBehavior File="FlyTo" DestName="Pickup: " X="5804.352" Y="3684.366" Z="-20.47348" />
 			<CustomBehavior File="ForcedDismount" />
 			<If Condition="Object(28122) == null">
+				<CustomBehavior File="RunCode" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
 				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:38624&quot;)" WaitTime="1505" />
 			</If>
-			<PickUp QuestName="Lifeblood of the Mosswalker Shrine" QuestId="12579" GiverName="Moodle"
-                        GiverId="28122" />
+			<PickUp QuestName="Lifeblood of the Mosswalker Shrine" QuestId="12579" GiverName="Moodle" GiverId="28122" />
 		</If>
 
 		<If Condition="HasQuest(12580) &amp;&amp; !IsQuestCompleted(12580)">
@@ -12515,9 +12571,21 @@
 		<If Condition="HasQuest(12580) &amp;&amp; IsQuestCompleted(12580)">
 			<CustomBehavior File="FlyTo" DestName="Turnin: " X="5654.102" Y="4555.103" Z="-135.3448" />
 			<If Condition="Object(28122) == null">
+				<CustomBehavior File="RunCode" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
 				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:38624&quot;)" WaitTime="1501" />
 			</If>
 			<If Condition="Unit(28122) == null">
+				<CustomBehavior File="RunCode" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
 				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:38624&quot;)" WaitTime="1501" />
 			</If>
 			<TurnIn Nav="Fly" QuestName="The Mosswalker Savior" QuestId="12580" TurnInName="Moodle"
@@ -12529,6 +12597,12 @@
 			<CustomBehavior File="ForcedDismount" />
 
 			<If Condition="Object(28122) == null">
+				<CustomBehavior File="RunCode" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
 				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:38624&quot;)" WaitTime="1502" />
 			</If>
 
@@ -12546,6 +12620,12 @@
                 <CustomBehavior File="FlyTo" DestName="Pickup: " X="5804.352" Y="3684.366" Z="-20.47348" />
                 <CustomBehavior File="ForcedDismount" />
                 <If Condition="Object(28122) == null">
+				<CustomBehavior File="RunCode" >
+					<![CDATA[ 
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
                     <CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:38624&quot;)" WaitTime="1501" />
                 </If>
                 <PickUp QuestName="A Hero's Burden" QuestId="12581" GiverName="Moodle" GiverId="28122" />
