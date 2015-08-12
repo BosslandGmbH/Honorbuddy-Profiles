@@ -1,0 +1,44 @@
+﻿<HBProfile xsi:noNamespaceSchemaLocation="../../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Name>[N - Quest] Goldmane the Skinner Follower [Kick] ($Rev: 3547 $)</Name>
+
+    <MinLevel>98</MinLevel>
+    <MaxLevel>1001</MaxLevel>
+
+    <MinDurability>0.2</MinDurability>
+    <MinFreeBagSlots>2</MinFreeBagSlots>
+
+
+    
+    <QuestOrder>
+	
+
+        <LootMobs Value="true" />
+        <UseMount Value="true" />
+		
+		<!-- Feline Friends Forever - Ironfist Harbor -->
+		<While Condition="!HasQuest(35596) &amp;&amp; !IsQuestCompleted(35596)" > <!-- Goldmane the Skinner / Follower -->
+		
+            <MoveTo DestName="Bolkar and Goldmane" X="2042.12" Y="7014.122" Z="51.06328" /> 
+            
+            <While Condition="!HasItem(111863)"> <!-- Goldmane's Cage Key -->
+				<CustomBehavior File="InteractWith" MobId="80080" WaitTime="1000" X="2042.12" Y="7014.122" Z="51.06328" /> 
+            </While>
+            
+            <!-- Cage -->
+            <!-- if npcid() doesn't offer a quest -->
+            <MoveTo DestName="Goldmanes Cage" X="2041.797" Y="7019.429" Z="51.06277" />
+            <CustomBehavior File="InteractWith" MobId="230842" WaitTime="1000" Range="8" X="2041.797" Y="7019.429" Z="51.06277" /> 
+            <CustomBehavior File="WaitTimer" WaitTime="7000" GoalText="Waiting for Goldmane {TimeRemaining}" />
+            <!-- /if -->
+            
+            <!-- NPC -->
+			<MoveTo DestName="Goldmane the Skinner" X="2042.12" Y="7014.122" Z="51.06328" />
+			<CustomBehavior File="InteractWith" MobId="80083" WaitForNpcs="False" WaitTime="3000" X="2042.12" Y="7014.122" Z="51.06328" />
+			<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click()" />
+			<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for quest to complete {TimeRemaining}" />
+		</While>
+
+    </QuestOrder>
+    
+
+</HBProfile>
