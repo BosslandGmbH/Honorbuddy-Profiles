@@ -1885,6 +1885,15 @@
 				<CustomBehavior File="WaitTimer" WaitTime="20000" GoalText="Waiting for objective to complete {TimeRemaining}" />
 			</While>
 			<While Condition="!(IsObjectiveComplete(2, 35895) &amp;&amp; IsObjectiveComplete(3, 35895)) &amp;&amp; Me.IsOnTransport">
+				<CustomBehavior File="WaitTimer" WaitTime="6500" TerminateWhen="Me.Z &lt;= 63" /> <!-- Wait for falling -->
+				<If Condition="!(Lua.GetReturnVal&lt;bool&gt;(&quot;return OverrideActionBarButton2:IsVisible();&quot;, 0))" >
+					<!-- If the objective fails, or the UI glitches, this should fix it. -->
+					<MoveTo DestName="Terokk's Fall" X="-256.8004" Y="797.2864" Z="59.57238" />
+					<CustomBehavior File="WaitTimer" WaitTime="20000" GoalText="Waiting for objective to complete {TimeRemaining}"
+									TerminateWhen="(Lua.GetReturnVal&lt;bool&gt;(&quot;return OverrideActionBarButton2:IsVisible();&quot;, 0))" />
+					<CustomBehavior File="Misc\RunLua" Lua="ReloadUI();" />
+					<CustomBehavior File="WaitTimer" WaitTime="5000" />
+				</If>
 				<MoveTo QuestId="35895" X="-318.6979" Y="797.9705" Z="59.03769" />
 				<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarButton2:Click()" WaitTime="0" />
 				<MoveTo QuestId="35895" X="-362.8764" Y="816.6022" Z="57.87015" />
