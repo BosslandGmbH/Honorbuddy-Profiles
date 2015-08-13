@@ -870,6 +870,24 @@
 			</Hotspots>
 		</Objective>
 	</Quest>
+    <Quest Id="34192" Name="Things Are Not Goren Our Way">
+        <Objective Type="KillMob" MobId="83628" KillCount="8">
+            <Hotspots>
+                <Hotspot X="1909.353" Y="89.48629" Z="83.52685" />
+                <Hotspot X="1879.056" Y="80.43793" Z="80.39838" />
+                <Hotspot X="1904.176" Y="51.778" Z="49.16379" />
+                <Hotspot X="1919.692" Y="86.81453" Z="30.30633" />
+                <Hotspot X="1899.188" Y="112.9833" Z="24.49314" />
+                <Hotspot X="1879.415" Y="117.0843" Z="22.92282" />     
+                <Hotspot X="1909.353" Y="89.48629" Z="83.52685" />                
+            </Hotspots>
+        </Objective>
+        <Objective Type="KillMob" MobId="81396" KillCount="1"> <!-- Stonetooth -->
+            <Hotspots>
+                <Hotspot X="1855.37" Y="124.5799" Z="22.00559" />
+            </Hotspots>
+        </Objective>
+    </Quest>
 	<!-- END: Quest Overrides -->
 	<!-- SMV - Gorgrond - Talador - Spires - Nagrand -->
 
@@ -1682,34 +1700,8 @@
 		<PickUp QuestName="Supply Drop" QuestId="35905" GiverName="Exarch Naielle" GiverId="80079" X="1489.214" Y="-1917.429" Z="67.46739" />
 		<!-- use glowing hearthstone back to base ??? -->
 		<TurnIn QuestName="Supply Drop" QuestId="35905" TurnInName="Baros Alexston" TurnInId="77209" X="1866.262" Y="263.6458" Z="77.17221" />
-		<!-- Ignoring Quest from Baros for lvl 2 garrison - we must be lvl 93 to purchase the plans
-        <PickUp QuestName="Bigger is Better" QuestId="36592" GiverName="Baros Alexston" GiverId="77209" X="1866.262" Y="263.6458" Z="77.17221" />
-            <If Condition="HasQuest(36592) &amp;&amp; !IsQuestCompleted(36592)" >
-                <CustomBehavior File="InteractWith" QuestId="36592" MobId="81369" Range="5" X="1868.496" Y="262.1124" Z="77.15714" />
-                // upgrade garrison
-            </If>
-        <TurnIn QuestName="Bigger is Better" QuestId="36592" TurnInName="Baros Alexston" TurnInId="77209" X="1866.262" Y="263.6458" Z="77.17221" />
-        -->
-		<!-- End of Elodor -->
-
-		<!-- The Verdant Mire -->
-		<!-- alchemist chain
-        <PickUp QuestName="The Mysterious Flask" QuestId="35342" GiverType="Item" GiverName="Mysterious Flask" GiverId="113103" />
-        <TurnIn QuestName="The Mysterious Flask" QuestId="35342" TurnInName="Aenir" TurnInId="82466" X="1883.939" Y="220.0885" Z="77.06384" />
-        <PickUp QuestName="The Young Alchemist" QuestId="35343" GiverName="Aenir" GiverId="82466" X="1883.939" Y="220.0885" Z="77.06384" />
-        <TurnIn QuestName="The Young Alchemist" QuestId="35343" TurnInName="Abatha" TurnInId="82497" X="827.5555" Y="-1474.939" Z="3.712434" />
-        <PickUp QuestName="The Missing Father" QuestId="35344" GiverName="Abatha" GiverId="82497" X="827.5555" Y="-1474.939" Z="3.712434" />
-        <TurnIn QuestName="The Missing Father" QuestId="35344" TurnInName="Telos" TurnInId="82496" X="616.6805" Y="-1350.472" Z="-23.93264" />
-        <PickUp QuestName="Shocking Assistance" QuestId="35345" GiverName="Telos" GiverId="82496" X="616.6805" Y="-1350.472" Z="-23.93264" />
-            <Objective QuestName="Shocking Assistance" QuestId="35345" Type="CollectItem" ItemId="113248" CollectCount="100" />
-            <If Condition="HasQuest(35345) &amp;&amp; IsQuestCompleted(35345)" >
-        <TurnIn QuestName="Shocking Assistance" QuestId="35345" TurnInName="Abatha" TurnInId="82497" X="827.5555" Y="-1474.939" Z="3.712434" />
-                <CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:111812&quot;)" WaitTime="6000" />
-            </If>
-            -->
-		<!-- End of The Verdant Mire -->
-
 		<!-- The Draakorium / Fiona's Caravan -->
+		<!-- End of Elodor -->
 		<If Condition="HasQuest(35444)" > <!-- The Southern Wilds -->
 			<TurnIn QuestName="The Southern Wilds" QuestId="35444" TurnInName="Prelate Reenu" TurnInId="76200" X="92.54688" Y="-1547.115" Z="35.48412" />
 		</If> 
@@ -2176,9 +2168,9 @@
 			<While Condition="(!IsObjectiveComplete(1, 33255))">
 				<MoveTo QuestId="33255" X="603.873" Y="-1230.87" Z="-21.42327" />
 				<CustomBehavior File="WaitTimer" WaitTime="15000" GoalText="Waiting for Yrel to spawn {TimeRemaining}" />				
-				<If Condition="Unit(73395) != null &amp;&amp; !IsQuestCompleted(33255)"> <!-- Yrel / Get on Transport -->
+				<While Condition="Unit(73395) != null &amp;&amp; !IsQuestCompleted(33255)"> <!-- Yrel / Get on Transport -->
 					<CustomBehavior File="InteractWith" QuestId="33255" MobId="77312" MobId2="75145" WaitForNpcs="False" WaitTime="40000" PreInteractMountStrategy="DismountOrCancelShapeshift" NonCompeteDistance="0" GossipOptions="1" X="603.873" Y="-1230.87" Z="-21.42327" /> <!-- Maraad -->
-				</If>
+				</While>
 
 				<While Condition="Unit(73395) == null &amp;&amp; !IsQuestCompleted(33255)"> <!-- Yrel not here Kill Mobs - Me.IsOnTransport doesn't work here -->
 					<!-- before first stairs	-->
@@ -2601,6 +2593,38 @@
 		<!-- Ashran Appearance - beta finally got fixed, but fp's aren't working so idk if i will include it or not - code is included at bottom of profile
         <PickUp QuestName="Ashran Appearance" QuestId="36624" GiverName="Lieutenant Thorn" GiverId="79953" X="1847.073" Y="270.6632" Z="78.39755" />
         -->
+        <PickUp QuestName="Bigger is Better" QuestId="36592" GiverName="Baros Alexston" GiverId="77209" X="1866.262" Y="263.6458" Z="77.17221" />
+            <If Condition="HasQuest(36592) &amp;&amp; !IsQuestCompleted(36592)" >
+                <CustomBehavior File="InteractWith" QuestId="36592" MobId="81369" Range="5" X="1868.496" Y="262.1124" Z="77.15714" />
+				<CustomBehavior File="Misc\RunLua" Lua="C_Garrison.UpgradeGarrison()" WaitTime="5000" />
+				<CustomBehavior File="Misc\RunLua" Lua="if MovieFrame and MovieFrame:IsVisible() then MovieFrame:StopMovie() elseif CinematicFrame and CinematicFrame:IsVisible() then CinematicFrame_CancelCinematic() end" WaitTime="2000" />
+            </If>
+        <TurnIn QuestName="Bigger is Better" QuestId="36592" TurnInName="Baros Alexston" TurnInId="77209" X="1866.262" Y="263.6458" Z="77.17221" />
+        <PickUp Nav="Fly" QuestName="Things Are Not Goren Our Way" QuestId="34192" GiverName="Timothy Leens" GiverId="77730" X="1899.896" Y="101.2778" Z="83.52695" />
+            <Objective QuestName="Things Are Not Goren Our Way" QuestId="34192" Type="KillMob" Nav="Fly" MobId="83628" KillCount="8" />
+            <Objective QuestName="Things Are Not Goren Our Way" QuestId="34192" Type="KillMob" Nav="Fly" MobId="81396" KillCount="1" />
+        <If Condition="HasQuest(34192) &amp;&amp; IsQuestCompleted(34192)" >
+    	    <TurnIn Nav="Fly" QuestName="Things Are Not Goren Our Way" QuestId="34192" TurnInName="Timothy Leens" TurnInId="77730" X="1899.896" Y="101.2778" Z="83.52695" />
+    	    <CustomBehavior File="WaitTimer" WaitTime="2000" />
+			<CustomBehavior File="Misc\RunLua" Lua="if MovieFrame and MovieFrame:IsVisible() then MovieFrame:StopMovie() elseif CinematicFrame and CinematicFrame:IsVisible() then CinematicFrame_CancelCinematic() end" WaitTime="2000" />
+    	</If>
+
+		<!-- The Verdant Mire -->
+		<!-- alchemist chain
+        <PickUp QuestName="The Mysterious Flask" QuestId="35342" GiverType="Item" GiverName="Mysterious Flask" GiverId="113103" />
+        <TurnIn QuestName="The Mysterious Flask" QuestId="35342" TurnInName="Aenir" TurnInId="82466" X="1883.939" Y="220.0885" Z="77.06384" />
+        <PickUp QuestName="The Young Alchemist" QuestId="35343" GiverName="Aenir" GiverId="82466" X="1883.939" Y="220.0885" Z="77.06384" />
+        <TurnIn QuestName="The Young Alchemist" QuestId="35343" TurnInName="Abatha" TurnInId="82497" X="827.5555" Y="-1474.939" Z="3.712434" />
+        <PickUp QuestName="The Missing Father" QuestId="35344" GiverName="Abatha" GiverId="82497" X="827.5555" Y="-1474.939" Z="3.712434" />
+        <TurnIn QuestName="The Missing Father" QuestId="35344" TurnInName="Telos" TurnInId="82496" X="616.6805" Y="-1350.472" Z="-23.93264" />
+        <PickUp QuestName="Shocking Assistance" QuestId="35345" GiverName="Telos" GiverId="82496" X="616.6805" Y="-1350.472" Z="-23.93264" />
+            <Objective QuestName="Shocking Assistance" QuestId="35345" Type="CollectItem" ItemId="113248" CollectCount="100" />
+            <If Condition="HasQuest(35345) &amp;&amp; IsQuestCompleted(35345)" >
+        <TurnIn QuestName="Shocking Assistance" QuestId="35345" TurnInName="Abatha" TurnInId="82497" X="827.5555" Y="-1474.939" Z="3.712434" />
+                <CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:111812&quot;)" WaitTime="6000" />
+            </If>
+            -->
+		<!-- End of The Verdant Mire -->
 
 
 		<If Condition="HasQuest(33533) &amp;&amp; IsQuestCompleted(33533)" > <!-- The Secrets of Gorgrond -->
