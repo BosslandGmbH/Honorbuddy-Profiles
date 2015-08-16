@@ -425,7 +425,7 @@
 
 		</If>
 
-		<If Condition="Me.IsAlliance &amp;&amp; Me.MapId == 0">
+		<If Condition="Me.IsAlliance &amp;&amp; Me.MapId == 0 &amp;&amp; !IsQuestCompleted(27922)">
 			<CustomBehavior File="FlyTo" DestName="Uldum Portal in SW" Land="true" X="-8230.783" Y="420.0706"
                             Z="117.6104" />
 
@@ -448,8 +448,8 @@
 		<TurnIn QuestName="Easy Money" TurnInName="Adarrah" QuestId="27003" TurnInId="46873"
                 X="-10995" Y="-1258.1" Z="13.2436" />
 		<PickUp QuestName="Traitors!" GiverName="Prince Nadun" QuestId="27922" GiverId="46872" />
-		<DisableBehavior Name="Pull" />
 		<If Condition="HasQuest(27922) &amp;&amp; !IsQuestCompleted(27922)">
+			<DisableBehavior Name="Pull" />
 			<CustomBehavior File="FlyTo" X="-10989.39" Y="-1366.588" Z="41.00417" />
 			<CustomBehavior File="MyCTM" X="-10972.35" Y="-1379.688" Z="35.53175" />
 			<CustomBehavior File="InteractWith" QuestId="27922" MobId="206579" CollectionDistance="50" NonCompeteDistance="0" PreInteractMountStrategy="DismountOrCancelShapeshift" 
@@ -459,8 +459,8 @@
 		</If>
 		<If Condition="HasQuest(27922) &amp;&amp; IsQuestCompleted(27922)">
 			<CustomBehavior File="FlyTo" Land="true" X="-11003.82" Y="-1248.205" Z="13.24318" />
+			<EnableBehavior Name="Pull" />
 		</If>
-		<EnableBehavior Name="Pull" />
 		<TurnIn QuestName="Traitors!" TurnInName="Prince Nadun" QuestId="27922" TurnInId="46872" />
 		<PickUp QuestName="Smoke in Their Eyes" QuestId="27923" GiverName="Prince Nadun" GiverId="46872" />
 		<PickUp QuestName="Kavem the Callous" QuestId="28105" GiverName="Prince Nadun" GiverId="46872" />
@@ -1079,13 +1079,46 @@
 
 
 		<TurnIn Nav="Fly" QuestName="Salhet's Secret" TurnInName="Salhet" QuestId="28276" TurnInId="48237" />
+		
+		
+		<If Condition="Me.Level &gt;= 85 &amp;&amp; Me.Level &lt; 100">
+
+			<!-- Check if MoP active on this Account -->
+			<If Condition="Lua.GetReturnVal&lt;int&gt;(&quot;return GetAccountExpansionLevel()&quot;, 0) &gt; 3">
+				<!-- Alliance -->
+				<If Condition="Me.IsAlliance">
+					<If Condition="Me.MapId == 1">
+						<CustomBehavior File="FlyTo" DestName="Ratchet" Land="true" X="-994.8082" Y="-3823.235" Z="5.594241" />
+						<CustomBehavior File="UseTransport" TransportId="20808"
+										WaitAtX="-996.8669" WaitAtY="-3826.07" WaitAtZ="5.536246"
+										TransportStartX="-1005.613" TransportStartY="-3841.648" TransportStartZ="0.03330701"
+										StandOnX="-998.4902" StandOnY="-3843.29" StandOnZ="6.0914"
+										TransportEndX="-14277.75" TransportEndY="582.8661" TransportEndZ="0.01553879"
+										GetOffX="-14280.88" GetOffY="566.6268" GetOffZ="6.979454" />
+					</If>
+					<If Condition="Me.MapId == 0">
+						<CustomBehavior File="FlyTo" DestName="Stormwind" Land="true" X="-8832.983" Y="622.6318" Z="93.92791" />
+						<CustomBehavior File="LoadProfile" ProfileName="..\MoP\[A - Quest] 85-86 The Jade Forest [Kick]" RememberProfile="true" />
+					</If>
+				</If>
+				<!-- Horde -->
+				<If Condition="Me.IsHorde &amp;&amp; (Me.MapId == 1)">
+					<CustomBehavior File="FlyTo" DestName="Orgrimmar" Land="true" X="1596.113" Y="-4415.456" Z="14.5409" />
+					<CustomBehavior File="LoadProfile" ProfileName="..\MoP\[H - Quest] 85-86 The Jade Forest [Kick]" RememberProfile="true" />
+				</If>
+				<CustomBehavior File="UserDialog" Title="title" AllowBotStop="true" SoundCue="Asterisk" SoundCueInterval="5"
+								Text="Something went wrong and we couldn't load The Jade Forest profile!" />
+			</If>
+		</If>
+		
+		
 		<PickUp QuestName="Salhet the Tactician" GiverName="Salhet" QuestId="28277" GiverId="48237" />
-		<If Condition="HasQuest(28277) &amp;&amp; !IsQuestCompleted(28277)">
+		<While Condition="HasQuest(28277) &amp;&amp; !IsQuestCompleted(28277)">
 			<CustomBehavior File="InteractWith" QuestId="28277" MobId="48237" InteractByGossipOptions="1"
                             X="-10606.8" Y="-1083.83" Z="155.2219" />
 			<CustomBehavior File="SpecificQuests\28277-Uldum-SalhetTheTactician" />
 			<CustomBehavior File="FlyTo" DestName="Salhet" X="-10610.87" Y="-1079.984" Z="157.3396" />
-		</If>
+		</While>
 		<TurnIn Nav="Fly" QuestName="Salhet the Tactician" TurnInName="Salhet" QuestId="28277" TurnInId="48237" />
 		<PickUp QuestName="Return to Camp" GiverName="Salhet" QuestId="28291" GiverId="48237" />
 		<If Condition="HasQuest(28291)">
@@ -1922,7 +1955,7 @@
 		<TurnIn QuestName="See You on the Other Side!" TurnInName="Harrison Jones" QuestId="28613" TurnInId="47158" X="-8680.61" Y="203.859" Z="338.8123" />
 		<PickUp QuestName="Fortune and Glory" QuestId="27748" GiverName="Harrison Jones" GiverId="47158" />
 		
-		<If Condition="Me.Level >= 85">
+		<If Condition="Me.Level &gt;= 85">
 
 			<!-- Check if MoP active on this Account -->
 			<If Condition="Lua.GetReturnVal&lt;int&gt;(&quot;return GetAccountExpansionLevel()&quot;, 0) &gt; 3">
