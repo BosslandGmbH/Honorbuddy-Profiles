@@ -65,7 +65,13 @@
             </Hotspots>
         </Objective>
     </Quest>
-
+	<Quest Id="36222" Name="The Champion of Blood">
+		<Objective Type="KillMob" MobId="84800" KillCount="1">
+			<Hotspots>
+				<Hotspot X="4402.974" Y="6121.277" Z="101.5588" />
+			</Hotspots>
+		</Objective>
+	</Quest>
 
     <QuestOrder>
 	
@@ -90,46 +96,30 @@
            <Objective QuestName="Entry Fee" QuestId="36221" Type="CollectItem" ItemId="114996" CollectCount="50" />
         <TurnIn QuestName="Entry Fee" QuestId="36221" TurnInName="Wodin the Troll-Servant" TurnInId="84784" X="4434.916" Y="6086.365" Z="107.4313" />
         <PickUp QuestName="The Champion of Blood" QuestId="36222" GiverName="Wodin the Troll-Servant" GiverId="84784" X="4434.916" Y="6086.365" Z="107.4313" />
- 	
-	<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="dev progression from here" />
-
   			<While Condition="HasQuest(36222) &amp;&amp; !IsQuestCompleted(36222)" > <!-- The Champion of Blood -->
-                <CustomBehavior File="InteractWith" QuestId="36222" MobId="84783" Range="5" NonCompeteDistance="0" WaitTime="10000" X="4426.681" Y="6082.228" Z="107.3944" />
-                
-                <!-- then kill -->
-                <Objective QuestName="The Champion of Blood" QuestId="36222" Type="KillMob" MobId="84800" KillCount="1" />
+                <CustomBehavior File="InteractWith" QuestId="36222" MobId="84783" Range="5" GossipOptions="1" NonCompeteDistance="0" WaitTime="10000" X="4426.681" Y="6082.228" Z="107.3944" />
+				<MoveTo X="4402.974" Y="6121.277" Z="101.5588" />
+				<CustomBehavior File="WaitTimer" WaitTime="20000" GoalText="Waiting for spawns {TimeRemaining}" />
+				
+                <!--<Objective QuestName="The Champion of Blood" QuestId="36222" Type="KillMob" MobId="84800" KillCount="1" />-->
+				<CustomBehavior File="KillUntilComplete" QuestId="36222" TerminateWhen="IsObjectiveComplete(2, 36222) || Me.IsDead" X="4402.974" Y="6121.277" Z="101.5588" ImmediatelySwitchToHighestPriorityTarget="True" >
+					<PursuitList>
+						<PursueUnit Id="87108" Priority="10" /> <!-- Image of Katsuo -->
+						<PursueUnit Id="84791" Priority="5" /> <!-- Katsuo -->
+						<PursueUnit Id="84800" Priority="1" /> <!-- Azuka Bladefury -->
+					</PursuitList>
+				</CustomBehavior>
 			</While>
         <TurnIn QuestName="The Champion of Blood" QuestId="36222" TurnInName="Wodin the Troll-Servant" TurnInId="84784" X="4434.916" Y="6086.365" Z="107.4313" />
-
-       
-        
-        
-        
-        
-
-	<!-- 
-
-    
-
-        
-    
-	-->		
-
-        
+		<PickUp Nav="Fly" QuestName="Out of the Shadows" QuestId="36290" GiverName="Wodin the Troll-Servant" GiverId="84784" X="4434.916" Y="6086.365" Z="107.4313" />
+			<!-- GHearth -->
+		<TurnIn Nav="Fly" QuestName="Out of the Shadows" QuestId="36290" TurnInName="Rokhan" TurnInId="78487" X="5614.007" Y="4563.16" Z="135.1946" />
 
 
 	
 	<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Garrison Campaign completed" />
 
     </QuestOrder>
-
-	<!-- 
-
-    
-    
-
-    
-	-->		
 
 
 </HBProfile>
