@@ -1429,16 +1429,16 @@
 			<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for table to activate {TimeRemaining}" />
 			<CustomBehavior File="InteractWith" QuestId="34692" MobId="81546" Range="5" WaitTime="2000" X="1847.561" Y="269.5938" Z="78.31422" />
 
-			<!-- try and add addfollowertomission when we find out wth is wrong 
+			<!-- try and add addfollowertomission when we find out wth is wrong -->
+
 			<CustomBehavior File="Misc\RunLua" Lua="GarrisonMissionFrameHelpBoxButton:Click()" NumOfTimes="3" WaitTime="500" />
 			<CustomBehavior File="Misc\RunLua" Lua="GarrisonMissionFrameMissionsListScrollFrameButton1:Click()" NumOfTimes="1" WaitTime="500" />
 			<CustomBehavior File="Misc\RunLua" Lua="GarrisonMissionFrameHelpBoxButton:Click()" NumOfTimes="2" WaitTime="500" />
-			<CustomBehavior File="Misc\RunLua" Lua="GarrisonMissionFrameFollowersListScrollFrameButton1:Click()" WaitTime="500" />
+			<!--<CustomBehavior File="Misc\RunLua" Lua="GarrisonMissionFrameFollowersListScrollFrameButton1:Click()" WaitTime="500" />
 			<CustomBehavior File="Misc\RunLua" Lua="GarrisonMissionFrameFollowersListScrollFrameButton1:Click('RightButton')" WaitTime="500" />
 			<CustomBehavior File="Misc\RunLua" Lua="DropDownList1:Click()" NumOfTimes="1" WaitTime="500" />
 			<CustomBehavior File="Misc\RunLua" Lua="DropDownList1Button1:Click()" NumOfTimes="1" WaitTime="1000" />
-			<CustomBehavior File="Misc\RunLua" Lua="GarrisonMissionFrame.MissionTab.MissionPage.StartMissionButton:Click()" WaitTime="500" />
--->
+			<CustomBehavior File="Misc\RunLua" Lua="GarrisonMissionFrame.MissionTab.MissionPage.StartMissionButton:Click()" WaitTime="500" /> -->
                 <CustomBehavior File="Misc\RunLua" NumOfTimes="1" WaitTime="1000" 
                                             Lua=" GarrisonMissionFrame.Instance.AddFollower(Styx.WoWInternals.Garrison.GarrisonInfo.Followers.First(g => g.GarrFollowerId == 34).Id);"  />
                 <CustomBehavior File="Misc\RunLua" Lua="GarrisonMissionFrame.MissionTab.MissionPage.StartMissionButton:Click()" WaitTime="500" />
@@ -2253,15 +2253,12 @@
 		<Objective QuestName="On the Offensive" QuestId="33083" Type="KillMob" MobId="74373" KillCount="15" />
 		<While Condition="HasQuest(34054) &amp;&amp; !IsQuestCompleted(34054)" > <!-- The Dark Side of the Moon -->
 			<While Condition="(!IsObjectiveComplete(1, 34054))">
-				<MoveTo DestName="The Dark Side of the Moon 1" X="754.3941" Y="300.9167" Z="90.15506" />
+				<MoveTo DestName="The Dark Side of the Moon 1" X="700.1867" Y="193.5048" Z="90.54597" />
+				<!-- Quest will bug out if Ner'zhul (76268) is not here when we arrive, abandoning is not a solution due to cache issues -->
 			</While>
 			<While Condition="(!IsObjectiveComplete(2, 34054))">
-				<CustomBehavior File="EscortGroup" QuestId="34054" EscortCompleteWhen="QuestObjectiveComplete" QuestObjectiveIndex="2"
-                                            EscortCountMax="1" EscortNpcId="76290" EscortMaxFightDistance="15" SearchForNpcsRadius="75" >
-					<SearchPath>
-						<Hotspot X="700.5243" Y="193.2361" Z="90.62926" />
-					</SearchPath>
-				</CustomBehavior>
+				<CustomBehavior File="WaitTimer" WaitTime="60000" GoalText="Waiting for Arkeddon to spawn: {TimeRemaining}" TerminateWhen="Unit(74632) != null" />
+				<CustomBehavior File="InteractWith" MobId="74632" Quest="34054" QuestObjectiveIndex="2" MobState="Alive" X="700.5243" Y="193.2361" Z="90.62926" />
 			</While>
 		</While>
 		<!-- Grab some Treasures -->
