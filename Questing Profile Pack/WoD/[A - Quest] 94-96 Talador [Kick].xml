@@ -930,42 +930,6 @@
 			</Hotspots>
 		</Objective>
 	</Quest>   
-	<Quest Id="34667" Name="Bonus Objective: Court of Souls">
-		<Objective Type="KillMob" MobId="79499" KillCount="8">
-			<Hotspots>
-				<Hotspot X="1936.978" Y="3251.224" Z="121.3118" />
-				<Hotspot X="1950.465" Y="3304.078" Z="121.3118" />
-				<Hotspot X="1991.469" Y="3309.799" Z="121.3118" />
-				<Hotspot X="1992.912" Y="3270.688" Z="121.3118" />
-				<Hotspot X="2056.625" Y="3227.345" Z="121.3116" />
-				<Hotspot X="2036.772" Y="3360.168" Z="121.3332" />
-				<Hotspot X="2082.344" Y="3334.151" Z="64.27569" />
-				<Hotspot X="2171.662" Y="3385.143" Z="66.81798" />
-				<Hotspot X="2234.943" Y="3475.446" Z="64.27585" />
-				<Hotspot X="1990.94" Y="3409.655" Z="121.5569" />
-				<Hotspot X="1931.903" Y="3383.138" Z="121.8134" />
-				<Hotspot X="1924.79" Y="3340.948" Z="121.3123" />
-				<Hotspot X="1941.835" Y="3257.11" Z="121.3117" />
-			</Hotspots>
-		</Objective>
-		<Objective Type="KillMob" MobId="79503" KillCount="10">
-			<Hotspots>
-				<Hotspot X="1936.978" Y="3251.224" Z="121.3118" />
-				<Hotspot X="1950.465" Y="3304.078" Z="121.3118" />
-				<Hotspot X="1991.469" Y="3309.799" Z="121.3118" />
-				<Hotspot X="1992.912" Y="3270.688" Z="121.3118" />
-				<Hotspot X="2056.625" Y="3227.345" Z="121.3116" />
-				<Hotspot X="2036.772" Y="3360.168" Z="121.3332" />
-				<Hotspot X="2082.344" Y="3334.151" Z="64.27569" />
-				<Hotspot X="2171.662" Y="3385.143" Z="66.81798" />
-				<Hotspot X="2234.943" Y="3475.446" Z="64.27585" />
-				<Hotspot X="1990.94" Y="3409.655" Z="121.5569" />
-				<Hotspot X="1931.903" Y="3383.138" Z="121.8134" />
-				<Hotspot X="1924.79" Y="3340.948" Z="121.3123" />
-				<Hotspot X="1941.835" Y="3257.11" Z="121.3117" />
-			</Hotspots>
-		</Objective>
-	</Quest>
 
 
 
@@ -2223,27 +2187,37 @@
 		<!-- End of Retribution Point -->
 
 			<If Condition="!HasQuest(34667) &amp;&amp; !IsQuestCompleted(34667)" > <!-- Bonus Objective: Court of Souls -->
-		<!-- <PickUp Nav="Fly" QuestName="Bonus Objective: Court of Souls" QuestId="34667" /> - BONUS -->
+				<!-- <PickUp Nav="Fly" QuestName="Bonus Objective: Court of Souls" QuestId="34667" /> - BONUS -->
 				<MoveTo X="1906.354" Y="3225.242" Z="133.759" />
 			</If>
-			<While Condition="HasQuest(34667) &amp;&amp; !IsQuestCompleted(34667)" > <!-- Bonus Objective: Court of Souls -->
-				<!--
-				Fel Firebomb Id: 7714, SpellId: 170835, SpellVisualId: 41798, 
-				-->
-			 <While Condition="!IsObjectiveComplete(3, 34667)"> <!-- 4 Batrider's Shot Down -->
-				<If Condition="!Me.IsOnTransport">
-					<CustomBehavior File="InteractWith" MobId="79523" WaitTime="2000" Range="4" X="1906.354" Y="3225.242" Z="133.759" />
+			<If Condition="!IsQuestCompleted(34667)" > <!-- Court of Souls, mid Talador -->
+				<If Condition="!HasQuest(34667)" >
+					<MoveTo DestName="Court of Souls" X="2000.563" Y="3228.425" Z="121.1691" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(34667)" />
 				</If>
-				<CustomBehavior File="InteractWith" MobId="79514" WaitTime="1000" KeepTargetSelected="True" Range="200" IgnoreLoS="True" MobState="Alive" X="1906.354" Y="3225.242" Z="133.759" />
-				<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarButton1:Click()" WaitTime="1000" />
-				<CustomBehavior File="Misc\RunLua" Lua="VehicleExit()" WaitTime="2000" />
-			 </While>
-				<Objective QuestName="Bonus Objective: Court of Souls" QuestId="34667" Type="KillMob" Nav="Fly" MobId="79499" KillCount="8" /> <!-- Kill Warlocks to release -->
-				<!-- <Mob Name="Warlock Soulstealer" Entry="79482" /> -->
-				<Objective QuestName="Bonus Objective: Court of Souls" QuestId="34667" Type="KillMob" Nav="Fly" MobId="79503" KillCount="10" />
-			</While>
-			<If Condition="!HasQuest(34667) &amp;&amp; !IsQuestCompleted(34667)" > <!-- Bonus Objective: Court of Souls -->
- 		<TurnIn Nav="Fly" QuestName="Bonus Objective: Court of Souls" QuestId="34667" /> <!-- BONUS -->
+				<CustomBehavior File="KillUntilComplete" QuestId="34667" MobId="79482" TerminateWhen="IsObjectiveComplete(1, 34667)" >
+					<HuntingGrounds>
+						<Hotspot X="1974.105" Y="3275.445" Z="121.3123" />
+						<Hotspot X="1926.56" Y="3324.992" Z="121.3119" />
+					</HuntingGrounds>
+				</CustomBehavior>
+				<Objective QuestName="Bonus Objective: Court of Souls" QuestId="34667" Type="KillMob" MobId="79503" KillCount="10" />
+				<If Condition="!IsObjectiveComplete(3, 34667)" >
+					<CustomBehavior File="InteractWith" MobId="79523" X="1906.354" Y="3225.242" Z="133.759" PreInteractMountStrategy="Dismount" TerminateWhen="Me.InVehicle" WaitTime="1500" />
+					<DisableBehavior Name="Combat" />
+					<While Condition="!IsObjectiveComplete(3, 34667) &amp;&amp; Me.InVehicle &amp;&amp; HasQuest(34667)" >
+						<CustomBehavior File="TargetAndMoveToMob" MobId="79514" TargetOnlyIfHealthPercentAbove="90" TerminateWhen="Me.GotTarget" />
+						<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarButton1:Click();" WaitTime="3000" />
+						<CustomBehavior File="Misc\RunLua" Lua="ClearTarget();" />
+						<If Condition="IsObjectiveComplete(3, 34667) &amp;&amp; !HasQuest(34667) &amp;&amp; Me.InVehicle" >
+							<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarLeaveFrameLeaveButton:Click();" />
+						</If>
+					</While>
+					<If Condition="Me.InVehicle" >
+						<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarLeaveFrameLeaveButton:Click();" />
+					</If>
+					<EnableBehavior Name="Combat" />
+				</If>
 			</If>
 
 		<!-- Journe Mine / Auchindoun -->
