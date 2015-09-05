@@ -1689,29 +1689,37 @@
 				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for objective to complete {TimeRemaining}" />
 			</While>
 			<While Condition="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber == 5">
+
 				<CustomBehavior File="Hooks\Avoid" AvoidName="ClusterBomb" Command="Add" ObjectId="78427" Radius="3.5" />
 				<!-- 3 parts to stage 5 -->
-				<If Condition="!Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(1).IsComplete">
-					<MoveTo DestName="The Battle for Shattrath: Stage 5a" X="3603.865" Y="3049.384" Z="1.572707" /> <!-- 1 -->
+				<If Condition="!Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(1).IsComplete &amp;&amp; Me.Z &lt; 15">
+					<MoveTo DestName="The Battle for Shattrath: Stage 5.1" X="3603.865" Y="3049.384" Z="1.572707" /> <!-- 1 -->
 				</If>
 				<If Condition="!Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(2).IsComplete">
 					<!-- 2 -->
-					<CustomBehavior File="WaitTimer" WaitTime="20000" GoalText="Waiting for objective to complete {TimeRemaining}" />
-					<CustomBehavior File="InteractWith" QuestId="34099" MobId="77195" GossipOptions="1" WaitTime="25000" X="3601.61" Y="3046.591" Z="1.950526" /> <!-- Khadgar -->
+					<CustomBehavior File="WaitTimer" WaitTime="30000" GoalText="Waiting for objective to complete {TimeRemaining}" />
+					<CustomBehavior File="InteractWith" MobId="77195" GossipOptions="1" WaitTime="25000" X="3601.61" Y="3046.591" Z="1.950526" /> <!-- Khadgar -->
 				</If>
-				<If Condition="!Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(3).IsComplete">
+				<While Condition="!Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(3).IsComplete || 
+                                            !Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(2).IsComplete ||
+                                            !Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(1).IsComplete">
+                  <If Condition="Me.Z &lt; 15">
+					<CustomBehavior File="InteractWith" MobId="77195" GossipOptions="1" WaitTime="25000" X="3601.61" Y="3046.591" Z="1.950526" /> <!-- Khadgar -->
+                  </If>
 					<!-- 3 -->
-					<MoveTo DestName="The Battle for Shattrath: Stage 5b" X="3922.294" Y="2924.162" Z="18.86321" />
-					<MoveTo DestName="The Battle for Shattrath: Stage 5c" X="3918.945" Y="2947.194" Z="18.69538" />
-					<MoveTo DestName="The Battle for Shattrath: Stage d" X="3919.787" Y="2956.806" Z="21.0472" />
-                    <CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for mob to spawn {TimeRemaining}" />
-					<CustomBehavior File="InteractWith" QuestId="34099" MobId="80962" WaitForNpcs="False" MobState="Alive" X="3919.787" Y="2956.806" Z="21.0472" /> <!-- Machinist B'randt -->
-				</If>
-				<MoveTo X="3927.179" Y="2939.349" Z="18.72123" />
-				<CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for agro to clear {TimeRemaining}" />
-
-				<CustomBehavior File="Hooks\Avoid" AvoidName="ClusterBomb" Command="Remove" />
+					<MoveTo DestName="The Battle for Shattrath: Stage 5.3a" X="3922.294" Y="2924.162" Z="18.86321" />
+					<MoveTo DestName="The Battle for Shattrath: Stage 5.3b" X="3918.945" Y="2947.194" Z="18.69538" />
+					<MoveTo DestName="The Battle for Shattrath: Stage 5.3c" X="3919.787" Y="2956.806" Z="21.0472" />
+					<CustomBehavior File="InteractWith" MobId="80962" WaitForNpcs="False" MobState="Alive" X="3919.787" Y="2956.806" Z="21.0472"
+                                                TerminateWhen="(Me.Z &lt; 15) || Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(3).IsComplete || 
+                                                Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(1).IsComplete"  /> <!-- Machinist B'randt -->
+                    <CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for while loop {TimeRemaining}" />
+				</While>
+                <CustomBehavior File="Hooks\Avoid" AvoidName="ClusterBomb" Command="Remove" />
 				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for objective to complete {TimeRemaining}" />
+                  <If Condition="Me.Z &gt; 15">
+					<CustomBehavior File="InteractWith" MobId="77195" GossipOptions="1" WaitTime="25000" X="3916.9" Y="2938.667" Z="18.69447" /> <!-- Khadgar -->
+                  </If>
 			</While>
 			<While Condition="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber == 6">
 				<If Condition="!Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(1).IsComplete">
