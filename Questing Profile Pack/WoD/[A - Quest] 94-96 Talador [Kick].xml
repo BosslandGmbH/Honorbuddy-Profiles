@@ -1653,18 +1653,21 @@
 			<If Condition="Me.MapId == 1116 &amp;&amp; !IsQuestCompleted(34099)"> <!-- Draenor, non scenario -->
 				<MoveTo DestName="The Battle for Shattrath: Start" X="3042.792" Y="2823.976" Z="67.02023" />
 			</If>
+			<While Condition="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber == 0">
+				<MoveTo DestName="The Battle for Shattrath: Start" X="3042.792" Y="2823.976" Z="67.02023" />
+			</While>
 			<While Condition="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber == 1">
-				<CustomBehavior File="InteractWith" QuestId="34099" MobId="77192" GossipOptions="1" X="3042.792" Y="2823.976" Z="67.02023" /> <!-- Thaelin -->
+				<CustomBehavior File="InteractWith" MobId="77192" GossipOptions="1" X="3042.792" Y="2823.976" Z="67.02023" /> <!-- Thaelin -->
 				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for objective to complete {TimeRemaining}" />
 			</While>
 			<While Condition="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber == 2">
-				<CustomBehavior File="InteractWith" QuestId="34099" MobId="86671" X="3040.497" Y="2826.125" Z="67.02023" /> <!-- Iron Star -->
+				<CustomBehavior File="InteractWith" MobId="86671" WaitTime="0" X="3040.497" Y="2826.125" Z="67.02023" /> <!-- Iron Star -->
 				<CustomBehavior File="WaitTimer" WaitTime="1000" GoalText="Waiting for objective to complete {TimeRemaining}" />
 			</While>
 			<While Condition="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber == 3">
 				<If Condition="!Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(1).IsComplete">
 					<If Condition="!Me.IsOnTransport" > 
-						<CustomBehavior File="InteractWith" QuestId="34099" MobId="86671" X="3040.497" Y="2826.125" Z="67.02023" /> <!-- Iron Star -->
+						<CustomBehavior File="InteractWith" MobId="86671" WaitTime="0" X="3040.497" Y="2826.125" Z="67.02023" /> <!-- Iron Star -->
 					</If>
 					<CustomBehavior File="RunLikeHell" AllowCombat="false" UseCTM="true" >
 						<Hotspot X="3040.458" Y="2863.921" Z="61.915" />
@@ -1680,29 +1683,30 @@
 						<Hotspot X="3433.123" Y="3125.799" Z="20.1449" />					
 					</CustomBehavior>
 				</If>
-				<CustomBehavior File="InteractWith" QuestId="34099" MobId="77195" GossipOptions="1" X="3451.258" Y="3127.955" Z="20.2411" /> <!-- Khadgar -->
+				<CustomBehavior File="InteractWith" MobId="77195" GossipOptions="1" X="3451.258" Y="3127.955" Z="20.2411" /> <!-- Khadgar -->
 				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for objective to complete {TimeRemaining}" />
 			</While>
 			<While Condition="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber == 4">
 				<!-- kill mobs / guard khadgar -->
-				<MoveTo DestName="The Battle for Shattrath: Stage 4" X="3527.443" Y="3119.473" Z="1.950148" />
+				<MoveTo DestName="The Battle for Shattrath: Stage 4" X="3505.512" Y="3126.001" Z="1.546924" />
 				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for objective to complete {TimeRemaining}" />
 			</While>
 			<While Condition="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber == 5">
 
 				<CustomBehavior File="Hooks\Avoid" AvoidName="ClusterBomb" Command="Add" ObjectId="78427" Radius="3.5" />
+                
 				<!-- 3 parts to stage 5 -->
-				<If Condition="!Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(1).IsComplete &amp;&amp; Me.Z &lt; 15">
-					<MoveTo DestName="The Battle for Shattrath: Stage 5.1" X="3603.865" Y="3049.384" Z="1.572707" /> <!-- 1 -->
-				</If>
 				<If Condition="!Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(2).IsComplete">
+					<MoveTo DestName="The Battle for Shattrath: Stage 5.1" X="3603.865" Y="3049.384" Z="1.572707" /> <!-- 1 -->
 					<!-- 2 -->
 					<CustomBehavior File="WaitTimer" WaitTime="30000" GoalText="Waiting for objective to complete {TimeRemaining}" />
 					<CustomBehavior File="InteractWith" MobId="77195" GossipOptions="1" WaitTime="25000" X="3601.61" Y="3046.591" Z="1.950526" /> <!-- Khadgar -->
 				</If>
+                <!--
 				<While Condition="!Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(3).IsComplete || 
                                             !Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(2).IsComplete ||
                                             !Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(1).IsComplete">
+                    -->
                   <If Condition="Me.Z &lt; 15">
 					<CustomBehavior File="InteractWith" MobId="77195" GossipOptions="1" WaitTime="25000" X="3601.61" Y="3046.591" Z="1.950526" /> <!-- Khadgar -->
                   </If>
@@ -1710,33 +1714,39 @@
 					<MoveTo DestName="The Battle for Shattrath: Stage 5.3a" X="3922.294" Y="2924.162" Z="18.86321" />
 					<MoveTo DestName="The Battle for Shattrath: Stage 5.3b" X="3918.945" Y="2947.194" Z="18.69538" />
 					<MoveTo DestName="The Battle for Shattrath: Stage 5.3c" X="3919.787" Y="2956.806" Z="21.0472" />
+                    <!-- 
 					<CustomBehavior File="InteractWith" MobId="80962" WaitForNpcs="False" MobState="Alive" X="3919.787" Y="2956.806" Z="21.0472"
                                                 TerminateWhen="(Me.Z &lt; 15) || Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(3).IsComplete &amp;&amp;
-                                                Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(1).IsComplete"  /> <!-- Machinist B'randt -->
+                                                Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(1).IsComplete"  /> Machinist B'randt -->
                     <CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for while loop {TimeRemaining}" />
+                    <!--
 				</While>
+                -->
                 <CustomBehavior File="Hooks\Avoid" AvoidName="ClusterBomb" Command="Remove" />
+                
 				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for objective to complete {TimeRemaining}" />
-                  <If Condition="Me.Z &gt; 15">
-					<CustomBehavior File="InteractWith" MobId="77195" GossipOptions="1" WaitTime="25000" X="3916.9" Y="2938.667" Z="18.69447" /> <!-- Khadgar -->
-                  </If>
+                <If Condition="Me.Z &gt; 15">
+                    <CustomBehavior File="InteractWith" MobId="77195" GossipOptions="1" WaitTime="15000" X="3916.9" Y="2938.667" Z="18.69447" /> <!-- Khadgar -->
+                </If>
+                  
 			</While>
 			<While Condition="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber == 6">
+				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for bot {TimeRemaining}" />
 				<If Condition="Me.Z &lt; 15">
 					<!-- 1 - Speak to Khadgar -->
 					<CustomBehavior File="InteractWith" MobId="77195" GossipOptions="1" WaitTime="12000" X="3601.61" Y="3046.591" Z="1.950526" /> <!-- Khadgar -->
 				</If>
 				<!-- 2 - Survive Blackhand's Onslaught -->
-				<CustomBehavior File="InteractWith" QuestId="34099" MobId="77256" WaitTime="3000" X="3670.838" Y="3057.878" Z="17.87251" /> <!-- Blackhand -->
+				<CustomBehavior File="InteractWith" MobId="77256" MobState="Alive" WaitForNpcs="False" WaitTime="3000" X="3670.838" Y="3057.878" Z="17.87251" /> <!-- Blackhand -->
 			</While>
 			<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for Cinematic {TimeRemaining}" />
 			<CustomBehavior File="Misc\RunLua" Lua="if MovieFrame and MovieFrame:IsVisible() then MovieFrame:StopMovie() elseif CinematicFrame and CinematicFrame:IsVisible() then CinematicFrame_CancelCinematic() end" WaitTime="5000" />
 			<If Condition="Me.MapId == 1207" >
-				<CustomBehavior File="InteractWith" MobId="231620" WaitTime="5000" X="3598.398" Y="3058.706" Z="1.949381" /> <!-- Portal Talador -->
+				<CustomBehavior File="InteractWith" MobId="231620" WaitTime="5000" X="3598.398" Y="3058.706" Z="1.949381" /> <!-- Portal to Talador -->
 			</If>
 		</If>
 		<If Condition="HasQuest(34099) &amp;&amp; IsQuestCompleted(34099) &amp;&amp; Me.MapId == 1207" > <!-- The Battle for Shattrath -->
-			<CustomBehavior File="InteractWith" MobId="231620" WaitTime="5000" X="3598.398" Y="3058.706" Z="1.949381" /> <!-- Portal Talador -->
+			<CustomBehavior File="InteractWith" MobId="231620" WaitTime="5000" X="3598.398" Y="3058.706" Z="1.949381" /> <!-- Portal to Talador -->
 		</If>
 		<TurnIn QuestName="The Battle for Shattrath" QuestId="34099" TurnInName="Yrel" TurnInId="79608" X="3590.811" Y="1679.04" Z="172.8994" />
 		<!-- End of Shattrath City -->
