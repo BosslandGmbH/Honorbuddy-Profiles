@@ -1,0 +1,117 @@
+﻿<HBProfile xsi:noNamespaceSchemaLocation="../../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Name>[N - Quest] Assault on Mok'gol Watchpost [Kick] ($Rev: 3547 $)</Name>
+
+    <MinLevel>100</MinLevel>
+    <MaxLevel>1001</MaxLevel>
+
+    <MinDurability>0.2</MinDurability>
+    <MinFreeBagSlots>2</MinFreeBagSlots>
+
+    <MailGrey>false</MailGrey>
+    <MailWhite>false</MailWhite>
+    <MailGreen>false</MailGreen>
+    <MailBlue>true</MailBlue>
+    <MailPurple>true</MailPurple>
+
+    <SellGrey>true</SellGrey>
+    <SellWhite>true</SellWhite>
+    <SellGreen>true</SellGreen>
+    <SellBlue>false</SellBlue>
+    <SellPurple>false</SellPurple>
+
+    <TargetElites>true</TargetElites>
+
+    <AvoidMobs>
+    </AvoidMobs>
+    <Blackspots>
+    </Blackspots>
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+    <QuestOrder>
+
+        <LootMobs Value="true" />
+        <UseMount Value="true" />
+    
+        <CustomBehavior File="UserSettings" KillBetweenHotspots="True" AllowedVariance="20" ArrivalTolerance="15" />
+    
+        <!-- Add Avoids -->
+        <!-- End Avoids -->
+	
+		<!-- Assault on Mok'gol Watchpost -->
+		<If Condition="!HasQuest(36818) &amp;&amp; !IsQuestCompleted(36818)" > <!-- Mok'gol Watchpost Area Bonus ID, Neutral -->
+			<MoveTo Nav="Fly" DestName="Mok'gol Watchpost start location" X="3704.614" Y="6762.131" Z="9.357979" />
+		</If>
+    
+		<UseMount Value="false" /> <!-- Change to UseFlyingMount Value="false" -->
+		
+		<CustomBehavior File="KillUntilComplete" TerminateWhen="IsQuestCompleted(36818)">
+			<PursuitList>
+				<PursueUnit Id="83049" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="72571" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="86656" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="86657" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="86659" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="87221" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="86660" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="86959" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="87583" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="87584" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="87234" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+			</PursuitList>
+			<HuntingGrounds>
+				<Hotspot X="3752.109" Y="6771.315" Z="6.800868" />
+				<Hotspot X="3704.614" Y="6762.131" Z="9.357979" />
+				<Hotspot X="3623.114" Y="6756.199" Z="10.03048" />
+				<Hotspot X="3603.359" Y="6707.01" Z="12.19996" />
+				<Hotspot X="3588.146" Y="6689.947" Z="12.27372" />
+				<Hotspot X="3545.261" Y="6723.257" Z="8.264163" />
+				<Hotspot X="3498.965" Y="6785.127" Z="2.333467" />
+				<Hotspot X="3469.75" Y="6862.827" Z="3.074609" />
+				<Hotspot X="3538.417" Y="6904.135" Z="20.7454" />
+				<Hotspot X="3601.334" Y="6849.06" Z="17.04243" />
+				<Hotspot X="3571.266" Y="6720.861" Z="8.4994" />
+				<Hotspot X="3696.059" Y="6764.438" Z="9.307984" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<UseMount Value="true" />
+        
+		<If Condition="Me.ZoneId == 6755" > <!-- Nagrand -->
+			<MoveTo Nav="Fly" DestName="Mok'gol Watchpost no agro hearth spot" X="3704.614" Y="6762.131" Z="9.357979" /> <!-- Mok'gol Watchpost, Nagrand -->
+
+			<If Condition="IsQuestCompleted(36818)" > <!-- Mok'gol Watchpost Area Bonus ID, Neutral -->
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:110560&quot;)" WaitTime="15000" /> <!-- Garrison Hearthstone -->
+			</If>
+		</If>
+		
+ 		<!-- Remove Avoids -->
+ 		<!-- End Remove Avoids -->
+       
+		<If Condition="Me.IsAlliance" >
+			<If Condition="HasQuest(36678)" > <!-- Daily -->
+		<TurnIn Nav="Fly" QuestName="Assault on Mok'gol Watchpost" QuestId="36678" TurnInName="Scout Valdez" TurnInId="81152" X="1949.675" Y="333.9757" Z="90.41009" />
+			</If>
+			<If Condition="HasQuest(38195)" > <!-- Missive -->
+		<TurnIn Nav="Fly" QuestName="Missive: Assault on Mok'gol Watchpost" QuestId="38195" TurnInName="Scout Valdez" TurnInId="81152" X="1949.675" Y="333.9757" Z="90.41009" />
+			</If>
+		</If>
+		
+		<If Condition="Me.IsHorde" >
+			<If Condition="HasQuest(36693)" > <!-- Daily -->
+		<TurnIn Nav="Fly" QuestName="Assault on Mok'gol Watchpost" QuestId="36693" TurnInName="Shadow Hunter Ukambe" TurnInId="78495" X="5575.156" Y="4593.704" Z="141.1709" />
+			</If>
+			<If Condition="HasQuest(38181)" > <!-- Missive -->
+		<TurnIn Nav="Fly" QuestName="Missive: Assault on Mok'gol Watchpost" QuestId="38181" TurnInName="Shadow Hunter Ukambe" TurnInId="78495" X="5575.156" Y="4593.704" Z="141.1709" />
+			</If>
+		</If>
+
+		<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Done with Assault on Mok'gol Watchpost" />
+
+    </QuestOrder>
+
+</HBProfile>
