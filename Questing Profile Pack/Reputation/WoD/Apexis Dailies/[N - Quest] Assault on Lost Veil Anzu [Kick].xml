@@ -1,0 +1,114 @@
+﻿<HBProfile xsi:noNamespaceSchemaLocation="../../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Name>[N - Quest] Assault on Lost Veil Anzu [Kick] ($Rev: 3547 $)</Name>
+
+    <MinLevel>100</MinLevel>
+    <MaxLevel>1001</MaxLevel>
+
+    <MinDurability>0.2</MinDurability>
+    <MinFreeBagSlots>2</MinFreeBagSlots>
+
+    <MailGrey>false</MailGrey>
+    <MailWhite>false</MailWhite>
+    <MailGreen>false</MailGreen>
+    <MailBlue>true</MailBlue>
+    <MailPurple>true</MailPurple>
+
+    <SellGrey>true</SellGrey>
+    <SellWhite>true</SellWhite>
+    <SellGreen>true</SellGreen>
+    <SellBlue>false</SellBlue>
+    <SellPurple>false</SellPurple>
+
+    <TargetElites>true</TargetElites>
+
+    <AvoidMobs>
+    </AvoidMobs>
+    <Blackspots>
+    </Blackspots>
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+		<Vendor Name="Rovan Astalan" Entry="81614" Type="Repair" X="-780.2448" Y="-677.118" Z="108.6696" /> <!-- N - Socethar's Rise -->
+	</Vendors>
+
+    <QuestOrder>
+
+        <LootMobs Value="true" />
+        <UseMount Value="true" />
+    
+        <CustomBehavior File="UserSettings" KillBetweenHotspots="True" AllowedVariance="20" ArrivalTolerance="15" />
+    
+        <!-- Add avoid stuff here -->
+        <!-- End avoids -->
+	
+		<!-- Assault on Lost Veil Anzu -->
+		<If Condition="!HasQuest(36860) &amp;&amp; !IsQuestCompleted(36860)" > <!-- Lost Veil Anzu Area Bonus ID, Neutral -->
+			<MoveTo Nav="Fly" DestName="Lost Veil Anzuarea start location" X="-519.8281" Y="221.5703" Z="-0.3348145" />
+		</If>
+    
+		<UseMount Value="false" /> <!-- Change to UseFlyingMount Value="false" -->
+		
+		<CustomBehavior File="KillUntilComplete" ProactiveCombatStrategy="ClearMobsTargetingUs" 
+									Movement="NavigatorOnly" TerminateWhen="IsQuestCompleted(36860)">
+			<PursuitList>
+				<PursueUnit Id="87019" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" /> <!-- 30% when killed -->
+				<PursueUnit Id="86163" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="89125" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="86205" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="86144" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="89127" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="86215" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="89144" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+			</PursuitList>
+			<HuntingGrounds>
+				<Hotspot X="-498.8769" Y="210.031" Z="1.01954" />
+				<Hotspot X="-431.9829" Y="180.3294" Z="1.070081" />
+				<Hotspot X="-362.9591" Y="160.6658" Z="2.94436" />
+				<Hotspot X="-366.25" Y="155.3785" Z="3.053541" /> <!-- Gluttonous Giant -->
+				<Hotspot X="-435.323" Y="221.3555" Z="1.070369" />
+				<Hotspot X="-502.2887" Y="281.89" Z="7.178974" />
+				<Hotspot X="-428.8587" Y="349.1454" Z="9.11879" />
+				<Hotspot X="-392.1167" Y="282.7748" Z="5.097383" />
+				<Hotspot X="-318.6477" Y="234.9759" Z="0.2645582" />
+				<Hotspot X="-249.0821" Y="204.7133" Z="0.4523611" />
+				<Hotspot X="-172.6287" Y="171.7014" Z="5.518014" />
+				<Hotspot X="-451.9184" Y="419.6783" Z="7.331282" />			
+				<Hotspot X="-498.8769" Y="210.031" Z="1.01954" />
+			</HuntingGrounds>
+		</CustomBehavior>
+        
+		<If Condition="Me.ZoneId == 6719" > <!-- SMV -->
+			<MoveTo Nav="Fly" DestName="Lost Veil Anzu no agro hearth spot" X="-519.8281" Y="221.5703" Z="-0.3348145" /> <!-- Lost Veil Anzu, SMV -->
+
+			<If Condition="IsQuestCompleted(36860)" > <!-- Lost Veil Anzu Area Bonus ID, Neutral -->
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:110560&quot;)" WaitTime="15000" /> <!-- Garrison Hearthstone -->
+			</If>
+		</If>
+
+		<UseMount Value="true" />
+        
+		<If Condition="Me.IsAlliance" >
+			<If Condition="HasQuest(36681)" > <!-- Daily -->
+		<TurnIn Nav="Fly" QuestName="Assault on Lost Veil Anzu" QuestId="36681" TurnInName="Scout Valdez" TurnInId="81152" X="1949.675" Y="333.9757" Z="90.41009" />
+			</If>
+			<If Condition="HasQuest(38198)" > <!-- Missive -->
+		<TurnIn Nav="Fly" QuestName="Missive: Assault on Lost Veil Anzu" QuestId="38198" TurnInName="Scout Valdez" TurnInId="81152" X="1949.675" Y="333.9757" Z="90.41009" />
+			</If>
+		</If>
+		
+		<If Condition="Me.IsHorde" >
+			<If Condition="HasQuest(36690)" > <!-- Daily -->
+		<TurnIn Nav="Fly" QuestName="Assault on Lost Veil Anzu" QuestId="36690" TurnInName="Shadow Hunter Ukambe" TurnInId="78495" X="5575.156" Y="4593.704" Z="141.1709" />
+			</If>
+			<If Condition="HasQuest(38184)" > <!-- Missive -->
+		<TurnIn Nav="Fly" QuestName="Missive: Assault on Lost Veil Anzu" QuestId="38184" TurnInName="Shadow Hunter Ukambe" TurnInId="78495" X="5575.156" Y="4593.704" Z="141.1709" />
+			</If>
+		</If>
+
+		<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Done with Assault on Lost Veil Anzu" />
+
+    </QuestOrder>
+
+</HBProfile>
