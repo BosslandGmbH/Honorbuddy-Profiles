@@ -1,0 +1,127 @@
+﻿<HBProfile xsi:noNamespaceSchemaLocation="../../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Name>[N - Quest] Assault on Iron Siegeworks [Kick] ($Rev: 3547 $)</Name>
+
+    <MinLevel>100</MinLevel>
+    <MaxLevel>1001</MaxLevel>
+
+    <MinDurability>0.2</MinDurability>
+    <MinFreeBagSlots>2</MinFreeBagSlots>
+
+    <MailGrey>false</MailGrey>
+    <MailWhite>false</MailWhite>
+    <MailGreen>false</MailGreen>
+    <MailBlue>true</MailBlue>
+    <MailPurple>true</MailPurple>
+
+    <SellGrey>true</SellGrey>
+    <SellWhite>true</SellWhite>
+    <SellGreen>true</SellGreen>
+    <SellBlue>false</SellBlue>
+    <SellPurple>false</SellPurple>
+
+    <TargetElites>true</TargetElites>
+
+    <AvoidMobs>
+    </AvoidMobs>
+    <Blackspots>
+    </Blackspots>
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+    <QuestOrder>
+
+        <LootMobs Value="true" />
+        <UseMount Value="true" />
+    
+        <CustomBehavior File="UserSettings" KillBetweenHotspots="True" AllowedVariance="20" ArrivalTolerance="15" />
+    
+        <!-- Add avoid stuff here -->
+		<!--
+			mobid 78210
+			Spell: Right Piston, Id: 155255, Target: None, private const int SpellId_RightPiston=155255
+			Spell: Left Piston, Id: 155243, Target: None, private const int SpellId_LeftPiston=155243
+			Spell: Shrapnel Blast, Id: 170750, Target: None, private const int SpellId_ShrapnelBlast=170750
+		-->
+        <!-- End avoids -->
+
+		<!-- Add a DoWhen to pickup bombs and throw them at things - 88860 -->
+		
+		<!-- Assault on Iron Siegeworks -->
+		<If Condition="!HasQuest(36822) &amp;&amp; !IsQuestCompleted(36822)" > <!-- Iron Siegeworks Area Bonus ID, Neutral -->
+			<MoveTo Nav="Fly" DestName="Iron Siegeworks FFR start location" X="5823.677" Y="2320.938" Z="156.8154" />
+		</If>
+    
+		<UseMount Value="false" /> <!-- Change to UseFlyingMount Value="false" -->
+
+		<CustomBehavior File="KillUntilComplete" ProactiveCombatStrategy="ClearMobsTargetingUs"
+                                     Movement="NavigatorOnly" TerminateWhen="IsQuestCompleted(36822)">
+			<PursuitList>
+				<PursueUnit Id="84378" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="85997" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="78210" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="77944" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="77945" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+				<PursueUnit Id="237343" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; !UNIT.TaggedByOther" />
+			</PursuitList>
+			<HuntingGrounds>
+				<Hotspot X="5936.895" Y="2209.534" Z="154.8389" />
+				<Hotspot X="5951.985" Y="2141.996" Z="164.5004" />
+				<Hotspot X="5824.813" Y="2206.066" Z="180.3703" />
+				<Hotspot X="6034.688" Y="2220.421" Z="153.207" />
+				<Hotspot X="5921.288" Y="2314.067" Z="184.3051" />
+				<Hotspot X="6028.158" Y="2420.089" Z="220.6323" />
+				<Hotspot X="5959.062" Y="2457.791" Z="234.4557" />
+				<Hotspot X="6105.498" Y="2300.357" Z="171.6781" />
+				<Hotspot X="6047.333" Y="2209.362" Z="152.438" />
+				<Hotspot X="6219.08" Y="2103.361" Z="144.715" />
+				<Hotspot X="6257.943" Y="2150.047" Z="144.7142" />
+				<Hotspot X="6167.396" Y="2211.831" Z="158.6771" />
+				<Hotspot X="6221.842" Y="2284.79" Z="178.002" />
+				<Hotspot X="6294.928" Y="2260.204" Z="186.5961" />
+				<Hotspot X="6320.217" Y="2189.127" Z="179.4737" />
+				<Hotspot X="6412.71" Y="2203.335" Z="201.9373" />	
+				<Hotspot X="6149.271" Y="2188.532" Z="153.024" />
+				<Hotspot X="5968.176" Y="2114.455" Z="164.5003" />
+				<Hotspot X="5865.387" Y="2175.537" Z="180.1354" />
+				<Hotspot X="5833.006" Y="2299.955" Z="155.7699" />
+			</HuntingGrounds>
+		</CustomBehavior>
+        
+		<If Condition="Me.ZoneId == 6720" > <!-- FFR -->
+			<MoveTo Nav="Fly" DestName="Iron Siegeworks no agro hearth spot" X="5823.677" Y="2320.938" Z="156.8154" /> <!-- Iron Siegeworks, FFR -->
+
+			<If Condition="IsQuestCompleted(36822)" > <!-- dummy Area Bonus ID, Neutral -->
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:110560&quot;)" WaitTime="15000" /> <!-- Garrison Hearthstone -->
+			</If>
+		</If>
+		
+		<UseMount Value="true" />
+
+		<If Condition="Me.IsAlliance" >
+			<If Condition="HasQuest(36674)" > <!-- Daily -->
+		<TurnIn Nav="Fly" QuestName="Assault on the Iron Siegeworks" QuestId="36674" TurnInName="Scout Valdez" TurnInId="81152" />
+			</If>
+			<If Condition="HasQuest(38191)" > <!-- Missive -->
+		<TurnIn Nav="Fly" QuestName="Missive: Assault on the Iron Siegeworks" QuestId="38191" TurnInName="Scout Valdez" TurnInId="81152" />
+			</If>
+		</If>
+		
+		<!-- Need to Verify Horde Id's -->
+		<If Condition="Me.IsHorde" >
+			<If Condition="HasQuest(00000)" > <!-- Daily -->
+		<TurnIn Nav="Fly" QuestName="Assault on the Iron Siegeworks" QuestId="36696" TurnInName="Shadow Hunter Ukambe" TurnInId="78495" X="5575.156" Y="4593.704" Z="141.1709" />
+			</If>
+			<If Condition="HasQuest(00000)" > <!-- Missive -->
+		<TurnIn Nav="Fly" QuestName="Missive: Assault on the Iron Siegeworks" QuestId="38178" TurnInName="Shadow Hunter Ukambe" TurnInId="78495" X="5575.156" Y="4593.704" Z="141.1709" />
+			</If>
+		</If>
+		
+		<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Done with Assault on Iron Siegeworks" />
+
+    </QuestOrder>
+
+</HBProfile>
