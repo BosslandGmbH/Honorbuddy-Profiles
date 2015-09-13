@@ -14,6 +14,24 @@
 
 			<CustomBehavior File="UserSettings" LootMobs="True" TrainNewSkills="False" LearnFlightPaths="False" UseFlightPaths="False" PullDistance="25" />
 			<CustomBehavior File="UserSettings" LearnFlightPaths="True" UseFlightPaths="True" />
+			
+        <PickUp QuestName="Bigger is Better" QuestId="36592" GiverName="Baros Alexston" GiverId="77209" X="1866.262" Y="263.6458" Z="77.17221" />
+            <If Condition="HasQuest(36592) &amp;&amp; !IsQuestCompleted(36592)" >
+                <CustomBehavior File="InteractWith" QuestId="36592" MobId="81369" Range="5" X="1868.496" Y="262.1124" Z="77.15714" />
+				<CustomBehavior File="Misc\RunLua" Lua="C_Garrison.UpgradeGarrison()" WaitTime="5000" />
+				<CustomBehavior File="Misc\RunLua" Lua="if MovieFrame and MovieFrame:IsVisible() then MovieFrame:StopMovie() elseif CinematicFrame and CinematicFrame:IsVisible() then CinematicFrame_CancelCinematic() end" WaitTime="2000" />
+            </If>
+        <TurnIn QuestName="Bigger is Better" QuestId="36592" TurnInName="Baros Alexston" TurnInId="77209" X="1866.262" Y="263.6458" Z="77.17221" />
+		<PickUp Nav="Fly" QuestName="My Very Own Castle" QuestId="36615" GiverName="Baros Alexston" GiverId="77209" X="1949.552" Y="329.5885" Z="90.40531" />
+            <If Condition="HasQuest(36615) &amp;&amp; !IsQuestCompleted(36615)" >
+			 <If Condition="Me.Gold &lt;= 5200" > <!-- Need 5200G -->
+			<CustomBehavior File="UserDialog" AllowBotStop="true" SoundCue="Exclamation" SoundCueInterval="1" Text="You need 5200 gold to run this profile" />
+			 </If>			
+                <CustomBehavior File="InteractWith" QuestId="36615" MobId="86017" Range="5" X="1949.552" Y="329.5885" Z="90.40531" />
+				<CustomBehavior File="Misc\RunLua" Lua="C_Garrison.UpgradeGarrison()" WaitTime="5000" />
+				<CustomBehavior File="Misc\RunLua" Lua="if MovieFrame and MovieFrame:IsVisible() then MovieFrame:StopMovie() elseif CinematicFrame and CinematicFrame:IsVisible() then CinematicFrame_CancelCinematic() end" WaitTime="2000" />
+            </If>
+		<TurnIn Nav="Fly" QuestName="My Very Own Castle" QuestId="36615" TurnInName="Baros Alexston" TurnInId="77209" X="1949.552" Y="329.5885" Z="90.40531" />
 
 			<If Condition="HasQuest(38253)" >
 		<TurnIn Nav="Fly" QuestName="Garrison Campaign: War Council" QuestId="38253" TurnInName="King Varian Wrynn" TurnInId="92219" X="1945.877" Y="327.1875" Z="90.28079" />
@@ -131,14 +149,14 @@
 			<While Condition="HasQuest(39055) &amp;&amp; !IsQuestCompleted(39055)" > <!-- Ship Shape -->
 			 <If Condition="(!IsObjectiveComplete(1, 39055))"> <!-- Build Transport -->
 				<!-- Do we have a Garrison Resources check? -->
-				<CustomBehavior File="InteractWith" MobId="95002" KeepTargetSelected="True" Range="4" GossipOptions="1" X="2182.767" Y="270.625" Z="1.050841" /> <!-- Yanas Seastrike 
+				<CustomBehavior File="InteractWith" MobId="95002" KeepTargetSelected="True" Range="4" GossipOptions="1" NonCompeteDistance="0" X="2182.767" Y="270.625" Z="1.050841" /> <!-- Yanas Seastrike 
 				<CustomBehavior File="Misc\RunLua" Lua="GossipTitleButton3:Click()" WaitTime="1000" />-->
 				<CustomBehavior File="Misc\RunLua" Lua="GarrisonCapacitiveDisplayFrame.StartWorkOrderButton:Click()" WaitTime="1000" />
 				<CustomBehavior File="WaitTimer" WaitTime="65000" GoalText="Waiting for quest to complete {TimeRemaining}" />
 			 </If>
 			 <If Condition="(!IsObjectiveComplete(2, 39055))"> <!-- Activate Transport -->
 				<MoveTo X="2178.128" Y="261.4283" Z="0.8599854" />	
-				<CustomBehavior File="InteractWith" MobId="243699" Range="30" X="2198.05" Y="246.375" Z="2.82991" /> <!-- Transport Ship -->
+				<CustomBehavior File="InteractWith" MobId="243699" Range="30" NonCompeteDistance="0" X="2198.05" Y="246.375" Z="2.82991" /> <!-- Transport Ship -->
 				
 				<CustomBehavior File="WaitTimer" WaitTime="3000" GoalText="Waiting for scenematic {TimeRemaining}" />
 				<!-- kill cinematic -->
@@ -150,7 +168,7 @@
 		<PickUp Nav="Fly" QuestName="The Invasion of Tanaan" QuestId="38435" GiverName="Yanas Seastrike" GiverId="95002" X="2182.767" Y="270.625" Z="1.050841" />
 			<While Condition="HasQuest(38435) &amp;&amp; !IsQuestCompleted(38435)" > <!-- The Invasion of Tanaan -->
 				<MoveTo Nav="Fly" DestName="Archmage Khadgar" X="2201.726" Y="419.6788" Z="5.967074" /> <!-- Archmage Khadgar -->
-				<CustomBehavior File="InteractWith" MobId="90177" Range="5" GossipOptions="1" WaitTime="2000" X="2205.408" Y="419.2379" Z="5.966881" /> <!-- Exarch Yrel -->
+				<CustomBehavior File="InteractWith" MobId="90177" Range="5" GossipOptions="1" WaitTime="2000" NonCompeteDistance="0" X="2205.408" Y="419.2379" Z="5.966881" /> <!-- Exarch Yrel -->
 				
 				<CustomBehavior File="WaitTimer" WaitTime="3000" GoalText="Waiting for scenematic {TimeRemaining}" />
 				<!-- kill cinematic -->
@@ -165,14 +183,14 @@
 				<CustomBehavior File="FlyTo" DestName="get Bleeding Hollow Chest" X="3694.637" Y="-1977.41" Z="10.62803" />
 				<CustomBehavior File="ForcedDismount" />
 			  </If>
-				<CustomBehavior File="InteractWith" MobId="240888" Range="3" WaitTime="2000" X="3661.425" Y="-1907.191" Z="21.42857" /> <!-- Letter from Kilrogg -->
+				<CustomBehavior File="InteractWith" MobId="240888" Range="3" WaitTime="2000" NonCompeteDistance="0" X="3661.425" Y="-1907.191" Z="21.42857" /> <!-- Letter from Kilrogg -->
 			 </While>
 			 <While Condition="!IsObjectiveComplete(2, 38436)">  <!-- Letter from Kilrogg -->
 			  <If Condition="CanFly() &amp;&amp; Object(240889) == null" >
 				<CustomBehavior File="FlyTo" DestName="get Bleeding Hollow Chest" X="3694.637" Y="-1977.41" Z="10.62803" />
 				<CustomBehavior File="ForcedDismount" />
 			  </If>
-				<CustomBehavior File="InteractWith" MobId="240889" Range="3" WaitTime="2000" X="3970.385" Y="-2176.585" Z="39.12125" /> <!-- Magril's Journal -->
+				<CustomBehavior File="InteractWith" MobId="240889" Range="3" WaitTime="2000" NonCompeteDistance="0" X="3970.385" Y="-2176.585" Z="39.12125" /> <!-- Magril's Journal -->
 			 </While>
 			</While>
 		<TurnIn Nav="Fly" QuestName="Obstacle Course" QuestId="38436" TurnInName="Exarch Naielle" TurnInId="91923" X="4079.173" Y="-1939.073" Z="26.32627" />
@@ -188,7 +206,7 @@
 			 </If>
 			 <While Condition="(!IsObjectiveComplete(2, 38444))">
 				<MoveTo X="4120.792" Y="-1667.796" Z="66.08576" />
-				<CustomBehavior File="InteractWith" MobId="240914" Range="6" X="4127.132" Y="-1674.307" Z="66.2667" /> <!-- Ammunition Pile -->
+				<CustomBehavior File="InteractWith" MobId="240914" Range="6" NonCompeteDistance="0" X="4127.132" Y="-1674.307" Z="66.2667" /> <!-- Ammunition Pile -->
 			 </While>
 			  <If Condition="CanFly()" >
 				<CustomBehavior File="FlyTo" DestName="Exarch Naielle" X="4034.969" Y="-1568.362" Z="65.63102" />
@@ -207,7 +225,7 @@
 				<MoveTo DestName="Lion's Watch" X="3864.877" Y="-1315.073" Z="90.88526" />
 			 </While>
 			 <While Condition="(!IsObjectiveComplete(2, 38445))"> <!-- Plant Flag / Establish Base -->
-				<CustomBehavior File="InteractWith" MobId="241036" Range="4" X="3859.455" Y="-1312.363" Z="91.36139" /> <!-- Alliance Banner -->
+				<CustomBehavior File="InteractWith" MobId="241036" Range="4" NonCompeteDistance="0" X="3859.455" Y="-1312.363" Z="91.36139" /> <!-- Alliance Banner -->
 				
 				<CustomBehavior File="WaitTimer" WaitTime="3000" GoalText="Waiting for scenematic {TimeRemaining}" />
 				<!-- kill cinematic -->
@@ -218,9 +236,16 @@
 		<TurnIn QuestName="The Assault Base" QuestId="38445" TurnInName="Exarch Yrel" TurnInId="90309" X="3820.899" Y="-1364.062" Z="94.91894" />
 		<PickUp Nav="Fly" QuestName="The Battle for the West" QuestId="38581" GiverName="Exarch Yrel" GiverId="90309" X="3820.899" Y="-1364.062" Z="94.91894" />
 		<PickUp Nav="Fly" QuestName="Shipyard Report" QuestId="39422" GiverName="Exarch Yrel" GiverId="90309" X="3820.899" Y="-1364.062" Z="94.91894" />
+		<PickUp Nav="Fly" QuestName="Bring the Reinforcements" QuestId="39313" GiverName="Angar Steelbellow" GiverId="90963" X="3879.793" Y="-1344.372" Z="91.90559" />
+			<While Condition="HasQuest(39313) &amp;&amp; !IsQuestCompleted(39313)" > <!-- Bring the Reinforcements -->
+				<CustomBehavior File="InteractWith" QuestId="39313" MobId="90963" Range="3" GossipOptions="1" KeepTargetSelected="True" NonCompeteDistance="0" X="3879.793" Y="-1344.372" Z="91.90559" />
+				
+			</While>
+		<TurnIn Nav="Fly" QuestName="Bring the Reinforcements" QuestId="39313" TurnInName="Angar Steelbellow" TurnInId="90963" X="3879.793" Y="-1344.372" Z="91.90559" />
+		<PickUp Nav="Fly" QuestName="Unknowable Power" QuestId="39432" GiverName="Dawn-Seeker Krisek" GiverId="95424" X="3855.705" Y="-1335.908" Z="91.15365" />
 			<While Condition="HasQuest(38581) &amp;&amp; !IsQuestCompleted(38581)" > <!-- The Battle for the West -->
-				<CustomBehavior File="InteractWith" QuestId="38581" MobId="90960" Range="3" GossipOptions="2" QuestObjectiveIndex="1" WaitTime="5000" X="3876.641" Y="-1310.991" Z="90.41779" /> <!-- Skyguard Thann -->
-				<CustomBehavior File="InteractWith" QuestId="38581" MobId="91935" Range="3" QuestObjectiveIndex="2" X="4057.82" Y="1192.078" Z="158.2236" /> <!-- Exarch Maladaar -->
+				<CustomBehavior File="InteractWith" QuestId="38581" MobId="90960" Range="3" GossipOptions="2" NonCompeteDistance="0" QuestObjectiveIndex="1" WaitTime="5000" X="3876.641" Y="-1310.991" Z="90.41779" /> <!-- Skyguard Thann -->
+				<CustomBehavior File="InteractWith" QuestId="38581" MobId="91935" Range="3" QuestObjectiveIndex="2" NonCompeteDistance="0" X="4057.82" Y="1192.078" Z="158.2236" /> <!-- Exarch Maladaar -->
 			</While>
 		<TurnIn Nav="Fly" QuestName="The Battle for the West" QuestId="38581" TurnInName="Exarch Maladaar" TurnInId="91935" X="4057.82" Y="1192.078" Z="158.2236" />
 		<PickUp Nav="Fly" QuestName="Commander in the Field!" QuestId="38446" GiverName="Exarch Maladaar" GiverId="91935" />
@@ -231,7 +256,7 @@
 				<CustomBehavior File="ForcedDismount" />
 			  </If>
 				<MoveTo DestName="Sha'naari Refuge" X="3729.331" Y="151.75" Z="56.2535" />
-				<CustomBehavior File="InteractWith" QuestId="38446" MobId="91942" Range="3" X="3729.331" Y="151.75" Z="56.2535" />
+				<CustomBehavior File="InteractWith" QuestId="38446" MobId="91942" Range="3" NonCompeteDistance="0" X="3729.331" Y="151.75" Z="56.2535" />
 			 </While>
 			 <While Condition="(!IsObjectiveComplete(2, 38446))"> <!-- NW - Aktar's Post -->
 			  <If Condition="CanFly()" >
@@ -239,7 +264,7 @@
 				<CustomBehavior File="ForcedDismount" />
 			  </If>
 				<MoveTo DestName="Aktar's Post" X="4574.01" Y="345.125" Z="221.0411" />
-				<CustomBehavior File="InteractWith" QuestId="38446" MobId="91945" Range="3" X="4574.01" Y="345.125" Z="221.0411" />
+				<CustomBehavior File="InteractWith" QuestId="38446" MobId="91945" Range="3" NonCompeteDistance="0" X="4574.01" Y="345.125" Z="221.0411" />
 			 </While>
 			 <While Condition="(!IsObjectiveComplete(3, 38446))"> <!-- NE - Malo's Lookout -->
 			  <If Condition="CanFly()" >
@@ -247,7 +272,7 @@
 				<CustomBehavior File="ForcedDismount" />
 			  </If>
 				<MoveTo DestName="Malo's Lookout" X="4460.054" Y="-565.7136" Z="50.3038" />
-				<CustomBehavior File="InteractWith" QuestId="38446" MobId="91968" Range="3" X="4460.054" Y="-565.7136" Z="50.3038" />
+				<CustomBehavior File="InteractWith" QuestId="38446" MobId="91968" Range="3" NonCompeteDistance="0" X="4460.054" Y="-565.7136" Z="50.3038" />
 			 </While>
 			</While>
 		<PickUp Nav="Fly" QuestName="A Message of Terrible Import" QuestId="38578" GiverName="Goi'orsh" GiverId="90584" X="4479.343" Y="-613.408" Z="41.02305" />
@@ -259,10 +284,12 @@
 			  </If>
 				<MoveTo DestName="Vault of the Earth" X="3481.35" Y="-771.9713" Z="39.644" />
 			 </While>
-				<CustomBehavior File="InteractWith" QuestId="38578" MobId="90644" Range="3" GossipOptions="1" X="3466.484" Y="-774.1233" Z="40.1847" />
+				<CustomBehavior File="InteractWith" QuestId="38578" MobId="90644" Range="3" GossipOptions="1" NonCompeteDistance="0" X="3466.484" Y="-774.1233" Z="40.1847" />
 			</While>
 		<TurnIn Nav="Fly" QuestName="A Message of Terrible Import" QuestId="38578" TurnInName="Lagar the Wise" TurnInId="90644" X="3466.484" Y="-774.1233" Z="40.1847" />
 		<TurnIn Nav="Fly" QuestName="Commander in the Field!" QuestId="38446" TurnInName="Exarch Yrel" TurnInId="90309" X="3820.899" Y="-1364.062" Z="94.91894" />
+
+
 		
 		<!-- Garrison, we could G Hearth	-->
 		<TurnIn Nav="Fly" QuestName="Shipyard Report" QuestId="39422" TurnInName="Merreck Vonder" TurnInId="93822" X="2185.458" Y="379.4583" Z="5.967165" />
@@ -271,7 +298,7 @@
 			<If Condition="HasQuest(39056) &amp;&amp; !IsQuestCompleted(39056)" >
 				<MoveTo DestName="Naval Command Table" X="2139.596" Y="382.7953" Z="16.3828" />
 				<CustomBehavior File="ForcedDismount" />
-				<CustomBehavior File="InteractWith" QuestId="39056" MobId="94399" Range="3" X="2139.596" Y="382.7953" Z="16.3828" />
+				<CustomBehavior File="InteractWith" QuestId="39056" MobId="94399" Range="3" NonCompeteDistance="0" X="2139.596" Y="382.7953" Z="16.3828" />
 				
 				<CustomBehavior File="Misc\RunLua" Lua="GarrisonShipyardMapMission1:Click()" NumOfTimes="3" WaitTime="500" />
 				<CustomBehavior File="Misc\RunLua" Lua="GarrisonShipyardFrameMissionsListScrollFrameButton1:Click()" NumOfTimes="1" WaitTime="500" />
