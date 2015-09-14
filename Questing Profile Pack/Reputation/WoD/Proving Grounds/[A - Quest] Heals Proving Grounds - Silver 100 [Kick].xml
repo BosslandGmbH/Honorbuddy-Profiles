@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <HBProfile>
-	<Name>[A - Quest] DPS Proving Grounds - Bronze 100 [Kick] ($Rev: 4365 $)</Name>
+	<Name>[A - Quest] Heals Proving Grounds - Bronze 100 [Kick] ($Rev: 4365 $)</Name>
 	<MinLevel>100</MinLevel>
 	<MaxLevel>1000</MaxLevel>
 	
@@ -15,7 +15,7 @@
 			<CustomBehavior File="UserSettings" LootMobs="True" TrainNewSkills="False" LearnFlightPaths="False" UseFlightPaths="False" PullDistance="25" />
 			<CustomBehavior File="UserSettings" LearnFlightPaths="True" UseFlightPaths="True" />
 			
-			<!-- Manually tell bot to target and move, and move behind target -->
+			<!-- Manually tell bot to buy food / water -->
 
 
 			<While Condition="Me.ZoneId != 6852" > <!-- Proving Grounds -->
@@ -25,27 +25,33 @@
 				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for port {TimeRemaining}" />
 			</While>
 
-		<While Condition="Me.ZoneId == 6852 &amp;&amp; !IsAchievementCompleted(9572)">
+		<While Condition="Me.ZoneId == 6852 &amp;&amp; !IsAchievementCompleted(9585)">
 
-				<!-- Need to move behind this target -->
-	 			<CustomBehavior File="Hooks\Avoid" AvoidName="Defend_Front" Command="Add" ObjectId="142174" Radius="5" LeashRadius="10" AvoidWhen="UNIT.HasAura(142174)" 
-				AvoidLocationProducer="WoWMathHelper.GetNearestPointOnLineSegment(Me.Location, UNIT.Location.RayCast(UNIT.Rotation, 4), UNIT.Location.RayCast(UNIT.Rotation, 5))" />
+				<!-- Don't stand in fire -->
+	 			<CustomBehavior File="Hooks\Avoid" AvoidName="Invoke_Lava" Command="Add" ObjectId="5268" Radius="5" />
 	
 			<If Condition="Unit(73328) != null &amp;&amp; Me.ZoneId == 6852"> <!-- Nadaga disappears on start -->
-                <CustomBehavior File="InteractWith" MobId="61636" Range="5" GossipOptions="1" KeepTargetSelected="True" X="3751.513" Y="524.3802" Z="639.6911" />
+				<!-- Dialog options change based on achievements, compensate for this -->
+                <CustomBehavior File="InteractWith" MobId="61636" Range="5" GossipOptions="4" KeepTargetSelected="True" X="3751.513" Y="524.3802" Z="639.6911" />
 				<MoveTo X="3793.847" Y="532.8981" Z="639.0076" />
 				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for Proving Grounds to start {TimeRemaining}" />
 			</If>
 			
 			<While Condition="Unit(73328) == null &amp;&amp; Me.ZoneId == 6852">
 				<MoveTo X="3793.847" Y="532.8981" Z="639.0076" />
+				
 				<CustomBehavior File="KillUntilComplete" TerminateWhen="Unit(73328) != null" >
 					<PursuitList>
-						<PursueUnit Id="71062" Priority="0" Name="Large Illusionary Slayer" /> <!-- No Specials -->
-						<PursueUnit Id="71080" Priority="0" Name="Large Illusionary Slayer" /> <!-- No Specials -->
-						<PursueUnit Id="71079" Priority="0" Name="Small Illusionary Guardian" /> <!-- Move Behind Target -->
-						<PursueUnit Id="71067" Priority="0" Name="Large Illusionary Varmint" />
-						<PursueUnit Id="71078" Priority="-5" Name="Small Illusionary Varmint" />
+						<PursueUnit Id="72343" Priority="0" Name="Large Illusionary Hive-Singer" /> <!-- No Specials -->
+						<PursueUnit Id="72342" Priority="0" Name="Small Illusionary Hive-Singer" /> <!-- No Specials -->
+						<PursueUnit Id="72337" Priority="0" Name="Large Illusionary Ripper" /> <!-- No Specials -->
+						<PursueUnit Id="72336" Priority="0" Name="Small Illusionary Ripper" /> <!-- No Specials -->
+						
+						<PursueUnit Id="72339" Priority="0" Name="Large Illusionary Flamecaller" /> <!-- Fire on ground -->
+						<PursueUnit Id="72338" Priority="0" Name="Small Illusionary Flamecaller" /> <!-- Fire on ground -->
+						
+						<PursueUnit Id="72346" Priority="0" Name="Large Illusionary Aqualyte" /> <!-- Dispel Magic -->
+						<PursueUnit Id="72344" Priority="0" Name="Small Illusionary Aqualyte" /> <!-- Dispel Magic -->
 					</PursuitList>
 					<HuntingGrounds>
 						<Hotspot X="3793.847" Y="532.8981" Z="639.0076" />
@@ -53,7 +59,7 @@
 				</CustomBehavior>
 			</While>
 
-			<CustomBehavior File="Hooks\Avoid" AvoidName="Defend_Front" Command="Remove" />
+			<CustomBehavior File="Hooks\Avoid" AvoidName="Invoke_Lava" Command="Remove" />
 
 		</While>
 
