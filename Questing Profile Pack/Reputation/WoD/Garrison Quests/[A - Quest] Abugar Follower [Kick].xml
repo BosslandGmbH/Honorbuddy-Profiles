@@ -18,22 +18,32 @@
         
         <!-- Abu'gar Follower -->
 		<While Condition="!HasQuest(36711) &amp;&amp; !IsQuestCompleted(36711)" > <!-- Abu'gar / Follower -->
-		 <While Condition="!HasItem(114245)" > <!-- Abu'Gar's Favorite Lure -->
+		 <While Condition="!HasItem(114245)" > <!-- Abu'Gar's Favorite Lure /run print(IsQuestFlaggedCompleted(36072)) -->
 			<MoveTo Nav="Fly" DestName="Abu'Gar's Favorite Lure" X="3050.445" Y="7141.8" Z="3.359086" />
 			<CustomBehavior File="InteractWith" MobId="233642" WaitTime="3000" X="3056.673" Y="7132.38" Z="1.907172" />
  		 </While>
-		 <While Condition="!HasItem(114242)" > <!-- Abu'Gar's Vitality -->
-			<MoveTo Nav="Fly" DestName="Abu'Gar's Vitality" 
-			<CustomBehavior File="InteractWith" MobId="233157" WaitTime="3000" 
+		 <While Condition="!HasItem(114242)" > <!-- Abu'Gar's Vitality /run print(IsQuestFlaggedCompleted(35711)) -->
+          <If Condition="CanFly()" >
+			<MoveTo Nav="Fly" DestName="Abu'Gar's Vitality" X="2611.085" Y="5575.737" Z="90.18195" />
+          </If>
+          <If Condition="!CanFly()" >
+ 			<MoveTo Movement="NavigatorOnly" DestName="Abu'Gar's Vitality" X="2590.244" Y="5564.916" Z="129.8205" />
+            <CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for agro to clear {TimeRemaining}" />
+  			<MoveTo Movement="NavigatorOnly" DestName="Abu'Gar's Vitality" X="2590.244" Y="5564.916" Z="129.8205" />
+            <CustomBehavior File="ForcedDismount" />
+            <CustomBehavior File="MyCTM" X="2611.789" Y="5570.918" Z="90.16292" />
+          </If>
+			<CustomBehavior File="InteractWith" MobId="233157" WaitTime="3000" PreInteractMountStrategy="Dismount" Range="5" X="2611.085" Y="5575.737" Z="90.18195" />
  		 </While>
-		 <While Condition="!HasItem(114243)" > <!-- Abu'Gar's Finest Reel -->
-			<MoveTo Nav="Fly" DestName="Abu'Gar's Finest Reel" 
-			<CustomBehavior File="InteractWith" MobId="233506" WaitTime="3000" 
+		 <While Condition="!HasItem(114243)" > <!-- Abu'Gar's Finest Reel /run print(IsQuestFlaggedCompleted(36089)) -->
+			<MoveTo Nav="Fly" DestName="Abu'Gar's Finest Reel" X="3450.123" Y="4483.766" Z="160.9797" />
+			<CustomBehavior File="InteractWith" MobId="233506" WaitTime="3000" X="3457.314" Y="4458.583" Z="160.8097" />
  		 </While>
         
 		 <If Condition="!HasQuest(36711) &amp;&amp; !IsQuestCompleted(36711)" > <!-- Abu'gar / Follower -->
 			<MoveTo Nav="Fly" DestName="Abu'gar" X="2804.147" Y="5495.722" Z="12.3347" />
 			<CustomBehavior File="InteractWith" MobId="82746" X="2804.147" Y="5495.722" Z="12.3347" WaitTime="3000" />
+            <CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteButton:Click()" WaitTime="1000" />	
 			<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click()" />
 		 </If>
 		</While>
