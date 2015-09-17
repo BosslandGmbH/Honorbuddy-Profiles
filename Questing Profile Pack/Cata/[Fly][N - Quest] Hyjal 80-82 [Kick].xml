@@ -3061,7 +3061,10 @@
                                 X="4074.596" Y="-4009.47" Z="971.1025" />
 				<CustomBehavior File="WaitTimer" WaitTime="3000" GoalText="Waiting for mount {TimeRemaining}" />
 			</If>
-			<While Condition="!IsObjectiveComplete(1,25608)">
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="Attack_Drake" UseWhen="Unit(40573).Distance &lt;= 25 &amp;&amp; Me.Combat &amp;&amp; Me.IsOnTransport" >
+				<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarButton2:Click()" WaitTime="5500" />
+			</CustomBehavior>
+			<While Condition="!IsObjectiveComplete(1,25608)"> <!-- Move this after obj 2 after DoWhen properly kills drakes for us -->
 				<If Condition="!Me.IsOnTransport">
 					<CustomBehavior File="FlyTo" DestName="get the drake again." Land="true"
                                     X="4073.321" Y="-4009.627" Z="971.1174" />
@@ -3111,10 +3114,13 @@
 				</If>
 				<EnableBehavior Name="Combat" />
 			</While>
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="Attack_Drake" Command="Remove" />
 		</While>
-		<EnableBehavior Name="Combat" />
 		<If Condition="HasQuest(25608) &amp;&amp; IsQuestCompleted(25608)">
+			<EnableBehavior Name="Combat" />
+		 <If Condition="Me.IsOnTransport">
 			<CustomBehavior File="EjectVeh" />
+		 </If>
 			<CustomBehavior File="FlyTo" DestName="Turnin Quest" X="4082.432" Y="-3995.996" Z="971.5511" />
 			<TurnIn Nav="Fly" QuestName="Slash and Burn" QuestId="25608" TurnInName="Commander Jarod Shadowsong"
                     TurnInId="40772" />

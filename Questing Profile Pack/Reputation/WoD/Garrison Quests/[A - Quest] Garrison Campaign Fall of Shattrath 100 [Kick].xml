@@ -1,0 +1,226 @@
+﻿<HBProfile xsi:noNamespaceSchemaLocation="../../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Name>[A - Quest] Garrison Campaign Fall of Shattrath 100 [Kick] ($Rev: 3547 $)</Name>
+
+    <MinLevel>90</MinLevel>
+    <MaxLevel>1001</MaxLevel>
+
+    <MinDurability>0.2</MinDurability>
+    <MinFreeBagSlots>2</MinFreeBagSlots>
+
+    <MailGrey>false</MailGrey>
+    <MailWhite>false</MailWhite>
+    <MailGreen>false</MailGreen>
+    <MailBlue>true</MailBlue>
+    <MailPurple>true</MailPurple>
+
+    <SellGrey>true</SellGrey>
+    <SellWhite>true</SellWhite>
+    <SellGreen>true</SellGreen>
+    <SellBlue>false</SellBlue>
+    <SellPurple>false</SellPurple>
+
+    <TargetElites>true</TargetElites>
+
+    <AvoidMobs>
+        <!--<Vendor Name="Bloodied Slayer" Entry="84765" Type="Repair" X="4261.436" Y="6201.667" Z="100.1521" />-->
+    </AvoidMobs>
+    <Blackspots>
+    </Blackspots>
+    <Mailboxes>
+
+    </Mailboxes>
+    <Vendors>
+
+    </Vendors>
+
+
+    <QuestOrder>
+	
+		<!-- User settings - Kill between hotspots false -->
+        <LootMobs Value="true" />
+        <UseMount Value="true" />
+    
+		<!-- Pick up at Garrison -->
+        <PickUp Nav="Fly" QuestName="Garrison Campaign: The Fall of Shattrath" QuestId="35679" GiverName="Khadgar's Servant" GiverId="83858" />
+        <TurnIn Nav="Fly" QuestName="Garrison Campaign: The Fall of Shattrath" QuestId="35679" TurnInName="Exarch Maladaar" TurnInId="75028" X="2495.125" Y="2864.642" Z="242.7278" />
+        <PickUp Nav="Fly" QuestName="Reclaiming the City" QuestId="35683" GiverName="Exarch Maladaar" GiverId="75028" X="2495.125" Y="2864.642" Z="242.7278" />
+        <!-- Probably need some avoids to not stand in fire -->
+        <Objective QuestName="Reclaiming the City" QuestId="35683" Type="CollectItem" Nav="Fly" ItemId="113294" CollectCount="100" /> <!-- Assault Shattrath Harbor -->
+        <TurnIn Nav="Fly" QuestName="Reclaiming the City" QuestId="35683" TurnInName="Exarch Maladaar" TurnInId="75028" X="2495.125" Y="2864.642" Z="242.7278" />
+        <PickUp Nav="Fly" QuestName="Socrethar's Demise" QuestId="35685" GiverName="Exarch Maladaar" GiverId="75028" X="2495.125" Y="2864.642" Z="242.7278" />
+			<While Condition="HasQuest(35685) &amp;&amp; !IsQuestCompleted(35685)" > <!-- Socrethar's Demise -->
+				<CustomBehavior File="InteractWith" QuestId="35685" WaitTime="20000" Range="5" MobIds="82695" X="3117.62" Y="3307.728" Z="46.5468" /> <!-- Banner -->
+                
+                <!-- Avoid:
+                Run to 
+                Missile: Avenger's Shield, Id: 79965, Target: Socrethar, private const int MissileSpellId_AvengersShield=79965
+                when socrethar is casting 
+            	Missile: Wrath of Socrethar, Id: 175018, Target: toonnamehere, private const int MissileSpellId_WrathofSocrethar=175018
+                I think
+                -->
+                
+                <CustomBehavior File="KillUntilComplete" QuestId="35685" ImmediatelySwitchToHighestPriorityTarget="True" 
+                                        TerminateWhen="Unit(82662) == null || IsQuestCompleted(35685)" >
+                    <PursuitList>
+                        <PursueUnit Id="82662" Priority="0" /> <!-- Socrethar -->
+                    </PursuitList>
+                    <HuntingGrounds WaypointVisitStrategy="InOrder" >
+                        <Hotspot X="3144.846" Y="3362.639" Z="53.45436" />
+                    </HuntingGrounds>
+                </CustomBehavior>
+                
+				<CustomBehavior File="WaitTimer" QuestId="35685" WaitTime="5000" GoalText="Waiting for quest to complete {TimeRemaining}" />
+			</While>
+        <TurnIn Nav="Fly" QuestName="Socrethar's Demise" QuestId="35685" TurnInName="Exarch Maladaar" TurnInId="75028" X="2495.125" Y="2864.642" Z="242.7278" />
+
+            <!-- 
+            Socrethar Id: 82662, IsAttackable: True, IsSelectable: True, SummonedBy: , 
+                Aura: Fireball Barrage Id: 175272 CastedBy: Socrethar
+                Aura: Wrath of Socrethar Id: 174959 CastedBy: Socrethar
+                Aura: Nether Protection Id: 174956 CastedBy: Socrethar
+                Aura: Weakened Id: 175004 CastedBy: Socrethar
+                Aura: Reckoning Id: 175366 CastedBy: Exarch Maladaar
+                Spell: Fireball Barrage, Id: 175272, Target: Socrethar, private const int SpellId_FireballBarrage=175272
+                Spell: Power of the Legion, Id: 175283, Target: None, private const int SpellId_PoweroftheLegion=175283
+                Spell: Wrath of Socrethar, Id: 174978, Target: toonnamehere, private const int SpellId_WrathofSocrethar=174978
+                Missile: Fireball Barrage, Id: 175274, Target: None, private const int MissileSpellId_FireballBarrage=175274
+                Missile: Fireball Barrage, Id: 175273, Target: toonnamehere, private const int MissileSpellId_FireballBarrage=175273
+                Missile: SpellVisualId: 0, Id: 0, Target: Exarch Maladaar, private const int MissileSpellId_SpellVisualId:0=0
+                Missile: Wrath of Socrethar, Id: 175018, Target: toonnamehere, private const int MissileSpellId_WrathofSocrethar=175018
+            Exarch Maladaar Id: 82668, IsAttackable: False, IsSelectable: True, 
+                Aura: Wrath of Socrethar Id: 174978 CastedBy: Socrethar
+                Aura: Wrath of Socrethar Id: 175023 CastedBy: Socrethar
+                Spell: Avenger's Shield, Id: 79965, Target: Socrethar, private const int SpellId_AvengersShield=79965
+                Spell: Divine Protection, Id: 174968, Target: None, private const int SpellId_DivineProtection=174968
+                Missile: Avenger's Shield, Id: 79965, Target: Socrethar, private const int MissileSpellId_AvengersShield=79965
+            Lady Liadrin Id: 82667, IsAttackable: False, IsSelectable: True, 
+                Aura: Power of the Legion Id: 175283 CastedBy: Socrethar
+                Spell: Holy Light, Id: 13952, Target: toonnamehere, private const int SpellId_HolyLight=13952
+                Spell: Hammer of Wrath, Id: 175314, Target: Socrethar, private const int SpellId_HammerofWrath=175314
+                Missile: Hammer of Wrath, Id: 175314, Target: Socrethar, private const int MissileSpellId_HammerofWrath=175314
+            -->    
+                
+			<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Garrison Campaign completed" />
+
+    </QuestOrder>
+    
+    <Quest Id="35683" Name="Reclaiming the City">
+        <Objective Type="CollectItem" ItemId="113294" CollectCount="100">
+            <CollectFrom>
+                    <Mob Id="83008" /> <!-- Haakun the All-Consuming 83008 - 25% -->
+                    <PursueUnit Id="82922" /> <!-- Xothear, the Destroyer - 82922 - lots of fire -->
+                    <PursueUnit Id="87597" /> <!-- Bombardier Gu'gok - 87597 -->
+                    <!-- <PursueUnit Id="87597" /> Felfire Consort - 82992 - too much fire -->
+                    
+                    <PursueUnit Id="84337" />
+                    <PursueUnit Id="84283" />
+                    <PursueUnit Id="84266" />
+                    <PursueUnit Id="84334" />
+                    <PursueUnit Id="87337" />
+                    <PursueUnit Id="84871" />
+                    <PursueUnit Id="84880" />
+                    <PursueUnit Id="84278" />
+                    <PursueUnit Id="83017" />
+                    <PursueUnit Id="83018" />
+                    <PursueUnit Id="82928" />
+                    <PursueUnit Id="87576" />
+                    <PursueUnit Id="85195" />
+                    <PursueUnit Id="84112" />
+                    <PursueUnit Id="84180" />
+                    <PursueUnit Id="84181" />
+                    <PursueUnit Id="84094" />
+                    <PursueUnit Id="84096" />
+                    <PursueUnit Id="83004" />
+                    <PursueUnit Id="84095" />
+                    <PursueUnit Id="83023" />
+                    <PursueUnit Id="82934" />
+                    <PursueUnit Id="82960" />
+                    <PursueUnit Id="85191" />
+                    <PursueUnit Id="84055" />
+            </CollectFrom>
+            <Hotspots>
+                    <!-- South Entrance -->
+                    <Hotspot X="3056.411" Y="3112.197" Z="33.50148" />
+                    <Hotspot X="3030.941" Y="3019.555" Z="47.63253" />
+                    <Hotspot X="3034.006" Y="2949.84" Z="47.81746" />
+                    <Hotspot X="3126.445" Y="2937.675" Z="50.8416" />
+                    <Hotspot X="3103.558" Y="2974.394" Z="50.8418" />
+                    <Hotspot X="3007.158" Y="2996.904" Z="47.81611" />
+                    <Hotspot X="2945.176" Y="2995.791" Z="51.52512" />
+                    <Hotspot X="2982.406" Y="3110.213" Z="33.502" />
+                    <Hotspot X="3041.071" Y="3156.602" Z="33.50192" />
+                    <Hotspot X="2870.129" Y="3144.096" Z="46.19415" />
+                    <Hotspot X="2806.664" Y="3194.924" Z="42.92036" />
+                    <Hotspot X="2728.342" Y="3198.75" Z="42.92041" />
+                    <Hotspot X="2905.501" Y="3263.418" Z="42.92078" />
+                    <Hotspot X="2996.38" Y="3240.605" Z="44.18542" />
+                    <Hotspot X="2943.805" Y="3175.42" Z="42.92089" />
+                    <Hotspot X="3035.595" Y="3150.226" Z="33.50153" />
+                    <Hotspot X="3132.869" Y="3101.421" Z="20.14475" />
+                    <!-- End of South Entrance -->
+                    
+                    <!-- Main City -->
+                    <Hotspot X="3273.988" Y="3021.417" Z="20.14483" />
+                    <Hotspot X="3241.235" Y="2982.039" Z="23.77394" />
+                    <Hotspot X="3211.526" Y="3055.043" Z="20.14597" />
+                    <Hotspot X="3181.338" Y="3028.476" Z="22.60158" />
+                    <Hotspot X="3192.859" Y="3088.912" Z="20.14472" />
+                    <Hotspot X="3187.388" Y="3160.813" Z="19.88129" />
+                    <Hotspot X="3245.422" Y="3169.107" Z="20.14469" />
+                    <Hotspot X="3234.417" Y="3217.047" Z="21.40389" />
+                    <Hotspot X="3303.804" Y="3214.628" Z="21.40414" />
+                    <Hotspot X="3381.056" Y="3196.027" Z="25.49555" />
+                    <Hotspot X="3331.214" Y="3154.899" Z="20.14442" />
+                    <Hotspot X="3290.673" Y="3144.785" Z="20.14484" />
+                    <Hotspot X="3331.389" Y="3066.802" Z="24.81007" />
+                    <Hotspot X="3305.833" Y="3023.359" Z="24.81057" />
+                    <!-- End of Main City -->
+                    
+                    <!-- Docks -->
+                    <Hotspot X="3855.515" Y="3575.019" Z="1.94973" />
+                    <Hotspot X="3846.377" Y="3505.704" Z="1.949231" />
+                    <Hotspot X="3909.554" Y="3498.363" Z="1.950587" />
+                    <Hotspot X="3931.843" Y="3547.802" Z="1.949977" />
+                    <Hotspot X="3848.796" Y="3612.871" Z="1.94946" />
+                    <Hotspot X="3840.033" Y="3666.294" Z="1.950119" />
+                    <Hotspot X="3803.242" Y="3702.965" Z="1.950032" />
+                    <Hotspot X="3744.775" Y="3714.885" Z="1.94956" />
+                    <Hotspot X="3735.254" Y="3765.695" Z="2.346194" />
+                    <Hotspot X="3673.644" Y="3741.335" Z="1.949785" />
+                    <Hotspot X="3644.234" Y="3646.361" Z="1.950055" />
+                    <Hotspot X="3649.259" Y="3577.461" Z="1.950191" />
+                    <Hotspot X="3582.104" Y="3575.769" Z="1.95067" />
+                    <Hotspot X="3584.06" Y="3574.294" Z="1.95047" />
+                    <Hotspot X="3615.078" Y="3486.889" Z="1.950733" />
+                    <Hotspot X="3609.344" Y="3371.147" Z="1.950385" />
+                    <Hotspot X="3496.238" Y="3392.933" Z="2.155909" />
+                    <Hotspot X="3512.965" Y="3258.023" Z="1.950034" />
+                    <Hotspot X="3543.069" Y="3184.685" Z="1.950135" />
+                    <Hotspot X="3659.011" Y="3230.225" Z="1.951218" />
+                    <Hotspot X="3523.35" Y="3133.964" Z="1.95043" />
+                    <Hotspot X="3580.644" Y="3052.563" Z="1.957134" />
+                    <Hotspot X="3509.119" Y="3060.12" Z="1.950531" />
+                    <Hotspot X="3490.588" Y="2987.108" Z="1.949833" />
+                    <Hotspot X="3541.48" Y="2904.679" Z="1.950796" />
+                    <Hotspot X="3585.859" Y="2850.97" Z="1.94992" />
+                    <Hotspot X="3472.791" Y="2968.498" Z="1.950056" />
+                    <Hotspot X="3385.019" Y="2922.354" Z="1.949972" />
+                    <Hotspot X="3286.503" Y="3004.298" Z="20.14526" />
+                    <!-- End of Docks -->
+
+                    <!-- <Hotspot X="3120.514" Y="2995.012" Z="51.14206" /> Felfire Consort - 82992 - lots of fire -->
+                    <Hotspot X="2872.13" Y="3229.05" Z="54.42781" /> <!-- Bombardier Gu'gok - 87597 -->
+                    <Hotspot X="3846.905" Y="3591.976" Z="1.949905" /> <!-- Xothear, the Destroyer - 82922 -->
+                    <Hotspot X="3428.872" Y="2968.057" Z="47.01289" /> <!-- Haakun the All-Consuming 83008 -->
+                    
+                    <!-- @ Center / out of bounds
+                    <Vendor Name="Shadowflame Terrorwalker" Entry="82930" Type="Repair" Nav="Fly" X="2756.866" Y="3389.348" Z="69.90814" />
+                    <Vendor Name="Vigilant Paarthos" Entry="88436" Type="Repair" Nav="Fly" X="2761.165" Y="3612.721" Z="60.26457" />
+                    <Vendor Name="Kurlosh Doomfang" Entry="82988" Type="Repair" Nav="Fly" X="2938.396" Y="3595.973" Z="88.90347" />
+                    -->
+            </Hotspots>
+        </Objective>
+    </Quest>
+    
+    
+</HBProfile>
