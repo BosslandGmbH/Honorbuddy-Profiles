@@ -494,15 +494,17 @@
 		<TurnIn QuestName="Born to Shred" QuestId="33729" TurnInName="Gazlowe" TurnInId="75941" X="2793.064" Y="2513.275" Z="121.1406" />
 		<PickUp QuestName="Engineering Her Demise" QuestId="33730" GiverName="Gazlowe" GiverId="75941" X="2793.064" Y="2513.275" Z="121.1406" />
 		<!-- Grab some Treasures -->
-			<If Condition="!IsQuestCompleted(34236)" >
+			<While Condition="!IsQuestCompleted(34236)" > <!-- 100 Garrison Resources -->
 				<MoveTo DestName="Water above Amethyl Crystal" X="3141.301" Y="2132.194" Z="103.7608" />
-				<CustomBehavior File="ForcedDismount" />
-				<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Amethyl Crystal" NumOfTimes="100" MobIds="227955"
+				<CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for agro to clear {TimeRemaining}" />
+				<CustomBehavior File="InteractWith" Range="10" WaitTime="2000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Amethyl Crystal" PreInteractMountStrategy="Dismount" MobId="227955"
 				 	TerminateWhen="Object(227955) == null || IsQuestCompleted(34236)" X="3141.912" Y="2131.863" Z="97.71159" />
 				<CustomBehavior File="AscendInWater" />
-				<MoveTo DestName="Waterside near Amethyl Crystal" X="3222.747" Y="2125.555" Z="109.054" />
+				<MoveTo Nav="Fly" DestName="Waterside near Amethyl Crystal" X="3222.747" Y="2125.555" Z="109.054" />
+				<CustomBehavior File="ForcedDismount" />
 				<If Condition="HasItem(116131)" ><CustomBehavior File="UseItem" ItemId="116131" /></If>
-			</If>
+				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for Quest to Complete {TimeRemaining}" />
+			</While>
 		<!-- END Grab some Treasures -->
 		<If Condition="HasQuest(33730) &amp;&amp; !IsQuestCompleted(33730)" > <!-- Engineering Her Demise -->
 			<CustomBehavior File="WaitTimer" WaitTime="6000" GoalText="Waiting for quest to continue {TimeRemaining}" />
@@ -530,7 +532,7 @@
 				<MoveTo DestName="The Battle for Shattrath: Start" X="3042.792" Y="2823.976" Z="67.02023" />
 			</While>
 			<While Condition="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber == 1">
-				<CustomBehavior File="InteractWith" MobId="77192" GossipOptions="1" X="3042.792" Y="2823.976" Z="67.02023" /> <!-- Thaelin -->
+				<CustomBehavior File="InteractWith" MobId="77191" GossipOptions="1" X="3042.792" Y="2823.976" Z="67.02023" /> <!-- Gazlowe -->
 				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for objective to complete {TimeRemaining}" />
 			</While>
 			<While Condition="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber == 2">
