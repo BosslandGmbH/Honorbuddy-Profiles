@@ -740,20 +740,25 @@
         <!-- WHERE DOES THIS GO??? -->
 		 <!-- Tormmok / Follower / A Centurion Without A Cause -->
 		<While Condition="!HasQuest(36037) &amp;&amp; !IsQuestCompleted(36037)" >
-			<MoveTo Movement="Fly" X="4894.878" Y="1331.378" Z="120.5051" />
+		 <If Condition="Unit(83820, u =&gt; !u.IsFriendly) == null" >
+			<MoveTo Nav="Fly" X="4894.878" Y="1331.378" Z="120.5051" />
+		 </If>
 			
-			<CustomBehavior File="KillUntilComplete" TerminateWhen="Unit(83820, u =&gt; u.IsFriendly) != null" >
-				<PursuitList>
-					<PursueUnit Id="83826" Priority="0" />
-					<PursueUnit Id="83824" Priority="0" />
-					<PursueUnit Id="83871" Priority="0" />
+			<CustomBehavior File="KillUntilComplete" TerminateWhen="Unit(83820, u =&gt; u.IsFriendly) != null" ImmediatelySwitchToHighestPriorityTarget="True" >
+				<PursuitList >
+					<PursueUnit Id="83826" Priority="0" PursueWhen="Unit(83820).Distance &lt;= 20" />
+					<PursueUnit Id="83824" Priority="0" PursueWhen="Unit(83820).Distance &lt;= 20" />
+					<PursueUnit Id="83871" Priority="100" PursueWhen="Unit(83820).Distance &lt;= 20" />
 				</PursuitList>
 				<HuntingGrounds WaypointVisitStrategy="InOrder" >
-					<Hotspot X="4854.727" Y="1389.715" Z="144.6774" />
+					<Hotspot X="4854.476" Y="1389.611" Z="144.6701" />
 				</HuntingGrounds>
 			</CustomBehavior>
 			
 			<CustomBehavior File="InteractWith" MobId="83820" GossipOptions="1,1" WaitTime="3000" X="4854.461" Y="1392.67" Z="145.0089" />
+			
+			<CustomBehavior File="InteractWith" MobId="83820" WaitTime="3000" KeepTargetSelected="True" X="4854.461" Y="1392.67" Z="145.0089" />
+			<CustomBehavior File="Misc\RunLua" Lua="GossipTitleButton1:Click()" WaitTime="1000" />
 			<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click()" />
 			<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for quest to complete {TimeRemaining}" />
 		</While>
