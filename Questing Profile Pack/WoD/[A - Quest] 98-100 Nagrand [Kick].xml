@@ -925,14 +925,15 @@
 		<PickUp QuestName="The Shadow of the Void" QuestId="35088" GiverName="Shamanstone" GiverId="233263" GiverType="GameObject" X="2700.135" Y="6368.885" Z="45.79745" />
 		<While Condition="HasQuest(35088) &amp;&amp; !IsQuestCompleted(35088)" > <!-- The Shadow of the Void -->
 			<CustomBehavior File="Hooks\Avoid" AvoidName="Singularity" Command="Add" ObjectId="81215" Radius="10" LeashRadius="30" AvoidWhen="UNIT.CastingSpellId == 171355" X="2525.788" Y="6335.215" Z="48.55553" />
-			<MoveTo DestName="Void Crystal" X="2525.788" Y="6335.215" Z="48.55553" />
+			<MoveTo Nav="Fly" DestName="Void Crystal" X="2525.788" Y="6335.215" Z="48.55553" />
 			<CustomBehavior File="InteractWith" QuestId="35088" MobId="232395" PreInteractMountStrategy="DismountOrCancelShapeshift" TerminateWhen="!Me.HasAura(162427) || Unit(81215) != null" NonCompeteDistance="0" 
 				X="2525.788" Y="6335.215" Z="48.55553" />
 			<CustomBehavior File="KillUntilComplete" QuestId="35088" MobId="81215" TerminateWhen="IsObjectiveComplete(2, 35088) || !Me.HasAura(162427) || Unit(81215) == null" X="2525.788" Y="6335.215" Z="48.55553" />
+			<CustomBehavior File="Hooks\Avoid" AvoidName="Singularity" Command="Remove" />
+			<CustomBehavior File="WaitTimer" WaitTime="3000" GoalText="Waiting for quest to complete {TimeRemaining}" />
 		</While>
 		<If Condition="HasQuest(35088) &amp;&amp; IsQuestCompleted(35088)" > <!-- The Shadow of the Void -->
 			<CustomBehavior File="Hooks\DoWhen" ActivityName="GetShamanstoneAura" Command="Remove" />
-			<CustomBehavior File="Hooks\Avoid" AvoidName="Singularity" Command="Remove" />
 			<CustomBehavior File="Misc\RunLua" Lua="CancelUnitBuff('player',GetSpellInfo(162427))"/>
 			<TurnIn QuestName="The Shadow of the Void" QuestId="35088" TurnInName="Shamanstone" TurnInId="233263" TurnInType="GameObject" X="2700.135" Y="6368.885" Z="45.79745" />
 		</If>
