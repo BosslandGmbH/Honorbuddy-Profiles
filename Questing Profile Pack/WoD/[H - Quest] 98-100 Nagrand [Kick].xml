@@ -45,10 +45,6 @@
 	</Vendors>
 
 
-
-
-
-
 	<QuestOrder IgnoreCheckpoints="true" >
 
 		<While Condition="Me.IsAlliance">
@@ -968,27 +964,27 @@
 			<While Condition="!IsObjectiveComplete(1, 36284)" >
 				<MoveTo QuestId="36284" DestName="Spore Sac 0" X="4044.968" Y="4313.137" Z="-1.306793" />
 				<CustomBehavior File="AscendInWater" />	
-				<CustomBehavior File="InteractWith" QuestId="36284" MobId2="234101" MobId="84706" TerminateWhen="IsObjectiveComplete(1, 36284)" />
+				<CustomBehavior File="InteractWith" QuestId="36284" MobId2="234101" MobId="84706" WaitForNpcs="False" MovementBy="NavigatorPreferred" />
 				<CustomBehavior File="AscendInWater" />	
 				<MoveTo QuestId="36284" DestName="Spore Sac 1" X="4093.573" Y="4331.769" Z="-3.054907" />
 				<CustomBehavior File="AscendInWater" />	
-				<CustomBehavior File="InteractWith" QuestId="36284" MobId2="234101" MobId="84706" TerminateWhen="IsObjectiveComplete(1, 36284)" />
+				<CustomBehavior File="InteractWith" QuestId="36284" MobId2="234101" MobId="84706" WaitForNpcs="False" MovementBy="NavigatorPreferred" />
 				<CustomBehavior File="AscendInWater" />	
 				<MoveTo QuestId="36284" DestName="Spore Sac 2" X="4132.437" Y="4356.298" Z="-1.833508" />
 				<CustomBehavior File="AscendInWater" />	
-				<CustomBehavior File="InteractWith" QuestId="36284" MobId2="234101" MobId="84706" TerminateWhen="IsObjectiveComplete(1, 36284)" />
+				<CustomBehavior File="InteractWith" QuestId="36284" MobId2="234101" MobId="84706" WaitForNpcs="False" MovementBy="NavigatorPreferred" />
 				<CustomBehavior File="AscendInWater" />	
 				<MoveTo QuestId="36284" DestName="Spore Sac 3" X="4160.741" Y="4384.007" Z="-0.3572536" />
 				<CustomBehavior File="AscendInWater" />	
-				<CustomBehavior File="InteractWith" QuestId="36284" MobId2="234101" MobId="84706" TerminateWhen="IsObjectiveComplete(1, 36284)" />
+				<CustomBehavior File="InteractWith" QuestId="36284" MobId2="234101" MobId="84706" WaitForNpcs="False" MovementBy="NavigatorPreferred" />
 				<CustomBehavior File="AscendInWater" />	
 				<MoveTo QuestId="36284" DestName="Spore Sac 4" X="4258.322" Y="4393.792" Z="-1.845163" />
 				<CustomBehavior File="AscendInWater" />	
-				<CustomBehavior File="InteractWith" QuestId="36284" MobId2="234101" MobId="84706" TerminateWhen="IsObjectiveComplete(1, 36284)" />
+				<CustomBehavior File="InteractWith" QuestId="36284" MobId2="234101" MobId="84706" WaitForNpcs="False" MovementBy="NavigatorPreferred" />
 				<CustomBehavior File="AscendInWater" />	
 				<MoveTo QuestId="36284" DestName="Spore Sac 5" X="4269.041" Y="4326.774" Z="-1.83668" />
 				<CustomBehavior File="AscendInWater" />	
-				<CustomBehavior File="InteractWith" QuestId="36284" MobId2="234101" MobId="84706" TerminateWhen="IsObjectiveComplete(1, 36284)" />
+				<CustomBehavior File="InteractWith" QuestId="36284" MobId2="234101" MobId="84706" WaitForNpcs="False" MovementBy="NavigatorPreferred" />
 				<CustomBehavior File="AscendInWater" />	
 			</While>
 
@@ -1168,6 +1164,150 @@
 			<CustomBehavior File="ForceSetVendor" DoSell="True" DoRepair="True" DoMail="True" />
 		</If>
 
+		<!-- RoT Quests -->
+		<If Condition="HasQuest(35922)"> <!-- Bread Crumb to Gazmolf -->
+			<TurnIn QuestName="Bread and Circuses" QuestId="35922" TurnInName="Dexyl Deadblade" TurnInId="79188" X="3019.969" Y="4800.141" Z="130.394" />
+		</If>
+        <PickUp Nav="Fly" QuestName="Ring of Trials: Crushmaul" QuestId="34662" GiverName="Dexyl Deadblade" GiverId="79188" X="3019.969" Y="4800.141" Z="130.394" />
+        <While Condition="HasQuest(34662) &amp;&amp; !IsQuestCompleted(34662)" > <!-- Ring of Trials: Crushmaul -->
+			<CustomBehavior File="Hooks\Avoid" AvoidName="Crushmaul_Crush" Command="Add" ObjectId="76702" Radius="10" LeashRadius="45" 
+				AvoidWhen="UNIT.CastingSpellId == 165783 || UNIT.CastingSpellId == 165622 || UNIT.CastingSpellId == 165631" 
+				AvoidLocationProducer="WoWMathHelper.GetNearestPointOnLineSegment(Me.Location, UNIT.Location.RayCast(UNIT.Rotation, 4), UNIT.Location.RayCast(UNIT.Rotation, 10))" />
+            
+            <CustomBehavior File="InteractWith" MobId="79189"  NonCompeteDistance="0" GossipOptions="1" WaitTime="1000" X="3048.009" Y="4903.172" Z="130.9005" />
+            <CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for spawn {TimeRemaining}" />
+            
+            <CustomBehavior File="KillUntilComplete" QuestId="34662" TerminateWhen="IsQuestCompleted(34662) || Unit(76702) == null" ImmediatelySwitchToHighestPriorityTarget="True" >
+                <PursuitList>
+                    <PursueUnit Id="79483" Priority="5000" /> <!-- Porkchop -->
+                    <PursueUnit Id="76702" Priority="0" /> <!-- Crushmaul -->
+                </PursuitList>
+                <HuntingGrounds WaypointVisitStrategy="InOrder" >
+                    <Hotspot X="3048.009" Y="4903.172" Z="130.9005" />
+                </HuntingGrounds>
+            </CustomBehavior>
+            
+			<CustomBehavior File="Hooks\Avoid" AvoidName="Crushmaul_Crush" Command="Remove" /> 
+        </While>
+        <TurnIn Nav="Fly" QuestName="Ring of Trials: Crushmaul" QuestId="34662" TurnInName="Dexyl Deadblade" TurnInId="79188" X="3019.969" Y="4800.141" Z="130.394" />
+
+        <PickUp Nav="Fly" QuestName="Ring of Trials: Raketalon" QuestId="34663" GiverName="Dexyl Deadblade" GiverId="79188" X="3019.969" Y="4800.141" Z="130.394" />
+        <While Condition="HasQuest(34663) &amp;&amp; !IsQuestCompleted(34663)" > <!-- Ring of Trials: Raketalon -->
+			<CustomBehavior File="Hooks\Avoid" AvoidName="Shatter_Whirlwind" Command="Add" ObjectType="Missile" ObjectId="7376" Radius="18" />
+           
+            <CustomBehavior File="InteractWith" MobId="79189"  NonCompeteDistance="0" GossipOptions="1" WaitTime="1000" X="3048.009" Y="4903.172" Z="130.9005" /> <!-- Start -->
+            <CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for spawn {TimeRemaining}" />
+            
+            <CustomBehavior File="KillUntilComplete" QuestId="34663" TerminateWhen="IsQuestCompleted(34663) || Unit(82670) == null" ImmediatelySwitchToHighestPriorityTarget="True" >
+                <PursuitList>
+                    <PursueUnit Id="76538" Priority="5002" /> <!-- Twister -->
+                    <PursueUnit Id="76533" Priority="5001" /> <!-- Roast -->
+                    <PursueUnit Id="76532" Priority="5000" /> <!-- Shatter -->
+                    <PursueUnit Id="82670" Priority="0" /> <!-- Raketalon -->
+                </PursuitList>
+                <HuntingGrounds WaypointVisitStrategy="InOrder" >
+                    <Hotspot X="3048.009" Y="4903.172" Z="130.9005" />
+                </HuntingGrounds>
+            </CustomBehavior>
+            
+			<CustomBehavior File="Hooks\Avoid" AvoidName="Shatter_Whirlwind" Command="Remove" /> 
+        </While>
+        <TurnIn Nav="Fly" QuestName="Ring of Trials: Raketalon" QuestId="34663" TurnInName="Dexyl Deadblade" TurnInId="79188" X="3019.969" Y="4800.141" Z="130.394" />
+
+        <PickUp Nav="Fly" QuestName="Ring of Trials: Hol'yelaa" QuestId="34664" GiverName="Dexyl Deadblade" GiverId="79188" X="3019.969" Y="4800.141" Z="130.394" />
+        <While Condition="HasQuest(34664) &amp;&amp; !IsQuestCompleted(34664)" > <!-- Ring of Trials: Hol'yelaa -->
+            <!-- We are slowed, useless
+			<CustomBehavior File="Hooks\Avoid" AvoidName="Holyeah_Spells" Command="Add" ObjectId="86146" Radius="15" LeashRadius="45" 
+				AvoidWhen="UNIT.CastingSpellId == 172454 || UNIT.CastingSpellId == 166437" 
+				AvoidLocationProducer="WoWMathHelper.GetNearestPointOnLineSegment(Me.Location, UNIT.Location.RayCast(UNIT.Rotation, 4), UNIT.Location.RayCast(UNIT.Rotation, 10))" />
+            -->
+            
+            <CustomBehavior File="InteractWith" MobId="79189"  NonCompeteDistance="0" GossipOptions="1" WaitTime="1000" X="3048.009" Y="4903.172" Z="130.9005" /> <!-- Start -->
+            <CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for spawn {TimeRemaining}" />
+            
+            <CustomBehavior File="KillUntilComplete" QuestId="34664" TerminateWhen="IsQuestCompleted(34664) || Unit(86146) == null" ImmediatelySwitchToHighestPriorityTarget="True" >
+                <PursuitList>
+                    <PursueUnit Id="86146" Priority="0" /> <!-- Hol'yelaa -->
+                </PursuitList>
+                <HuntingGrounds WaypointVisitStrategy="InOrder" >
+                    <Hotspot X="3048.009" Y="4903.172" Z="130.9005" />
+                </HuntingGrounds>
+            </CustomBehavior>
+            
+            <!--
+			<CustomBehavior File="Hooks\Avoid" AvoidName="Holyeah_Spells" Command="Remove" /> 
+            -->
+        </While>
+        <TurnIn Nav="Fly" QuestName="Ring of Trials: Hol'yelaa" QuestId="34664" TurnInName="Dexyl Deadblade" TurnInId="79188" X="3019.969" Y="4800.141" Z="130.394" />
+
+        <PickUp Nav="Fly" QuestName="Ring of Trials: Captain Boomspark" QuestId="34665" GiverName="Dexyl Deadblade" GiverId="79188" X="3019.969" Y="4800.141" Z="130.394" />
+        <While Condition="HasQuest(34665) &amp;&amp; !IsQuestCompleted(34665)" > <!-- Ring of Trials: Captain Boomspark -->
+			<CustomBehavior File="Hooks\Avoid" AvoidName="Bomb_Bots" Command="Add" ObjectType="Npc" ObjectId="82380" Radius="10" />
+  			<CustomBehavior File="Hooks\Avoid" AvoidName="Burninator_Incinerator" Command="Add" ObjectId="79690" Radius="20" LeashRadius="50" AvoidWhen="UNIT.CastingSpellId == 165813" 
+				AvoidLocationProducer="WoWMathHelper.GetNearestPointOnLineSegment(Me.Location, UNIT.Location.RayCast(UNIT.Rotation, 4), UNIT.Location.RayCast(UNIT.Rotation, 10))" />
+          
+            <CustomBehavior File="InteractWith" MobId="79189"  NonCompeteDistance="0" GossipOptions="1" WaitTime="1000" X="3048.009" Y="4903.172" Z="130.9005" /> <!-- Start -->
+            <CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for spawn {TimeRemaining}" />
+            
+            <CustomBehavior File="KillUntilComplete" QuestId="34665" TerminateWhen="IsQuestCompleted(34665) || (Unit(86146) == null &amp;&amp; Unit(79496) == null)" ImmediatelySwitchToHighestPriorityTarget="True" >
+                <PursuitList>
+                    <PursueUnit Id="79496" Priority="0" /> <!-- Captain Boomspark -->
+                    <PursueUnit Id="79690" Priority="0" /> <!-- The Burninator -->
+                </PursuitList>
+                <HuntingGrounds WaypointVisitStrategy="InOrder" >
+                    <Hotspot X="3048.009" Y="4903.172" Z="130.9005" />
+                </HuntingGrounds>
+            </CustomBehavior>
+			<CustomBehavior File="Hooks\Avoid" AvoidName="Burninator_Incinerator" Command="Remove" /> 
+ 
+            <CustomBehavior File="WaitTimer" WaitTime="8000" GoalText="Waiting for bots to go away {TimeRemaining}" />
+ 
+			<CustomBehavior File="Hooks\Avoid" AvoidName="Bomb_Bots" Command="Remove" /> 
+        </While>
+        <TurnIn Nav="Fly" QuestName="Ring of Trials: Captain Boomspark" QuestId="34665" TurnInName="Dexyl Deadblade" TurnInId="79188" X="3019.969" Y="4800.141" Z="130.394" />
+
+        <PickUp Nav="Fly" QuestName="Ring of Trials: Roakk the Zealot" QuestId="34666" GiverName="Dexyl Deadblade" GiverId="79188" X="3019.969" Y="4800.141" Z="130.394" />
+        <While Condition="HasQuest(34666) &amp;&amp; !IsQuestCompleted(34666)" > <!-- Ring of Trials: Roakk the Zealot -->
+			<!--<CustomBehavior File="Hooks\Avoid" AvoidName="RtZ_Brilliant_Edge" Command="Add" ObjectType="AreaTrigger" ObjectId="7345" Radius="8" />-->
+  			<CustomBehavior File="Hooks\Avoid" AvoidName="RtZ_Radiance" Command="Add" ObjectId="79490" Radius="30" LeashRadius="40" AvoidWhen="UNIT.CastingSpellId == 166140" 
+				AvoidLocationProducer="WoWMathHelper.GetNearestPointOnLineSegment(Me.Location, UNIT.Location.RayCast(UNIT.Rotation, 4), UNIT.Location.RayCast(UNIT.Rotation, 10))" X="3048.009" Y="4903.172" Z="130.9005" />
+				<!-- This doesn't help with pet classes, we need a way to simply /turnaround (do not face mob) 
+				
+				// This code doesn't work right
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="RtZ_Radiance_TurnAround" UseWhen="(Me.CurrentTarget == 79490) &amp;&amp; (Me.CurrentTarget.CastingSpellId == 166140)" >
+			 <CustomBehavior File="RunCode" >
+				<![CDATA[ 
+				 var ct = Me.CurrentTarget;
+				 if (ct != null)
+				 {
+					var faceLoc = WoWMathHelper.CalculatePointFrom(ct.Location, Me.Location, -5);
+					StyxWoW.Me.SetFacing(faceLoc);
+					await Coroutine.Wait(3000, () => ct.CastingSpellId != 166140);
+				}]]>
+			 </CustomBehavior>
+			</CustomBehavior>
+				-->
+          
+            <CustomBehavior File="InteractWith" MobId="79189"  NonCompeteDistance="0" GossipOptions="1" WaitTime="1000" X="3048.009" Y="4903.172" Z="130.9005" /> <!-- Start -->
+            <CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for spawn {TimeRemaining}" />
+            
+            <!-- Always pull mob back to X="3048.009" Y="4903.172" Z="130.9005" /> if possible -->
+            
+            <CustomBehavior File="KillUntilComplete" QuestId="34666" TerminateWhen="IsQuestCompleted(34666) || Unit(79490) == null" ImmediatelySwitchToHighestPriorityTarget="True" >
+                <PursuitList>
+                    <PursueUnit Id="79490" Priority="0" /> <!-- Roakk the Zealot -->
+                </PursuitList>
+                <HuntingGrounds WaypointVisitStrategy="InOrder" >
+                    <Hotspot X="3048.009" Y="4903.172" Z="130.9005" />
+                </HuntingGrounds>
+            </CustomBehavior>
+ 
+			<CustomBehavior File="Hooks\Avoid" AvoidName="RtZ_Brilliant_Edge" Command="Remove" /> 
+			<CustomBehavior File="Hooks\Avoid" AvoidName="RtZ_Radiance" Command="Remove" /> 
+        </While>
+        <TurnIn Nav="Fly" QuestName="Ring of Trials: Roakk the Zealot" QuestId="34666" TurnInName="Dexyl Deadblade" TurnInId="79188" X="3019.969" Y="4800.141" Z="130.394" />
+		
+		
 		<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" 
 										Text="End of WoD Profiles - There's nothing more!\n\nIf you enjoyed this questing pack, please feel free to donate!
 										\n\nhttps://www.thebuddyforum.com/honorbuddy-forum/honorbuddy-profiles/131188-kicks-1-100-mega-profile-pack.html" />
