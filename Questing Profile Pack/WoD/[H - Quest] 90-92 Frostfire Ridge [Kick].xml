@@ -88,27 +88,31 @@
 
 		<!-- <WoWItem Name="A Guide to Skinning in Draenor" Entry="111351" /> -->
 		<While Condition="GetItemCount(111351) &gt;= 1" >
+			<CustomBehavior File="ForcedDismount" />
 			<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(111351)" WaitTime="1337" />
 		</While>
 
-
 		<!-- <WoWItem Name="A Compendium of the Herbs of Draenor" Entry="111350" /> -->
 		<While Condition="GetItemCount(111350) &gt;= 1" >
+			<CustomBehavior File="ForcedDismount" />
 			<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(111350)" WaitTime="1337" />
 		</While>
 
 		<!-- <WoWItem Name="A Treatise on Mining in Draenor" Entry="111349" /> -->
 		<While Condition="GetItemCount(111349) &gt;= 1" >
+			<CustomBehavior File="ForcedDismount" />
 			<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(111349)" WaitTime="1337" />
 		</While>
 
 		<!-- <WoWItem Name="The Joy of Draenor Cooking" Entry="111387" /> -->
 		<While Condition="GetItemCount(111387) &gt;= 1" >
+			<CustomBehavior File="ForcedDismount" />
 			<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(111387)" WaitTime="1337" />
 		</While>
 
 		<!-- <WoWItem Name="First Aid in Draenor" Entry="111364" /> -->
 		<While Condition="GetItemCount(111364) &gt;= 1" >
+			<CustomBehavior File="ForcedDismount" />
 			<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(111364)" WaitTime="1337" />
 		</While>
 
@@ -618,7 +622,7 @@
 		</CustomBehavior>
 		<TurnIn QuestName="Gormaul Tower" QuestId="33784" TurnInName="Durotan" TurnInId="76240" X="6476.128" Y="6203.583" Z="221.3367" />
 		<PickUp QuestName="These Colors Don't Run" QuestId="33526" GiverName="Durotan" GiverId="70860" X="6449.916" Y="6299.063" Z="228.0325" />
-		<While Condition="HasQuest(33526) &amp;&amp; !IsQuestCompleted(33526)" >
+		<While Condition="HasQuest(33526) &amp;&amp; !IsQuestCompleted(33526)" > <!-- These Colors Don't Run -->
 			<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" QuestId="33526" MobId="73373" MobId2="75240" MobId3="73469" NumOfTimes="20" MobState="dead" TerminateWhen="IsObjectiveComplete(1, 33526)" 
 											InteractByUsingItemId="107279" CollectionDistance="200" >
 				<HuntingGrounds WaypointVisitStrategy="InOrder" >
@@ -641,16 +645,17 @@
 		</While>
 		<TurnIn QuestName="Deeds Left Undone" QuestId="33546" TurnInName="Durotan" TurnInId="75177" X="6653.87" Y="5914.223" Z="254.1397" />
 		<PickUp QuestName="Great Balls of Fire!" QuestId="33408" GiverName="Durotan" GiverId="75177" X="6653.87" Y="5914.223" Z="254.1397" />
-		<MoveTo DestName="Great Balls of Fire 1" QuestId="33408"  X="6627.952" Y="5889.019" Z="257.9761" />
-		<CustomBehavior File="WaitTimer" QuestId="33408" WaitTime="1337" />
-		<MoveTo DestName="Great Balls of Fire 2" QuestId="33408"  X="6601.545" Y="5848.771" Z="275.1208" />
-		<CustomBehavior File="WaitTimer" QuestId="33408" WaitTime="1337" />
-		<MoveTo DestName="Great Balls of Fire 3" QuestId="33408"  X="6597.322" Y="5836.705" Z="279.8028" />
-		<CustomBehavior File="WaitTimer" QuestId="33408" WaitTime="1337" />
-		<MoveTo DestName="Great Balls of Fire 4" QuestId="33408"  X="6594.563" Y="5815.948" Z="288.703" />
-		<CustomBehavior File="WaitTimer" QuestId="33408" WaitTime="1337" />
-		<MoveTo DestName="Great Balls of Fire" QuestId="33408" X="6592.074" Y="5774.022" Z="306.117" />
-		<While Condition="HasQuest(33408) &amp;&amp; !IsQuestCompleted(33408)"> <!-- Great Balls of Fire! -->
+		<If Condition="HasQuest(33408)"> <!-- Great Balls of Fire! -->
+			<MoveTo DestName="Great Balls of Fire 1" QuestId="33408"  X="6627.952" Y="5889.019" Z="257.9761" />
+			<CustomBehavior File="WaitTimer" QuestId="33408" WaitTime="1337" />
+			<MoveTo DestName="Great Balls of Fire 2" QuestId="33408"  X="6601.545" Y="5848.771" Z="275.1208" />
+			<CustomBehavior File="WaitTimer" QuestId="33408" WaitTime="1337" />
+			<MoveTo DestName="Great Balls of Fire 3" QuestId="33408"  X="6597.322" Y="5836.705" Z="279.8028" />
+			<CustomBehavior File="WaitTimer" QuestId="33408" WaitTime="1337" />
+			<MoveTo DestName="Great Balls of Fire 4" QuestId="33408"  X="6594.563" Y="5815.948" Z="288.703" />
+			<CustomBehavior File="WaitTimer" QuestId="33408" WaitTime="1337" />
+			<MoveTo DestName="Great Balls of Fire" QuestId="33408" X="6592.074" Y="5774.022" Z="306.117" />
+		 <While Condition="HasQuest(33408) &amp;&amp; !IsQuestCompleted(33408)"> <!-- Great Balls of Fire! -->
 			<CustomBehavior File="Hooks\Avoid" AvoidName="AvoidBalls" Command="Add" ObjectId="224636" Radius="5" />
 			<CustomBehavior File="Hooks\Avoid" AvoidName="BallsOfFire" Command="Add" ObjectType="AreaTrigger" ObjectId="5669" Radius="6" 
                 AvoidLocationProducer="WoWMathHelper.GetNearestPointOnLineSegment(Me.Location, AREATRIGGER.Location, AREATRIGGER.Location.RayCast(AREATRIGGER.Rotation, 8))" />
@@ -660,7 +665,8 @@
 
 			<CustomBehavior File="Hooks\Avoid" AvoidName="AvoidBalls" Command="Remove" />
 			<CustomBehavior File="Hooks\Avoid" AvoidName="BallsOfFire" Command="Remove" />
-		</While>
+		 </While>
+		</If>
 		<TurnIn QuestName="Great Balls of Fire!" QuestId="33408" TurnInName="Thrall" TurnInId="75186" X="6627.966" Y="5665.899" Z="318.8831" />	
 		<PickUp QuestName="The Butcher of Bladespire" QuestId="33410" GiverName="Thrall" GiverId="75186" X="6627.966" Y="5665.899" Z="318.8831" />	
 		<Objective QuestName="The Butcher of Bladespire" QuestId="33410" Type="KillMob" MobId="74254" KillCount="1" />
@@ -755,7 +761,6 @@
 		<!-- Circle of Blood -->
 		<TurnIn QuestName="Mopping Up" QuestId="33412" TurnInName="Igrimar the Resolute" TurnInId="74635" X="7117.029" Y="6008.2" Z="133.8583"  />
 		<PickUp QuestName="The Warlord's Guard" QuestId="33450" GiverName="Igrimar the Resolute" GiverId="74635" X="7117.029" Y="6008.2" Z="133.8583"  />
-
 		<Objective QuestName="The Warlord's Guard" QuestId="33450" Type="CollectItem" ItemId="106943" CollectCount="1" />
 		<Objective QuestName="The Warlord's Guard" QuestId="33450" Type="CollectItem" ItemId="106944" CollectCount="1" />
 		<Objective QuestName="The Warlord's Guard" QuestId="33450" Type="CollectItem" ItemId="106942" CollectCount="1" />
@@ -1109,7 +1114,7 @@
 		<TurnIn QuestName="The Strength of Our Bonds" QuestId="32993" TurnInName="Karg Bloodfury" TurnInId="72373" X="5827.043" Y="3640.7" Z="120.8966" />
 		<PickUp QuestName="Where's My Wolf?!" QuestId="33826" GiverName="Karg Bloodfury" GiverId="72373" X="5834.021" Y="3641.519" Z="120.9034" />
 		<PickUp QuestName="Karg Unchained" QuestId="33785" GiverName="Karg Bloodfury" GiverId="72373" X="5834.021" Y="3641.519" Z="120.9034" />
-		<While Condition="HasQuest(33826) &amp;&amp; !IsQuestCompleted(33826)">
+		<While Condition="HasQuest(33826) &amp;&amp; !IsQuestCompleted(33826)"> <!-- Where's My Wolf?! -->
 			<Objective QuestName="Where's My Wolf?!" QuestId="33826" Type="KillMob" MobId="72864" KillCount="1" />
 			<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" QuestId="33826" MobId="72500" Range="4" NonCompeteDistance="0" TerminateWhen="IsObjectiveComplete(2, 33826)" X="5625.609" Y="3775.825" Z="112.8718" />
 		</While>
@@ -1487,7 +1492,6 @@
 
 		</If>
 
-
 		<!-- End of Thunder Pass -->
 
 		<!-- Bones of Aguark -->
@@ -1562,24 +1566,23 @@
 			<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" QuestId="34073" MobId="227781" TerminateWhen="IsObjectiveComplete(2, 34073)" Range="5" NonCompeteDistance="0" X="5259.713" Y="2492.365" Z="133.2677" />
 			<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" QuestId="34073" MobId="227782" TerminateWhen="IsObjectiveComplete(3, 34073)" Range="5" NonCompeteDistance="0" X="5211.609" Y="2406.665" Z="131.8132" />
 		</While>
-
-		<MoveTo QuestId="34102" DestName="Agurak's Fall" X="5365.22" Y="2490.856" Z="183.0257" />
-		<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" QuestId="34102" MobIds="77046, 77147" InteractByUsingItemId="109196" NumOfTimes="100" NonCompeteDistance="0" 
-                                    ProactiveCombatStrategy="ClearMobsTargetingUs" MobState="Dead" InteractBlacklistTimeInSeconds="30" >
-			<HuntingGrounds WaypointVisitStrategy="InOrder" >
-				<Hotspot Name="Gate to Agurak's Fall" X="5365.22" Y="2490.856" Z="183.0257" />
-				<Hotspot Name="Center of Agurak's Fall" X="5250.777" Y="2448.413" Z="122.3418" />
-				<Hotspot Name="South of Agurak's Fall" X="5169.411" Y="2407.359" Z="131.5274" />
-			</HuntingGrounds>
-		</CustomBehavior>
-
+		<If Condition="HasQuest(34102)" > <!-- Agurak's Fall -->
+			<MoveTo QuestId="34102" DestName="Agurak's Fall" X="5365.22" Y="2490.856" Z="183.0257" />
+			<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" QuestId="34102" MobIds="77046, 77147" InteractByUsingItemId="109196" NumOfTimes="100" NonCompeteDistance="0" 
+										ProactiveCombatStrategy="ClearMobsTargetingUs" MobState="Dead" InteractBlacklistTimeInSeconds="30" >
+				<HuntingGrounds WaypointVisitStrategy="InOrder" >
+					<Hotspot Name="Gate to Agurak's Fall" X="5365.22" Y="2490.856" Z="183.0257" />
+					<Hotspot Name="Center of Agurak's Fall" X="5250.777" Y="2448.413" Z="122.3418" />
+					<Hotspot Name="South of Agurak's Fall" X="5169.411" Y="2407.359" Z="131.5274" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</If>
 		<TurnIn QuestName="Burn Them Down" QuestId="34073" TurnInName="Scout RukGan" TurnInId="77210" X="5162.717" Y="2441.554" Z="131.3471" />
 		<TurnIn QuestName="The Mark of Defiance" QuestId="34102" TurnInName="Scout RukGan" TurnInId="77210" X="5162.717" Y="2441.554" Z="131.3471" />
 		<PickUp QuestName="Vul'gath's End" QuestId="34075" GiverName="Scout RukGan" GiverId="77210" X="5162.717" Y="2441.554" Z="131.3471" />
 		<Objective QuestName="Vul'gath's End" QuestId="34075" Type="KillMob" MobId="77104" KillCount="1" />	
 
-
-		<If Condition="HasQuest(34075)" > <!-- Vul'gath's End -->
+		<If Condition="HasQuest(34075)" > <!-- Vul'gath's End / Repair -->
 			<TurnIn QuestName="Vul'gath's End" QuestId="34075" TurnInName="Scout RukGan" TurnInId="77210" X="5162.717" Y="2441.554" Z="131.3471" />
 			<MoveTo  X="5563.049" Y="4518.574" Z="131.976" /> <!-- Garrison -->
 			<CustomBehavior File="ForceSetVendor" DoSell="True" DoRepair="True" DoMail="True" />
