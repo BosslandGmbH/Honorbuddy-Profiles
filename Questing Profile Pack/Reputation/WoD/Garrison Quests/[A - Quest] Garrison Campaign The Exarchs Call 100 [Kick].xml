@@ -1,0 +1,126 @@
+﻿<HBProfile xsi:noNamespaceSchemaLocation="../../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Name>[A - Quest] Garrison Campaign The Exarchs Call 100 [Kick] ($Rev: 3547 $)</Name>
+
+    <MinLevel>90</MinLevel>
+    <MaxLevel>1001</MaxLevel>
+
+    <MinDurability>0.2</MinDurability>
+    <MinFreeBagSlots>2</MinFreeBagSlots>
+
+    <MailGrey>false</MailGrey>
+    <MailWhite>false</MailWhite>
+    <MailGreen>false</MailGreen>
+    <MailBlue>true</MailBlue>
+    <MailPurple>true</MailPurple>
+
+    <SellGrey>true</SellGrey>
+    <SellWhite>true</SellWhite>
+    <SellGreen>true</SellGreen>
+    <SellBlue>false</SellBlue>
+    <SellPurple>false</SellPurple>
+
+    <TargetElites>true</TargetElites>
+
+    <AvoidMobs>
+    </AvoidMobs>
+    <Blackspots>
+    </Blackspots>
+    <Mailboxes>
+
+    </Mailboxes>
+    <Vendors>
+
+    </Vendors>
+    
+    <Quest Id="36168" Name="The Trial of Faith">
+        <Objective Type="KillMob" MobId="84719" KillCount="1">
+            <Hotspots>
+            </Hotspots>
+        </Objective>
+        <Objective Type="KillMob" MobId="84814" KillCount="1">
+            <Hotspots>
+            </Hotspots>
+        </Objective>
+    </Quest>
+    <Quest Id="36167" Name="The Trial of Heart">
+        <Objective Type="KillMob" MobId="84403" KillCount="1">
+            <Hotspots>
+                <Hotspot X="4532.388" Y="6674.368" Z="7.319362" />
+            </Hotspots>
+        </Objective>
+    </Quest>
+    <Quest Id="36164" Name="The Trial of Courage">
+        <Objective Type="KillMob" MobId="84364" KillCount="1">
+            <Hotspots>
+                <Hotspot X="6957.379" Y="4280.077" Z="116.7712" />
+            </Hotspots>
+        </Objective>
+    </Quest>
+
+    <QuestOrder>
+	
+		<!-- User settings - Kill between hotspots false -->
+        <LootMobs Value="true" />
+        <UseMount Value="true" />
+    
+		<!-- Pick up at Garrison -->
+        <PickUp Nav="Fly" QuestName="Garrison Campaign: The Exarch's Call" QuestId="36163" GiverName="Deedree" GiverId="82776" X="1930.8" Y="320.1198" Z="89.50341" />
+        <If Condition="HasQuest(36163)" > <!-- Garrison Campaign: The Exarch's Call -->
+            <MoveTo Nav="Fly" DestName="Altar of Sha'tar" X="1490.58" Y="-2046.304" Z="90.64192" />
+        </If>
+        <TurnIn Nav="Fly" QuestName="Garrison Campaign: The Exarch's Call" QuestId="36163" TurnInName="Yrel" TurnInId="73395" X="1491.116" Y="-2101.309" Z="91.79547" />
+        <PickUp Nav="Fly" QuestName="The Trial of Faith" QuestId="36168" GiverName="Exarch Maladaar" GiverId="80073" X="1482.189" Y="-2108.172" Z="92.27888" />
+        <PickUp Nav="Fly" QuestName="The Trial of Heart" QuestId="36167" GiverName="Exarch Naielle" GiverId="80079" X="1491.472" Y="-2112.906" Z="92.27686" />
+        <PickUp Nav="Fly" QuestName="The Trial of Courage" QuestId="36164" GiverName="Exarch Akama" GiverId="80078" X="1500.413" Y="-2108.179" Z="92.29404" />
+        <If Condition="HasQuest(36168) &amp;&amp; !IsQuestCompleted(36168)" > <!-- The Trial of Faith, Auchindoun -->
+         <While Condition="!IsObjectiveComplete(1, 36168)">
+            <MoveTo Nav="Fly" DestName="Auchindoun" X="1467.638" Y="3130.597" Z="92.59324" />
+            <CustomBehavior File="InteractWith" QuestId="36168" WaitTime="4000" Range="5" GossipOptions="1" MobIds="79434" X="1484.137" Y="3071.385" Z="109.7672" />
+             <!-- accept trial of faith scenario -->
+            <CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Do the scenario, get out, and hit continue" />
+        </While>
+         <!-- Script rest of inside. atm we don't have a mesh -->
+            <Objective QuestName="The Trial of Faith" QuestId="36168" Type="KillMob" Nav="Fly" MobId="84719" KillCount="1" /> <!-- 2 -->
+            <Objective QuestName="The Trial of Faith" QuestId="36168" Type="KillMob" Nav="Fly" MobId="84814" KillCount="1" /> <!-- 3 -->
+            <!-- Get out via portal -->
+        </If>
+        <If Condition="HasQuest(36167) &amp;&amp; !IsQuestCompleted(36167)" > <!-- The Trial of Heart, Nagrand -->
+         <While Condition="!IsObjectiveComplete(1, 36167)">
+            <MoveTo Nav="Fly" DestName="Ceulean Lagoon, Nagrand" X="4229.996" Y="6505.766" Z="2.234209" />
+            <CustomBehavior File="InteractWith" QuestId="36167" Range="5" GossipOptions="1" MobIds="84542" MovementBy="NavigatorPreferred" X="4293.226" Y="6498.21" Z="4.839214" />
+         </While>
+            <Objective QuestName="The Trial of Heart" QuestId="36167" Type="KillMob" Nav="Fly" MobId="84403" KillCount="1" /> <!-- Nagrand -->
+            
+        </If>
+        <!-- avail in nagrand
+        <PickUp Nav="Fly" QuestName="An Act of Kindness" QuestId="36193" GiverName="Rangari Saardar" GiverId="84459" />
+        <Objective QuestName="An Act of Kindness" QuestId="36193" Type="KillMob" Nav="Fly" MobId="84458" KillCount="5" />
+        <Objective QuestName="An Act of Kindness" QuestId="36193" Type="CollectItem" Nav="Fly" ItemId="114926" CollectCount="1" />
+        <TurnIn Nav="Fly" QuestName="An Act of Kindness" QuestId="36193" TurnInName="Rangari Saardar" TurnInId="84459" />
+         -->
+        <If Condition="HasQuest(36164) &amp;&amp; !IsQuestCompleted(36164)" > <!-- The Trial of Courage, FFR -->
+         <While Condition="!IsObjectiveComplete(1, 36164)">
+            <MoveTo Nav="Fly" DestName="Ceulean Lagoon, FFR" X="6928.343" Y="4257.221" Z="111.1492" />
+            <CustomBehavior File="InteractWith" QuestId="36164" Range="5" GossipOptions="1" MobIds="84368" X="6928.343" Y="4257.221" Z="111.1492" />
+         </While>
+        <Objective QuestName="The Trial of Courage" QuestId="36164" Type="KillMob" Nav="Fly" MobId="84364" KillCount="1" /> <!-- FFR -->
+        </If>
+        <TurnIn Nav="Fly" QuestName="The Trial of Heart" QuestId="36167" TurnInName="Exarch Naielle" TurnInId="84975" X="80.90945" Y="-2758.084" Z="62.53283" />
+        <TurnIn Nav="Fly" QuestName="The Trial of Courage" QuestId="36164" TurnInName="Exarch Akama" TurnInId="84973" X="80.90945" Y="-2758.084" Z="62.53283" />
+        <TurnIn Nav="Fly" QuestName="The Trial of Faith" QuestId="36168" TurnInName="Exarch Maladaar" TurnInId="84974" X="80.90945" Y="-2758.084" Z="62.53283" />
+        <PickUp Nav="Fly" QuestName="The Trial of Champions" QuestId="36169" GiverName="Exarch Maladaar" GiverId="84974" X="74.67882" Y="-2765.3" Z="62.53134" />
+        <If Condition="HasQuest(36169) &amp;&amp; !IsQuestCompleted(36169)" > <!-- The Trial of Champions, SMV -->
+            <CustomBehavior File="InteractWith" QuestId="36169" WaitTime="4000" Range="5" GossipOptions="1" MobIds="84974" X="74.67882" Y="-2765.3" Z="62.53134" />
+            <CustomBehavior File="WaitTimer" WaitTime="20000" GoalText="Waiting for objective to complete {TimeRemaining}" />
+        </If>
+        <TurnIn Nav="Fly" QuestName="The Trial of Champions" QuestId="36169" TurnInName="Exarch Maladaar" TurnInId="84974" X="74.67882" Y="-2765.3" Z="62.53134" />
+
+        <!-- use item 
+        <WoWItem Name="Touch of the Naaru" Entry="119144" />
+        -->
+	
+			<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Garrison Campaign completed" />
+
+    </QuestOrder>
+    
+</HBProfile>
