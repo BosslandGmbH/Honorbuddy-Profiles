@@ -1358,6 +1358,11 @@
 		</SetGrindArea>
 		<GrindTo Condition="Me.Level >= 100" GoalText="Grinding to Level 100" />
 
+		<If Condition="Me.MapId == 1116 &amp;&amp; !IsQuestCompleted(34662)"> <!-- Draenor -->
+			<CustomBehavior File="ForceSetVendor" DoSell="True" DoRepair="True" DoMail="True" />
+		</If>
+
+		<!-- RoT Quests -->
 		<If Condition="HasQuest(35922)"> <!-- Bread Crumb to Gazmolf -->
 			<TurnIn QuestName="Bread and Circuses" QuestId="35922" TurnInName="Dexyl Deadblade" TurnInId="79188" X="3019.969" Y="4800.141" Z="130.394" />
 		</If>
@@ -1388,9 +1393,13 @@
         <While Condition="HasQuest(34663) &amp;&amp; !IsQuestCompleted(34663)" > <!-- Ring of Trials: Raketalon -->
 			<CustomBehavior File="Hooks\Avoid" AvoidName="Shatter_Whirlwind" Command="Add" ObjectType="Missile" ObjectId="7376" Radius="18" />
            
-            <CustomBehavior File="InteractWith" MobId="79189" PreInteractMountStrategy="Dismount" NonCompeteDistance="0" GossipOptions="1" WaitTime="1000" X="3048.009" Y="4903.172" Z="130.9005" /> <!-- Start -->
-            <CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for spawn {TimeRemaining}" />
-            <MoveTo DestName="Arena Mob" X="3006.418" Y="4874.338" Z="130.6037" />
+		   <If Condition="Unit(82670) == null" >
+            <CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" MobId="79189"  NonCompeteDistance="0" GossipOptions="1" WaitTime="3000" X="3048.009" Y="4903.172" Z="130.9005" /> <!-- Start -->
+            <CustomBehavior File="WaitTimer" WaitTime="3000" GoalText="Waiting for spawn {TimeRemaining}" />
+		   </If>
+		   
+		   <MoveTo DestName="Boss Spawn Point" X="3031.936" Y="4892.486" Z="130.6038" />
+		   
             <CustomBehavior File="KillUntilComplete" QuestId="34663" TerminateWhen="IsQuestCompleted(34663) || Unit(82670) == null" ImmediatelySwitchToHighestPriorityTarget="True" >
                 <PursuitList>
                     <PursueUnit Id="76538" Priority="5002" /> <!-- Twister -->

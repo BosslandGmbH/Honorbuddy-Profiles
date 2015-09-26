@@ -1166,7 +1166,7 @@
 			<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click()" WaitTime="500" />	
 		</While>
 
-		<If Condition="Me.MapId == 1116"> <!-- Draenor -->
+		<If Condition="Me.MapId == 1116 &amp;&amp; !IsQuestCompleted(34662)"> <!-- Draenor -->
 			<CustomBehavior File="ForceSetVendor" DoSell="True" DoRepair="True" DoMail="True" />
 		</If>
 
@@ -1201,15 +1201,17 @@
         <While Condition="HasQuest(34663) &amp;&amp; !IsQuestCompleted(34663)" > <!-- Ring of Trials: Raketalon -->
 			<CustomBehavior File="Hooks\Avoid" AvoidName="Shatter_Whirlwind" Command="Add" ObjectType="Missile" ObjectId="7376" Radius="18" />
            
-            <CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" MobId="79189"  NonCompeteDistance="0" GossipOptions="1" WaitTime="1000" X="3048.009" Y="4903.172" Z="130.9005" /> <!-- Start -->
-            <CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for spawn {TimeRemaining}" />
+		   <If Condition="Unit(82670) == null" >
+            <CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" MobId="79189"  NonCompeteDistance="0" GossipOptions="1" WaitTime="3000" X="3048.009" Y="4903.172" Z="130.9005" /> <!-- Start -->
+            <CustomBehavior File="WaitTimer" WaitTime="3000" GoalText="Waiting for spawn {TimeRemaining}" />
+		   </If>
             
             <CustomBehavior File="KillUntilComplete" QuestId="34663" TerminateWhen="IsQuestCompleted(34663) || Unit(82670) == null" ImmediatelySwitchToHighestPriorityTarget="True" >
                 <PursuitList>
                     <PursueUnit Id="76538" Priority="5002" /> <!-- Twister -->
                     <PursueUnit Id="76533" Priority="5001" /> <!-- Roast -->
                     <PursueUnit Id="76532" Priority="5000" /> <!-- Shatter -->
-                    <PursueUnit Id="82670" Priority="0" /> <!-- Raketalon -->
+                    <PursueUnit Id="82670" Priority="1" /> <!-- Raketalon -->
                 </PursuitList>
                 <HuntingGrounds WaypointVisitStrategy="InOrder" >
                     <Hotspot X="3048.009" Y="4903.172" Z="130.9005" />
