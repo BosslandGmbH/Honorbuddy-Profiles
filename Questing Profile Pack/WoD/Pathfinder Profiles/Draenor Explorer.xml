@@ -1,0 +1,605 @@
+<HBProfile>
+	<Name>Draenor Explorer</Name>
+	
+	<MinDurability>0.2</MinDurability>
+	<MinFreeBagSlots>2</MinFreeBagSlots>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>false</MailWhite>
+	<MailGreen>false</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>-
+	<SellBlue>false</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<Blackspots>
+		<Blackspot X="6084.439" Y="4962.94" Z="150.2059" Radius="272.554" Height="19.52177" /> <!-- Stonefang Outpost -->
+	</Blackspots>
+
+	<Blacklist>
+		<Mob Name="Ironhide Bull" Id="86731" Flags="Pull" />
+		<Mob Name="Deadly Gloomstalker" Id="86773" Flags="Pull" />
+		<Mob Name="Hulking Gronn" Id="86768" Flags="Pull" />
+		<Mob Name="Marsh Anaconda" Id="87039" Flags="Pull" />
+		<Mob Name="Vicious Razorclaw" Id="88956" Flags="Pull" />
+		<Mob Name="Wetland Trampler" Id="87021" Flags="Pull" />
+		<Mob Name="Gro the Uncreator" Id="81251" Flags="Pull" />
+		<Mob Name="Direfang Alpha" Id="86932" Flags="Pull" />
+	</Blacklist>
+
+	<Vendors>
+		<!--Shadowmoon Valley:-->
+		<!--Exile's Rise-->
+		<Vendor Name="Mokarg" Entry="76198" Type="Repair" X="1475.611" Y="-790.243" Z="38.12963" />
+		<Vendor Name="Rovan Astalan" Entry="81614" Type="Repair" X="-780.2448" Y="-677.118" Z="108.6697" />
+		<!--Spires of Arak:-->
+		<!--Veil Terokk-->
+		<Vendor Name="Kuro'ak" Entry="86386" Type="Food" X="-394.9809" Y="1852.606" Z="53.45683" />
+		<Vendor Name="Ruuan the Seer" Entry="87775" Type="Repair" X="-432.757" Y="1850.8" Z="41.6203" />
+		<!--Pinchwhistle Gearworks-->
+		<Vendor Name="Twizix Copperbomb" Entry="82183" Type="Repair" X="-1483.905" Y="981.5174" Z="8.025256" />
+		<!--Talador:-->
+		<!--Anchorite's Sojourn-->
+		<Vendor Name="Caregiver Uluura" Entry="75430" Type="Food" X="2144.236" Y="1232.42" Z="117.2146" />
+		<!--Shattrath City-->
+		<Vendor Name="Reema" Entry="86317" Type="Repair" X="2663.982" Y="2796.673" Z="246.1862" />
+		<Vendor Name="Bordos" Entry="82635" Type="Repair" X="2617.845" Y="2823.831" Z="242.3916" />
+		<Vendor Name="Fiaana" Entry="82636" Type="Food" X="2620.902" Y="2783.97" Z="242.3923" />
+		<!--Zangarra-->
+		<Vendor Name="James Lamone" Entry="80930" Type="Repair" X="3214.887" Y="835.0538" Z="80.63318" />
+		<!--Nagrand:-->
+		<!--The Ring of Trials-->
+		<Vendor Name="Grogglefitz" Entry="79199" Type="Food" X="3013.191" Y="4762.819" Z="128.275" />
+		<Vendor Name="Pyxni Pennypocket" Entry="79310" Type="Repair" X="3085.323" Y="4849.036" Z="128.3325" />
+		<!--Gorgrond:-->
+		<!--Breaker's Crown-->
+		<Vendor Name="Budgy" Entry="84234" Type="Repair" X="6610.504" Y="1286.526" Z="64.83815" />
+		<!--Frostfire Ridge: Bloodmaul Slag Mines-->
+		<Vendor Name="Urkag" Entry="85545" Type="Repair" X="7400.561" Y="4335.775" Z="126.4071" />
+		<Vendor Name="Barduun" Entry="85547" Type="Food" X="7370.463" Y="4342.348" Z="127.2008" />
+		<!--Garrison Vendors-->
+		<Vendor Name="Provisioner Hanfa" Entry="81346" Type="Repair" X="1854.957" Y="269.2205" Z="76.63961" UsableWhen="Me.IsAlliance" />
+		<Vendor Name="Supplymaster Eri" Entry="76872" Type="Repair" X="5626.828" Y="4629.681" Z="139.3038" UsableWhen="Me.IsHorde" />
+	</Vendors>
+
+	<Mailboxes>
+		<!--Shattrath City-->
+		<Mailbox X="2614.091" Y="2799.328" Z="242.3915" />
+		<!--Fort Wrynn-->
+		<!--Zangarra-->
+		<Mailbox X="3183.211" Y="773.5329" Z="78.33458" />
+		<!--Pinchwhistle Gearworks-->
+		<Mailbox X="-1567.494" Y="942.592" Z="10.57905" />
+		<!--Garrison-->
+		<Mailbox X="1923.274" Y="299.2899" Z="88.96642" UsableWhen="Me.IsAlliance" />
+		<Mailbox X="5580.682" Y="4570.392" Z="136.558" UsableWhen="Me.IsHorde" />
+	</Mailboxes>
+
+	<TargetElites>false</TargetElites> <!-- For Nagrand mostly. -->
+
+<QuestOrder>
+		<While Condition="!IsAchievementCompleted(8935, true)" > <!-- We're checking this achievement on an account-wide level. -->
+
+		<!-- Frostfire Ridge -->
+			<!-- Ordered as if you just left the Horde garrison. -->
+			<While Condition="!IsAchievementCompleted(8937)" >
+				<If Condition="Me.IsAlliance &amp;&amp; Me.ZoneId != 6720" >
+					<If Condition="Me.MapId == 1331" >
+						<MoveTo Nav="Fly" DestName="Frostfire Ridge" X="1866.53" Y="220.968" Z="76.71077" />
+						<CustomBehavior File="InteractWith" MobId="81103" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="TaxiButton33:Click(); TaxiButton31:Click(); TaxiButton32:Click();" /> <!-- MoveTo has issues with not using the Garrison FP. -->
+					</If>
+					<MoveTo Nav="Fly" DestName="Frostfire Ridge" X="5353.85" Y="2067.139" Z="172.1688" />
+					<DisableBehavior Name="Pull" /> <!-- Hopefully to run past Horde guards. -->
+					<MoveTo Nav="Fly" DestName="Frostfire Ridge" X="6040.703" Y="2743.595" Z="205.0379" />
+					<EnableBehavior Name="Pull" />
+				</If>
+
+				<While Condition="!IsAchievementCompleted(8937, 12)" > <!-- Stonegfang Outpost -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Frostfire Ridge - Stonefang Outpost.&quot;);" />
+					<MoveTo Nav="Fly" DestName="Stonegfang Outpost" X="6145.457" Y="4677.768" Z="161.0572" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8937, 12)" />
+				</While>
+				<While Condition="!IsAchievementCompleted(8937, 13)" > <!-- The Boneslag -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Frostfire Ridge - The Boneslag.&quot;);" />
+					<MoveTo Nav="Fly" DestName="The Boneslag" X="6311.368" Y="4529.71" Z="129.5122" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8937, 13)" />
+				</While>
+				<While Condition="!IsAchievementCompleted(8937, 15)" > <!-- Wor'gol -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Frostfire Ridge - Wor'gol.&quot;);" />
+					<MoveTo Nav="Fly" DestName="Wor'gol" X="5832.492" Y="5988.9" Z="117.1444" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8937, 15)" />
+				</While>
+				<While Condition="!IsAchievementCompleted(8937, 1)" > <!-- Bladespire Citadel -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Frostfire Ridge - Bladespire Citadel.&quot;);" />
+					<MoveTo Nav="Fly" DestName="Bladespire Citadel" X="7742.765" Y="5255.375" Z="148.6746" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8937, 1)" />
+				</While>
+				<While Condition="!IsAchievementCompleted(8937, 6)" > <!-- Frostwind Crag -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Frostfire Ridge - Frostwind Crag.&quot;);" />
+					<MoveTo Nav="Fly" DestName="Frostwind Crag" X="7397.117" Y="5772.501" Z="128.0301" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8937, 6)" />
+				</While>
+				<While Condition="!IsAchievementCompleted(8937, 5)" > <!-- Daggermaw Ravine -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Frostfire Ridge - Daggermaw Ravine.&quot;);" />
+					<MoveTo Nav="Fly" DestName="Daggermaw Ravine" X="7375.512" Y="5262.066" Z="130.4902" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8937, 5)" />
+				</While>
+				<While Condition="!IsAchievementCompleted(8937, 2)" > <!-- Bloodmaul Stronghold -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Frostfire Ridge -  Bloodmaul Stronghold.&quot;);" />
+					<MoveTo Nav="Fly" DestName=" Bloodmaul Stronghold" X="7468.276" Y="4996.277" Z="122.3823" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8937, 2)" />
+					<DisableBehavior Name="Pull" /> <!-- Needed or else the bot will spend 15minutes fighting mobs in Bloodmaul Stronghold -->
+				</While>
+				<While Condition="!IsAchievementCompleted(8937, 4)" > <!-- Colossal's Fall -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Frostfire Ridge -  Colossal's Fall.&quot;);" />
+					<MoveTo Nav="Fly" DestName=" Colossal's Fall" X="7325.114" Y="3884.609" Z="111.2982" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8937, 4)" />
+				</While>
+				<EnableBehavior Name="Pull" />
+				<While Condition="!IsAchievementCompleted(8937, 11)" > <!-- Magnarok -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Frostfire Ridge - Magnarok.&quot;);" />
+					<MoveTo Nav="Fly" DestName="Magnarok" X="6965.946" Y="3349.543" Z="163.923" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8937, 11)" />
+				</While>
+				<While Condition="!IsAchievementCompleted(8937, 14)" > <!-- The Cracking Plains -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Frostfire Ridge - The Cracking Plains.&quot;);" />
+					<MoveTo Nav="Fly" DestName="The Cracking Plains" X="6564.591" Y="4142.408" Z="92.12887" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8937, 14)" />
+				</While>
+				<While Condition="!IsAchievementCompleted(8937, 7)" > <!-- Grimfrost Hill -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Frostfire Ridge - Grimfrost Hill.&quot;);" />
+					<MoveTo Nav="Fly" DestName="Grimfrost Hill" X="6367.264" Y="3496.222" Z="143.5587" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8937, 7)" />
+				</While>
+				<While Condition="!IsAchievementCompleted(8937, 8)" > <!-- Grom'gar -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Frostfire Ridge - Grom'gar.&quot;);" />
+					<MoveTo Nav="Fly" DestName="Grom'gar" X="5910.98" Y="3668.361" Z="131.1647" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8937, 8)" />
+				</While>
+				<While Condition="!IsAchievementCompleted(8937, 10)" > <!-- Iron Waystation -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Frostfire Ridge - Iron Waystation.&quot;);" />
+					<MoveTo Nav="Fly" DestName="Iron Waystation" X="5718.476" Y="2934.836" Z="184.7393" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8937, 10)" />
+				</While>
+				<While Condition="!IsAchievementCompleted(8937, 9)" > <!-- Iron Siegeworks -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Frostfire Ridge - Iron Siegeworks.&quot;);" />
+					<MoveTo Nav="Fly" DestName="Iron Siegeworks" X="5958.22" Y="2512.546" Z="217.8442" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8937, 9)" />
+				</While>
+				<While Condition="!IsAchievementCompleted(8937, 3)" > <!-- Bones of Agurak -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Frostfire Ridge - Bones of Agurak.&quot;);" />
+					<MoveTo Nav="Fly" DestName="Bones of Agurak" X="5789.925" Y="2444.511" Z="201.3604" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8937, 3)" />
+				</While>
+			</While>
+		<!-- END Frostfire Ridge -->
+
+		<!-- Gorgrond -->
+			<!-- Ordered by South to North -->
+			<While Condition="!IsAchievementCompleted(8939, 7)" > <!-- Evermorn Springs -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Gorgrond - Evermorn Springs.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Evermorn Springs" X="5227.007" Y="1367.02" Z="87.78622" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8939, 7)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8939, 5)" > <!-- Deadgrin -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Gorgrond - Deadgrin.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Deadgrin" X="5468.091" Y="1980.877" Z="163.2027" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8939, 5)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8939, 1)" > <!-- Bastion Rise -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Gorgrond - Bastion Rise.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Bastion Rise" X="5302.965" Y="1064.266" Z="109.8569" /> <!-- Check Me :: Name didn't match on minimap. -->
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8939, 1)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8939, 12)" > <!-- Tangleheart -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Gorgrond - Tangleheart.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Tangleheart" X="5752.675" Y="935.2783" Z="47.03551" /> <!-- Check Me :: Name didn't match on minimap. -->
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8939, 12)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8939, 4)" > <!-- Crimson Fen -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Gorgrond - Crimson Fen.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Crimson Fen" X="6024.777" Y="635.8621" Z="31.79577" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8939, 4)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8939, 9)" > <!-- Highpass, no mobs were here for my Horde tester. -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Gorgrond - Highpass.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Highpass" X="6315.186" Y="738.8609" Z="113.7621" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8939, 9)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8939, 2)" > <!-- Beastwatch, no mobs were here for my Alliance tester. -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Gorgrond - Beastwatch.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Beastwatch" X="5779.674" Y="1296.977" Z="107.267" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8939, 2)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8939, 11)" > <!-- Stonemaul Arena -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Gorgrond - Stonemaul Arena.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Stonemaul Arena" X="5971.679" Y="1571.885" Z="91.25516" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8939, 11)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8939, 8)" > <!-- Gronn Canyon -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Gorgrond - Gronn Canyon.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Gronn Canyon" X="7161.511" Y="1270.686" Z="-6.224159" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8939, 8)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8939, 14)" > <!-- The Pit -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Gorgrond - The Pit.&quot;);" />
+				<MoveTo Nav="Fly" DestName="The Pit" X="7504.724" Y="1182.501" Z="58.01563" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8939, 14)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8939, 13)" > <!-- The Iron Approach, will need to flight path to if the player is using a ground mount! -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Gorgrond - The Iron Approach.&quot;);" />
+				<!-- CanFly check here for the MoveTo below. -->
+				<MoveTo Nav="Fly" DestName="The Iron Approach" X="7598.193" Y="1831.196" Z="79.07809" /> <!-- Get close to flight master to invoke flight -->
+				<MoveTo Nav="Fly" DestName="The Iron Approach" X="8487.719" Y="1543.353" Z="78.84365" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8939, 13)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8939, 3)" > <!-- Grimrail Depot, may need some custom navigation to avoid The Pit -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Gorgrond - Grimrail Depot.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Grimrail Depot" X="7766.706" Y="580.8946" Z="111.0823" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8939, 3)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8939, 6)" > <!-- Everbloom Wilds -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Gorgrond - Everbloom Wilds.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Everbloom Wilds" X="7137.268" Y="612.2866" Z="95.85979" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8939, 6)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8939, 10)" > <!-- Iyun Weald -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Gorgrond - Iyun Weald.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Iyun Weald" X="6759.015" Y="65.22174" Z="67.16055" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8939, 10)" />
+			</While>
+		<!-- END Gorgrond -->
+
+		<!-- Talador -->
+			<!-- Ordered by starting in the Center (Terokkar Refuge) to counter clockwise around the zone. -->
+			<While Condition="!IsAchievementCompleted(8940, 3)" > <!-- Duskfall Island -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Talador - Duskfall Island.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Duskfall Island" X="2160.242" Y="1636.681" Z="132.0216" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8940, 3)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8940, 10)" > <!-- Anchorite's Sojourn -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Talador - Anchorite's Sojourn.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Anchorite's Sojourn" X="2319.51" Y="1252.672" Z="119.9693" /> <!-- For Horde to prevent getting near Alliance guards. -->
+				<MoveTo Nav="Fly" DestName="Anchorite's Sojourn" X="2293.988" Y="1160.69" Z="111.8567" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8940, 10)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8940, 1)" > <!-- Aruuna -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Talador - Aruuna.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Aruuna" X="2686.815" Y="1127.958" Z="202.756" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8940, 1)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8940, 15)" > <!-- Zangarra, may require quest completion. -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Talador - Zangarra.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Zangarra" X="3324.826" Y="1127.852" Z="193.9311" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8940, 15)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8940, 5)" > <!-- Fort Wrynn -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Talador - Fort Wrynn.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Fort Wrynn" X="3501.351" Y="1807.799" Z="186.4862" />
+				<MoveTo Nav="Fly" DestName="Fort Wrynn" X="3549.873" Y="1791.912" Z="190.2391" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8940, 5)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8940, 8)" > <!-- The Path of Glory -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Talador - The Path of Glory.&quot;);" />
+				<MoveTo Nav="Fly" DestName="The Path of Glory" X="4037.618" Y="1855.682" Z="120.2131" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8940, 8)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8940, 9)" > <!-- Orunai Coast -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Talador - Orunai Coast.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Orunai Coast" X="3558.802" Y="2245.748" Z="92.41125" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8940, 9)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8940, 14)" > <!-- Tuurem -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Talador - Tuurem.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Tuurem" X="3137.3" Y="2272.115" Z="107.0243" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8940, 14)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8940, 11)" > <!-- Shattrath City -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Talador - Shattrath City.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Shattrath City" X="3034.043" Y="2876.509" Z="56.39628" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8940, 11)" />
+				<MoveTo Nav="Fly" DestName="Away from Shattrath City" X="2688.899" Y="2287.73" Z="110.6978" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8940, 6)" > <!-- Gordal Fortress -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Talador - Gordal Fortress.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Gordal Fortress" X="1686.456" Y="1748.745" Z="283.9951" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8940, 6)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8940, 13)" > <!-- Tomb of Lights -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Talador - Tomb of Lights.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Tomb of Lights" X="1840.149" Y="2345.309" Z="133.7848" />
+				<RunTo DestName="Tomb of Lights" X="1851.139" Y="2327.302" Z="136.0185" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8940, 13)" />
+				<MoveTo Nav="Fly" DestName="Away from The Burning Front" X="2013.106" Y="2395.583" Z="160.5756" /> <!-- Avoid Burning Front while going to Auchindoun -->
+			</While>
+			<While Condition="!IsAchievementCompleted(8940, 2)" > <!-- Auchindoun -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Talador - Auchindoun.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Auchindoun" X="2005.827" Y="2865.082" Z="133.6589" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8940, 2)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8940, 4)" > <!-- Court of Souls -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Talador - Court of Souls.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Court of Souls" X="2121.615" Y="3337.625" Z="111.3421" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8940, 4)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8940, 7)" > <!-- Gul'rok -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Talador - Gul'rok.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Gul'rok" X="1298.135" Y="3555.583" Z="146.5468" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8940, 7)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8940, 12)" > <!-- Telmor -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Talador - Telmor.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Telmor" X="916.5688" Y="3052.607" Z="139.9906" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8940, 12)" />
+			</While>
+		<!-- END Talador -->
+
+		<!-- Nagrand -->
+			<!-- Ordered by starting in the Center (Ring of Trials) to counter clockwise around the zone. -->
+			<While Condition="!IsAchievementCompleted(8942, 13)" > <!-- The Ring of Trials -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Nagrand - The Ring of Trials.&quot;);" />
+				<MoveTo Nav="Fly" DestName="The Ring of Trials" X="2967.23" Y="4757.804" Z="127.8989" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8942, 13)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8942, 4)" > <!-- Hallvalor -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Nagrand - Hallvalor.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Hallvalor" X="2989.863" Y="4484.428" Z="142.5666" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8942, 4)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8942, 15)" > <!-- Zangar Shore -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Nagrand - Zangar Shore.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Zangar Shore" X="3900.419" Y="4443.163" Z="33.6152" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8942, 15)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8942, 14)" > <!-- Throne of the Elements -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Nagrand - Throne of the Elements.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Throne of the Elements" X="4151.649" Y="5170.822" Z="62.84765" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8942, 14)" />
+			</While>
+			<!-- This section is around a lot of elite mobs.  May need to make adjustments to prevent death loops. -->
+				<While Condition="!IsAchievementCompleted(8942, 12)" > <!-- The Ring of Blood -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Nagrand - The Ring of Blood.&quot;);" />
+					<MoveTo Nav="Fly" DestName="The Ring of Blood" X="4065.001" Y="5819.735" Z="79.98383" /> <!-- Attempt to put the bot in a position so it can avoid elites. -->
+					<MoveTo Nav="Fly" DestName="The Ring of Blood" X="4014.776" Y="6040.715" Z="51.01141" />
+					<MoveTo Nav="Fly" DestName="The Ring of Blood" X="4145.134" Y="6068.175" Z="65.8443" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8942, 12)" />
+					<MoveTo Nav="Fly" DestName="Away from The Ring of Blood" X="4014.776" Y="6040.715" Z="51.01141" />
+					<MoveTo Nav="Fly" DestName="Away from The Ring of Blood" X="4065.001" Y="5819.735" Z="79.98383" />
+				</While>
+				<While Condition="!IsAchievementCompleted(8942, 2)" > <!-- Broken Precipice -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Nagrand - Broken Precipice.&quot;);" />
+					<MoveTo Nav="Fly" DestName="Broken Precipice" X="3878.554" Y="6924.47" Z="17.39953" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8942, 2)" />
+				</While>
+				<While Condition="!IsAchievementCompleted(8942, 9)" > <!-- Mok'gol Watchpost -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Nagrand - Mok'gol Watchpost.&quot;);" />
+					<MoveTo Nav="Fly" DestName="Mok'gol Watchpost" X="3721.712" Y="6831.077" Z="8.553986" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8942, 9)" />
+				</While>
+				<While Condition="!IsAchievementCompleted(8942, 1)" > <!-- Ancestral Grounds -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Nagrand - Ancestral Grounds.&quot;);" />
+					<MoveTo Nav="Fly" DestName="Ancestral Grounds" X="3012.831" Y="7149.937" Z="5.088314" />
+
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8942, 1)" />
+				</While>
+				<While Condition="!IsAchievementCompleted(8942, 5)" > <!-- Highmaul Harbor -->
+					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Nagrand - Highmaul Harbor.&quot;);" />
+					<MoveTo Nav="Fly" DestName="Highmaul Harbor" X="3309.774" Y="7357.22" Z="8.099504" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8942, 5)" />
+				</While>
+			<!-- END This section is around a lot of elite mobs.  May need to make adjustments to prevent death loops. -->
+			<While Condition="!IsAchievementCompleted(8942, 10)" > <!-- Oshu'gun -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Nagrand - Oshu'gun.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Oshu'gun" X="2623.547" Y="6606.428" Z="11.22142" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8942, 10)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8942, 6)" > <!-- Ironfist Harbor -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Nagrand - Ironfist Harbor.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Ironfist Harbor" X="2050.765" Y="6813.976" Z="25.30441" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8942, 6)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8942, 7)" > <!-- Lok-rath -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Nagrand - Lok-rath.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Lok-rath" X="3089.112" Y="6044.831" Z="66.54602" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8942, 7)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8942, 11)" > <!-- Telaar -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Nagrand - Telaar.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Telaar" X="2490.008" Y="5417.193" Z="137.883" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8942, 11)" />
+			</While>
+
+			<While Condition="!IsAchievementCompleted(8942, 3)" > <!-- Gates of Grommashar -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Nagrand - Gates of Grommashar.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Gates of Grommashar" X="2331.635" Y="5112.091" Z="214.1595" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8942, 3)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8942, 8)" > <!-- Mar'gok's Overwatch -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Nagrand - Mar'gok's Overwatch.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Mar'gok's Overwatch" X="2370.84" Y="4733.655" Z="212.013" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8942, 8)" />
+			</While>
+		<!-- END Nagrand -->
+
+		<!-- Spires of Arak -->
+			<!-- Ordered by North-West starting at Apexis Excavation going counter clockwise around the zone. -->
+			<While Condition="!IsAchievementCompleted(8941, 6)" > <!-- Veil Akraz -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Spires of Arak - Veil Akraz.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Veil Akraz" X="429.0437" Y="2154.827" Z="15.86909" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8941, 6)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8941, 11)" > <!-- Bladefist Hold -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Spires of Arak - Bladefist Hold.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Bladefist Hold" X="207.8295" Y="2777.837" Z="84.3054" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8941, 11)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8941, 3)" > <!-- The Writhing Mire -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Spires of Arak - The Writhing Mire.&quot;);" />
+				<MoveTo Nav="Fly" DestName="The Writhing Mire" X="-353.5252" Y="2475.999" Z="4.273696" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8941, 3)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8941, 17)" > <!-- Axefall -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Spires of Arak - Axefall.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Axefall" X="-411.4685" Y="2321.362" Z="8.331429" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8941, 17)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8941, 12)" > <!-- Admiral Taylor's Garrison -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Spires of Arak - Admiral Taylor's Garrison.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Admiral Taylor's Garrison" X="-608.9474" Y="2270.578" Z="21.15821" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8941, 12)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8941, 7)" > <!-- Southport -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Spires of Arak - Southport.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Southport" X="-985.8807" Y="2138.681" Z="5.344547" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8941, 7)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8941, 16)" > <!-- Bloodmane Valley -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Spires of Arak - Bloodmane Valley.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Bloodmane Valley" X="-1093.398" Y="1743.295" Z="39.70217" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8941, 16)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8941, 4)" > <!-- Pinchwhistle Point -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Spires of Arak - Pinchwhistle Point.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Pinchwhistle Point" X="-2084.457" Y="1261.43" Z="12.96117" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8941, 4)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8941, 14)" > <!-- Pinchwhistle Gearworks -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Spires of Arak - Pinchwhistle Gearworks.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Pinchwhistle Gearworks" X="-1507.184" Y="983.5859" Z="7.465679" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8941, 14)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8941, 5)" > <!-- Veil Zekk -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Spires of Arak - Veil Zekk.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Veil Zekk" X="-946.432" Y="925.6049" Z="6.685529" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8941, 5)" />
+			</While>	
+			<While Condition="!IsAchievementCompleted(8941, 10)" > <!-- Sethekk Hollow -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Spires of Arak - Sethekk Hollow.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Sethekk Hollow" X="-611.6656" Y="777.0718" Z="54.66247" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8941, 10)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8941, 15)" > <!-- Ravenskar -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Spires of Arak - Ravenskar.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Ravenskar" X="-711.895" Y="1430.531" Z="44.13367" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8941, 15)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8941, 9)" > <!-- Terrace of Dawn -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Spires of Arak - Terrace of Dawn.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Terrace of Dawn" X="-359.5879" Y="1661.59" Z="63.13415" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8941, 9)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8941, 8)" > <!-- Windswept Terrace -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Spires of Arak - Windswept Terrace.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Windswept Terrace" X="-728.93" Y="1803.989" Z="87.71613" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8941, 8)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8941, 1)" > <!-- Skettis -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Spires of Arak - Skettis.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Skettis" X="633.8129" Y="1926.404" Z="136.9607" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8941, 1)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8941, 2)" > <!-- The Howling Crag -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Spires of Arak - The Howling Crag.&quot;);" />
+				<MoveTo Nav="Fly" DestName="The Howling Crag" X="497.9632" Y="776.6858" Z="89.17898" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8941, 2)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8941, 13)" > <!-- Lost Veil Anzu -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Spires of Arak - Lost Veil Anzu.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Lost Veil Anzu" X="78.22218" Y="282.2233" Z="115.9342" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8941, 13)" />
+			</While>
+		<!-- END Spires of Arak -->
+
+		<!-- Shadowmoon Valley -->
+			<!-- Ordered by as if you left the Alliance Garrison. -->
+			<While Condition="!IsAchievementCompleted(8938, 5)" > <!-- Gloomshade Grove -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Shadowmoon Valley - Gloomshade Grove.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Gloomshade Grove" X="1442.395" Y="-158.4643" Z="52.51632" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8938, 5)" />
+				<If Condition="Me.IsHorde" >
+					<MoveTo Nav="Fly" DestName="Safespot for Horde" X="1397.89" Y="183.4533" Z="61.0374" />
+				</If>
+			</While>
+			<While Condition="!IsAchievementCompleted(8938, 6)" > <!-- Gul'var -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Shadowmoon Valley - Gul'var.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Gul'var" X="1523.244" Y="849.2421" Z="66.30801" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8938, 6)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8938, 1)" > <!-- Anguish Fortress -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Shadowmoon Valley - Anguish Fortress.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Anguish Fortress" X="1048.632" Y="343.5346" Z="36.83459" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8938, 1)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8938, 4)" > <!-- Embaari Village -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Shadowmoon Valley - Embaari Village.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Embaari Village" X="1080.129" Y="-632.1002" Z="-37.31638" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8938, 4)" />
+				<MoveTo Nav="Fly" DestName="Away from Embaari Village" X="1051.737" Y="-524.8804" Z="-34.47728" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8938, 8)" > <!-- Shaz'gul -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Shadowmoon Valley - Shaz'gul.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Shaz'gul" X="97.69746" Y="-483.055" Z="23.74744" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8938, 8)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8938, 10)" > <!-- Socrethar's Rise -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Shadowmoon Valley - Socrethar's Rise.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Socrethar's Rise" X="-468.1174" Y="-739.5754" Z="27.78322" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8938, 10)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8938, 11)" > <!-- Isle of Shadows -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Shadowmoon Valley - Isle of Shadows.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Isle of Shadows" X="-893.9886" Y="-447.825" Z="0.6915371" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8938, 11)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8938, 2)" > <!-- Darktide Roost, no elegant way to get here. Bot will swim through ocean. -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Shadowmoon Valley - Darktide Roost.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Darktide Roost" X="-977.1819" Y="-1739.859" Z="3.381221" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8938, 2)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8938, 9)" > <!-- The Shimmer Moor -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Shadowmoon Valley - The Shimmer Moor.&quot;);" />
+				<MoveTo Nav="Fly" DestName="The Shimmer Moor" X="-26.78795" Y="-1623.652" Z="45.87603" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8938, 9)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8938, 7)" > <!-- Karabor -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Shadowmoon Valley - Karabor.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Karabor" X="573.9067" Y="-1914.819" Z="26.48459" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8938, 7)" />
+			</While>
+			<While Condition="!IsAchievementCompleted(8938, 3)" > <!-- Elodor -->
+				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.Yellow, &quot;[Discovering]: &quot;, System.Windows.Media.Colors.Goldenrod, &quot;Shadowmoon Valley - Elodor.&quot;);" />
+				<MoveTo Nav="Fly" DestName="Elodor" X="991.8135" Y="-1395.44" Z="-3.612888" />
+				<MoveTo Nav="Fly" DestName="Elodor" X="1061.844" Y="-1429.891" Z="-10.62323" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="IsAchievementCompleted(8938, 3)" />
+			</While>
+		<!-- END Shadowmoon Valley -->
+
+	</While>
+
+	<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: All locations explored, going back to the Garrison.&quot;);" />
+
+	<If Condition="HasItem(110560) &amp;&amp; Me.BagItems.FirstOrDefault(h =&gt; h.Entry == 110560).CooldownTimeLeft.TotalMilliseconds == 0" >
+		<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Using our Garrison Hearthstone.&quot;);" />
+		<CustomBehavior File="ForcedDismount" />
+		<While Condition="!(Me.ZoneId == 7078 || Me.ZoneId == 7004)" >
+			<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(110560);" WaitTime="500" />
+			<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="!(Me.ZoneId == 7078 || Me.ZoneId == 7004) || Me.Combat || !Me.IsCasting" />
+		</While>
+		<Else>
+			<If Condition="Me.IsAlliance" >
+				<MoveTo Nav="Fly" DestName="Garrison" X="1866.757" Y="222.1068" Z="76.69209" />
+			</If>
+			<If Condition="Me.IsHorde" >
+				<MoveTo Nav="Fly" DestName="Garrison" X="5592.404" Y="4529.675" Z="126.3718" />
+			</If>
+		</Else>
+	</If>
+
+
+</QuestOrder>
+</HBProfile>
