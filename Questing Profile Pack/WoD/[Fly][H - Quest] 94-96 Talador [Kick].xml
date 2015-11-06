@@ -1248,17 +1248,42 @@
 		<PickUp Nav="Fly" QuestName="Come Together" QuestId="34706" GiverName="Lady Liadrin" GiverId="77580" X="1469.575" Y="3108.475" Z="93.5532" />
 		<!-- End of Retribution Point -->
 
-		<!-- UNABLE TO COMPLETE BONUS:
-			<MoveTo Nav="Fly" DestName="Bonus Objective: Court of Souls" X="2067.464" Y="3222.48" Z="121.4647" /> (Court of Souls / West Talador )
-			<PickUp Nav="Fly" QuestName="Bonus Objective: Court of Souls" QuestId="34667" GiverName="" GiverId="" />
-			<Objective Nav="Fly" QuestName="Bonus Objective: Court of Souls" QuestId="34667" Type="KillMob" MobId="79499" KillCount="8" />
-			<Objective Nav="Fly" QuestName="Bonus Objective: Court of Souls" QuestId="34667" Type="KillMob" MobId="79503" KillCount="10" />
-			<Objective Nav="Fly" QuestName="Bonus Objective: Court of Souls" QuestId="34667" Type="KillMob" MobId="88822" KillCount="4" />
-			<TurnIn Nav="Fly" QuestName="Bonus Objective: Court of Souls" QuestId="34667" TurnInName="" TurnInId="" />
-
-			:: we have to use a vehicle to shoot down 4x 
-			<Vendor Name="Shadowgaze Batrider" Entry="79514" Type="Repair" X="1978.188" Y="3287.724" Z="149.9076" />
-			-->
+			<If Condition="!HasQuest(34667) &amp;&amp; !IsQuestCompleted(34667)" > <!-- Bonus Objective: Court of Souls -->
+				<!-- <PickUp Nav="Fly" QuestName="Bonus Objective: Court of Souls" QuestId="34667" /> - BONUS -->
+				<MoveTo Nav="Fly" X="1906.354" Y="3225.242" Z="133.759" />
+			</If>
+			<If Condition="!IsQuestCompleted(34667)" > <!-- Court of Souls, mid Talador -->
+				<If Condition="!HasQuest(34667)" >
+					<MoveTo Nav="Fly" DestName="Court of Souls" X="2000.563" Y="3228.425" Z="121.1691" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(34667)" />
+				</If>
+				<CustomBehavior File="KillUntilComplete" QuestId="34667" MobId="79482" TerminateWhen="IsObjectiveComplete(1, 34667)" >
+					<HuntingGrounds>
+						<Hotspot X="1974.105" Y="3275.445" Z="121.3123" />
+						<Hotspot X="1926.56" Y="3324.992" Z="121.3119" />
+						<Hotspot X="2043.173" Y="3237.151" Z="121.3705" />
+						<Hotspot X="2036.804" Y="3223.226" Z="121.2278" />
+					</HuntingGrounds>
+				</CustomBehavior>
+				<MoveTo Nav="Fly" QuestId="34667" DestName="Bonus Objective: Court of Souls" X="1991.527" Y="3269.636" Z="121.3101" />
+				<Objective QuestName="Bonus Objective: Court of Souls" QuestId="34667" Type="KillMob" MobId="79503" KillCount="10" />
+				<If Condition="!IsObjectiveComplete(3, 34667)" >
+					<CustomBehavior File="InteractWith" MobId="79523" X="1906.354" Y="3225.242" Z="133.759" PreInteractMountStrategy="Dismount" TerminateWhen="Me.InVehicle" WaitTime="1500" />
+					<DisableBehavior Name="Combat" />
+					<While Condition="!IsObjectiveComplete(3, 34667) &amp;&amp; Me.InVehicle &amp;&amp; HasQuest(34667)" >
+						<CustomBehavior File="TargetAndMoveToMob" MobId="79514" TargetOnlyIfHealthPercentAbove="90" TerminateWhen="Me.GotTarget" />
+						<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarButton1:Click();" WaitTime="3000" />
+						<CustomBehavior File="Misc\RunLua" Lua="ClearTarget();" />
+						<If Condition="IsObjectiveComplete(3, 34667) &amp;&amp; !HasQuest(34667) &amp;&amp; Me.InVehicle" >
+							<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarLeaveFrameLeaveButton:Click();" />
+						</If>
+					</While>
+					<If Condition="Me.InVehicle" >
+						<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarLeaveFrameLeaveButton:Click();" />
+					</If>
+					<EnableBehavior Name="Combat" />
+				</If>
+			</If>
 
 		<!-- Journe Mine / Auchindoun -->
 		<TurnIn Nav="Fly" QuestName="Every Bit Counts" QuestId="34710" TurnInName="Ageilaa" TurnInId="78534" X="2196.828" Y="2858.67" Z="134.0391" />
