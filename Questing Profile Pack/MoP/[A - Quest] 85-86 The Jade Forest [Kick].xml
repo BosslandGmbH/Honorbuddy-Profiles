@@ -1847,11 +1847,18 @@
 			<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for CLQ {TimeRemaining}" />
 		</While>
 		<While Condition="HasQuest(29755) &amp;&amp; !IsQuestCompleted(29755)">
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="GrabBody" AllowUseDuringCombat="true" AllowExecutionWhileNotAlive="false" UseWhen="!IsQuestCompleted(29755) &amp;&amp; Me.HasAura(106539)" >
+				<DisableBehavior Name="Combat" />
+				<CustomBehavior File="InteractWith" MobId="56600" IgnoreCombat="true" /> <!-- Grab body! -->
+				<EnableBehavior Name="Combat" />
+			</CustomBehavior>
 			<CustomBehavior File="InteractWith" InteractByQuestFrameDisposition="Accept" QuestId="29755"
                             MobId="56595" WaitTime="1" CollectionDistance="1000"
                             X="3149.503" Y="-1512.377" Z="200.2956" />
 			<CustomBehavior File="InteractWith" QuestId="29755" MobId="56596" WaitTime="1"
                             CollectionDistance="1000" X="3149.503" Y="-1512.377" Z="200.2956" />
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="GrabBody" Command="Remove" />
+			<CustomBehavior File="WaitTimer" WaitTime="2500" />
 		</While>
 		<TurnIn QuestName="Pei-Back" QuestId="29755" TurnInName="Pei-Zhi" TurnInId="59492"
                 X="3069.28" Y="-1609.01" Z="222.8473" />
