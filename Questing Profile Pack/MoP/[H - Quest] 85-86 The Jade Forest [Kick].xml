@@ -1986,9 +1986,9 @@
 		<Objective QuestName="Ritual Artifacts" QuestId="29751" Type="CollectItem" ItemId="74760" CollectCount="1" />
 
 		<While Condition="HasQuest(29752) &amp;&amp; !IsQuestCompleted(29752)">
-			<CustomBehavior File="InteractWith" QuestId="29752" MobId="55290" MobState="Alive" NumOfTimes="500" IgnoreCombat="true"
-							TerminateWhen="ObjectManager.GetObjectsOfType&lt;WoWUnit&gt;().Any(u =&gt; u.Entry !=55290 &amp;&amp; u.Aggro)"
-                            InteractByUsingItemId="74771" Range="25" WaitTime="4000" CollectionDistance="1000">
+			<CustomBehavior File="InteractWith" QuestId="29752" MobId="55290" MobState="Alive" IgnoreCombat="true" MobHpPercentLeft="100"
+                            InteractByUsingItemId="74771"
+                            Range="25" CollectionDistance="1000" TerminateWhen="Me.Combat &amp;&amp; Me.CurrentTarget.Entry != 55290">
 				<HuntingGrounds>
 					<Hotspot X="2963.413" Y="-1452.859" Z="244.1403" />
 					<Hotspot X="2972.904" Y="-1399.264" Z="244.1403" />
@@ -1997,6 +1997,7 @@
 					<Hotspot X="2856.351" Y="-1475.471" Z="275.5011" />
 				</HuntingGrounds>
 			</CustomBehavior>
+			<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="!Me.Combat" />
 		</While>
 		<Objective QuestName="Vessels of the Spirit" QuestId="29750" Type="CollectItem" ItemId="74763"
                    CollectCount="8" />
