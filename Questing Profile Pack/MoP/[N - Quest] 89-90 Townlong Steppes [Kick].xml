@@ -1382,15 +1382,21 @@
             <If Condition="(!HasSpell(115913)) &amp;&amp; (Me.Level &gt;= 90)">
                 <CustomBehavior File="FlyTo" DestName="kill Et'kil" X="2014.557" Y="4833.926" Z="158.7839"/>
             </If>
-            <!-- <Objective QuestName="My Father's Crossbow" QuestId="30931" Type="CollectItem" ItemId="82332" CollectCount="1" /> -->
+            <CustomBehavior File="Hooks\Avoid" AvoidName="Drone_CausticSpray" Command="Add" ObjectId="63677" Radius="6"
+                            AvoidWhen="UNIT.CastingSpellId == 125825" AvoidLocationProducer="UNIT.Location.RayCast(UNIT.Rotation, 8)" />
+            <CustomBehavior File="Hooks\Avoid" AvoidName="Etkil_SonicSpike" Command="Add" ObjectType="Missile" ObjectId="119688" Radius="3" />
             <MoveTo X="2057.646" Y="4858.151" Z="154.6169"/>
+            <!-- <Objective QuestName="My Father's Crossbow" QuestId="30931" Type="CollectItem" ItemId="82332" CollectCount="1" />
+            EchoTiger: GetOutOfGroundEffectsAndAuras is broken at the moment.  That and Avoid is probably a better solution for this.
             <CustomBehavior File="GetOutOfGroundEffectAndAuras" QuestId="30931" StartNpcId="61540" PreferKillingMobId="63677" EventX="2057.646" EventY="4858.151" EventZ="154.6169" MoveBehindMobCastingSpellId1="119688" MoveBehindMobCastingSpellId2="119694" MoveBehindMobCastingSpellId3="125825" MoveBehindMobCastingSpellId4="125845">
                 <Safespots>
                     <Hotspot X="2012.314" Y="4844.366" Z="159.3651"/>
                 </Safespots>
-            </CustomBehavior>
+            </CustomBehavior>  -->
             <CustomBehavior File="WaitTimer" WaitTime="3000" GoalText="Waiting for agro to clear {TimeRemaining}"/>
             <CustomBehavior File="InteractWith" QuestId="30931" MobId="61540" MobState="Dead" InteractByLooting="true" X="2012.314" Y="4844.366" Z="159.3651" TerminateWhen="HasItem(82332)" />
+            <CustomBehavior File="Hooks\Avoid" AvoidName="Drone_CausticSpray" Command="Remove" />
+            <CustomBehavior File="Hooks\Avoid" AvoidName="Etkil_SonicSpike" Command="Remove" />
             <MoveTo X="2057.646" Y="4858.151" Z="154.6169"/>
         </While>
         <If Condition="HasQuest(30931) &amp;&amp; IsQuestCompleted(30931)">
