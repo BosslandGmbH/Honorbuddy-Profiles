@@ -1,4 +1,4 @@
-Welcome to the Honorbuddy Mega Profile Packs 1-90 (Questing, Grinding, Gathering)
+Welcome to the Honorbuddy Mega Profile Packs 1-100 (Questing, Grinding, Gathering)
 ---------------------------------------------------------------------------------
 These profiles are the *official* profile pack provided by BosslandGmbH
 when you purchase Honorbuddy.
@@ -10,7 +10,9 @@ This document will help you:
 * Start using Honorbuddy
 
 The profiles are constantly being updated, so we only provide distribution
-through Subversion.  Subversion is *very* easy to use, and once installed
+through Subversion and through the Buddy Store.
+The store variants of the profiles are updated every day at 11-UTC both AM and PM.
+Subversion is *very* easy to use, and once installed
 provides access to a number of other wares offered in our forums.
 
 Ultimately, the goal of this profile pack is to make it capable
@@ -41,33 +43,43 @@ Of particular interest to newcomers will be this information:
 
 To get started using the Kick's profile pack
 ---------------------------------------------
-The first steps to getting the profile pack involve setting up the Tortoise Subversion tool,
-then extracting a copy of Kick's profile pack to your local disk.
+[If you're using the BuddyStore]
 
-These resources will help you get Tortoise installed and working:
-
-* Tortoise Subversion
-	This is the tool used to extract copies of any Subversion repository.
-	http://tortoisesvn.net/downloads.html
-  
-* Video tutorial for setting up and using Subversion (thanks, JVidia!)
-	From Honorbudy forum: http://www.thebuddyforum.com/honorbuddy-forum/honorbuddy-guides/26031-guide-how-svn-jvidia.html
-	Direct Youtube link: https://www.youtube.com/watch?feature=player_embedded&v=_KJ1pn9l3Zs
+	Simply click 'Load Profile.'
+	After clicking this, you can chose to load from the Buddy Store.
+	If you're wanting to level your character up, it's recommended that you use the "Auto Loader v2.xml"
 
 
-Once Tortoise is working, you can extract a copy of the Proile packto your
-local disk drives.  Kick's Subversion repository is located here:
+[If you're using Subversion]
 
-* https://kicks-scripts.googlecode.com/svn/trunk/
-
-
-Now, use Honorbuddy's "Load Profile" button to select whichever profile
-interests you.  Hit Honorbuddy's "Start" button, and you should be off-and-away.
+	The first steps to getting the profile pack involve setting up the Tortoise Subversion tool,
+	then extracting a copy of Kick's profile pack to your local disk.
 
 
-Keeping your copy of Kick's Repository Up-to-Date
+	These resources will help you get Tortoise installed and working:
+
+	* Tortoise Subversion
+		This is the tool used to extract copies of any Subversion repository.
+		http://tortoisesvn.net/downloads.html
+	  
+	* Video tutorial for setting up and using Subversion (thanks, JVidia!)
+		From Honorbudy forum: http://www.thebuddyforum.com/honorbuddy-forum/honorbuddy-guides/26031-guide-how-svn-jvidia.html
+		Direct Youtube link: https://www.youtube.com/watch?feature=player_embedded&v=_KJ1pn9l3Zs
+
+
+	Once Tortoise is working, you can extract a copy of the Proile packto your
+	local disk drives.  Kick's Subversion repository is located here:
+
+	* https://kicks-scripts.googlecode.com/svn/trunk/
+
+
+	Now, use Honorbuddy's "Load Profile" button to select whichever profile
+	interests you.  Hit Honorbuddy's "Start" button, and you should be off-and-away.
+
+
+	Keeping your copy of Kick's Repository Up-to-Date
 -------------------------------------------------
-On a daily basis, before launching Honorbuddy, you should make certain that your copy
+If you're using Subversion, on a daily basis, before launching Honorbuddy, you should make certain that your copy
 of Kick's repository is up-to-date.  Using Windoze file explorer:
 	-> "right click" on the "Kick's Profiles" directory
 	-> SVN update
@@ -93,7 +105,7 @@ a treasure trove of alternate offerings provided by the Buddy Community.
 
 If you have a specific need not addressed by this profile pack, please have
 a look at the Profiles forum.
-* http://www.thebuddyforum.com/honorbuddy-forum/submitted-profiles/
+* http://www.thebuddyforum.com/honorbuddy-forum/
 
 
 Happy questing!
