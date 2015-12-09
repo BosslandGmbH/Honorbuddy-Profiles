@@ -231,8 +231,11 @@
         <UseMount Value="true" />
         <!-- END: Checkpoint Block -->
 
-
-        <PickUp QuestName="Fresh out of the Grave" QuestId="24959" GiverName="Agatha" GiverId="49044"/>
+        <If Condition="!HasQuest(24959) &amp;&amp; !IsQuestCompleted(24959)" >
+            <PickUp QuestName="Fresh out of the Grave" QuestId="24959" GiverName="Agatha" GiverId="49044"/>
+            <CustomBehavior File="WaitTimer" WaitTime="2500" />
+            <CustomBehavior File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click();" /> <!-- Rigor Mortis buff won't remove unless we actually click Accept. -->
+        </If>
         <TurnIn QuestName="Fresh out of the Grave" QuestId="24959" TurnInName="Undertaker Mordo" TurnInId="1568"/>
         <PickUp QuestName="the Shadow Grave" QuestId="28608" GiverName="Undertaker Mordo" GiverId="1568"/>
         <Objective QuestName="The Shadow Grave" QuestId="28608" Type="CollectItem" ItemId="64582" CollectCount="1"/>
