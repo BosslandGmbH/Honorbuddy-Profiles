@@ -59,13 +59,13 @@
 
 		<While Condition="Me.IsAlliance">
 			<CustomBehavior File="UserDialog" AllowBotStop="true" SoundCue="Exclamation"
-                            SoundCueInterval="1" Text="You must be Horde to run this profile!" />
+														SoundCueInterval="1" Text="You must be Horde to run this profile!" />
 		</While>
 		<!-- BEGIN: Checkpoint Block
-             This code needs to be replicated after every checkpoint.
-             If you modify something in this block, don't forget to update the copy of this
-             block after each checkpoint, and the at the start of the <QuestOrder>, also.
-        -->
+						 This code needs to be replicated after every checkpoint.
+						 If you modify something in this block, don't forget to update the copy of this
+						 block after each checkpoint, and the at the start of the <QuestOrder>, also.
+				-->
 		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
 		<!--<CustomBehavior File="UserSettings" AutoEquip="true" />-->
 
@@ -550,14 +550,30 @@
 			<TurnIn Nav="Fly" QuestName="Cut Them Down" QuestId="35433" TurnInName="Draka" TurnInId="82233" X="4911.972" Y="1627.708" Z="116.7827" />
 			<PickUp Nav="Fly" QuestName="Thieving Dwarves" QuestId="36488" GiverName="Kaz the Shrieker" GiverId="82228" X="4907.062" Y="1627.014" Z="117.2115"/>
 
-			<!-- <MoveTo Nav="Fly" DestName="Pickup Bonus Objective: Tailthrasher Basin" X="4502.001" Y="1493.342" Z="141.776" /> // to pickup
-		<PickUp Nav="Fly" QuestName="Bonus Objective: Tailthrasher Basin" QuestId="36520" GiverName="" GiverId="" />
-		<Objective Nav="Fly" QuestName="Bonus Objective: Tailthrasher Basin" QuestId="36520" Type="KillMob" MobId="85770" KillCount="12" />
-		<Objective Nav="Fly" QuestName="Bonus Objective: Tailthrasher Basin" QuestId="36520" Type="KillMob" MobId="85810" KillCount="6" />
-		<Objective Nav="Fly" QuestName="Bonus Objective: Tailthrasher Basin" QuestId="36520" Type="KillMob" MobId="85733" KillCount="1" />
-		<TurnIn Nav="Fly" QuestName="Bonus Objective: Tailthrasher Basin" QuestId="36520" TurnInName="" TurnInId="" />
-
-		-->		
+			<While Condition="!IsQuestCompleted(36520)" > <!-- Tailthrasher Basin, southern Gorgrond -->
+				<If Condition="!HasQuest(36520) &amp;&amp; !IsQuestCompleted(36520)" >
+					<MoveTo Nav="Fly" DestName="Tailthrasher Basin" X="4699.052" Y="1281.002" Z="122.0951" />
+					<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for quest to trigger {TimeRemaining}" TerminateWhen="HasQuest(36520)" />
+				</If>
+				<While Condition="!IsObjectiveComplete(2, 36520)" >
+					<CustomBehavior File="InteractWith" QuestId="36520" MovementBy="NavigatorPreferred" MobId="85810" TerminateWhen="IsObjectiveComplete(2, 36520)" >
+						<HuntingGrounds WaypointVisitStrategy="InOrder">
+							<Hotspot X="4622.737" Y="1355.936" Z="119.246" />
+							<Hotspot X="4692.831" Y="1308.706" Z="122.0948" />
+							<Hotspot X="4640.547" Y="1499.312" Z="126.5769" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</While>
+				<CustomBehavior File="InteractWith" QuestId="36520" MovementBy="NavigatorPreferred" MobId="85733" X="4749.683" Y="1435.49" Z="138.4854" TerminateWhen="IsObjectiveComplete(3, 36520)" />
+				<CustomBehavior File="InteractWith" QuestId="36520" MovementBy="NavigatorPreferred" MobId1="85770" MobId2="85724" MobId3="85718" MobId4="85725" TerminateWhen="IsObjectiveComplete(1, 36520)" >
+					<HuntingGrounds>
+						<Hotspot X="4664.397" Y="1400.371" Z="136.5752" />
+						<Hotspot X="4681.579" Y="1326.879" Z="122.1064" />
+						<Hotspot X="4635.645" Y="1496.011" Z="124.9741" />
+					</HuntingGrounds>
+				</CustomBehavior>
+				<CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for quest to Complete {TimeRemaining}" TerminateWhen="IsQuestCompleted(36520)" />
+			</While>
 
 			<TurnIn Nav="Fly" QuestName="Thieving Dwarves" QuestId="36488" TurnInName="Cutter" TurnInId="85601" X="4489.742" Y="1265.661" Z="149.7657" />
 			<!-- Grab some Treasures 
@@ -619,11 +635,11 @@
 			</If>
 			<Objective Nav="Fly" QuestName="Iyu" QuestId="35510" Type="KillMob" MobId="78819" KillCount="1" />
 			<TurnIn Nav="Fly" QuestName="Iyu" QuestId="35510" TurnInName="Draka" TurnInId="82337" X="4503.802" Y="1165.127" Z="166.8236" />
-			<If Condition="!HasQuest(35511) &amp;&amp; !IsQuestCompleted(35511)" > <!-- Kaz the Shrieker / Follower -->
+			<!--<If Condition="!HasQuest(35511) &amp;&amp; !IsQuestCompleted(35511)" >  Kaz the Shrieker / Follower 
 				<MoveTo Nav="Fly" DestName="Kaz the Shrieker" X="4506.272" Y="1159.967" Z="166.7329" />
 				<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" MobId="82338" X="4506.272" Y="1159.967" Z="166.7329" WaitTime="3000" />
 				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click()" />
-			</If>
+			</If>-->
 			<PickUp Nav="Fly" QuestName="Power of the Genesaur" QuestId="35416" GiverName="Draka" GiverId="82337" X="4503.802" Y="1165.127" Z="166.8236" />
 			<TurnIn Nav="Fly" QuestName="Power of the Genesaur" QuestId="35416" TurnInName="Durotan" TurnInId="74594" X="5763.857" Y="1297.016" Z="106.9526" />
 			<!-- End of Razorbloom Chain -->
@@ -742,7 +758,7 @@
 			</If>
 		END Grab some Treasures -->
 		
-        <!-- WHERE DOES THIS GO??? -->
+				<!-- WHERE DOES THIS GO??? -->
 		 <!-- Tormmok / Follower / A Centurion Without A Cause 
 		<While Condition="!HasQuest(36037) &amp;&amp; !IsQuestCompleted(36037)" >
 		 <If Condition="Unit(83820, u =&gt; !u.IsFriendly) == null" >
@@ -767,9 +783,9 @@
 			<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click()" />
 			<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for quest to complete {TimeRemaining}" />
 		</While>
-        -->
+				-->
 		
-        <!-- Blook / Follower / I Am Blook 
+				<!-- Blook / Follower / I Am Blook 
 		<While Condition="!HasQuest(34279) &amp;&amp; !IsQuestCompleted(34279)" >
 			<MoveTo X="4605.394" Y="1691.941" Z="234.4051" />
 			<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" MobId="78030" GossipOptions="1" WaitTime="3000" X="4605.394" Y="1691.941" Z="234.4051" />
@@ -1115,7 +1131,7 @@
 			<TurnIn Nav="Fly" QuestName="It's a Matter of Strategy" QuestId="34681" TurnInName="Foreman Grobash" TurnInId="79176" />
 			<!-- In Talador -->
 		</If>
-        
+				
 		<CustomBehavior File="LoadProfile" ProfileName="[Fly][H - Quest] 94-96 Talador [Kick]" />
 
 	</QuestOrder>
