@@ -696,15 +696,22 @@
 		<TurnIn Nav="Fly" QuestName="War on the Twilight's Hammer" QuestId="25319" TurnInName="Malfurion Stormrage"
                 TurnInId="39857" X="5190.42" Y="-2955.79" Z="1560.821" />
 		<PickUp Nav="Fly" QuestName="Flamebreaker" QuestId="25323" GiverName="Malfurion Stormrage" GiverId="39857" />
-		<CustomBehavior File="InteractWith" QuestId="25323" InteractByUsingItemId="53107" MobId="38896"
-                        NumOfTimes="150" WaitTime="3000"
-                        Range="15" PreInteractMountStrategy="Dismount" ProactiveCombatStrategy="ClearMobsTargetingUs"
-                        MobState="Alive">
-			<HuntingGrounds>
-				<Hotspot X="5271.366" Y="-2826.779" Z="1526.809" />
-				<Hotspot X="5353.267" Y="-2962.379" Z="1544.673" />
-			</HuntingGrounds>
-		</CustomBehavior>
+		<If Condition="HasQuest(25323) &amp;&amp; !IsQuestCompleted(25323)" >
+			<CustomBehavior File="Message" Text="Disabling pet usage until this quest is completed." />
+			<CustomBehavior File="RunMacro" Macro="/petpassive" />
+			<CustomBehavior File="RunCode" Code="RoutineManager.SetCapabilityState(CapabilityFlags.PetUse, CapabilityState.Disallowed, &qout;Quest credit&qout;);" />
+			<CustomBehavior File="InteractWith" QuestId="25323" InteractByUsingItemId="53107" MobId="38896"
+	                        NumOfTimes="150" WaitTime="3000"
+	                        Range="15" PreInteractMountStrategy="Dismount" ProactiveCombatStrategy="ClearMobsTargetingUs"
+	                        MobState="Alive">
+				<HuntingGrounds>
+					<Hotspot X="5271.366" Y="-2826.779" Z="1526.809" />
+					<Hotspot X="5353.267" Y="-2962.379" Z="1544.673" />
+				</HuntingGrounds>
+			</CustomBehavior>
+			<CustomBehavior File="Message" Text="Enabling pet usage." />
+			<CustomBehavior File="RunCode" Code="RoutineManager.SetCapabilityState(CapabilityFlags.PetUse, CapabilityState.DontCare, &quot;Done with quest&quot;);" />
+		</If>
 		<TurnIn Nav="Fly" QuestName="Flamebreaker" QuestId="25323" TurnInName="Malfurion Stormrage" TurnInId="39857" />
 		<PickUp Nav="Fly" QuestName="The Return of Baron Geddon" QuestId="25464" GiverName="Malfurion Stormrage"
                 GiverId="39857" />
