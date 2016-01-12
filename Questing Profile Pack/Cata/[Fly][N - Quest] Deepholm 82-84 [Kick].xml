@@ -393,7 +393,7 @@
 		<TurnIn QuestName="Something that Burns" TurnInName="Initiate Goldmine" QuestId="27135" TurnInId="42574" />
 		<PickUp QuestName="Apply and Flash Dry" GiverName="Initiate Goldmine" QuestId="26411" GiverId="42574" />
 		<While Condition="HasQuest(26411) &amp;&amp; !IsQuestCompleted(26411)">
-		<CustomBehavior File="FlyTo" Land="true" X="846.4485" Y="676.6024" Z="-69.31956" />
+			<CustomBehavior File="FlyTo" Land="true" X="846.4485" Y="676.6024" Z="-69.31956" />
 			<CustomBehavior File="ForcedDismount" />
 			<CustomBehavior File="InteractWith" QuestId="26411" MobId="43036" InteractByUsingItemId="58502" PreInteractMountStrategy="DismountOrCancelShapeshift" 
                             CollectionDistance="50" X="845.4846" Y="677.6641" Z="-69.33977" />
@@ -1383,17 +1383,20 @@
 		</If>
 		<TurnIn QuestName="Stonefather's Boon" TurnInName="Crag Rockcrusher" QuestId="26499" TurnInId="43071"
                 X="459.53" Y="1628.21" Z="352.1236" />
-		<PickUp QuestName="Sealing the Way" GiverName="Crag Rockcrusher" QuestId="26501" GiverId="43071"
+		<PickUp Nav="Fly" QuestName="Sealing the Way" GiverName="Crag Rockcrusher" QuestId="26501" GiverId="43071"
                 X="459.53" Y="1628.21" Z="352.1236" />
 		<TurnIn QuestName="We're Surrounded" TurnInName="Earthbreaker Dolomite" QuestId="26500" TurnInId="43160"
                 X="428.764" Y="1613.22" Z="360.7727" />
 		<PickUp QuestName="Thunder Stones" GiverName="Earthbreaker Dolomite" QuestId="26502" GiverId="43160" />
 		<Objective QuestName="Thunder Stones" QuestId="26502" Type="CollectItem" CollectCount="12" ItemId="58886" />
 		<DisableBehavior Name="Loot" />
-		<If Condition="HasQuest(26501) &amp;&amp; !IsQuestCompleted(26501)">
-			<MoveTo X="454.4053" Y="1633.561" Z="350.9009" />
+		<While Condition="HasQuest(26501) &amp;&amp; !IsQuestCompleted(26501)">
+			<CustomBehavior File="FlyTo" Land="true" DestName="Sealing the Way" X="459.53" Y="1628.21" Z="352.1236" />
+			<CustomBehavior File="ForcedDismount" />
+			<UseMount Value="false" />
 			<CustomBehavior File="SpecificQuests\26501-Deepholm-SealingTheWay" />
-		</If>
+		</While>
+		<UseMount Value="true" />
 		<If Condition="HasQuest(26502) &amp;&amp; IsQuestCompleted(26502)">
 			<CustomBehavior File="FlyTo" X="687.361" Y="1795.531" Z="333.4402" />
 			<CustomBehavior File="ForcedDismount" />
