@@ -37,21 +37,22 @@
         <LootMobs Value="true" />
         <UseMount Value="true" />
     
-        <CustomBehavior File="UserSettings" KillBetweenHotspots="True" AllowedVariance="20" ArrivalTolerance="15" />
+        <CustomBehavior File="UserSettings" KillBetweenHotspots="True" />
     
         <!-- Add Avoids -->
         <!-- End avoids -->
 	
 		<!-- Assault on Darktide Roost -->
-		<If Condition="!HasQuest(35974) &amp;&amp; !IsQuestCompleted(35974)" > <!-- Darktide Roost Area Bonus ID, Neutral -->
+		<If Condition="(Me.IsAlliance &amp;&amp; HasQuest(38196) &amp;&amp; !IsQuestCompleted(38196)) || (Me.IsHorde &amp;&amp; HasQuest(38182) &amp;&amp; !IsQuestCompleted(38182))" > <!-- Missive ID,  Area ID was bugging out. -->
 			<MoveTo Nav="Fly" DestName="Darktide Roost start location" X="-975.5678" Y="-1733.989" Z="3.229883" />
+			<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(35974)" />
 		</If>
     
 		<UseMount Value="false" /> <!-- Change to UseFlyingMount Value="false" -->
 		
-			<While Condition="HasQuest(35974)" >
-				<CustomBehavior File="InteractWith" QuestId="35974" TerminateWhen="!HasQuest(35974)" MobState="Alive" Range="5" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" WaitTime="1000" 
-											MobIds="234587,238984,235823,78148,78168,78999,78822,78339,78328,78550,85357" NumOfTimes="200" CollectionDistance="150" Movement="NavigatorOnly" >
+			<While Condition="(Me.IsAlliance &amp;&amp; HasQuest(38196) &amp;&amp; !IsQuestCompleted(38196)) || (Me.IsHorde &amp;&amp; HasQuest(38182) &amp;&amp; !IsQuestCompleted(38182))" >
+				<CustomBehavior File="InteractWith" QuestId="35974" TerminateWhen="(Me.IsAlliance &amp;&amp; IsQuestCompleted(38196)) || (Me.IsHorde &amp;&amp; IsQuestCompleted(38182))" MobState="Alive" Range="5" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" WaitTime="1000" 
+											MobIds="234587,238984,235823,78148,78168,78999,78822,78339,78328,78550,85357" NumOfTimes="200" CollectionDistance="150" MovementBy="NavigatorOnly" >
 					<HuntingGrounds WaypointVisitStrategy="InOrder" >
 						<Hotspot X="-1032.08" Y="-1761.989" Z="4.217237" />
 						<Hotspot X="-1086.079" Y="-1755.859" Z="3.860207" />
