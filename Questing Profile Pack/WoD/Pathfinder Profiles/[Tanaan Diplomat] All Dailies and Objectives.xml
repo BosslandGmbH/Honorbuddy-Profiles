@@ -1,6 +1,7 @@
 <HBProfile>
 	<Name>[Tanaan Diplomat] All Dailies and Objectives</Name>
-	
+	<!-- Original contribution by EchoTiger -->
+
 	<MinDurability>0.2</MinDurability>
 	<MinFreeBagSlots>2</MinFreeBagSlots>
 
@@ -2815,8 +2816,8 @@
 	<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: All bonus objective zones complete!&quot;);" />
  
 	<!-- Saberstalker Grind -->
-		<While Condition="Me.GetReputationLevelWith(1850) &lt; WoWUnitReaction.Revered &amp;&amp; Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.GrindSaberstalkersILvl &amp;&amp; Settings.Instance.GrindSaberstalkers" >		
-			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Going to grind Saberstalker reputation until we're revered or until you stop the bot.&quot;);" />		
+		<While Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.GrindSaberstalkersILvl &amp;&amp; Settings.Instance.GrindSaberstalkers" >		
+			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Going to grind Saberstalkers.&quot;);" />		
 			<If Condition="(!HasQuest(39582) &amp;&amp; !IsQuestCompleted(39582) &amp;&amp; Me.IsAlliance) || (!HasQuest(39529) &amp;&amp; !IsQuestCompleted(39529) &amp;&amp; Me.IsHorde)" >		
 				<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Red, &quot;[Notification]: You may want to pick up Tooth and Claw before letting this grind commence.&quot;);" />		
 			</If>		
@@ -2833,7 +2834,7 @@
 					</Hotspots>		
 				</GrindArea>		
 			</SetGrindArea>		
-			<GrindUntil Condition="Me.GetReputationLevelWith(1850) &gt;= WoWUnitReaction.Revered" />		
+			<GrindUntil Condition="!Settings.Instance.GrindSaberstalkers" />		
 		</While>		
 	<!-- END Saberstalker Grind -->
 
