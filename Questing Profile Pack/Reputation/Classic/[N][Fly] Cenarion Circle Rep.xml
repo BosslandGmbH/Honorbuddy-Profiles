@@ -11,7 +11,7 @@
 
     <Name>Hawker's Cenarion Circle Reputation Profile ($Rev: 3547 $)</Name>
 
-    <MinLevel>54</MinLevel>
+    <MinLevel>53</MinLevel>
     <MaxLevel>1001</MaxLevel>
 
     <MinDurability>0.3</MinDurability>
@@ -62,6 +62,41 @@
                                         TransportEndX="-1005.613" TransportEndY="-3841.648" TransportEndZ="0.03330701"
                                         GetOffX="-996.8669" GetOffY="-3826.07" GetOffZ="5.536246" />
         </If>
+		
+				<CustomBehavior File="RunCode" Type="Definition"><![CDATA[     
+			// Items that always need to be sold
+			HashSet<uint> RubbishItems = new HashSet<uint>(new uint[]
+			{
+				117, 118, 159, 
+				805, 828, 856, 858, 1179, 1710, 
+				2287, 2455, 2835, 2836, 3827, 3928, 
+				4496, 4498, 4537, 4541, 4540, 4592, 4593, 4602, 4604, 4605, 
+				5760, 5572, 
+				6290, 6299, 6532,
+				7755, 8766, 8932, 8950, 8952,   
+				12223, 13443, 13446,            
+				22710, 23389, 27668, 27669, 
+				57247, 57542, 73209, 74837, 74844, 74849, 74850, 
+				81412, 81414, 108330, 113478
+			}); 
+			 
+			async Task SellRubbishItems()
+			{
+				Logging.Write("Selling items in RubbishItems");
+				foreach (var item in Me.BagItems.Where(i => RubbishItems.Contains(i.Entry)))
+				{
+					Logging.Write("Selling {0}.", item.Name);                       
+					item.UseContainerItem();
+					await Coroutine.Sleep(1337);
+				}
+			}
+		]]>
+		</CustomBehavior>  
+
+		<CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellRubbish" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; Me.BagItems.Any(i => 	RubbishItems.Contains(i.Entry))" >
+			<CustomBehavior File="RunCode" Code="await SellRubbishItems();"/>  
+		</CustomBehavior>
+
 
 
         <PickUp Nav="Fly" QuestName="Twilight Geolords" QuestId="8320" GiverName="Huum Wildmane" GiverId="15270" X="-6825.453" Y="824.4618" Z="49.49794" />
