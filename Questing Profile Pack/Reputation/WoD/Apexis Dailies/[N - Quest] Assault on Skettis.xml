@@ -1,0 +1,119 @@
+﻿<HBProfile xsi:noNamespaceSchemaLocation="../../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Name>[N - Quest] Assault on Skettis ($Rev: 3547 $)</Name>
+
+    <MinLevel>100</MinLevel>
+    <MaxLevel>1001</MaxLevel>
+
+    <MinDurability>0.2</MinDurability>
+    <MinFreeBagSlots>2</MinFreeBagSlots>
+
+    <MailGrey>false</MailGrey>
+    <MailWhite>false</MailWhite>
+    <MailGreen>false</MailGreen>
+    <MailBlue>true</MailBlue>
+    <MailPurple>true</MailPurple>
+
+    <SellGrey>true</SellGrey>
+    <SellWhite>true</SellWhite>
+    <SellGreen>true</SellGreen>
+    <SellBlue>false</SellBlue>
+    <SellPurple>false</SellPurple>
+
+    <TargetElites>true</TargetElites>
+
+    <AvoidMobs>
+    </AvoidMobs>
+    <Blackspots>
+    </Blackspots>
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+		<Vendor Name="Rovan Astalan" Entry="81614" Type="Repair" X="-780.2448" Y="-677.118" Z="108.6696" /> <!-- N - Socethar's Rise -->
+	</Vendors>
+
+    <QuestOrder>
+
+        <LootMobs Value="true" />
+        <UseMount Value="true" />
+    
+        <CustomBehavior File="UserSettings" KillBetweenHotspots="True" />
+		
+        <CustomBehavior File="Hooks\Avoid" AvoidName="Piercing_Wirl" Command="Add" ObjectType="Missile" ObjectId="165373" Radius="5" />
+
+		<!-- Assault on Skettis -->    		
+			<While Condition="!IsQuestCompleted(36069)" >
+
+				<If Condition="!HasQuest(36069) &amp;&amp; !IsQuestCompleted(36069)" > <!-- Skettis Area Bonus ID, Neutral -->
+					<UseMount Value="true" /> <!-- Change to UseFlyingMount Value="false" -->
+					<MoveTo Nav="Fly" DestName="Skettis start location" X="941.0303" Y="1054.742" Z="176.3771" />
+					<UseMount Value="false" /> <!-- Change to UseFlyingMount Value="false" -->
+				</If>
+				<If Condition="Me.HasAura(170810) &amp;&amp; Lua.GetReturnVal&lt;uint&gt;(&quot;return UnitPower(\&quot;player\&quot;, ALTERNATE_POWER_INDEX)&quot;, 0) &gt;= 30" > <!-- Turn in prisoners. -->
+					<MoveTo Nav="Fly" X="921.813" Y="1063.758" Z="178.4792" />
+					<CustomBehavior File="InteractWith" MobId="89063" WaitTime="1000" X="919.0364" Y="1063.517" Z="178.7565" />
+					<CustomBehavior File="Misc\RunLua" Lua="GossipTitleButton1:Click();" />
+				</If>
+				<If Condition="HasItem(118701)" > <!-- Free prisoners -->
+					<CustomBehavior File="InteractWith" QuestId="36069" TerminateWhen="!HasQuest(36069) || !HasItem(118701)" Range="5" ProactiveCombatStrategy="NoClear" PreInteractMountStrategy="Dismount" WaitTime="1000"
+						MobIds="89076" NumOfTimes="5" CollectionDistance="150" MovementBy="NavigatorOnly" >
+						<HuntingGrounds WaypointVisitStrategy="InOrder" >
+							<Hotspot X="926.8762" Y="1115.193" Z="178.0661" />
+							<Hotspot X="921.3916" Y="1167.528" Z="174.8075" />
+							<Hotspot X="923.3045" Y="1222.531" Z="175.1217" />
+							<Hotspot X="915.8005" Y="1270.863" Z="174.789" />
+							<Hotspot X="939.5073" Y="1383.489" Z="285.829" />
+							<Hotspot X="1034.404" Y="1334.977" Z="276.2809" />
+							<Hotspot X="1088.775" Y="1308.331" Z="278.3826" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</If>
+				<If Condition="!HasItem(118701)" > <!-- Get keys. -->
+					<CustomBehavior File="InteractWith" QuestId="36069" TerminateWhen="!HasQuest(36069) || HasItem(118701)" MobState="AliveNotInCombat" Range="5" ProactiveCombatStrategy="ClearMobsThatWillAggro" PreInteractMountStrategy="Dismount" MobIds="84467, 85542, 84231, 89085, 84303, 89083" CollectionDistance="150" MovementBy="NavigatorOnly" >
+						<HuntingGrounds WaypointVisitStrategy="InOrder" >
+							<Hotspot X="926.8762" Y="1115.193" Z="178.0661" />
+							<Hotspot X="921.3916" Y="1167.528" Z="174.8075" />
+							<Hotspot X="923.3045" Y="1222.531" Z="175.1217" />
+							<Hotspot X="915.8005" Y="1270.863" Z="174.789" />
+							<Hotspot X="939.5073" Y="1383.489" Z="285.829" />
+							<Hotspot X="1034.404" Y="1334.977" Z="276.2809" />
+							<Hotspot X="1088.775" Y="1308.331" Z="278.3826" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</If>
+			</While>
+		<!-- END Assault on Skettis-->
+
+		<UseMount Value="true" />
+		
+		<If Condition="Me.ZoneId == 6722" >
+			<MoveTo Nav="Fly" DestName="To Safe spot." X="959.9972" Y="994.1547" Z="174.8541" />
+			<If Condition="IsQuestCompleted(36069)" > <!-- Skettis Area Bonus ID, Neutral -->
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:110560&quot;)" WaitTime="15000" /> <!-- Garrison Hearthstone -->
+			</If>
+		</If>
+        
+		<If Condition="Me.IsAlliance" >
+			<If Condition="HasQuest(36683)" > <!-- Daily -->
+				<TurnIn Nav="Fly" QuestName="Assault on Skettis" QuestId="36683" TurnInName="Scout Valdez" TurnInId="81152" X="1949.675" Y="333.9757" Z="90.41009" />
+			</If>
+			<If Condition="HasQuest(38200)" > <!-- Missive -->
+				<TurnIn Nav="Fly" QuestName="Missive: Assault on Skettis" QuestId="38200" TurnInName="Scout Valdez" TurnInId="81152" X="1949.675" Y="333.9757" Z="90.41009" />
+			</If>
+		</If>
+		
+		<If Condition="Me.IsHorde" >
+			<If Condition="HasQuest(36688)" > <!-- Daily -->
+				<TurnIn Nav="Fly" QuestName="Assault on Skettis" QuestId="36688" TurnInName="Shadow Hunter Ukambe" TurnInId="78495" X="5575.156" Y="4593.704" Z="141.1709" />
+			</If>
+			<If Condition="HasQuest(38186)" > <!-- Missive -->
+				<TurnIn Nav="Fly" QuestName="Missive: Assault on Skettis" QuestId="38186" TurnInName="Shadow Hunter Ukambe" TurnInId="78495" X="5575.156" Y="4593.704" Z="141.1709" />
+			</If>
+		</If>
+
+		<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Done with Assault on Skettis" />
+
+    </QuestOrder>
+
+</HBProfile>
