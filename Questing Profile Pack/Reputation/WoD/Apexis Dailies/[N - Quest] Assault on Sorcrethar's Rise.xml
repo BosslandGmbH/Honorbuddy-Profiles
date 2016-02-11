@@ -1,0 +1,102 @@
+﻿<HBProfile xsi:noNamespaceSchemaLocation="../../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Name>[N - Quest] Assault on Socrethar's Rise ($Rev: 3547 $)</Name>
+
+    <MinLevel>100</MinLevel>
+    <MaxLevel>1001</MaxLevel>
+
+    <MinDurability>0.2</MinDurability>
+    <MinFreeBagSlots>2</MinFreeBagSlots>
+
+    <MailGrey>false</MailGrey>
+    <MailWhite>false</MailWhite>
+    <MailGreen>false</MailGreen>
+    <MailBlue>true</MailBlue>
+    <MailPurple>true</MailPurple>
+
+    <SellGrey>true</SellGrey>
+    <SellWhite>true</SellWhite>
+    <SellGreen>true</SellGreen>
+    <SellBlue>false</SellBlue>
+    <SellPurple>false</SellPurple>
+
+    <TargetElites>true</TargetElites>
+
+    <AvoidMobs>
+    	<Mob Name="Lady Temptessa" Entry="85121" />
+    	<Mob Name="Sargerei Demonlord" Entry="81543" />
+    	<Mob Name="Sargerei Darkblade" Entry="84945" />
+    	<Mob Name="Master Sergeant Milgra" Entry="85001" />
+    	<Mob Name="Nightshade Consort" Entry="84908" />
+    </AvoidMobs>
+
+    <Blackspots>
+    </Blackspots>
+
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+		<Vendor Name="Rovan Astalan" Entry="81614" Type="Repair" X="-780.2448" Y="-677.118" Z="108.6696" /> <!-- N - Socethar's Rise -->
+	</Vendors>
+
+    <QuestOrder>
+
+        <LootMobs Value="true" />
+        <UseMount Value="true" />
+    
+        <CustomBehavior File="UserSettings" KillBetweenHotspots="True" />
+		
+
+		<!-- Assault on Socrethar's Rise -->    		
+			<While Condition="!IsQuestCompleted(36348)" >
+
+				<If Condition="!HasQuest(36348) &amp;&amp; !IsQuestCompleted(36348)" > <!-- Socrethar's Rise Area Bonus ID, Neutral -->
+					<UseMount Value="true" /> <!-- Change to UseFlyingMount Value="false" -->
+					<MoveTo Nav="Fly" DestName="Socrethar's Rise start location" X="-484.1143" Y="-728.191" Z="35.97327" />
+					<UseMount Value="false" /> <!-- Change to UseFlyingMount Value="false" -->
+				</If>
+				<CustomBehavior File="InteractWith" QuestId="36348" TerminateWhen="!HasQuest(36348)" MobState="AliveNotInCombat" Range="5" PreInteractMountStrategy="Dismount" MobIds="234563, 86125" CollectionDistance="150" MovementBy="NavigatorPreferred" >
+					<HuntingGrounds WaypointVisitStrategy="InOrder" >
+						<Hotspot X="-669.2126" Y="-689.33" Z="82.78828" />
+						<Hotspot X="-779.6949" Y="-1038.887" Z="85.48633" />
+						<Hotspot X="-885.4636" Y="-1068.302" Z="96.24574" />
+						<Hotspot X="-1000.306" Y="-938.6604" Z="97.58516" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+		<!-- END Assault on Socrethar's Rise-->
+
+		<UseMount Value="true" />
+		
+		<If Condition="Me.ZoneId == 6722" >
+			<MoveTo Nav="Fly" DestName="To Safe spot." X="959.9972" Y="994.1547" Z="174.8541" />
+			<If Condition="IsQuestCompleted(36348)" > <!-- Socrethar's Rise Area Bonus ID, Neutral -->
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:110560&quot;)" WaitTime="1000" /> <!-- Garrison Hearthstone -->
+				<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="!Me.IsCasting" />
+			</If>
+		</If>
+        
+		<If Condition="Me.IsAlliance" >
+			<If Condition="HasQuest(36680)" > <!-- Daily -->
+				<TurnIn Nav="Fly" QuestName="Assault on Socrethar's Rise" QuestId="36680" TurnInName="Scout Valdez" TurnInId="81152" X="1949.675" Y="333.9757" Z="90.41009" />
+			</If>
+			<If Condition="HasQuest(38197)" > <!-- Missive -->
+				<TurnIn Nav="Fly" QuestName="Missive: Assault on Socrethar's Rise" QuestId="38197" TurnInName="Scout Valdez" TurnInId="81152" X="1949.675" Y="333.9757" Z="90.41009" />
+			</If>
+		</If>
+		
+		<If Condition="Me.IsHorde" >
+			<If Condition="HasQuest(36691)" > <!-- Daily -->
+				<TurnIn Nav="Fly" QuestName="Assault on Socrethar's Rise" QuestId="36691" TurnInName="Shadow Hunter Ukambe" TurnInId="78495" X="5575.156" Y="4593.704" Z="141.1709" />
+			</If>
+			<If Condition="HasQuest(38183)" > <!-- Missive -->
+				<TurnIn Nav="Fly" QuestName="Missive: Assault on Socrethar's Rise" QuestId="38183" TurnInName="Shadow Hunter Ukambe" TurnInId="78495" X="5575.156" Y="4593.704" Z="141.1709" />
+			</If>
+		</If>
+
+		<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Done with Assault on Socrethar's Rise" />
+
+    </QuestOrder>
+
+</HBProfile>
