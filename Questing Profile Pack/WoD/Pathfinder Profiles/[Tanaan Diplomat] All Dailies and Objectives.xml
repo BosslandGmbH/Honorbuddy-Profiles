@@ -125,10 +125,10 @@
 	<!-- END Activate Baleful Token Usage -->
 
 	<!-- Item Level Technicals -->
-		<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+		<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Your gear seems to be strong enough. We won't take any precautions.&quot;);" />
 		</If>
-		<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+		<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Your gear looks to be a bit weak. We will use a more cautious farm method and avoid stronger mobs.&quot;);" />
 			<!-- Could use a SetBlackspots :o -->
 			<SetAvoidMobs>
@@ -223,7 +223,7 @@
 			</CustomBehavior>
 		</If>
 		<!-- Hook Treasures and Rare Detection -->
-			<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+			<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 				<CustomBehavior File="Hooks\DoWhen" LogExecution="false" AllowExecutionWhileNotAlive="false" ActivityName="Kill Rares" UseWhen="Me.IsAlive &amp;&amp; Me.DurabilityPercent &gt;= .2 &amp;&amp; ((HasQuest(39432) &amp;&amp; !IsQuestCompleted(39432)) || (HasQuest(39433) &amp;&amp; !IsQuestCompleted(39433))) &amp;&amp; ObjectManager.GetObjectsOfType&lt;WoWUnit&gt;().Where(u =&gt; new[]{92552, 90884, 90936, 92429, 93264, 93076, 90434, 90519, 89675, 90887, 93028, 90888, 91727, 92647, 93125, 92941, 91695, 90094, 90777, 90429, 90437, 93279, 90438, 93002, 90442, 91374, 92194, 90885, 90024, 93236, 92887, 92606, 92694, 92977, 92574, 91087, 90122}.Contains((int)u.Entry) &amp;&amp; Navigator.CanNavigateFully(Me.Location, u.Location) &amp;&amp; Navigator.PathDistance(Me.Location, u.Location) &lt;= 50 &amp;&amp; u.IsAlive).OrderBy(u =&gt; Navigator.PathDistance(Me.Location, u.Location)).FirstOrDefault() != null" >
 					<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Killing a rare.&quot;);" />
 					<CustomBehavior File="InteractWith" IgnoreMobsInBlackspots="true" MovementBy="NavigatorOnly" PreInteractMountStrategy="Dismount" WaitForNpcs="false" ProactiveCombatStrategy="ClearMobsTargetingUs" MobState="Alive" InteractByLooting="true" CollectionDistance="500"
@@ -236,7 +236,7 @@
 				MobIds="241599, 241847, 241848, 241433, 241656, 240003, 241742, 241563, 241745, 242649, 241561, 242249, 241760, 240577, 243852, 241605, 241657, 241692, 243796, 241533, 241565, 241521, 241560, 241671, 243860, 241504, 241699, 240543, 241713, 240289, 241775, 243693, 241673, 241566, 243690, 241764, 241449, 241835, 240580, 241674, 241841, 241450, 241601, 241600, 241602" TerminateWhen="Me.IsDead" />
 				</CustomBehavior>
 			</If>
-			<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+			<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 				<CustomBehavior File="Hooks\DoWhen" LogExecution="false" ActivityName="Grab Treasures" UseWhen="Me.IsAlive &amp;&amp; ((HasQuest(39432) &amp;&amp; !IsQuestCompleted(39432)) || (HasQuest(39433) &amp;&amp; !IsQuestCompleted(39433))) &amp;&amp; 
 				ObjectManager.GetObjectsOfType&lt;WoWGameObject&gt;().Where(o =&gt; new[]{243796, 243852, 243860}.Contains((int)o.Entry) &amp;&amp; !(Math.Floor(o.X) == 4338 || Math.Floor(o.X) == 4302 || Math.Floor(o.X) == 4656) &amp;&amp; Navigator.PathDistance(Me.Location, o.Location) &lt; 75 &amp;&amp;	Navigator.CanNavigateFully(Me.Location, o.Location)).OrderBy(o =&gt; o.Distance).FirstOrDefault() != null" > 
 				<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Grabbing a treasure.&quot;);" />
@@ -428,7 +428,7 @@
 					<While Condition="HasQuest(37891) &amp;&amp; !IsQuestCompleted(37891)" > <!-- Assault on Ironhold Harbor -->
 						<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - Assault on Ironhold Harbor.&quot;);" />
 						<!-- Hard Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(37866) &amp;&amp; !IsQuestCompleted(37866)" >
 									<MoveTo Nav="Fly" DestName="Ironhold Harbor" X="4583.305" Y="-399.9979" Z="10.69125" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(37866)" />
@@ -446,7 +446,7 @@
 							</If>
 						<!-- END Hard Pulls -->
 						<!-- Easy Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(37866) &amp;&amp; !IsQuestCompleted(37866)" >
 									<MoveTo Nav="Fly" DestName="Ironhold Harbor" X="4633.494" Y="-578.2945" Z="44.38635" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(37866)" />
@@ -466,7 +466,7 @@
 					<While Condition="HasQuest(37968) &amp;&amp; !IsQuestCompleted(37968)" > <!-- Assault on the Temple of Sha'naar -->
 						<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - Assault on the Temple of Sha'naar.&quot;);" />
 						<!-- Hard Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(37966) &amp;&amp; !IsQuestCompleted(37966)" >
 									<MoveTo Nav="Fly" DestName="Temple of Sha'naar" X="3612.619" Y="183.9686" Z="129.547" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(37966)" />
@@ -481,7 +481,7 @@
 							</If>
 						<!-- END Hard Pulls -->
 						<!-- Easy Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(37966) &amp;&amp; !IsQuestCompleted(37866)" >
 									<If Condition="!CanFly()" >
 										<MoveTo DestName="Temple of Sha'naar" X="3663.508" Y="105.9724" Z="83.52634" />
@@ -517,7 +517,7 @@
 							</CustomBehavior>
 						<!-- END Iron Front Healing Bandages -->
 						<!-- Hard Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(38051) &amp;&amp; !IsQuestCompleted(38051)" >
 									<MoveTo Nav="Fly" DestName="The Iron Front" X="4022.859" Y="1185.233" Z="159.6061" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38051)" />
@@ -534,7 +534,7 @@
 							</If>
 						<!-- END Hard Pulls -->
 						<!-- Easy Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(38051) &amp;&amp; !IsQuestCompleted(38051)" >
 									<MoveTo Nav="Fly" DestName="The Iron Front" X="3992.573" Y="805.0379" Z="151.8674" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38051)" />
@@ -572,7 +572,7 @@
 					<While Condition="HasQuest(38250) &amp;&amp; !IsQuestCompleted(38250)" > <!-- Assault on the Ruins of Kra'nak -->
 						<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - Assault on the Ruins of Kra'nak.&quot;);" />
 						<!-- Hard Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(37938) &amp;&amp; !IsQuestCompleted(37938)" >
 									<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4546.603" Y="484.6314" Z="226.6398" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(37938)" />
@@ -590,7 +590,7 @@
 							</If>
 						<!-- END Hard Pulls -->
 						<!-- Easy Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(37938) &amp;&amp; !IsQuestCompleted(37938)" >
 									<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4539.619" Y="424.5465" Z="229.3716" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(37938)" />
@@ -612,7 +612,7 @@
 					<While Condition="HasQuest(38440) &amp;&amp; !IsQuestCompleted(38440)" > <!-- Assault on The Fel Forge -->
 						<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - Assault on The Fel Forge.&quot;);" />
 						<!-- Hard Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(38439) &amp;&amp; !IsQuestCompleted(38439)" > <!-- Assault on the Fel Forge -->
 									<MoveTo Nav="Fly" DestName="The Fel Forge" X="4472.133" Y="-697.1107" Z="33.81255" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38439)" />
@@ -630,7 +630,7 @@
 							</If>
 						<!-- END Hard Pulls -->
 						<!-- Easy Pulls :: Same as hard, make edits if too hard. -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(38439) &amp;&amp; !IsQuestCompleted(38439)" > <!-- Assault on the Fel Forge -->
 									<MoveTo Nav="Fly" DestName="The Fel Forge" X="4472.133" Y="-697.1107" Z="33.81255" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38439)" />
@@ -751,7 +751,7 @@
 					<While Condition="!IsQuestCompleted(38868) &amp;&amp; !IsQuestCompleted(38250) &amp;&amp; !IsQuestCompleted(39574) &amp;&amp; (!HasQuest(39447) &amp;&amp; !IsQuestCompleted(39447))" > <!-- Assault on the Ruins of Kra'nak : Intro Version -->
 						<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Completing Assault on the Ruins of Kra'nak.&quot;);" />
 						<!-- Hard Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(38868) &amp;&amp; !IsQuestCompleted(38868) &amp;&amp; (!HasQuest(39447) &amp;&amp; !IsQuestCompleted(39447))" >
 									<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4546.603" Y="484.6314" Z="226.6398" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38868) || HasQuest(39447)" />
@@ -769,7 +769,7 @@
 							</If>
 						<!-- END Hard Pulls -->
 						<!-- Easy Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(38868) &amp;&amp; !IsQuestCompleted(38868) &amp;&amp; (!HasQuest(39447) &amp;&amp; !IsQuestCompleted(39447))" >
 									<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4539.619" Y="424.5465" Z="229.3716" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38868) || HasQuest(39447)" />
@@ -791,7 +791,7 @@
 					<While Condition="!IsQuestCompleted(39447) &amp;&amp; !IsQuestCompleted(38250) &amp;&amp; !IsQuestCompleted(39574)" > <!-- Assault on the Ruins of Kra'nak -->
 						<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Completing Assault on the Ruins of Kra'nak.&quot;);" />
 						<!-- Hard Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(39447) &amp;&amp; !IsQuestCompleted(39447)" >
 									<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4546.603" Y="484.6314" Z="226.6398" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39447)" />
@@ -809,7 +809,7 @@
 							</If>
 						<!-- END Hard Pulls -->
 						<!-- Easy Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(39447) &amp;&amp; !IsQuestCompleted(39447)" >
 									<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4539.619" Y="424.5465" Z="229.3716" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39447)" />
@@ -831,7 +831,7 @@
 					<While Condition="!IsQuestCompleted(39449) &amp;&amp; !IsQuestCompleted(37968) &amp;&amp; !IsQuestCompleted(39574)" > <!-- Assault on the Temple of Sha'naar -->
 						<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Completing Assault on the Temple of Sha'naar.&quot;);" />
 						<!-- Hard Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(39449) &amp;&amp; !IsQuestCompleted(39449)" > <!-- Assault on the Temple of Sha'naar -->
 									<MoveTo Nav="Fly" DestName="Temple of Sha'naar" X="3612.619" Y="183.9686" Z="129.547" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39449)" />
@@ -846,7 +846,7 @@
 							</If>
 						<!-- END Hard Pulls -->
 						<!-- Easy Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(39449) &amp;&amp; !IsQuestCompleted(39449)" > <!-- Assault on the Temple of Sha'naar -->
 									<If Condition="!CanFly()" >
 										<MoveTo DestName="Temple of Sha'naar" X="3663.508" Y="105.9724" Z="83.52634" />
@@ -866,7 +866,7 @@
 
 					<While Condition="!IsQuestCompleted(39451) &amp;&amp; !IsQuestCompleted(37891) &amp;&amp; !IsQuestCompleted(39574)" > <!-- Assault on Ironhold Harbor -->
 						<!-- Hard Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(39451) &amp;&amp; !IsQuestCompleted(39451)" >
 									<MoveTo Nav="Fly" DestName="Ironhold Harbor" X="4583.305" Y="-399.9979" Z="10.69125" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39451)" />
@@ -884,7 +884,7 @@
 							</If>
 						<!-- END Hard Pulls -->
 						<!-- Easy Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(39451) &amp;&amp; !IsQuestCompleted(39451)" >
 									<MoveTo Nav="Fly" DestName="Ironhold Harbor" X="4633.494" Y="-578.2945" Z="44.38635" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39451)" />
@@ -907,7 +907,7 @@
 				<While Condition="HasQuest(39581) &amp;&amp; !IsQuestCompleted(39581)" > <!-- [Pavnik] Demonslayer of Tanaan -->
 					<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - Demonslayer of Tanaan.&quot;);" />
 					<!-- Hard Pulls -->
-						<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+						<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 							<SetGrindArea>
 								<GrindArea>
 									<MobIds>93024, 90517</MobIds>
@@ -924,7 +924,7 @@
 						</If>
 					<!-- END Hard Pulls -->
 					<!-- Easy Pulls :: Same as hard, make edits if too hard. -->
-						<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+						<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 							<SetGrindArea>
 								<GrindArea>
 									<MobIds>93024, 90517</MobIds>
@@ -962,7 +962,7 @@
 					<While Condition="HasQuest(37940) &amp;&amp; !IsQuestCompleted(37940)" > <!-- Assault on Ironhold Harbor -->
 						<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - Assault on Ironhold Harbor.&quot;);" />
 						<!-- Hard Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(37865) &amp;&amp; !IsQuestCompleted(37865)" >
 									<MoveTo Nav="Fly" DestName="Ironhold Harbor" X="4583.305" Y="-399.9979" Z="10.69125" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(37865)" />
@@ -980,7 +980,7 @@
 							</If>
 						<!-- END Hard Pulls -->
 						<!-- Easy Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(37865) &amp;&amp; !IsQuestCompleted(37865)" >
 									<MoveTo Nav="Fly" DestName="Ironhold Harbor" X="4633.494" Y="-578.2945" Z="44.38635" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(37865)" />
@@ -1000,7 +1000,7 @@
 					<While Condition="HasQuest(38449) &amp;&amp; !IsQuestCompleted(38449)" > <!-- Assault on the Temple of Sha'naar -->
 						<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - Assault on the Temple of Sha'naar.&quot;);" />
 						<!-- Hard Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(38020) &amp;&amp; !IsQuestCompleted(38020)" >
 									<MoveTo Nav="Fly" DestName="Temple of Sha'naar" X="3612.619" Y="183.9686" Z="129.547" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38020)" />
@@ -1015,7 +1015,7 @@
 							</If>
 						<!-- END Hard Pulls -->
 						<!-- Easy Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(38020) &amp;&amp; !IsQuestCompleted(38020)" >
 									<If Condition="!CanFly()" >
 										<MoveTo DestName="Temple of Sha'naar" X="3663.508" Y="105.9724" Z="83.52634" />
@@ -1051,7 +1051,7 @@
 							</CustomBehavior>
 						<!-- END Iron Front Healing Bandages -->
 						<!-- Hard Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(38054) &amp;&amp; !IsQuestCompleted(38054)" >
 									<MoveTo Nav="Fly" DestName="The Iron Front" X="4022.859" Y="1185.233" Z="159.6061" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38054)" />
@@ -1068,7 +1068,7 @@
 							</If>
 						<!-- END Hard Pulls -->
 						<!-- Easy Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(38054) &amp;&amp; !IsQuestCompleted(38054)" >
 									<MoveTo Nav="Fly" DestName="The Iron Front" X="3992.573" Y="805.0379" Z="151.8674" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38054)" />
@@ -1088,7 +1088,7 @@
 					<While Condition="HasQuest(38044) &amp;&amp; !IsQuestCompleted(38044)" > <!-- Bleeding the Bleeding Hollow -->
 						<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - Bleeding the Bleeding Hollow.&quot;);" />
 						<!-- Hard Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(38040) &amp;&amp; !IsQuestCompleted(38040)" >
 									<MoveTo Nav="Fly" DestName="Zeth'gol" X="4245.792" Y="390.4549" Z="153.8195" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38040)" />
@@ -1105,7 +1105,7 @@
 							</If>
 						<!-- END Hard Pulls -->
 						<!-- Easy Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(38040) &amp;&amp; !IsQuestCompleted(38040)" >
 									<MoveTo Nav="Fly" DestName="Zeth'gol" X="4245.792" Y="390.4549" Z="153.8195" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38040)" />
@@ -1125,7 +1125,7 @@
 					<While Condition="HasQuest(38252) &amp;&amp; !IsQuestCompleted(38252)" > <!-- Assault on the Ruins of Kra'nak -->
 						<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - Assault on the Ruins of Kra'nak.&quot;);" />
 						<!-- Hard Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(38009) &amp;&amp; !IsQuestCompleted(38009)" >
 									<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4546.603" Y="484.6314" Z="226.6398" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38009)" />
@@ -1143,7 +1143,7 @@
 							</If>
 						<!-- END Hard Pulls -->
 						<!-- Easy Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(38009) &amp;&amp; !IsQuestCompleted(38009)" >
 									<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4539.619" Y="424.5465" Z="229.3716" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38009)" />
@@ -1165,7 +1165,7 @@
 					<While Condition="HasQuest(38441) &amp;&amp; !IsQuestCompleted(38441)" > <!-- Assault on The Fel Forge -->
 						<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - Assault on The Fel Forge.&quot;);" />
 						<!-- Hard Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(37970) &amp;&amp; !IsQuestCompleted(37970)" > <!-- Assault on the Fel Forge -->
 									<MoveTo Nav="Fly" DestName="The Fel Forge" X="4472.133" Y="-697.1107" Z="33.81255" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(37970)" />
@@ -1183,7 +1183,7 @@
 							</If>
 						<!-- END Hard Pulls -->
 						<!-- Easy Pulls :: Same as hard, make edits if too hard. -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(37970) &amp;&amp; !IsQuestCompleted(37970)" > <!-- Assault on the Fel Forge -->
 									<MoveTo Nav="Fly" DestName="The Fel Forge" X="4472.133" Y="-697.1107" Z="33.81255" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(37970)" />
@@ -1306,7 +1306,7 @@
 					<While Condition="!IsQuestCompleted(38869) &amp;&amp; !IsQuestCompleted(38252) &amp;&amp; !IsQuestCompleted(39526) &amp;&amp; (!HasQuest(39448) &amp;&amp; !IsQuestCompleted(39448))" > <!-- Assault on the Ruins of Kra'nak : Intro Version -->
 						<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Completing Assault on the Ruins of Kra'nak.&quot;);" />
 						<!-- Hard Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(38869) &amp;&amp; !IsQuestCompleted(38869) &amp;&amp; (!HasQuest(39448) &amp;&amp; !IsQuestCompleted(39448))" >
 									<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4546.603" Y="484.6314" Z="226.6398" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38869) || HasQuest(39448)" />
@@ -1324,7 +1324,7 @@
 							</If>
 						<!-- END Hard Pulls -->
 						<!-- Easy Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(38869) &amp;&amp; !IsQuestCompleted(38869) &amp;&amp; (!HasQuest(39448) &amp;&amp; !IsQuestCompleted(39448))" >
 									<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4539.619" Y="424.5465" Z="229.3716" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38869) || HasQuest(39448)" />
@@ -1346,7 +1346,7 @@
 					<While Condition="!IsQuestCompleted(39448) &amp;&amp; !IsQuestCompleted(38252) &amp;&amp; !IsQuestCompleted(39526)" > <!-- Assault on the Ruins of Kra'nak -->
 						<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Completing Assault on the Ruins of Kra'nak.&quot;);" />
 						<!-- Hard Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(39448) &amp;&amp; !IsQuestCompleted(39448)" >
 									<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4546.603" Y="484.6314" Z="226.6398" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39448)" />
@@ -1364,7 +1364,7 @@
 							</If>
 						<!-- END Hard Pulls -->
 						<!-- Easy Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(39448) &amp;&amp; !IsQuestCompleted(39448)" >
 									<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4539.619" Y="424.5465" Z="229.3716" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39448)" />
@@ -1386,7 +1386,7 @@
 					<While Condition="!IsQuestCompleted(39450) &amp;&amp; !IsQuestCompleted(38449) &amp;&amp; !IsQuestCompleted(39526)" > <!-- Assault on the Temple of Sha'naar -->
 						<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Completing Assault on the Temple of Sha'naar.&quot;);" />
 						<!-- Hard Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(39450) &amp;&amp; !IsQuestCompleted(39450)" > <!-- Assault on the Temple of Sha'naar -->
 									<MoveTo Nav="Fly" DestName="Temple of Sha'naar" X="3612.619" Y="183.9686" Z="129.547" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39450)" />
@@ -1401,7 +1401,7 @@
 							</If>
 						<!-- END Hard Pulls -->
 						<!-- Easy Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(39450) &amp;&amp; !IsQuestCompleted(39450)" > <!-- Assault on the Temple of Sha'naar -->
 									<If Condition="!CanFly()" >
 										<MoveTo DestName="Temple of Sha'naar" X="3663.508" Y="105.9724" Z="83.52634" />
@@ -1421,7 +1421,7 @@
 
 					<While Condition="!IsQuestCompleted(39452) &amp;&amp; !IsQuestCompleted(37940) &amp;&amp; !IsQuestCompleted(39526)" > <!-- Assault on Ironhold Harbor -->
 						<!-- Hard Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(39452) &amp;&amp; !IsQuestCompleted(39452)" >
 									<MoveTo Nav="Fly" DestName="Ironhold Harbor" X="4583.305" Y="-399.9979" Z="10.69125" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39452)" />
@@ -1439,7 +1439,7 @@
 							</If>
 						<!-- END Hard Pulls -->
 						<!-- Easy Pulls -->
-							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+							<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 								<While Condition="!HasQuest(39452) &amp;&amp; !IsQuestCompleted(39452)" >
 									<MoveTo Nav="Fly" DestName="Ironhold Harbor" X="4633.494" Y="-578.2945" Z="44.38635" />
 									<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39452)" />
@@ -1533,7 +1533,7 @@
 			<While Condition="!IsQuestCompleted(39445) &amp;&amp; !IsQuestCompleted(38440)" > <!-- Assault on the Fel Forge -->
 				<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Completing Assault on the Fel Forge.&quot;);" />
 				<!-- Hard Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(39445) &amp;&amp; !IsQuestCompleted(39445)" > <!-- Assault on the Fel Forge -->
 							<MoveTo Nav="Fly" DestName="The Fel Forge" X="4472.133" Y="-697.1107" Z="33.81255" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39445)" />
@@ -1551,7 +1551,7 @@
 					</If>
 				<!-- END Hard Pulls -->
 				<!-- Easy Pulls :: Same as hard, make edits if too hard. -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(39445) &amp;&amp; !IsQuestCompleted(39445)" > <!-- Assault on the Fel Forge -->
 							<MoveTo Nav="Fly" DestName="The Fel Forge" X="4472.133" Y="-697.1107" Z="33.81255" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39445)" />
@@ -1573,7 +1573,7 @@
 			<While Condition="!IsQuestCompleted(39451) &amp;&amp; !IsQuestCompleted(37891)" > <!-- Assault on Ironhold Harbor -->
 				<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Completing Assault on Ironhold Harbor.&quot;);" />
 				<!-- Hard Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(39451) &amp;&amp; !IsQuestCompleted(39451)" >
 							<MoveTo Nav="Fly" DestName="Ironhold Harbor" X="4583.305" Y="-399.9979" Z="10.69125" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39451)" />
@@ -1591,7 +1591,7 @@
 					</If>
 				<!-- END Hard Pulls -->
 				<!-- Easy Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(39451) &amp;&amp; !IsQuestCompleted(39451)" >
 							<MoveTo Nav="Fly" DestName="Ironhold Harbor" X="4633.494" Y="-578.2945" Z="44.38635" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39451)" />
@@ -1611,7 +1611,7 @@
 			<While Condition="!IsQuestCompleted(38868) &amp;&amp; !IsQuestCompleted(38250) &amp;&amp; (!HasQuest(39447) &amp;&amp; !IsQuestCompleted(39447))" > <!-- Assault on the Ruins of Kra'nak : Intro Version -->
 				<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Completing Assault on the Ruins of Kra'nak.&quot;);" />
 				<!-- Hard Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(38868) &amp;&amp; !IsQuestCompleted(38868) &amp;&amp; (!HasQuest(39447) &amp;&amp; !IsQuestCompleted(39447))" >
 							<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4546.603" Y="484.6314" Z="226.6398" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38868) || HasQuest(39447)" />
@@ -1629,7 +1629,7 @@
 					</If>
 				<!-- END Hard Pulls -->
 				<!-- Easy Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(38868) &amp;&amp; !IsQuestCompleted(38868) &amp;&amp; (!HasQuest(39447) &amp;&amp; !IsQuestCompleted(39447))" >
 							<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4539.619" Y="424.5465" Z="229.3716" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38868) || HasQuest(39447)" />
@@ -1651,7 +1651,7 @@
 			<While Condition="!IsQuestCompleted(39447) &amp;&amp; !IsQuestCompleted(38250)" > <!-- Assault on the Ruins of Kra'nak -->
 				<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Completing Assault on the Ruins of Kra'nak.&quot;);" />
 				<!-- Hard Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(39447) &amp;&amp; !IsQuestCompleted(39447)" >
 							<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4546.603" Y="484.6314" Z="226.6398" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39447)" />
@@ -1667,7 +1667,7 @@
 					</If>
 				<!-- END Hard Pulls -->
 				<!-- Easy Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(39447) &amp;&amp; !IsQuestCompleted(39447)" >
 							<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4539.619" Y="424.5465" Z="229.3716" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39447)" />
@@ -1738,7 +1738,7 @@
 					</CustomBehavior>
 				<!-- END Iron Front Healing Bandages -->
 				<!-- Hard Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(38866) &amp;&amp; !IsQuestCompleted(38866) &amp;&amp; (!HasQuest(39443) &amp;&amp; !IsQuestCompleted(39443))" >
 							<MoveTo Nav="Fly" DestName="The Iron Front" X="4022.859" Y="1185.233" Z="159.6061" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38866) || HasQuest(39443)" />
@@ -1755,7 +1755,7 @@
 					</If>
 				<!-- END Hard Pulls -->
 				<!-- Easy Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(38866) &amp;&amp; !IsQuestCompleted(38866) &amp;&amp; (!HasQuest(39443) &amp;&amp; !IsQuestCompleted(39443))" >
 							<MoveTo Nav="Fly" DestName="The Iron Front" X="3992.573" Y="805.0379" Z="151.8674" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38866) || HasQuest(39443)" />
@@ -1790,7 +1790,7 @@
 						</CustomBehavior>
 					<!-- END Iron Front Healing Bandages -->
 				<!-- Hard Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(39443) &amp;&amp; !IsQuestCompleted(39443)" >
 							<MoveTo Nav="Fly" DestName="The Iron Front" X="4022.859" Y="1185.233" Z="159.6061" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39443)" />
@@ -1807,7 +1807,7 @@
 					</If>
 				<!-- END Hard Pulls -->
 				<!-- Easy Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(39443) &amp;&amp; !IsQuestCompleted(39443)" >
 							<MoveTo Nav="Fly" DestName="The Iron Front" X="3992.573" Y="805.0379" Z="151.8674" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39443)" />
@@ -1827,7 +1827,7 @@
 			<While Condition="!IsQuestCompleted(39449) &amp;&amp; !IsQuestCompleted(37968)" > <!-- Assault on the Temple of Sha'naar -->
 				<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Completing Assault on the Temple of Sha'naar.&quot;);" />
 				<!-- Hard Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(39449) &amp;&amp; !IsQuestCompleted(39449)" > <!-- Assault on the Temple of Sha'naar -->
 							<MoveTo Nav="Fly" DestName="Temple of Sha'naar" X="3612.619" Y="183.9686" Z="129.547" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39449)" />
@@ -1842,7 +1842,7 @@
 					</If>
 				<!-- END Hard Pulls -->
 				<!-- Easy Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(39449) &amp;&amp; !IsQuestCompleted(39449)" > <!-- Assault on the Temple of Sha'naar -->
 							<If Condition="!CanFly()" >
 								<MoveTo DestName="Temple of Sha'naar" X="3663.508" Y="105.9724" Z="83.52634" />
@@ -1888,7 +1888,7 @@
 		<While Condition="HasQuest(39571) &amp;&amp; !IsQuestCompleted(39571)" > <!-- Disarming Sha'naar -->
 			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - Disarming Sha'naar.&quot;);" />
 			<!-- Hard Pulls -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 					<CustomBehavior File="InteractWith" IgnoreMobsInBlackspots="true" MovementBy="NavigatorOnly" PreInteractMountStrategy="Dismount" ProactiveCombatStrategy="ClearMobsTargetingUs" QuestId="39571" NumOfTimes="1000" WaitTime="500" MobIds="243794" >
 						<HuntingGrounds>
 							<Hotspot Name="Entrace of Sha'naar" X="3620.049" Y="164.0029" Z="124.2737" />
@@ -1899,7 +1899,7 @@
 				</If>
 			<!-- END Hard Pulls -->
 			<!-- Easy Pulls -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 					<CustomBehavior File="InteractWith" IgnoreMobsInBlackspots="true" MovementBy="NavigatorOnly" PreInteractMountStrategy="Dismount" ProactiveCombatStrategy="ClearAll" QuestId="39571" NumOfTimes="1000" WaitTime="500" MobIds="243794" >
 						<HuntingGrounds>
 							<Hotspot Name="Entrace of Sha'naar" X="3620.049" Y="164.0029" Z="124.2737" />
@@ -1913,7 +1913,7 @@
 		<While Condition="HasQuest(39570) &amp;&amp; !IsQuestCompleted(39570)" > <!-- Secrets of the Shadow Council -->
 			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - Secrets of the Shadow Council.&quot;);" />
 			<!-- Hard Pulls -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 					<SetGrindArea>
 						<GrindArea>
 							<MobIds>90649, 90607, 90312, 90654, 89748</MobIds>
@@ -1931,7 +1931,7 @@
 				</If>
 			<!-- END Hard Pulls -->
 			<!-- Easy Pulls -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 					<SetGrindArea>
 						<GrindArea>
 							<MobIds>90649, 90607, 90312, 90654, 89748</MobIds>
@@ -1953,7 +1953,7 @@
 		<While Condition="HasQuest(39586) &amp;&amp; !IsQuestCompleted(39586)" > <!-- [Pavnik] Bringing Down the Iron Horde -->
 			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - Bringing Down the Iron Horde.&quot;);" />
 			<!-- Hard Pulls -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 					<SetGrindArea>
 						<GrindArea>
 							<MobIds>90066, 91760, 91764, 91721, 89754, 93370</MobIds>
@@ -1969,7 +1969,7 @@
 				</If>
 			<!-- END Hard Pulls -->
 			<!-- Easy Pulls :: Same as hard, make edits if too hard. -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 					<SetGrindArea>
 						<GrindArea>
 							<MobIds>90066, 91760, 91764, 91721, 89754, 93370</MobIds>
@@ -1989,7 +1989,7 @@
 		<While Condition="HasQuest(39569) &amp;&amp; !IsQuestCompleted(39569)" > <!-- Breaking Their Fel Bonds -->
 			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - Breaking Their Fel Bonds.&quot;);" />
 			<!-- Hard Pulls -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 					<CustomBehavior File="InteractWith" IgnoreMobsInBlackspots="true" MobState="AliveNotInCombat" InteractByLooting="true" NumOfTimes="1000" WaitTime="500" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" MobIds="90066, 91760, 91721, 89754, 93370" QuestId="39569" >
 						<HuntingGrounds>
 							<Hotspot X="4314.433" Y="-1025.236" Z="21.86001" />
@@ -2001,7 +2001,7 @@
 				</If>
 			<!-- END Hard Pulls -->
 			<!-- Easy Pulls :: Same as hard, make edits if too hard. -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 					<CustomBehavior File="InteractWith" IgnoreMobsInBlackspots="true" MobState="AliveNotInCombat" InteractByLooting="true" NumOfTimes="1000" WaitTime="500" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" MobIds="90066, 91760, 91721, 89754, 93370" QuestId="39569" >
 						<HuntingGrounds>
 							<Hotspot X="4314.433" Y="-1025.236" Z="21.86001" />
@@ -2017,7 +2017,7 @@
 		<While Condition="HasQuest(39568) &amp;&amp; !IsQuestCompleted(39568)" > <!-- A Little Wetwork -->
 			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - A Little Wetwork.&quot;);" />
 			<!-- Hard Pulls -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 					<MoveTo Nav="Fly" DestName="Ironhold Harbor" X="4583.305" Y="-399.9979" Z="10.69125" />
 					<SetGrindArea>
 						<GrindArea>
@@ -2036,7 +2036,7 @@
 				</If>
 			<!-- END Hard Pulls -->
 			<!-- Easy Pulls -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 					<MoveTo Nav="Fly" DestName="Ironhold Harbor" X="4633.494" Y="-578.2945" Z="44.38635" />
 					<SetGrindArea>
 						<GrindArea>
@@ -2057,7 +2057,7 @@
 		<While Condition="HasQuest(39567) &amp;&amp; !IsQuestCompleted(39567)" > <!-- Bloodied Blades of Zeth'Gol -->
 			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - Bloodied Blades of Zeth'Gol.&quot;);" />
 			<!-- Hard Pulls -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 					<SetGrindArea>
 						<GrindArea>
 							<MobIds>90851, 89699, 89703, 89705</MobIds>
@@ -2074,7 +2074,7 @@
 				</If>
 			<!-- END Hard Pulls -->
 			<!-- Easy Pulls -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 					<SetGrindArea>
 						<GrindArea>
 							<MobIds>90851, 89699, 89703, 89705</MobIds>
@@ -2097,7 +2097,7 @@
 			<While Condition="!IsQuestCompleted(39446) &amp;&amp; !IsQuestCompleted(38441)" > <!-- Assault on Fel Forge -->
 				<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Completing Assault Fel Forge.&quot;);" />
 				<!-- Hard Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(39446) &amp;&amp; !IsQuestCompleted(39446)" > <!-- Assault on the Fel Forge -->
 							<MoveTo Nav="Fly" DestName="The Fel Forge" X="4472.133" Y="-697.1107" Z="33.81255" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39446)" />
@@ -2115,7 +2115,7 @@
 					</If>
 				<!-- END Hard Pulls -->
 				<!-- Easy Pulls :: Same as hard, make edits if too hard. -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(39446) &amp;&amp; !IsQuestCompleted(39446)" > <!-- Assault on the Fel Forge -->
 							<MoveTo Nav="Fly" DestName="The Fel Forge" X="4472.133" Y="-697.1107" Z="33.81255" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39446)" />
@@ -2137,7 +2137,7 @@
 			<While Condition="!IsQuestCompleted(39452) &amp;&amp; !IsQuestCompleted(37940)" > <!-- Assault on Ironhold Harbor -->
 				<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Completing Assault on Ironhold Harbor.&quot;);" />
 				<!-- Hard Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(39452) &amp;&amp; !IsQuestCompleted(39452)" >
 							<MoveTo Nav="Fly" DestName="Ironhold Harbor" X="4583.305" Y="-399.9979" Z="10.69125" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39452)" />
@@ -2155,7 +2155,7 @@
 					</If>
 				<!-- END Hard Pulls -->
 				<!-- Easy Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(39452) &amp;&amp; !IsQuestCompleted(39452)" >
 							<MoveTo Nav="Fly" DestName="Ironhold Harbor" X="4633.494" Y="-578.2945" Z="44.38635" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39452)" />
@@ -2175,7 +2175,7 @@
 			<While Condition="!IsQuestCompleted(38869) &amp;&amp; !IsQuestCompleted(38252) &amp;&amp; (!HasQuest(39448) &amp;&amp; !IsQuestCompleted(39448))" > <!-- Assault on the Ruins of Kra'nak : Intro Version -->
 				<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Completing Assault on the Ruins of Kra'nak.&quot;);" />
 				<!-- Hard Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(38869) &amp;&amp; !IsQuestCompleted(38869) &amp;&amp; (!HasQuest(39448) &amp;&amp; !IsQuestCompleted(39448))" >
 							<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4546.603" Y="484.6314" Z="226.6398" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38869) || HasQuest(39448)" />
@@ -2193,7 +2193,7 @@
 					</If>
 				<!-- END Hard Pulls -->
 				<!-- Easy Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(38869) &amp;&amp; !IsQuestCompleted(38869) &amp;&amp; (!HasQuest(39448) &amp;&amp; !IsQuestCompleted(39448))" >
 							<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4539.619" Y="424.5465" Z="229.3716" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38869) || HasQuest(39448)" />
@@ -2215,7 +2215,7 @@
 			<While Condition="!IsQuestCompleted(39448) &amp;&amp; !IsQuestCompleted(38252)" > <!-- Assault on the Ruins of Kra'nak -->
 					<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Completing Assault on the Ruins of Kra'nak.&quot;);" />
 					<!-- Hard Pulls -->
-						<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+						<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 							<While Condition="!HasQuest(39448) &amp;&amp; !IsQuestCompleted(39448)" >
 								<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4546.603" Y="484.6314" Z="226.6398" />
 								<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39448)" />
@@ -2233,7 +2233,7 @@
 						</If>
 					<!-- END Hard Pulls -->
 					<!-- Easy Pulls -->
-						<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+						<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 							<While Condition="!HasQuest(39448) &amp;&amp; !IsQuestCompleted(39448)" >
 								<MoveTo Nav="Fly" DestName="Ruins of Kra'nak" X="4539.619" Y="424.5465" Z="229.3716" />
 								<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39448)" />
@@ -2304,7 +2304,7 @@
 					</CustomBehavior>
 				<!-- END Iron Front Healing Bandages -->
 				<!-- Hard Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 					<If Condition="!HasQuest(38865) &amp;&amp; !IsQuestCompleted(38865) &amp;&amp; (!HasQuest(39444) &amp;&amp; !IsQuestCompleted(39444))" >
 						<MoveTo Nav="Fly" DestName="The Iron Front" X="3992.573" Y="805.0379" Z="151.8674" />
 						<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38865) || HasQuest(39444)" />
@@ -2325,7 +2325,7 @@
 					</If>
 				<!-- END Hard Pulls -->
 				<!-- Easy Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(38865) &amp;&amp; !IsQuestCompleted(38865) &amp;&amp; (!HasQuest(39444) &amp;&amp; !IsQuestCompleted(39444))" >
 							<MoveTo Nav="Fly" DestName="The Iron Front" X="3992.573" Y="805.0379" Z="151.8674" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(38865) || HasQuest(39444)" />
@@ -2360,7 +2360,7 @@
 					</CustomBehavior>
 				<!-- END Iron Front Healing Bandages -->
 				<!-- Hard Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(39444) &amp;&amp; !IsQuestCompleted(39444)" >
 							<MoveTo Nav="Fly" DestName="The Iron Front" X="4022.859" Y="1185.233" Z="159.6061" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39444)" />
@@ -2377,7 +2377,7 @@
 					</If>
 				<!-- END Hard Pulls -->
 				<!-- Easy Pulls -->
-					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+					<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 						<While Condition="!HasQuest(39444) &amp;&amp; !IsQuestCompleted(39444)" >
 							<MoveTo Nav="Fly" DestName="The Iron Front" X="3992.573" Y="805.0379" Z="151.8674" />
 							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39444)" />
@@ -2397,7 +2397,7 @@
 			<While Condition="!IsQuestCompleted(39450) &amp;&amp; !IsQuestCompleted(38449)" > <!-- Assault on the Temple of Sha'naar -->
 					<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Completing Assault on the Temple of Sha'naar.&quot;);" />
 					<!-- Hard Pulls -->
-						<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+						<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 							<While Condition="!HasQuest(39450) &amp;&amp; !IsQuestCompleted(39450)" > <!-- Assault on the Temple of Sha'naar -->
 								<MoveTo Nav="Fly" DestName="Temple of Sha'naar" X="3612.619" Y="183.9686" Z="129.547" />
 								<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(39450)" />
@@ -2412,7 +2412,7 @@
 						</If>
 					<!-- END Hard Pulls -->
 					<!-- Easy Pulls -->
-						<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+						<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 							<While Condition="!HasQuest(39450) &amp;&amp; !IsQuestCompleted(39450)" > <!-- Assault on the Temple of Sha'naar -->
 								<If Condition="!CanFly()" >
 									<MoveTo DestName="Temple of Sha'naar" X="3663.508" Y="105.9724" Z="83.52634" />
@@ -2458,7 +2458,7 @@
 		<While Condition="HasQuest(39513) &amp;&amp; !IsQuestCompleted(39513)" > <!-- Disarming Sha'naar -->
 			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - Disarming Sha'naar.&quot;);" />
 			<!-- Hard Pulls -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 					<CustomBehavior File="InteractWith" IgnoreMobsInBlackspots="true" MovementBy="NavigatorOnly" PreInteractMountStrategy="Dismount" ProactiveCombatStrategy="ClearMobsTargetingUs" QuestId="39513" NumOfTimes="1000" WaitTime="500" MobIds="243794" >
 						<HuntingGrounds>
 							<Hotspot Name="Entrace of Sha'naar" X="3620.049" Y="164.0029" Z="124.2737" />
@@ -2469,7 +2469,7 @@
 				</If>
 			<!-- END Hard Pulls -->
 			<!-- Easy Pulls -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 					<CustomBehavior File="InteractWith" IgnoreMobsInBlackspots="true" MovementBy="NavigatorOnly" PreInteractMountStrategy="Dismount" ProactiveCombatStrategy="ClearAll" QuestId="39513" NumOfTimes="1000" WaitTime="500" MobIds="243794" >
 						<HuntingGrounds>
 							<Hotspot Name="Entrace of Sha'naar" X="3620.049" Y="164.0029" Z="124.2737" />
@@ -2483,7 +2483,7 @@
 		<While Condition="HasQuest(39512) &amp;&amp; !IsQuestCompleted(39512)" > <!-- Secrets of the Shadow Council -->
 			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - Secrets of the Shadow Council.&quot;);" />
 			<!-- Hard Pulls -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 					<SetGrindArea>
 						<GrindArea>
 							<MobIds>90649, 90607, 90312, 90654, 89748</MobIds>
@@ -2501,7 +2501,7 @@
 				</If>
 			<!-- END Hard Pulls -->
 			<!-- Easy Pulls -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 					<SetGrindArea>
 						<GrindArea>
 							<MobIds>90649, 90607, 90312, 90654, 89748</MobIds>
@@ -2551,7 +2551,7 @@
 		<While Condition="HasQuest(39510) &amp;&amp; !IsQuestCompleted(39510)" > <!-- A Little Wetwork -->
 			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - A Little Wetwork.&quot;);" />
 			<!-- Hard Pulls -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 					<MoveTo Nav="Fly" DestName="Ironhold Harbor" X="4583.305" Y="-399.9979" Z="10.69125" />
 					<SetGrindArea>
 						<GrindArea>
@@ -2570,7 +2570,7 @@
 				</If>
 			<!-- END Hard Pulls -->
 			<!-- Easy Pulls -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 					<MoveTo Nav="Fly" DestName="Ironhold Harbor" X="4633.494" Y="-578.2945" Z="44.38635" />
 					<SetGrindArea>
 						<GrindArea>
@@ -2591,7 +2591,7 @@
 		<While Condition="HasQuest(39509) &amp;&amp; !IsQuestCompleted(39509)" > <!-- Bloodied Blades of Zeth'Gol -->
 			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Quest Detected - Bloodied Blades of Zeth'Gol.&quot;);" />
 			<!-- Hard Pulls -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.MinItemLevel" >
 					<SetGrindArea>
 						<GrindArea>
 							<MobIds>90851, 89699, 89703, 89705</MobIds>
@@ -2608,7 +2608,7 @@
 				</If>
 			<!-- END Hard Pulls -->
 			<!-- Easy Pulls -->
-				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &lt; Settings.Instance.MinItemLevel" >
+				<If Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &lt; Settings.Instance.MinItemLevel" >
 					<SetGrindArea>
 						<GrindArea>
 							<MobIds>90851, 89699, 89703, 89705</MobIds>
@@ -2820,7 +2820,7 @@
 	<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: All bonus objective zones complete!&quot;);" />
  
 	<!-- Saberstalker Grind -->
-		<While Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 0) &gt;= Settings.Instance.GrindSaberstalkersILvl &amp;&amp; Settings.Instance.GrindSaberstalkers" >		
+		<While Condition="Lua.GetReturnVal&lt;float&gt;(&quot;return GetAverageItemLevel()&quot;, 1) &gt;= Settings.Instance.GrindSaberstalkersILvl &amp;&amp; Settings.Instance.GrindSaberstalkers" >		
 			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Going to grind Saberstalkers.&quot;);" />		
 			<If Condition="(!HasQuest(39582) &amp;&amp; !IsQuestCompleted(39582) &amp;&amp; Me.IsAlliance) || (!HasQuest(39529) &amp;&amp; !IsQuestCompleted(39529) &amp;&amp; Me.IsHorde)" >		
 				<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Red, &quot;[Notification]: You may want to pick up Tooth and Claw before letting this grind commence.&quot;);" />		
