@@ -3183,7 +3183,48 @@
             If you modify something in this block, don't forget to update the copy of this
             block after each checkpoint, and the at the start of the <QuestOrder>, also.
             -->
-
+		<CustomBehavior File="RunCode" Type="Definition">
+			<![CDATA[ 
+		        IEnumerable<WoWItem> GetExtraConsumables()
+		        {
+		            uint foodCount = 0;
+		            uint drinkCount = 0;
+		            // Skip conjured and buff comsumables.
+		  
+		            var extraConsumables = (from item in Me.BagItems
+		                               where item != null && item.ItemInfo != null
+		                               let isFood = Consumable.IsFood(item.ItemInfo)
+		                               let isDrink = Consumable.IsDrink(item.ItemInfo)
+		                               where (isFood || isDrink) && item.ItemInfo.SellPrice > 0 && item.Effects.Count == 1 && item.ItemInfo.RequiredLevel < Me.Level - 10                    
+		                               select item).ToList();
+		  
+		  
+		            var extraPotions = Me.BagItems
+		                .Where(c => c != null && c.IsValid && c.ItemInfo != null && c.ItemInfo.SellPrice > 0 && c.Effects.Count == 1
+		                    && (c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Potion
+		                    || c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Elixir
+		                    || c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Flask)
+		                    && c.ItemInfo.RequiredLevel < Me.Level - 20);
+		  
+		            extraConsumables.AddRange(extraPotions);
+		            return extraConsumables;
+		        }
+		         
+		        async Task SellExtraConsumables()
+		        {
+		            Logging.Write("Selling items in GetExtraConsumables()");
+		            foreach (var item in GetExtraConsumables())
+		            {
+		                Logging.Write("Selling {0}.", item.Name);                       
+		                item.UseContainerItem();
+		                await Coroutine.Sleep(1337);
+		            }
+		        }
+            ]]>
+		</CustomBehavior>
+        <CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+            <CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>  
+        </CustomBehavior>
 		<CustomBehavior File="Misc\ProfileCompatibilityInfo"
             AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 		<CustomBehavior File="UserSettings" UseFlightPaths="true" GroundMountFarmingMode="false"
@@ -3514,7 +3555,9 @@
             If you modify something in this block, don't forget to update the copy of this
             block after each checkpoint, and the at the start of the <QuestOrder>, also.
             -->
-
+        <CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+            <CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>  
+        </CustomBehavior>
 		<CustomBehavior File="Misc\ProfileCompatibilityInfo"
             AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 		<CustomBehavior File="UserSettings" UseFlightPaths="true" GroundMountFarmingMode="false"
@@ -3839,7 +3882,9 @@
             If you modify something in this block, don't forget to update the copy of this
             block after each checkpoint, and the at the start of the <QuestOrder>, also.
             -->
-
+        <CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+            <CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>  
+        </CustomBehavior>
 		<CustomBehavior File="Misc\ProfileCompatibilityInfo"
             AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 		<CustomBehavior File="UserSettings" UseFlightPaths="true" GroundMountFarmingMode="false"
@@ -4235,7 +4280,9 @@
                 If you modify something in this block, don't forget to update the copy of this
                 block after each checkpoint, and the at the start of the <QuestOrder>, also.
                 -->
-
+	        <CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+	            <CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>  
+	        </CustomBehavior>
 			<CustomBehavior File="Misc\ProfileCompatibilityInfo"
                 AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 			<CustomBehavior File="UserSettings" UseFlightPaths="true" GroundMountFarmingMode="false"
@@ -4773,7 +4820,9 @@
             If you modify something in this block, don't forget to update the copy of this
             block after each checkpoint, and the at the start of the <QuestOrder>, also.
             -->
-
+        <CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+            <CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>  
+        </CustomBehavior>
 		<CustomBehavior File="Misc\ProfileCompatibilityInfo"
             AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 		<CustomBehavior File="UserSettings" UseFlightPaths="true" GroundMountFarmingMode="false"
@@ -5112,7 +5161,9 @@
             If you modify something in this block, don't forget to update the copy of this
             block after each checkpoint, and the at the start of the <QuestOrder>, also.
             -->
-
+        <CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+            <CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>  
+        </CustomBehavior>
 		<CustomBehavior File="Misc\ProfileCompatibilityInfo"
             AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 		<CustomBehavior File="UserSettings" UseFlightPaths="true" GroundMountFarmingMode="false"
@@ -5301,7 +5352,9 @@
             If you modify something in this block, don't forget to update the copy of this
             block after each checkpoint, and the at the start of the <QuestOrder>, also.
             -->
-
+        <CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+            <CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>  
+        </CustomBehavior>
 		<CustomBehavior File="Misc\ProfileCompatibilityInfo"
             AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 		<CustomBehavior File="UserSettings" UseFlightPaths="true" GroundMountFarmingMode="false"
@@ -5645,7 +5698,9 @@
             If you modify something in this block, don't forget to update the copy of this
             block after each checkpoint, and the at the start of the <QuestOrder>, also.
             -->
-
+        <CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+            <CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>  
+        </CustomBehavior>
 		<CustomBehavior File="Misc\ProfileCompatibilityInfo"
             AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 		<CustomBehavior File="UserSettings" UseFlightPaths="true" GroundMountFarmingMode="false"
@@ -6005,7 +6060,9 @@
             If you modify something in this block, don't forget to update the copy of this
             block after each checkpoint, and the at the start of the <QuestOrder>, also.
             -->
-
+        <CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+            <CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>  
+        </CustomBehavior>
 		<CustomBehavior File="Misc\ProfileCompatibilityInfo"
             AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 		<CustomBehavior File="UserSettings" UseFlightPaths="true" GroundMountFarmingMode="false"
@@ -6489,7 +6546,9 @@
             If you modify something in this block, don't forget to update the copy of this
             block after each checkpoint, and the at the start of the <QuestOrder>, also.
             -->
-
+        <CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+            <CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>  
+        </CustomBehavior>
 		<CustomBehavior File="Misc\ProfileCompatibilityInfo"
             AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 		<CustomBehavior File="UserSettings" UseFlightPaths="true" GroundMountFarmingMode="false"
@@ -7481,7 +7540,9 @@
                 If you modify something in this block, don't forget to update the copy of this
                 block after each checkpoint, and the at the start of the <QuestOrder>, also.
                 -->
-
+	        <CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+	            <CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>  
+	        </CustomBehavior>
 			<CustomBehavior File="Misc\ProfileCompatibilityInfo"
                 AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 			<CustomBehavior File="UserSettings" UseFlightPaths="true" GroundMountFarmingMode="false"
@@ -8135,7 +8196,9 @@
             If you modify something in this block, don't forget to update the copy of this
             block after each checkpoint, and the at the start of the <QuestOrder>, also.
             -->
-
+        <CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+            <CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>  
+        </CustomBehavior>
 		<CustomBehavior File="Misc\ProfileCompatibilityInfo"
             AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 		<CustomBehavior File="UserSettings" UseFlightPaths="true" GroundMountFarmingMode="false"
@@ -8459,7 +8522,9 @@
             If you modify something in this block, don't forget to update the copy of this
             block after each checkpoint, and the at the start of the <QuestOrder>, also.
             -->
-
+        <CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+            <CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>  
+        </CustomBehavior>
 		<CustomBehavior File="Misc\ProfileCompatibilityInfo"
             AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 		<CustomBehavior File="UserSettings" UseFlightPaths="true" GroundMountFarmingMode="false"
@@ -9264,7 +9329,9 @@
             If you modify something in this block, don't forget to update the copy of this
             block after each checkpoint, and the at the start of the <QuestOrder>, also.
             -->
-
+        <CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+            <CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>  
+        </CustomBehavior>
 		<CustomBehavior File="Misc\ProfileCompatibilityInfo"
             AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 		<CustomBehavior File="UserSettings" UseFlightPaths="true" GroundMountFarmingMode="false"
@@ -9614,7 +9681,9 @@
             If you modify something in this block, don't forget to update the copy of this
             block after each checkpoint, and the at the start of the <QuestOrder>, also.
             -->
-
+        <CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+            <CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>  
+        </CustomBehavior>
 		<CustomBehavior File="Misc\ProfileCompatibilityInfo"
             AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 		<CustomBehavior File="UserSettings" UseFlightPaths="true" GroundMountFarmingMode="false"
