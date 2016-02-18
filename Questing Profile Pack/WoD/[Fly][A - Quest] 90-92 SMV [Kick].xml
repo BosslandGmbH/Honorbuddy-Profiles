@@ -2113,18 +2113,11 @@
 					<TurnIn Nav="Fly" QuestName="Fungal Bundle" QuestId="37332" TurnInName="Rangari Sheera" TurnInId="81324" />
 				</If>
 
-				<If Condition="HasItem(119208)" >
-					<If Condition="!HasQuest(37322)" >
-						<PickUp Nav="Fly" QuestName="The Prophet's Final Message" QuestId="37322"  GiverName="The Prophet's Arcanum" GiverId="119208" GiverType="Item" />
-					</If>
-					<Objective QuestName="The Prophet's Final Message" QuestId="37322" Type="CollectItem" Nav="Fly" ItemId="119208" CollectCount="1" />
-					<TurnIn Nav="Fly" QuestName="The Prophet's Final Message" QuestId="37322" TurnInName="Prophet Velen's Memorial" TurnInId="237790" TurnInType="Object" />			
-
-				</If>
 
 
 				<TurnIn Nav="Fly" QuestName="Gloomshade Game Hunter" QuestId="33461" TurnInName="Arsenio Zerep" TurnInId="80159" X="1904.377" Y="211.1814" Z="77.05808" />
 				<PickUp QuestName="Ashran Appearance" QuestId="36624" GiverName="Lieutenant Thorn" GiverId="79953" X="1847.073" Y="270.6632" Z="78.39755" />
+
 				<If Condition="HasQuest(36624) &amp;&amp; !IsQuestCompleted(36624)" > <!-- Ashran Appearance -->
 					<CustomBehavior File="InteractWith" MobId="81103" GossipOptions="2" WaitTime="4000" X="1864.33" Y="217.8108" Z="76.63772" />
 				</If>
@@ -2158,7 +2151,28 @@
 					<MoveTo X="1922.334" Y="294.41" Z="88.9647" /> <!-- Garrison, in case GHS doesn't work -->
 				</If>
 
+				<!-- The Prophet's Final Message -->
+				<If Condition="!IsQuestCompleted(37322)" >
+					<MoveTo DestName="Garrison" X="1922.334" Y="294.41" Z="88.9647" /> 
+					<If Condition="Object(232284) != null" >
+						<CustomBehavior File="InteractWith" MovementBy="NavigatorOnly" WaitTime="1500" MobIds="232284" X="1923.274" Y="299.2899" Z="88.96642" /> 
+						<CustomBehavior File="RunCode" Code="await MailFrame.Instance.OpenAllMailCoroutine();" />
+					</If>
 
+					<If Condition="Object(230127) != null" >
+						<CustomBehavior File="InteractWith" MovementBy="NavigatorOnly" WaitTime="1500" MobIds="230127" X="1927.694" Y="294.151" Z="88.96585" />
+						<CustomBehavior File="RunCode" Code="await MailFrame.Instance.OpenAllMailCoroutine();" />
+					</If>
+				</If>
+
+				<If Condition="HasItem(119208)" >
+					<If Condition="!HasQuest(37322)" >
+						<PickUp Nav="Fly" QuestName="The Prophet's Final Message" QuestId="37322"  GiverName="The Prophet's Arcanum" GiverId="119208" GiverType="Item" />
+					</If>
+					<Objective QuestName="The Prophet's Final Message" QuestId="37322" Type="CollectItem" Nav="Fly" ItemId="119208" CollectCount="1" />
+					<TurnIn Nav="Fly" QuestName="The Prophet's Final Message" QuestId="37322" TurnInName="Prophet Velen's Memorial" TurnInId="237790" TurnInType="Object" />			
+
+				</If>
 
 
 
