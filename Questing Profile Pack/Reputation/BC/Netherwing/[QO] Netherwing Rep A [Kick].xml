@@ -114,6 +114,7 @@
 			<CollectFrom>
 				<Object Name="Netherwing Egg" Id="185915" />
 				<Object Name="Netherwing Egg" Id="185600" />
+				<Mob Id="23264" />
 			</CollectFrom>
 			<Hotspots>
 				<Hotspot X="-5029.996" Y="373.3292" Z="170.6461" />
@@ -517,13 +518,31 @@
 				<CustomBehavior File="ForcedDismount" />
 				<TurnIn Nav="Fly" QuestName="Karynaku" QuestId="10858" TurnInName="Karynaku" TurnInId="22112" X="-4197.369" Y="384.9256" Z="117.9248" />
 			</If>
-			<If Condition="((!HasQuest(10871)) &amp;&amp; (!IsQuestCompleted(10871)))" >
+			<If Condition="!HasQuest(10866) &amp;&amp; !IsQuestCompleted(10866)" >
 				<CustomBehavior File="FlyTo" X="-4197.369" Y="384.9256" Z="117.9248" />
 				<CustomBehavior File="ForcedDismount" />
-				<PickUp Nav="Fly" QuestName="Ally of the Netherwing" QuestId="10871" GiverName="Karynaku" GiverId="22112" X="-4197.369" Y="384.9256" Z="117.9248" />
+				<PickUp Nav="Fly" QuestName="Zuluhed the Whacked" QuestId="10866" GiverName="Karynaku" GiverId="22112" X="-4197.369" Y="384.9256" Z="117.9248" />
 			</If>
-			<If Condition="((HasQuest(10871)) &amp;&amp; (IsQuestCompleted(10871)))" >
-				<TurnIn Nav="Fly" QuestName="Ally of the Netherwing" QuestId="10871" TurnInName="Mordenai" TurnInId="22113" X="-4100.113" Y="962.5827" Z="24.57802" />
+			<If Condition="HasQuest(10866) &amp;&amp; !IsQuestCompleted(10866)" >
+				<MoveTo Nav="Fly" X="-4203.014" Y="325.52" Z="120.3394" />
+				<CustomBehavior File="WaitTimer" WaitTime="30000" TerminateWhen="Me.Combat" />
+				<CustomBehavior File="InteractWith" QuestId="10866" MobId="11980" MobState="Alive" ProactiveCombatStrategy="NoClear" Range="1" />
+				<CustomBehavior File="InteractWith" QuestId="10866" MobId="185156" Range="5" />
+			</If>
+			<If Condition="HasQuest(10866) &amp;&amp; IsQuestCompleted(10866)" >
+				<CustomBehavior File="FlyTo" X="-4197.369" Y="384.9256" Z="117.9248" />
+				<TurnIn Nav="Fly" QuestName="Zuluhed the Whacked" QuestId="10866" TurnInName="Karynaku" TurnInId="22112" X="-4197.369" Y="384.9256" Z="117.9248" />
+			</If>
+
+
+			<If Condition="((!HasQuest(10870)) &amp;&amp; (!IsQuestCompleted(10870)))" >
+				<CustomBehavior File="FlyTo" X="-4197.369" Y="384.9256" Z="117.9248" />
+				<CustomBehavior File="ForcedDismount" />
+				<PickUp Nav="Fly" QuestName="Ally of the Netherwing" QuestId="10870" GiverName="Karynaku" GiverId="22112" X="-4197.369" Y="384.9256" Z="117.9248" />
+				<!-- Taxi on KArynaku's back. -->
+			</If>
+			<If Condition="((HasQuest(10870)) &amp;&amp; (IsQuestCompleted(10870)))" >
+				<TurnIn Nav="Fly" QuestName="Ally of the Netherwing" QuestId="10870" TurnInName="Mordenai" TurnInId="22113" X="-4100.113" Y="962.5827" Z="24.57802" />
 			</If>
 			<If Condition="((!HasQuest(11012)) &amp;&amp; (!IsQuestCompleted(11012)))" >
 				<CustomBehavior File="InteractWith"  MobId="22113" CollectionDistance="50"
@@ -542,21 +561,27 @@
 				<TurnIn Nav="Fly" QuestName="In Service of the Illidari" QuestId="11013" TurnInName="Overlord Mor'ghor" TurnInId="23139" X="-5088.833" Y="583.0613" Z="86.82536" />
 			</If>
 			<If Condition="((!HasQuest(11014)) &amp;&amp; (!IsQuestCompleted(11014)))" >
-				<CustomBehavior File="FlyTo" X="-5121.085" Y="585.2968" Z="84.88553" />
-				<CustomBehavior File="ForcedDismount" />
 				<PickUp Nav="Fly" QuestName="Enter the Taskmaster" QuestId="11014" GiverName="Overlord Mor'ghor" GiverId="23139" X="-5088.833" Y="583.0613" Z="86.82536" />
 			</If>
 			<If Condition="((HasQuest(11014)) &amp;&amp; (IsQuestCompleted(11014)))" >
 				<TurnIn Nav="Fly" QuestName="Enter the Taskmaster" QuestId="11014" TurnInName="Taskmaster Varkule Dragonbreath" TurnInId="23140" />
-				<PickUp Nav="Fly" QuestName="Rise, Overseer!" QuestId="11053" GiverName="Taskmaster Varkule Dragonbreath" GiverId="23140" />
 			</If>
-			<If Condition="((!HasQuest(11053)) &amp;&amp; (!IsQuestCompleted(11053)))" >
+
+			<If Condition="!IsQuestCompleted(11019)" >
+				<CustomBehavior File="InteractWith" MobId="23141" X="-5118.329" Y="595.0888" Z="84.94885" />
+				<CustomBehavior File="Misc\RunLua" Lua="GossipTitleButton1:Click();" WaitTime="750" />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+			</If>
+			<!-- <If Condition="((!HasQuest(11053)) &amp;&amp; (!IsQuestCompleted(11053)))" >
 				<CustomBehavior File="FlyTo" X="-5121.085" Y="585.2968" Z="84.88553" />
 				<CustomBehavior File="ForcedDismount" />
 				<PickUp Nav="Fly" QuestName="Rise, Overseer!" QuestId="11053" GiverName="Taskmaster Varkule Dragonbreath" GiverId="23140" />
 			</If>
 			<If Condition="((HasQuest(11053)) &amp;&amp; (IsQuestCompleted(11053)))" >
 				<TurnIn Nav="Fly" QuestName="Rise, Overseer!" QuestId="11053" TurnInName="Overlord Mor'ghor" TurnInId="23139" />
+			</If> -->
+			<If Condition="!HasQuest(11015) &amp;&amp; !IsQuestCompleted(11015)" >
+				<PickUp Nav="Fly" QuestName="Netherwing Crystals" QuestId="11015" GiverName="Taskmaster Varkule Dragonbreath" GiverId="23140" X="-5114.439" Y="588.4843" Z="85.78934" />
 			</If>
 			<If Condition="((!HasQuest(11019)) &amp;&amp; (!IsQuestCompleted(11019)))" >
 				<CustomBehavior File="FlyTo" X="-5121.085" Y="585.2968" Z="84.88553" />
@@ -577,18 +602,18 @@
 				<CustomBehavior File="FlyTo" X="-5115.927" Y="128.7672" Z="129.7659" />
 				<CustomBehavior File="ForcedDismount" />
 				<If Condition="(!HasItem(32621))" >
-						<SetGrindArea>
-							<GrindArea>
-								<Factions>16</Factions>
-								<Hotspots>
-									<Hotspot X="-5109.378" Y="120.8343" Z="129.7664" />
-									<Hotspot X="-5109.267" Y="156.0746" Z="129.766" />
-									<Hotspot X="-5074.108" Y="169.778" Z="129.1284" />
-									<Hotspot X="-5107.523" Y="179.4649" Z="130.7953" />
-								</Hotspots>
-							</GrindArea>
-						</SetGrindArea>
-						<GrindUntil Condition="(HasItem(32621))" />
+					<SetGrindArea>
+						<GrindArea>
+							<MobIds>23264</MobIds>
+							<Hotspots>
+								<Hotspot X="-5109.378" Y="120.8343" Z="129.7664" />
+								<Hotspot X="-5109.267" Y="156.0746" Z="129.766" />
+								<Hotspot X="-5074.108" Y="169.778" Z="129.1284" />
+								<Hotspot X="-5107.523" Y="179.4649" Z="130.7953" />
+							</Hotspots>
+						</GrindArea>
+					</SetGrindArea>
+					<GrindUntil Condition="(HasItem(32621))" />
 				</If>
 				<PickUp Nav="Fly" QuestName="A Job Unfinished..." QuestId="11041" GiverName="Partially Digested Hand" GiverId="32621" GiverType="Item" />
 			</If>
@@ -597,9 +622,45 @@
 				<Objective QuestName="A Job Unfinished..." QuestId="11041" Type="KillMob" MobId="23269" KillCount="1" />
 				<Objective QuestName="A Job Unfinished..." QuestId="11041" Type="KillMob" MobId="23264" KillCount="10" />
 			</If>
-			<If Condition="((HasQuest(11049)) &amp;&amp; (!IsQuestCompleted(11049)))" >
-				<Objective QuestName="The Great Netherwing Egg Hunt" QuestId="11049" Type="CollectItem" ItemId="32506" CollectCount="1" />
-			</If>
+			<While Condition="((HasQuest(11049)) &amp;&amp; (!IsQuestCompleted(11049)))" >
+	            <CustomBehavior File="InteractWith" MobIds="185915, 185600" PreInteractMountStrategy="Dismount" Range="3" CollectionDistance="200" >
+	                <HuntingGrounds>
+	                    <Hotspot X="-5195.258" Y="746.5243" Z="72.51826" />
+	                    <Hotspot X="-5082.855" Y="586.9879" Z="130.2544" />
+	                    <Hotspot X="-5230.61" Y="538.0766" Z="71.67867" />
+	                    <Hotspot X="-5373.583" Y="555.6926" Z="99.59716" />
+	                    <Hotspot X="-5255.655" Y="401.659" Z="84.90911" />
+	                    <Hotspot X="-5065.046" Y="363.3931" Z="260.4366" />
+	                    <Hotspot X="-5099.065" Y="291.055" Z="197.1563" />
+	                    <Hotspot X="-5109.262" Y="144.3606" Z="149.7681" />
+	                    <Hotspot X="-5046.516" Y="192.7658" Z="142.703" />
+	                    <Hotspot X="-4988.762" Y="285.5263" Z="112.9709" />
+	                    <Hotspot X="-4957.594" Y="379.4748" Z="126.5052" />
+	                    <Hotspot X="-5024.006" Y="504.3115" Z="101.0563" />
+	                    <Hotspot X="-5236.595" Y="455.2259" Z="98.05861" />
+	                    <Hotspot X="-5343.52" Y="216.3273" Z="74.74231" />
+	                    <Hotspot X="-5267.815" Y="69.62548" Z="74.52104" />
+	                    <Hotspot X="-5409.048" Y="-55.43548" Z="137.4816" />
+	                    <Hotspot X="-5173.94" Y="-77.30832" Z="84.35261" />
+	                    <Hotspot X="-5127.631" Y="-146.6762" Z="102.9928" />
+	                    <Hotspot X="-5000.504" Y="-92.77831" Z="77.38731" />
+	                    <Hotspot X="-5010.833" Y="52.38588" Z="92.44536" />
+	                    <Hotspot X="-4913.37" Y="60.70529" Z="75.10946" />
+	                    <Hotspot X="-4878.644" Y="211.5977" Z="68.7178" />
+	                    <Hotspot X="-4828.656" Y="386.3727" Z="71.72263" />
+	                    <Hotspot X="-4963.411" Y="443.9084" Z="227.2638" />
+	                    <Hotspot X="-4299.419" Y="324.4479" Z="169.1331" />
+	                    <Hotspot X="-4220.296" Y="427.3188" Z="64.68701" />
+	                    <Hotspot X="-4164.463" Y="547.7781" Z="34.4186" />
+	                    <Hotspot X="-4397.258" Y="551.0456" Z="264.7446" />
+	                    <Hotspot X="-4718.362" Y="671.8993" Z="94.86899" />
+	                    <Hotspot X="-4848.279" Y="687.0264" Z="80.76964" />
+	                    <Hotspot X="-4950.41" Y="819.2221" Z="113.36" />
+	                    <Hotspot X="-5076.345" Y="851.3983" Z="57.69758" />
+	                    <Hotspot X="-5192.271" Y="758.268" Z="68.39481" />
+	                </HuntingGrounds>
+	            </CustomBehavior>
+			</While>
 			<If Condition="((HasQuest(11041)) &amp;&amp; (IsQuestCompleted(11041)))" >
 				<CustomBehavior File="FlyTo" X="-5121.085" Y="585.2968" Z="84.88553" />
 				<CustomBehavior File="ForcedDismount" />
@@ -610,6 +671,7 @@
 				<CustomBehavior File="ForcedDismount" />
 				<TurnIn Nav="Fly" QuestName="The Great Netherwing Egg Hunt" QuestId="11049" TurnInName="Yarzill the Merc" TurnInId="23141" />
 			</If>
+			<!-- Below may need some work -->
 			<If Condition="((!HasQuest(11075)) &amp;&amp; (!IsQuestCompleted(11075)))" >
 				<CustomBehavior File="FlyTo" X="-5114.824" Y="590.3912" Z="85.72112" />
 				<CustomBehavior File="ForcedDismount" />
