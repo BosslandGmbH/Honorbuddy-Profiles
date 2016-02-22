@@ -268,22 +268,22 @@
              <If Condition="(HasItem(31372))" >
                 <CustomBehavior File="FlyTo" X="-4096.2" Y="871.0768" Z="10.80783" />
                 <CustomBehavior File="ForcedDismount" />
-              <While Condition="(HasItem(31372))" >
-                <UseItem QuestId="10804" ItemId="31372" X="-4096.2" Y="871.0768" Z="10.80783" />
-                <CustomBehavior File="WaitTimer" WaitTime="15000" QuestId="10804" />
-              </While>
+            	<While Condition="(HasItem(31372))" >
+	                <UseItem QuestId="10804" ItemId="31372" X="-4096.2" Y="871.0768" Z="10.80783" />
+	                <CustomBehavior File="WaitTimer" WaitTime="15000" QuestId="10804" />
+	            </While>
              </If>
             </If>
             <If Condition="((HasQuest(10804)) &amp;&amp; (IsQuestCompleted(10804)))" >
                 <CustomBehavior File="FlyTo" X="-4106.656" Y="882.1691" Z="13.22201" />
                 <CustomBehavior File="ForcedDismount" />
-        <TurnIn QuestName="Kindness" QuestId="10804" TurnInName="Mordenai" TurnInId="22113" />
-        <PickUp QuestName="Seek Out Neltharaku" QuestId="10811" GiverName="Mordenai" GiverId="22113" />
+		        <TurnIn QuestName="Kindness" QuestId="10804" TurnInName="Mordenai" TurnInId="22113" />
+		        <PickUp QuestName="Seek Out Neltharaku" QuestId="10811" GiverName="Mordenai" GiverId="22113" />
             </If>
             <If Condition="((!HasQuest(10811)) &amp;&amp; (!IsQuestCompleted(10811)))" >
                 <CustomBehavior File="FlyTo" X="-4106.656" Y="882.1691" Z="13.22201" />
                 <CustomBehavior File="ForcedDismount" />
-        <PickUp QuestName="Seek Out Neltharaku" QuestId="10811" GiverName="Mordenai" GiverId="22113" />
+        		<PickUp QuestName="Seek Out Neltharaku" QuestId="10811" GiverName="Mordenai" GiverId="22113" />
             </If>
             <If Condition="((HasQuest(10811)) &amp;&amp; (IsQuestCompleted(10811)))" >
                 <CustomBehavior File="FlyTo" X="-4145.2" Y="554.7842" Z="155.034" />
@@ -291,22 +291,59 @@
         <!-- <TurnIn QuestName="Seek Out Neltharaku" QuestId="10811" TurnInName="Neltharaku" TurnInId="21657" /> -->
             </If>
             <If Condition="((!HasQuest(10814)) &amp;&amp; (!IsQuestCompleted(10814)))" >
-                <CustomBehavior File="FlyTo" X="-4145.2" Y="554.7842" Z="155.034" />
-    <CustomBehavior File="UserDialog"  AllowBotStop="true" SoundCue="Asterisk" SoundCueInterval="2" Text="Find the flying dragon in the sky and grab next quest\n\nListen to his story and turnin that quest and get the next one" />
-        <!-- <PickUp QuestName="Neltharaku's Tale" QuestId="10814" GiverName="Neltharaku" GiverId="21657" /> -->
+                <CustomBehavior File="Message" Text="Looking for Neltharaku.." />
+                <CustomBehavior File="InteractWith" MobId="21657" Range="1" CollectionDistance="200" > <!-- Track down Neltharaku. -->
+                	<HuntingGrounds>
+						<Hotspot X="-4210.736" Y="358.1187" Z="188.8729" />
+						<Hotspot X="-4191.705" Y="684.9189" Z="106.0552" />
+						<Hotspot X="-4051.531" Y="1063.616" Z="112.6422" />
+						<Hotspot X="-3894.45" Y="1064.659" Z="109.6283" />
+						<Hotspot X="-4035.521" Y="610.2536" Z="117.4452" />
+                	</HuntingGrounds>
+                </CustomBehavior>
+                <CustomBehavior File="Misc\RunLua" Lua="GossipFrameCloseButton:Click(); QuestFrameCloseButton:Click();" />
+        		<PickUp QuestName="Neltharaku's Tale" QuestId="10814" GiverName="Neltharaku" GiverId="21657" />
             </If>
-            <If Condition="((HasQuest(10814)) &amp;&amp; (!IsQuestCompleted(10814)))" >
-        <!-- interactwith 21657, InteractByGossipOptions="1, 1, 1, 1"
-            runmacro cleartarget x2 -->
-            </If>
+            <While Condition="((HasQuest(10814)) &amp;&amp; (!IsQuestCompleted(10814)))" >
+            	<CustomBehavior File="Misc\RunLua" Lua="GossipFrameCloseButton:Click(); QuestFrameCloseButton:Click();" />
+                <CustomBehavior File="InteractWith" MobId="21657" Range="1" CollectionDistance="200" > <!-- Track down Neltharaku. -->
+                	<HuntingGrounds>
+						<Hotspot X="-4210.736" Y="358.1187" Z="188.8729" />
+						<Hotspot X="-4191.705" Y="684.9189" Z="106.0552" />
+						<Hotspot X="-4051.531" Y="1063.616" Z="112.6422" />
+						<Hotspot X="-3894.45" Y="1064.659" Z="109.6283" />
+						<Hotspot X="-4035.521" Y="610.2536" Z="117.4452" />
+                	</HuntingGrounds>
+                </CustomBehavior>
+		    	<CustomBehavior File="Misc\RunLua" QuestId="10814" Lua="SelectGossipOption(1);" WaitTime="750" NumOfTimes="15" />
+            </While>
             <If Condition="((HasQuest(10814)) &amp;&amp; (IsQuestCompleted(10814)))" >
-                <CustomBehavior File="FlyTo" X="-4145.2" Y="554.7842" Z="155.034" />
-        <!-- <TurnIn QuestName="Neltharaku's Tale" QuestId="10814" TurnInName="Neltharaku" TurnInId="21657" /> -->
+                <CustomBehavior File="Message" Text="Looking for Neltharaku.." />
+                <CustomBehavior File="InteractWith" MobId="21657" Range="1" CollectionDistance="200" > <!-- Track down Neltharaku. -->
+                	<HuntingGrounds>
+						<Hotspot X="-4210.736" Y="358.1187" Z="188.8729" />
+						<Hotspot X="-4191.705" Y="684.9189" Z="106.0552" />
+						<Hotspot X="-4051.531" Y="1063.616" Z="112.6422" />
+						<Hotspot X="-3894.45" Y="1064.659" Z="109.6283" />
+						<Hotspot X="-4035.521" Y="610.2536" Z="117.4452" />
+                	</HuntingGrounds>
+                </CustomBehavior>
+                <CustomBehavior File="Misc\RunLua" Lua="GossipFrameCloseButton:Click(); QuestFrameCloseButton:Click();" />
+        		<TurnIn QuestName="Neltharaku's Tale" QuestId="10814" TurnInName="Neltharaku" TurnInId="21657" />
             </If>
             <If Condition="((!HasQuest(10836)) &amp;&amp; (!IsQuestCompleted(10836)))" >
-                <CustomBehavior File="FlyTo" X="-4145.2" Y="554.7842" Z="155.034" />
-    <CustomBehavior File="UserDialog"  AllowBotStop="true" SoundCue="Asterisk" SoundCueInterval="2" Text="Find the flying dragon in the sky and grab next quest\n\n" />
-        <!-- <PickUp QuestName="Infiltrating Dragonmaw Fortress" QuestId="10836" GiverName="Neltharaku" GiverId="21657" /> -->
+                <CustomBehavior File="Message" Text="Looking for Neltharaku.." />
+                <CustomBehavior File="InteractWith" MobId="21657" Range="1" CollectionDistance="200" > <!-- Track down Neltharaku. -->
+                	<HuntingGrounds>
+						<Hotspot X="-4210.736" Y="358.1187" Z="188.8729" />
+						<Hotspot X="-4191.705" Y="684.9189" Z="106.0552" />
+						<Hotspot X="-4051.531" Y="1063.616" Z="112.6422" />
+						<Hotspot X="-3894.45" Y="1064.659" Z="109.6283" />
+						<Hotspot X="-4035.521" Y="610.2536" Z="117.4452" />
+                	</HuntingGrounds>
+                </CustomBehavior>
+                <CustomBehavior File="Misc\RunLua" Lua="GossipFrameCloseButton:Click(); QuestFrameCloseButton:Click();" />
+        		<PickUp QuestName="Infiltrating Dragonmaw Fortress" QuestId="10836" GiverName="Neltharaku" GiverId="21657" />
             </If>
             <If Condition="((HasQuest(10836)) &amp;&amp; (!IsQuestCompleted(10836)))" >
                 <CustomBehavior File="FlyTo" X="-4153.915" Y="568.2325" Z="10.49707" />
@@ -314,14 +351,32 @@
                 <Objective QuestName="Infiltrating Dragonmaw Fortress" QuestId="10836" Type="KillMob" MobId="22197" KillCount="15" />
             </If>
             <If Condition="((HasQuest(10836)) &amp;&amp; (IsQuestCompleted(10836)))" >
-                <CustomBehavior File="FlyTo" X="-4145.2" Y="554.7842" Z="155.034" />
-    <CustomBehavior File="UserDialog"  AllowBotStop="true" SoundCue="Asterisk" SoundCueInterval="2" Text="Find the flying dragon in the sky and turn into him and grab next quest" />
-        <!-- <TurnIn QuestName="Infiltrating Dragonmaw Fortress" QuestId="10836" TurnInName="Neltharaku" TurnInId="21657" /> -->
+                <CustomBehavior File="Message" Text="Looking for Neltharaku.." />
+                <CustomBehavior File="InteractWith" MobId="21657" Range="1" CollectionDistance="200" > <!-- Track down Neltharaku. -->
+                	<HuntingGrounds>
+						<Hotspot X="-4210.736" Y="358.1187" Z="188.8729" />
+						<Hotspot X="-4191.705" Y="684.9189" Z="106.0552" />
+						<Hotspot X="-4051.531" Y="1063.616" Z="112.6422" />
+						<Hotspot X="-3894.45" Y="1064.659" Z="109.6283" />
+						<Hotspot X="-4035.521" Y="610.2536" Z="117.4452" />
+                	</HuntingGrounds>
+                </CustomBehavior>
+                <CustomBehavior File="Misc\RunLua" Lua="GossipFrameCloseButton:Click(); QuestFrameCloseButton:Click();" />
+        		<TurnIn QuestName="Infiltrating Dragonmaw Fortress" QuestId="10836" TurnInName="Neltharaku" TurnInId="21657" />
             </If>
             <If Condition="((!HasQuest(10837)) &amp;&amp; (!IsQuestCompleted(10837)))" >
-                <CustomBehavior File="FlyTo" X="-4145.2" Y="554.7842" Z="155.034" />
-    <CustomBehavior File="UserDialog"  AllowBotStop="true" SoundCue="Asterisk" SoundCueInterval="2" Text="Find the flying dragon in the sky and grab next quest\n\n" />
-    <!-- <PickUp QuestName="To Netherwing Ledge!" QuestId="10837" GiverName="Neltharaku" GiverId="21657" /> -->
+            	<CustomBehavior File="Message" Text="Looking for Neltharaku.." />
+                <CustomBehavior File="InteractWith" MobId="21657" Range="1" CollectionDistance="200" > <!-- Track down Neltharaku. -->
+                	<HuntingGrounds>
+						<Hotspot X="-4210.736" Y="358.1187" Z="188.8729" />
+						<Hotspot X="-4191.705" Y="684.9189" Z="106.0552" />
+						<Hotspot X="-4051.531" Y="1063.616" Z="112.6422" />
+						<Hotspot X="-3894.45" Y="1064.659" Z="109.6283" />
+						<Hotspot X="-4035.521" Y="610.2536" Z="117.4452" />
+                	</HuntingGrounds>
+                </CustomBehavior>
+                <CustomBehavior File="Misc\RunLua" Lua="GossipFrameCloseButton:Click(); QuestFrameCloseButton:Click();" />
+    			<PickUp QuestName="To Netherwing Ledge!" QuestId="10837" GiverName="Neltharaku" GiverId="21657" />
             </If>
             <If Condition="((HasQuest(10837)) &amp;&amp; (!IsQuestCompleted(10837)))" >
                 <CustomBehavior File="FlyTo" X="-4952.758" Y="383.7342" Z="85.53783" />
@@ -329,14 +384,32 @@
                 <Objective QuestName="To Netherwing Ledge!" QuestId="10837" Type="CollectItem" ItemId="31504" CollectCount="12" />
             </If>
             <If Condition="((HasQuest(10837)) &amp;&amp; (IsQuestCompleted(10837)))" >
-                <CustomBehavior File="FlyTo" X="-4145.2" Y="554.7842" Z="155.034" />
-    <CustomBehavior File="UserDialog"  AllowBotStop="true" SoundCue="Asterisk" SoundCueInterval="2" Text="Find the flying dragon in the sky and turn into him and grab next quest" />
-        <!-- <TurnIn QuestName="To Netherwing Ledge!" QuestId="10837" TurnInName="Neltharaku" TurnInId="21657" /> -->
+                <CustomBehavior File="Message" Text="Looking for Neltharaku.." />
+                <CustomBehavior File="InteractWith" MobId="21657" Range="1" CollectionDistance="200" > <!-- Track down Neltharaku. -->
+                	<HuntingGrounds>
+						<Hotspot X="-4210.736" Y="358.1187" Z="188.8729" />
+						<Hotspot X="-4191.705" Y="684.9189" Z="106.0552" />
+						<Hotspot X="-4051.531" Y="1063.616" Z="112.6422" />
+						<Hotspot X="-3894.45" Y="1064.659" Z="109.6283" />
+						<Hotspot X="-4035.521" Y="610.2536" Z="117.4452" />
+                	</HuntingGrounds>
+                </CustomBehavior>
+                <CustomBehavior File="Misc\RunLua" Lua="GossipFrameCloseButton:Click(); QuestFrameCloseButton:Click();" />
+        		<TurnIn QuestName="To Netherwing Ledge!" QuestId="10837" TurnInName="Neltharaku" TurnInId="21657" />
             </If>
             <If Condition="((!HasQuest(10854)) &amp;&amp; (!IsQuestCompleted(10854)))" >
-                <CustomBehavior File="FlyTo" X="-4145.2" Y="554.7842" Z="155.034" />
-    <CustomBehavior File="UserDialog"  AllowBotStop="true" SoundCue="Asterisk" SoundCueInterval="2" Text="Find the flying dragon in the sky and grab next quest\n\n" />
-        <!-- <PickUp QuestName="The Force of Neltharaku" QuestId="10854" GiverName="Neltharaku" GiverId="21657" /> -->
+                <CustomBehavior File="Message" Text="Looking for Neltharaku.." />
+                <CustomBehavior File="InteractWith" MobId="21657" Range="1" CollectionDistance="200" > <!-- Track down Neltharaku. -->
+                	<HuntingGrounds>
+						<Hotspot X="-4210.736" Y="358.1187" Z="188.8729" />
+						<Hotspot X="-4191.705" Y="684.9189" Z="106.0552" />
+						<Hotspot X="-4051.531" Y="1063.616" Z="112.6422" />
+						<Hotspot X="-3894.45" Y="1064.659" Z="109.6283" />
+						<Hotspot X="-4035.521" Y="610.2536" Z="117.4452" />
+                	</HuntingGrounds>
+                </CustomBehavior>
+                <CustomBehavior File="Misc\RunLua" Lua="GossipFrameCloseButton:Click(); QuestFrameCloseButton:Click();" />
+        		<PickUp QuestName="The Force of Neltharaku" QuestId="10854" GiverName="Neltharaku" GiverId="21657" />
             </If>
             <If Condition="((HasQuest(10854)) &amp;&amp; (!IsQuestCompleted(10854)))" >
                 <CustomBehavior File="FlyTo" X="-4172.386" Y="526.4583" Z="21.73062" />
@@ -354,14 +427,32 @@
               -->
             </If>
             <If Condition="((HasQuest(10854)) &amp;&amp; (IsQuestCompleted(10854)))" >
-                <CustomBehavior File="FlyTo" X="-4145.2" Y="554.7842" Z="155.034" />
-    <CustomBehavior File="UserDialog"  AllowBotStop="true" SoundCue="Asterisk" SoundCueInterval="2" Text="Find the flying dragon in the sky and turn into him and grab next quest" />
-        <!-- <TurnIn QuestName="The Force of Neltharaku" QuestId="10854" TurnInName="Neltharaku" TurnInId="21657" /> -->
+                <CustomBehavior File="Message" Text="Looking for Neltharaku.." />
+                <CustomBehavior File="InteractWith" MobId="21657" Range="1" CollectionDistance="200" > <!-- Track down Neltharaku. -->
+                	<HuntingGrounds>
+						<Hotspot X="-4210.736" Y="358.1187" Z="188.8729" />
+						<Hotspot X="-4191.705" Y="684.9189" Z="106.0552" />
+						<Hotspot X="-4051.531" Y="1063.616" Z="112.6422" />
+						<Hotspot X="-3894.45" Y="1064.659" Z="109.6283" />
+						<Hotspot X="-4035.521" Y="610.2536" Z="117.4452" />
+                	</HuntingGrounds>
+                </CustomBehavior>
+                <CustomBehavior File="Misc\RunLua" Lua="GossipFrameCloseButton:Click(); QuestFrameCloseButton:Click();" />
+        		<TurnIn QuestName="The Force of Neltharaku" QuestId="10854" TurnInName="Neltharaku" TurnInId="21657" />
             </If>
             <If Condition="((!HasQuest(10858)) &amp;&amp; (!IsQuestCompleted(10858)))" >
-                <CustomBehavior File="FlyTo" X="-4145.2" Y="554.7842" Z="155.034" />
-    <CustomBehavior File="UserDialog"  AllowBotStop="true" SoundCue="Asterisk" SoundCueInterval="2" Text="Find the flying dragon in the sky and grab next quest\n\n" />
-        <!-- <PickUp QuestName="Karynaku" QuestId="10858" GiverName="Neltharaku" GiverId="21657" /> -->
+                <CustomBehavior File="Message" Text="Looking for Neltharaku.." />
+                <CustomBehavior File="InteractWith" MobId="21657" Range="1" CollectionDistance="200" > <!-- Track down Neltharaku. -->
+                	<HuntingGrounds>
+						<Hotspot X="-4210.736" Y="358.1187" Z="188.8729" />
+						<Hotspot X="-4191.705" Y="684.9189" Z="106.0552" />
+						<Hotspot X="-4051.531" Y="1063.616" Z="112.6422" />
+						<Hotspot X="-3894.45" Y="1064.659" Z="109.6283" />
+						<Hotspot X="-4035.521" Y="610.2536" Z="117.4452" />
+                	</HuntingGrounds>
+                </CustomBehavior>
+                <CustomBehavior File="Misc\RunLua" Lua="GossipFrameCloseButton:Click(); QuestFrameCloseButton:Click();" />
+        		<PickUp QuestName="Karynaku" QuestId="10858" GiverName="Neltharaku" GiverId="21657" />
             </If>
             <If Condition="((HasQuest(10858)) &amp;&amp; (IsQuestCompleted(10858)))" >
                 <CustomBehavior File="FlyTo" X="-4197.369" Y="384.9256" Z="117.9248" />
