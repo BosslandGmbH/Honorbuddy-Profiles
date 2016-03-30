@@ -63,21 +63,21 @@
                                         GetOffX="-996.8669" GetOffY="-3826.07" GetOffZ="5.536246" />
         </If>
 		
-				<CustomBehavior File="RunCode" Type="Definition"><![CDATA[     
+		<CustomBehavior File="RunCode" Type="Definition"><![CDATA[     
 			// Items that always need to be sold
 			HashSet<uint> RubbishItems = new HashSet<uint>(new uint[]
 			{
 				117, 118, 159, 
-				805, 828, 856, 858, 1179, 1710, 
-				2287, 2455, 2835, 2836, 3827, 3928, 
-				4496, 4498, 4537, 4541, 4540, 4592, 4593, 4602, 4604, 4605, 
-				5760, 5572, 
+				805, 828, 856, 858, 1179, 
+				2287, 2455, 2835, 2836, 
+				4496, 4537, 4541, 4540, 4592, 4593, 4604, 4605, 
+				5572, 
 				6290, 6299, 6532,
-				7755, 8766, 8932, 8950, 8952,   
-				12223, 13443, 13446,            
+				7755,   
+				12223,   
+				20406, 20407, 20408, 
 				22710, 23389, 27668, 27669, 
-				57247, 57542, 73209, 74837, 74844, 74849, 74850, 
-				81412, 81414, 108330, 113478
+				57247, 57542, 73209, 108330
 			}); 
 			 
 			async Task SellRubbishItems()
@@ -93,10 +93,10 @@
 		]]>
 		</CustomBehavior>  
 
+
 		<CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellRubbish" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; Me.BagItems.Any(i => 	RubbishItems.Contains(i.Entry))" >
 			<CustomBehavior File="RunCode" Code="await SellRubbishItems();"/>  
 		</CustomBehavior>
-
 
 
         <PickUp Nav="Fly" QuestName="Twilight Geolords" QuestId="8320" GiverName="Huum Wildmane" GiverId="15270" X="-6825.453" Y="824.4618" Z="49.49794" />
@@ -129,7 +129,7 @@
                 </SetGrindArea>
                 <GrindUntil Condition="GetItemCount(20404) &gt;= 10" GoalText="Getting 10 Encrypted Twilight Text." />
                 <!--
-                <CustomBehavior File="DeleteItems" Ids="20406, 20407, 20408" />
+              
                 -->
             </If>
 
@@ -173,12 +173,12 @@
             </If>
 
             <If Condition="CanFly()">
-                <CustomBehavior File="FlyTo" Land="true" DestName="Cenarion Hold" X="-6822.05" Y="829.7651" Z="49.46407" />
+                <CustomBehavior File="FlyTo" Land="true" DestName="Cenarion Hold" X="-6816.005" Y="797.2602" Z="51.09688" />
             </If>
             <MoveTo DestName="Cenarion Hold" X="-6822.05" Y="829.7651" Z="49.46407" />
 
             <While Condition="( GetItemCount(20404) &gt;= 10 ) &amp;&amp; ( Me.GetReputationLevelWith(609) &lt; WoWUnitReaction.Exalted )" >
-                <CustomBehavior File="InteractWith"  MobId="15306" CollectionDistance="50"
+                <CustomBehavior File="InteractWith"  MobId="15306" CollectionDistance="50" PreInteractMountStrategy="DismountOrCancelShapeshift" 
                                 X="-6836.007" Y="845.5305" Z="48.99781" />
                 <CustomBehavior File="RunMacro" Macro="/click GossipTitleButton1" />
                 <CustomBehavior File="RunMacro" Macro="/click QuestFrameCompleteButton" />
@@ -209,7 +209,8 @@
                 </If>
 
             </While>
-            <CustomBehavior File="ForceSetVendor" DoMail="true" DoSell="true" DoRepair="true" />
+			  <CustomBehavior File="DeleteItems" Ids="20406, 20407, 20408" />
+            <CustomBehavior File="ForceSetVendor" DoMail="false" DoSell="true" DoRepair="true" />
         </While>
 
         <If Condition="GetItemCount(20404) &lt; 20" >
