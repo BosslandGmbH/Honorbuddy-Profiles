@@ -2991,8 +2991,32 @@
         <PickUp Nav="Fly" QuestName="Do a Barrel Roll!" QuestId="30991" GiverName="Lao-Chin the Iron Belly" GiverId="61820" X="3110.619" Y="2848.267" Z="470.8852" />
         <DisableBehavior Name="Pull" />
         <While Condition="HasQuest(30991) &amp;&amp; !IsQuestCompleted(30991)">
-            <MoveTo X="3097.47" Y="2836.993" Z="470.1034" />
-            <CustomBehavior File="SpecificQuests\30991-KunLai-DoABarrelRoll" />
+            <CustomBehavior File="InteractWith" MobId="60553" Range="10" WaitTime="1000" IgnoreLoSToTarget="true" X="3098.667" Y="2835.832" Z="470.4945" />
+            <CustomBehavior File="RunCode" ><![CDATA[
+                while (Me.InVehicle) {
+                    if (Unit(60483, o => o.IsAlive) != null && Me.InVehicle && !IsObjectiveComplete(2, 30991)) {
+                        WoWMovement.ClickToMove(Unit(60483, o => o.IsAlive).Location);
+                        if (Me.Location.Distance(Unit(60483, o => o.IsAlive).Location) < 30) {
+                            Lua.DoString("if GetPetActionCooldown(1) == 0 then CastPetAction(1) end");
+                            await Coroutine.Wait(10000, () => !Me.InVehicle);
+                        }
+                    }
+                    if (Unit(60455, o => o.IsAlive) != null && Me.InVehicle && !IsObjectiveComplete(1, 30991)) {
+                        WoWMovement.ClickToMove(Unit(60455, u => u.IsAlive).Location);
+                        if (Me.Location.Distance(Unit(60455, u => u.IsAlive).Location) < 30) {
+                            Lua.DoString("if GetPetActionCooldown(1) == 0 then CastPetAction(1) end");
+                            await Coroutine.Wait(10000, () => !Me.InVehicle);
+                        }
+                    }
+
+                    if (Me.Z < 415) {
+                        Lua.DoString("if GetPetActionCooldown(1) == 0 then CastPetAction(1) end"); // We went too far!
+                    }
+
+                    await Coroutine.Yield();
+                }
+            ]]>
+            </CustomBehavior>
         </While>
         <TurnIn Nav="Fly" QuestName="Do a Barrel Roll!" QuestId="30991" TurnInName="Lao-Chin the Iron Belly" TurnInId="61820" X="3110.619" Y="2848.267" Z="470.8852" />
         <EnableBehavior Name="Pull" />
