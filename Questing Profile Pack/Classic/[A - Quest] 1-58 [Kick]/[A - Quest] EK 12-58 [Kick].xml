@@ -8984,17 +8984,15 @@
 		<PickUp QuestName="Twisted Twilight Ties" QuestId="28060" GiverName="Taskmaster Scrange" GiverId="14626" />
 		<While Condition="HasQuest(28060) &amp;&amp; !IsQuestCompleted(28060)">
 			<MoveTo DestName="Hansel Heavyhands" QuestId="28060" X="-6613.067" Y="-1267.963" Z="208.7441" />
+            <CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Unit(47460) != null || Unit(14621) != null" />
 			<CustomBehavior File="InteractWith" QuestId="28060" MobId="14627" InteractByGossipOptions="1"
                             X="-6613.067" Y="-1267.963" Z="208.7441" />
-			<CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for Hansel {TimeRemaining}" />
-			<CustomBehavior File="InteractWith" QuestId="28060" MobId="14621" WaitForNpcs="false"
-                            MobState="Dead" X="-6632.53" Y="-1234.04" Z="209.8085" />
-			<CustomBehavior File="InteractWith" QuestId="28060" MobId="47460" WaitForNpcs="false"
-                            MobState="Dead" X="-6632.53" Y="-1234.04" Z="209.8085" />
-			<If Condition="!IsQuestCompleted(28060)">
-				<MoveTo DestName="Hansel Heavyhands" X="-6613.198" Y="-1268.928" Z="208.7448" />
-				<CustomBehavior File="WaitTimer" WaitTime="25000" GoalText="Waiting for bosses to spawn {TimeRemaining}" />
-			</If>
+			<CustomBehavior File="KillUntilComplete" QuestId="28060" >
+				<PursuitList>
+					<PursueUnit Id="47460" Priority="1000" PursueWhen="!IsObjectiveComplete(2, 28060)" />
+					<PursueUnit Id="14621" PursueWhen="!IsObjectiveComplete(1, 28060)" />
+				</PursuitList>
+			</CustomBehavior>
 		</While>
 		<TurnIn QuestName="Twisted Twilight Ties" QuestId="28060" TurnInName="Overseer Oilfist"
                 TurnInId="14625" X="-6680.89" Y="-1438.68" Z="168.4239" />
