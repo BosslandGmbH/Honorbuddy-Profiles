@@ -6637,16 +6637,26 @@
 		<PickUp QuestName="Blisterpaw Butchery" QuestId="25115" GiverName="Driz Plunkbow" GiverId="39178" />
 
 		<!-- "Blisterpaw Butchery" 25115 -->
-		<CustomBehavior File="InteractWith" QuestId="25115" InteractByUsingItemId="52715" MobState="Dead" MobId="5426" Range="5" NumOfTimes="150" PreInteractMountStrategy="Dismount" CollectionDistance="300">
-			<HuntingGrounds>
-				<Hotspot X="-7098.866" Y="-3677.45" Z="10.83027" />
-				<Hotspot X="-6993.541" Y="-3391.235" Z="9.642881" />
-				<Hotspot X="-7100.68" Y="-3187.205" Z="8.879009" />
-				<Hotspot X="-7174.427" Y="-3330.734" Z="13.65397" />
-				<Hotspot X="-7208.878" Y="-3534.263" Z="10.59076" />
-				<Hotspot X="-7236.906" Y="-3615.529" Z="11.03862" />
-			</HuntingGrounds>
-		</CustomBehavior>
+		<If Condition="HasQuest(25115) &amp;&amp; !IsQuestCompleted(25115)" >
+			<CustomBehavior File="RunCode" Type="Definition" Code="bool BlisterpawButcheryReactivateSkinning = false;" />
+			<If Condition="CharacterSettings.Instance.SkinMobs" >
+				<CustomBehavior File="RunCode" Code="BlisterpawButcheryReactivateSkinning = true;" />
+				<CustomBehavior File="RunCode" Code="CharacterSettings.Instance.SkinMobs = false;" />
+			</If>
+			<CustomBehavior File="InteractWith" QuestId="25115" InteractByUsingItemId="52715" MobState="Dead" MobId="5426" Range="5" NumOfTimes="150" PreInteractMountStrategy="Dismount" CollectionDistance="300">
+				<HuntingGrounds>
+					<Hotspot X="-7098.866" Y="-3677.45" Z="10.83027" />
+					<Hotspot X="-6993.541" Y="-3391.235" Z="9.642881" />
+					<Hotspot X="-7100.68" Y="-3187.205" Z="8.879009" />
+					<Hotspot X="-7174.427" Y="-3330.734" Z="13.65397" />
+					<Hotspot X="-7208.878" Y="-3534.263" Z="10.59076" />
+					<Hotspot X="-7236.906" Y="-3615.529" Z="11.03862" />
+				</HuntingGrounds>
+			</CustomBehavior>
+			<If Condition="BlisterpawButcheryReactivateSkinning" >
+				<CustomBehavior File="RunCode" Code="CharacterSettings.Instance.SkinMobs = true;" />
+			</If>
+		</If>
 		<Objective QuestName="Blisterpaw Butchery" QuestId="25115" Type="KillMob" MobId="40509" KillCount="10" />
 
 		<TurnIn QuestName="Blisterpaw Butchery" QuestId="25115" TurnInName="Driz Plunkbow" TurnInId="39178" />
