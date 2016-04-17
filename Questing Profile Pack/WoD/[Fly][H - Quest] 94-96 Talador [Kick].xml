@@ -282,10 +282,21 @@
 				<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" QuestId="34840" MobId="230949" Range="6" TerminateWhen="IsObjectiveComplete(4, 34840)" 
 											WaitTime="6000" X="1655.939" Y="1738.37" Z="299.1087" /> <!-- Grapling Hook and Rope -->
 			</While>
-			<TurnIn QuestName="Dropping Bombs" QuestId="34840" TurnInName="Morketh Bladehowl" TurnInId="80339" X="1625.816" Y="1733.194" Z="307.0859" />
-			<PickUp Nav="Fly" QuestName="Supply Recovery" QuestId="34860" GiverName="Morketh Bladehowl" GiverId="80339" X="1625.816" Y="1733.194" Z="307.0859" />
-			<PickUp Nav="Fly" QuestName="Prized Repossessions" QuestId="34858" GiverName="Morketh Bladehowl" GiverId="80339" X="1625.816" Y="1733.194" Z="307.0859" />
-			<PickUp Nav="Fly" QuestName="Punching Through" QuestId="34855" GiverName="Morketh Bladehowl" GiverId="80339" X="1625.816" Y="1733.194" Z="307.0859" />
+			<If Condition="HasQuest(34840) &amp;&amp; IsQuestCompleted(84840)" >
+				<TurnIn QuestName="Dropping Bombs" QuestId="34840" TurnInName="Morketh Bladehowl" TurnInId="80339" X="1625.816" Y="1733.194" Z="307.0859" />
+				<CustomBehavior File="WaitTimer" WaitTime="5000" /> <!-- Let Morketh Spawn -->
+			</If>
+			<If Condition="Unit(80339) != null" >
+				<!-- This was the old NpcId.  I'm not sure if they removed this NPC, or if it only spawns under specific circumstances.  Leaving this code here just in case. ~EchoTiger -->
+				<PickUp Nav="Fly" QuestName="Supply Recovery" QuestId="34860" GiverName="Morketh Bladehowl" GiverId="80339" X="1625.816" Y="1733.194" Z="307.0859" />
+				<PickUp Nav="Fly" QuestName="Prized Repossessions" QuestId="34858" GiverName="Morketh Bladehowl" GiverId="80339" X="1625.816" Y="1733.194" Z="307.0859" />
+				<PickUp Nav="Fly" QuestName="Punching Through" QuestId="34855" GiverName="Morketh Bladehowl" GiverId="80339" X="1625.816" Y="1733.194" Z="307.0859" />
+			</If>
+			<If Condition="Unit(80229) != null" >
+				<PickUp Nav="Fly" QuestName="Supply Recovery" QuestId="34860" GiverName="Morketh Bladehowl" GiverId="80229" X="1625.816" Y="1733.194" Z="307.0859" />
+				<PickUp Nav="Fly" QuestName="Prized Repossessions" QuestId="34858" GiverName="Morketh Bladehowl" GiverId="80229" X="1625.816" Y="1733.194" Z="307.0859" />
+				<PickUp Nav="Fly" QuestName="Punching Through" QuestId="34855" GiverName="Morketh Bladehowl" GiverId="80229" X="1625.816" Y="1733.194" Z="307.0859" />
+			</If>
 			<While Condition="HasQuest(34860) &amp;&amp; !IsQuestCompleted(34860)" > <!-- Supply Recovery -->
 				<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" QuestId="34860" MobId="80323" NumOfTimes="20" Range="8" WaitForNpcs="false"
 								CollectionDistance="1000" >
