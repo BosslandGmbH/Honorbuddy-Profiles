@@ -6365,12 +6365,22 @@
 		<PickUp QuestName="Faerie Dragon Muisek" QuestId="25345" GiverName="Witch Doctor Uzer'i" GiverId="8115" />
 
 		<!-- "Faerie Dragon Muisek" 25345 -->
-		<CustomBehavior File="InteractWith" QuestId="25345" InteractByUsingItemId="9620" MobState="Dead" MobId="5278" Range="5" NumOfTimes="100" PreInteractMountStrategy="Dismount" CollectionDistance="350">
-			<HuntingGrounds>
-				<Hotspot X="-4504.374" Y="438.5101" Z="47.05794" />
-				<Hotspot X="-4206.146" Y="253.1625" Z="54.42464" />
-			</HuntingGrounds>
-		</CustomBehavior>
+		<If Condition="HasQuest(25112) &amp;&amp; !IsQuestCompleted(25112)" >
+			<CustomBehavior File="RunCode" Type="Definition" Code="bool FaerieDragonMuisekReactivateSkinning = false;" />
+			<If Condition="CharacterSettings.Instance.SkinMobs" >
+				<CustomBehavior File="RunCode" Code="FaerieDragonMuisekReactivateSkinning = true;" />
+				<CustomBehavior File="RunCode" Code="CharacterSettings.Instance.SkinMobs = false;" />
+			</If>
+			<CustomBehavior File="InteractWith" QuestId="25345" InteractByUsingItemId="9620" MobState="Dead" MobId="5278" Range="5" NumOfTimes="100" PreInteractMountStrategy="Dismount" CollectionDistance="350">
+				<HuntingGrounds>
+					<Hotspot X="-4504.374" Y="438.5101" Z="47.05794" />
+					<Hotspot X="-4206.146" Y="253.1625" Z="54.42464" />
+				</HuntingGrounds>
+			</CustomBehavior>
+			<If Condition="FaerieDragonMuisekReactivateSkinning" >
+				<CustomBehavior File="RunCode" Code="CharacterSettings.Instance.SkinMobs = true;" />
+			</If>
+		</If>
 
 
 		<TurnIn QuestName="Faerie Dragon Muisek" QuestId="25345" TurnInName="Witch Doctor Uzer'i" TurnInId="8115" />
