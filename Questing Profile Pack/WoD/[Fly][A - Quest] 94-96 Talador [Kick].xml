@@ -1109,6 +1109,8 @@
 				<MoveTo Nav="Fly" DestName="Magister Serena" X="1714.698" Y="2121.344" Z="139.1829" />
 				<PickUp Nav="Fly" QuestName="Dropping In" QuestId="34913" GiverName="Magister Serena" GiverId="80607" X="1714.698" Y="2121.344" Z="139.1829" />
 				<If Condition="HasQuest(34913) &amp;&amp; !IsQuestCompleted(34913)" > <!-- Dropping In -->
+					<!-- Harvesting prevents the move to portal -->
+					<CustomBehavior File="UserSettings" HarvestHerbs="false" HarvestMinerals="false" /> 
 					<CustomBehavior File="InteractWith" QuestId="34913" MobId="230978" NonCompeteDistance="0" NumOfTimes="20" TerminateWhen="IsObjectiveComplete(1, 34913)" MovementBy="NavigatorPreferred" 
 											WaitForNpcs="False" WaitTime="1000" Range="8" PreInteractMountStrategy="DismountOrCancelShapeshift" >
 						<HuntingGrounds WaypointVisitStrategy="InOrder" >
@@ -1128,6 +1130,12 @@
 				</If>
 			</While>
 
+			<!--  Added for toons that get disconnected before the turnin -->
+			<If Condition="HasQuest(34913)  &amp;&amp;  Object(231105) != null">
+				<TurnIn QuestName="Dropping In" QuestId="34913" TurnInName="Magister Serena" TurnInId="80608"  />
+			</If>
+
+			<CustomBehavior File="UserSettings" Preset="UserOriginal" />
 			<PickUp Nav="Fly" QuestName="Vicious Viziers" QuestId="34910" GiverName="Magister Serena" GiverId="80608" X="1668.189" Y="1662.498" Z="304.7826" />
 			<PickUp Nav="Fly" QuestName="While We're in the Neighborhood" QuestId="34909" GiverName="Magister Serena" GiverId="80608" X="1668.189" Y="1662.498" Z="304.7826" />
 			<PickUp Nav="Fly" QuestName="Orbs of Power" QuestId="34911" GiverName="Magister Serena" GiverId="80608" X="1668.189" Y="1662.498" Z="304.7826" />
