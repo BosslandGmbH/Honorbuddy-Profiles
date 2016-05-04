@@ -899,9 +899,27 @@
 		</If>
 		<If Condition="IsQuestCompleted(36575)" > <!-- LM - Shredder vs. Saberon -->
 			<PickUp Nav="Fly" QuestName="Shredder vs. Saberon" QuestId="36439" GiverName="Altauur" GiverId="85432" X="6975.458" Y="869.9393" Z="93.22194" />
+			<MoveTo Nav="Fly" X="7092.143" Y="835.4748" Z="73.02531" /> <!-- Make sure navigator doesn't calculate a bad path through the M2 objects -->
 			<While Condition="HasQuest(36439) &amp;&amp; !IsQuestCompleted(36439)" > <!-- Shredder vs. Saberon -->
-				<MoveTo Nav="Fly" DestName="Shredder vs. Saberon (a)" X="6943.784" Y="795.8861" Z="147.339" />
-				<CustomBehavior File="InteractWith" QuestId="36439" PreInteractMountStrategy="Dismount" MobId="235381" WaitForNpcs="False" Range="5" WaitTime="8000" X="6937.3" Y="793.9132" Z="149.3734" />
+				<MoveTo X="6943.51" Y="796.7389" Z="147.5094" />
+				<CustomBehavior File="RunCode"><![CDATA[
+					WoWGameObject vinePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().FirstOrDefault(x => x.Entry == 235381 && x.Distance <= 15);
+					while (vinePoi != null)
+					{
+						if (vinePoi.Distance > 5)
+						{
+							Navigator.MoveTo(new WoWPoint(6940.604, 796.3497, 148.7876)); //Object .Location is messing with navigator.
+						}
+						else
+						{
+							await CommonCoroutines.StopMoving();
+							vinePoi.Interact();
+							await Coroutine.Wait(8000, () => vinePoi == null);
+						}
+						await Coroutine.Yield();
+					}
+				]]>
+				</CustomBehavior>
 				<MoveTo Nav="Fly" DestName="Shredder vs. Saberon (b)" X="6892.507" Y="811.1858" Z="150.934" />
 				<CustomBehavior File="WaitTimer" QuestId="36439" WaitTime="30000" GoalText="Waiting for quest to complete {TimeRemaining}" />
 			</While>
