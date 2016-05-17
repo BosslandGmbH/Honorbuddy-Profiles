@@ -70,6 +70,15 @@
 						}
 						return false;
 					}
+
+					async Task SkipCutscene()
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(3000);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(3000);
+					}
 				]]>
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
@@ -88,14 +97,256 @@
 						<Hotspot X="979.2049" Y="2946.421" Z="-8.680933" />
 					</HuntingGrounds>
 				</CustomBehavior>
-				<CustomBehavior File="InteractWith" MobId="" QuestId="40077" QuestObjectiveIndex="2" X="" Y="" Z="" />
+				<CustomBehavior File="InteractWith" MobId="250560" QuestId="40077" QuestObjectiveIndex="2" X="1002.7" Y="2955.813" Z="-10.55572" />
+				<CustomBehavior File="RunCode" Code="SkipCutscene();" />
 			</While>
 			<TurnIn QuestName="The Invasion Begins" QuestId="40077" TurnInName="Kayn Sunfury" TurnInId="98229" X="998.9774" Y="2958.637" Z="-10.55687" />
 
+			<PickUp QuestName="Assault on Mardum" QuestId="39279" GiverName="Kayn Sunfury" GiverId="98229" X="998.9774" Y="2958.637" Z="-10.5568" />
+			<While Condition="DoQuest(39279)" >
+				<CustomBehavior File="InteractWith" MobId="241751" QuestId="40077" QuestObjectiveIndex="1" WaitTime="16000" X="1027.811" Y="2846.23" Z="5.979488" />
+				<CustomBehavior File="InteractWith" MobId="101518" QuestId="40077" QuestObjectiveIndex="2" WaitTime="16000" X="1016.708" Y="2849.313" Z="5.400201" />
+				<If Condition="DoQuest(39279)" > <!-- 1of3, Assault on Mardum, Terminates when 'Enter the Illidari: Ashtongue' quest completes. -->
+					<CustomBehavior File="InteractWith" MobIds="244439, 97142" WaitForNpcs="false" QuestId="39279" >
+						<HuntingGrounds>
+							<Hotspot X="937.5411" Y="2843.241" Z="1.29002" />
+							<Hotspot X="862.149" Y="2900.982" Z="-24.73688" />
+							<Hotspot X="802.3164" Y="2794.566" Z="-32.2492" />
+							<Hotspot X="825.494" Y="2762.91" Z="-30.74704" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</If>
+			</While>
+			<TurnIn QuestName="Assault on Mardum" QuestId="39279" TurnInName="Allari the Souleater" TurnInId="94410"  X="824.5972" Y="2758.497" Z="-30.43329" />
 
+			<PickUp QuestName="Set Them Free" QuestId="38759" GiverName="Allari the Souleater" GiverId="94410" X="824.5972" Y="2758.497" Z="-30.43329" />
+			<PickUp QuestName="Eye On the Prize" QuestId="39049" GiverName="Allari the Souleater" GiverId="94410" X="824.5972" Y="2758.497" Z="-30.43329" />
+			<PickUp QuestName="Enter the Illidari: Coilskar" QuestId="40379" GiverName="Sevis Brightflame" GiverId="100982" X="799.16" Y="2770.399" Z="-34.23812" />
 
+			<While Condition="DoQuest(39049)" >
+				<!-- NOTE: <AddAvoid> : Could use avoidance here for the Inferal's fireballs and the spinny things that are summoned. -->
+				<CustomBehavior File="KillUntilComplete" MobId="93105" QuestId="39049" QuestObjectiveIndex="1" X="592.5816" Y="2432.891" Z="-72.19401" />
+			</While>
 
+			<While Condition="DoQuest(40379)" >
+				<CustomBehavior File="InteractWith" MobId="99914" GossipOptions="1" QuestId="40077" QuestObjectiveIndex="1" X="758.9722" Y="2403.007" Z="-60.99771" />
+				<CustomBehavior File="InteractWith" MobId="241756" QuestId="40077" QuestObjectiveIndex="2" X="775.1858" Y="2389.073" Z="-58.26276" />
+			</While>
+
+			<While Condition="DoQuest(38759)" >
+				<If Condition="!HasItem(128227)" >
+					<CustomBehavior File="KillUntilComplete" MobId="95226" QuestId="39049" QuestObjectiveIndex="1" >
+						<HuntingGrounds>
+							<Hotspot X="731.5803" Y="2597.187" Z="-67.37312" />
+							<Hotspot X="831.3241" Y="2498.659" Z="-60.30329" />
+							<Hotspot X="721.7729" Y="2441.058" Z="-65.50719" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</If>
+				<CustomBehavior File="InteractWith" MobId="242989" QuestId="38759" QuestObjectiveIndex="2" X="743.8021" Y="2467.594" Z="-63.04863" />
+				<CustomBehavior File="InteractWith" MobId="244916" QuestId="38759" QuestObjectiveIndex="3" X="784.7188" Y="2556.173" Z="-70.49132" />
+				<CustomBehavior File="InteractWith" MobId="242990" QuestId="38759" QuestObjectiveIndex="5" X="910.4202" Y="2473.604" Z="-66.64028" />
+				<CustomBehavior File="InteractWith" MobId="242987" QuestId="38759" QuestObjectiveIndex="4" X="879.4462" Y="2584.974" Z="-56.78919" />
+			</While>
+
+			<TurnIn QuestName="Set Them Free" QuestId="38759" TurnInName="Jace Darkweaver" TurnInId="93759" X="1059.675" Y="2576.715" Z="-37.24481" />
+			<TurnIn QuestName="Eye On the Prize" QuestId="39049" TurnInName="Jace Darkweaver" TurnInId="93759" X="1059.675" Y="2576.715" Z="-37.24481" />
+			<TurnIn QuestName="Enter the Illidari: Coilskar" QuestId="40379" TurnInName="Jace Darkweaver" TurnInId="93759" X="1059.675" Y="2576.715" Z="-37.24481" />
+
+			<PickUp QuestName="Meeting With the Queen" QuestId="39050" GiverName="Jace Darkweaver" GiverId="93759" X="1059.675" Y="2576.715" Z="-37.24481" />
+			<While Condition="DoQuest(39050)" >
+				<CustomBehavior File="InteractWith" MobId="243335" QuestId="39050" QuestObjectiveIndex="1" X="1062.385" Y="2578.528" Z="-37.08225" />
+				<CustomBehavior File="RunCode" Code="SkipCutscene();" />
+			</While>
+			<TurnIn QuestName="Meeting With the Queen" QuestId="39050" TurnInName="Jace Darkweaver" TurnInId="93759" X="1059.675" Y="2576.715" Z="-37.24481" />
+
+			<PickUp QuestName="Enter the Illidari: Shivarra" QuestId="38765" GiverName="Jace Darkweaver" GiverId="93759" X="1059.675" Y="2576.715" Z="-37.24481" />
+			<PickUp QuestName="Before We're Overrun" QuestId="38766" GiverName="Jace Darkweaver" GiverId="93759" X="1059.675" Y="2576.715" Z="-37.24481" />
+
+			<While Condition="DoQuest(38766)" >
+				<If Condition="DoQuest(39279)" > <!-- 2of3, Assault on Mardum, Terminates when 'Enter the Illidari: Ashtongue' quest completes. -->
+					<CustomBehavior File="InteractWith" MobId="244441" WaitForNpcs="false" QuestId="39279" X="1246.913" Y="2522.461" Z="1.859429" />
+					<CustomBehavior File="InteractWith" MobId="243873" WaitForNpcs="false" QuestId="39279" X="1289.429" Y="2591.532" Z="9.881704" />
+					<CustomBehavior File="InteractWith" MobId="243873" WaitForNpcs="false" QuestId="39279" X="1331.564" Y="2522.944" Z="27.49844" />
+					<CustomBehavior File="InteractWith" MobId="97142" WaitForNpcs="false" QuestId="39279" X="1346.188" Y="2598.635" Z="19.24367" />
+					<CustomBehavior File="InteractWith" MobId="243873" WaitForNpcs="false" QuestId="39279" X="1403.729" Y="2638.297" Z="26.27418" /> 
+					<CustomBehavior File="InteractWith" MobId="243873" WaitForNpcs="false" QuestId="39279" X="1508.599" Y="2613.663" Z="31.72714" />
+				</If>
+				<!-- NOTE: <AddAvoid> : Need to get out of the fel lasers, taping the spire objects will deactivate lasers.  I believe the boss also casts a frontal attack.
+					Name="Spire Stabilizer" Entry="244604" X="1606.717" Y="2690.228" Z="20.27687"
+					Name="Spire Stabilizer" Entry="244601" X="1577.047" Y="2718.522" Z="19.88217"
+				-->
+				<CustomBehavior File="KillUntilComplete" MobId="93221" QuestId="38766" QuestObjectiveIndex="1" X="1609.669" Y="2727.322" Z="20.23943" />
+			</While>
+
+			<While Condition="DoQuest(38765)" >
+				<CustomBehavior File="InteractWith" MobId="99915" GossipOptions="1,1" QuestId="38765" QuestObjectiveIndex="1" X="1587.962" Y="2543.091" Z="62.0174" />
+				<CustomBehavior File="InteractWith" MobId="241757" QuestId="38765" QuestObjectiveIndex="2" X="1614.97" Y="2518.042" Z="73.3252" />
+			</While>
+
+			<TurnIn QuestName="Enter the Illidari: Shivarra" QuestId="38765" TurnInName="Kayn Sunfury" TurnInId="93127" X="1456.023" Y="1763.717" Z="54.43828" />
+			<TurnIn QuestName="Before We're Overrun" QuestId="38766" TurnInName="Kayn Sunfury" TurnInId="93127" X="1456.023" Y="1763.717" Z="54.43828" />
+
+			<PickUp QuestName="Orders for Your Captains" QuestId="38813" GiverName="Kayn Sunfury" GiverId="93127" X="1456.023" Y="1763.717" Z="54.43828" />
+			<While Condition="DoQuest(38813)" >
+				<CustomBehavior File="InteractWith" MobId="93693" GossipOptions="1" QuestId="38765" QuestObjectiveIndex="2" X="1421.135" Y="1811.379" Z="61.92189" />
+				<CustomBehavior File="InteractWith" MobId="94435" GossipOptions="1" QuestId="38765" QuestObjectiveIndex="3" X="1400.339" Y="1745.774" Z="56.71823" />
+				<CustomBehavior File="InteractWith" MobId="90247" GossipOptions="1" QuestId="38765" QuestObjectiveIndex="1" X="1417.597" Y="1701.092" Z="54.48024" />
+			</While>
+			<TurnIn QuestName="Orders for Your Captains" QuestId="38813" TurnInName="Kayn Sunfury" TurnInId="93127" X="1456.023" Y="1763.717" Z="54.43828" />
+
+			<PickUp QuestName="Give Me Sight Beyond Sight" QuestId="39262" GiverName="Kayn Sunfury" GiverId="93127" X="1456.023" Y="1763.717" Z="54.43828" />
+			<While Condition="DoQuest(39262)" >
+				<CustomBehavior File="InteractWith" MobId="96436" GossipOptions="1" QuestId="38765" QuestObjectiveIndex="1" X="1267.639" Y="1631.332" Z="102.7817" />
+				<MoveTo X="1254.799" Y="1635.149" Z="101.2232" />
+				<CustomBehavior File="RunCode" Code="
+					var rockslidePoi = Object(245045);
+					Me.SetFacing(rockslidePoi);
+					await Coroutine.Sleep(2000);
+					SpellManager.Cast(188501);
+					await Coroutine.Sleep(1000);
+				" />
+			</While>
+			<TurnIn QuestName="Give Me Sight Beyond Sight" QuestId="39262" TurnInName="Jace Darkweaver" TurnInId="93127" X="1456.023" Y="1763.717" Z="54.43828" />
+
+			<PickUp QuestName="Hidden No More" QuestId="39495" GiverName="Jace Darkweaver" GiverId="93127" X="1456.023" Y="1763.717" Z="54.43828" />
+			<While Condition="DoQuest(39495)" >
+				<CustomBehavior File="KillUntilComplete" MobId="96441" QuestId="38766" QuestObjectiveIndex="1" X="1103.806" Y="1609.285" Z="116.6899" />
+			</While>
+			<TurnIn QuestName="Hidden No More" QuestId="39495" TurnInName="Kayn Sunfury" TurnInId="93127" X="1456.023" Y="1763.717" Z="54.43813" />
+
+			<PickUp QuestName="Stop the Bombardment" QuestId="38727" GiverName="Kayn Sunfury" GiverId="93127" X="1456.023" Y="1763.717" Z="54.43813" />
+			<PickUp QuestName="Their Numbers Are Legion" QuestId="38819" GiverName="Cyana Nightglaive" GiverId="96420" X="1453.278" Y="1762.342" Z="54.438" />
+			<PickUp QuestName="Into the Foul Creche" QuestId="38725" GiverName="Allari the Souleater" GiverId="96655" X="1458.165" Y="1763.073" Z="54.43821" />
+
+			<While Condition="DoQuest(38727)" >
+				<CustomBehavior File="InteractWith" MobId="243968" WaitTime="15000" QuestId="38727" QuestObjectiveIndex="1" X="1356.149" Y="1436.212" Z="37.66927" />
+				<CustomBehavior File="InteractWith" MobId="243967" WaitTime="15000" QuestId="38727" QuestObjectiveIndex="2" X="1547.845" Y="1221.847" Z="74.33907" />
+				<CustomBehavior File="InteractWith" MobId="243965" WaitTime="15000" QuestId="38727" QuestObjectiveIndex="3" X="1813.363" Y="1543.425" Z="88.37321" />
+			</While>
+
+			<While Condition="DoQuest(38819)" >
+				<CustomBehavior File="InteractWith" MobIds="245995, 100545, 97382, 102724, 96278, 97034, 96277" ProactiveCombatStrategy="ClearMobsThatWillAggro" MobState="Alive" QuestId="38819" NumOfTimes="1000" WaitTime="500"  >
+					<HuntingGrounds>
+						<Hotspot X="1876.332" Y="1599.706" Z="94.19205" />
+						<Hotspot X="1875.889" Y="1687.406" Z="86.19054" />
+						<Hotspot X="1478.478" Y="1130.051" Z="69.52277" />
+						<Hotspot X="1384.462" Y="1087.794" Z="82.91431" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+			<TurnIn QuestName="Their Numbers Are Legion" QuestId="38819" TurnInName="Kor'vas Bloodthorn" TurnInId="98711" X="1729.004" Y="1290.427" Z="82.89674" />
+
+			<PickUp QuestName="The Imp Mother's Tome" QuestId="40222" GiverName="Kor'vas Bloodthorn" GiverId="98711" X="1729.004" Y="1290.427" Z="82.89674" />
+			<While Condition="DoQuest(40222)" >
+				<CustomBehavior File="InteractWith" MobId="98986" InteractByLooting="true" QuestId="40222" X="1880.26" Y="1140.319" Z="80.16714" />
+			</While>
+			<TurnIn QuestName="The Imp Mother's Tome" QuestId="40222" TurnInName="Kor'vas Bloodthorn" TurnInId="99045" X="1454.29" Y="1763.451" Z="54.43799" />
+
+			<TurnIn QuestName="Stop the Bombardment" QuestId="38727" TurnInName="Kayn Sunfury" TurnInId="93127" X="1456.023" Y="1763.717" Z="54.43816" />
+			<TurnIn QuestName="Their Numbers Are Legion" QuestId="38819" TurnInName="Kayn Sunfury" TurnInId="93127" X="1456.023" Y="1763.717" Z="54.43816" />
+
+			<PickUp QuestName="Fel Secrets" QuestId="40051" GiverName="Kor'vas Bloodthorn" GiverId="99045" X="1454.29" Y="1763.451" Z="54.43799" />
+			<While Condition="DoQuest(40051)" >
+				<CustomBehavior File="InteractWith" MobId="245112" WaitTime="2500" QuestId="40051" X="1455.868" Y="1761.759" Z="55.65202" />
+				<CustomBehavior File="UserDialog" QuestId="40051" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" Text="Choose a specialization." />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestChoiceFrameOption1.OptionButton:Click();" /> <!-- Havoc -->
+				<!-- Vengeance
+				QuestChoiceFrameOption2.OptionButton:Click(); -->
+			</While>
+			<TurnIn QuestName="Fel Secrets" QuestId="40051" TurnInName="Kayn Sunfury" TurnInId="93127" X="1456.023" Y="1763.717" Z="54.43816" />
+
+			<PickUp QuestName="Cry Havoc and Let Slip the Illidari!" QuestId="39516" GiverName="Kayn Sunfury" GiverId="93127" X="1456.023" Y="1763.717" Z="54.43816" />
+			<While Condition="DoQuest(39516)" >
+				<CustomBehavior File="InteractWith" MobId="93127" GossipOptions="2" QuestId="39516" QuestObjectiveIndex="3" X="1456.023" Y="1763.717" Z="54.43816" />
+				<CustomBehavior File="InteractWith" MobId="96420" GossipOptions="1" QuestId="39516" QuestObjectiveIndex="2" X="1453.278" Y="1762.342" Z="54.43803" />
+				<CustomBehavior File="InteractWith" MobId="96655" GossipOptions="1" QuestId="39516" QuestObjectiveIndex="1" X="1458.165" Y="1763.073" Z="54.43824" />
+				<CustomBehavior File="InteractWith" MobId="99045" GossipOptions="1" QuestId="39516" QuestObjectiveIndex="4" X="1454.29" Y="1763.451" Z="54.43799" />
+				<CustomBehavior File="InteractWith" MobId="96652" GossipOptions="1" QuestId="39516" QuestObjectiveIndex="5" X="1460.233" Y="1773.326" Z="54.4456" />
+			</While>
+			<TurnIn QuestName="Cry Havoc and Let Slip the Illidari!" QuestId="39516" TurnInName="Kayn Sunfury" TurnInId="93127" X="1456.023" Y="1763.717" Z="54.43835" />
+
+			<PickUp QuestName="On Felbat Wings" QuestId="39663" GiverName="Kayn Sunfury" GiverId="93127" X="1456.023" Y="1763.717" Z="54.43816" />
+			<While Condition="DoQuest(39663)" >
+				<CustomBehavior File="InteractWith" MobId="96653" GossipOptions="1" QuestId="39663" QuestObjectiveIndex="2" WaitTime="5000" X="1452.146" Y="1688.467" Z="47.22427" />
+				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
+			</While>
+			<TurnIn QuestName="On Felbat Wings" QuestId="39663" TurnInName="Cyana Nightglaive" TurnInId="97297" X="1469.057" Y="1411.031" Z="243.8633" />
+
+			<PickUp QuestName="The Keystone" QuestId="38728" GiverName="Cyana Nightglaive" GiverId="97297" X="1469.057" Y="1411.031" Z="243.8633" />
+			<While Condition="DoQuest(38728)" >
+				<CustomBehavior File="InteractWith" MobId="100333" InteractByLooting="true" QuestId="38728" X="1559.513" Y="1407.249" Z="237.1088" />
+			</While>
+			<TurnIn QuestName="The Keystone" QuestId="38728" TurnInName="Kayn Sunfury" TurnInId="97303" X="1626.918" Y="1413.984" Z="208.7414" />
+
+			<PickUp QuestName="Return to the Black Temple" QuestId="38729" GiverName="Kayn Sunfury" GiverId="97303" X="1626.918" Y="1413.984" Z="208.7414" />
+			<While Condition="DoQuest(38729)" >
+				<CustomBehavior File="InteractWith" MobId="245728" QuestId="38729" QuestObjectiveIndex="1" X="1629.439" Y="1414.21" Z="210.3634" />
+			</While>
+			<If Condition="QuestDone(38729)" >
+				<TurnIn QuestName="Return to the Black Temple" QuestId="38729" TurnInName="Fel Portal" TurnInType="Object" TurnInId="244466" X="1636.608" Y="1414.271" Z="208.7355" />
+				<CustomBehavior File="RunCode" Code="SkipCutscene();" />
+			</If>
 		<!-- END Loc: Mardum, the Shattered Abyss -->
+
+		<!-- Loc: Azsuna -->
+			<PickUp QuestName="Breaking Out" QuestId="38672" GiverName="Maiev Shadowsong" GiverId="92776" X="4326.902" Y="-515.2207" Z="-287.7824" />
+			<While Condition="DoQuest(38672)" >
+				<CustomBehavior File="KillUntilComplete" MobId="103655" QuestId="38672" QuestObjectiveIndex="1" X="4312.782" Y="-590.1771" Z="-281.2702" />
+				<CustomBehavior File="KillUntilComplete" MobId="103658" QuestId="38672" QuestObjectiveIndex="2" X="4339.203" Y="-590.0521" Z="-281.2409" />
+				<CustomBehavior File="WaitTimer" WaitTime="60000" QuestId="38672" />
+			</While>
+			<TurnIn QuestName="Breaking Out" QuestId="38672" TurnInName="Lever" TurnInType="Object" TurnInId="244923" X="4332.152" Y="-582.5434" Z="-281.9227" />
+
+			<PickUp QuestName="Rise of the Illidari" QuestId="38690" GiverName="Kayn Sunfury" GiverId="92980" X="4330.08" Y="-548.2882" Z="-281.8343" />
+			<PickUp QuestName="Fel Infusion" QuestId="38689" GiverName="Altruis the Sufferer" GiverId="92986" X="4321.747" Y="-547.8611" Z="-281.6629" />
+
+			<While Condition="DoQuest(38690)" >
+				<CustomBehavior File="InteractWith" MobId="244588" QuestId="38690" NumOfTimes="16" >
+					<HuntingGrounds>
+						<Hotspot X="4327.04" Y="-551.9789" Z="-281.825" />
+						<Hotspot X="4325.488" Y="-446.7546" Z="-283.3723" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<While Condition="DoQuest(38689, 39742)" >
+				<CustomBehavior File="KillUntilComplete" MobIds="92782, 92776" TerminateWhen="!DoQuest(38689, 39742)" >
+					<HuntingGrounds>
+						<Hotspot X="4325.653" Y="-523.0162" Z="-287.6848" />
+						<Hotspot X="4272.173" Y="-493.1877" Z="-281.6576" />
+						<Hotspot X="4383.523" Y="-492.0817" Z="-281.8568" />
+						<Hotspot X="4325.009" Y="-436.2533" Z="-281.8516" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<TurnIn QuestName="Fel Infusion" QuestId="38689" TurnInName="Altruis the Sufferer" TurnInId="92986" X="4238.932" Y="-295.1424" Z="-281.3928" />
+			<TurnIn QuestName="Rise of the Illidari" QuestId="38690" TurnInName="Kayn Sunfury" TurnInId="96665" X="4238.04" Y="-290.1441" Z="-281.394" />
+
+			<PickUp QuestName="Stop Gul'dan!" QuestId="38723" GiverName="Maiev Shadowsong" GiverId="92718" X="4235.613" Y="-292.9566" Z="-281.3957" />
+			<While Condition="DoQuest(38723)" >
+				<CustomBehavior File="RunCode" Code="StopCinematic();" />
+				<CustomBehavior File="KillUntilComplete" MobId="92990" QuestId="38723" X="4047.738" Y="-308.8333" Z="-281.5897" />
+			</While>
+			<TurnIn QuestName="Stop Gul'dan!" QuestId="38723" TurnInName="Kayn Sunfury" TurnInId="96665" X="4079.023" Y="-306.7014" Z="-281.5352" />
+
+			<PickUp QuestName="Grand Theft Felbat" QuestId="39682" GiverName="Kayn Sunfury" GiverId="96665" X="4079.023" Y="-306.7014" Z="-281.5352" />
+			<While Condition="DoQuest(39682)" >
+				<CustomBehavior File="InteractWith" MobId="96659" QuestId="39682" QuestObjectiveIndex="1" X="4437.868" Y="-283.0434" Z="-244.7543" />
+				<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
+			</While>
+			<TurnIn QuestName="Grand Theft Felbat" QuestId="39682" TurnInName="Kor'vas Bloodthorn" TurnInId="97643" X="4456.744" Y="-395.5313" Z="126.0077" />
+
+			<PickUp QuestName="Frozen in Time" QuestId="39685" GiverName="Kor'vas Bloodthorn" GiverId="97643" X="4456.744" Y="-395.5313" Z="126.0077" />
+			<PickUp QuestName="Beam Me Up" QuestId="39684" GiverName="Kor'vas Bloodthorn" GiverId="97643" X="4456.744" Y="-395.5313" Z="126.0077" />
+			<PickUp QuestName="Forged in Fire" QuestId="39683" GiverName="Allari the Souleater" GiverId="96675" X="4458.162" Y="-393.3403" Z="125.8987" />
+
+			<While Condition="DoQuest(39685)" >
+				<CustomBehavior File="KillUntilComplete" MobId="96682" QuestId="39685" X="4660.464" Y="-451.5764" Z="122.0296" />
+			</While>
+
+		<!-- END Loc: Azsuma -->
 
 
 		<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Work in progress." />
