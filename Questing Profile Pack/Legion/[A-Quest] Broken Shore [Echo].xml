@@ -1,0 +1,160 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[A-Quest] Broken Shore [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklists>
+	</Blacklists>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+
+					async Task SkipCutscene()
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(3000);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(3000);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Loc: Stormwind -->
+			<If Condition="!IsQuestCompleted(40519)" >
+				<MoveTo X="-8494.549" Y="1083.814" Z="17.94511" />
+				<PickUp QuestName="The Legion Returns" QuestId="40519" GiverName="" GiverId="" /> <!-- Auto Pickup in Stormwind -->
+			</If>
+			<TurnIn QuestName="The Legion Returns" QuestId="40519" TurnInName="Recruiter Lee" TurnInId="Recruiter Lee" Entry="107934" X="-8495.111" Y="1078.7" Z="17.94479" />
+
+			<PickUp QuestName="To Be Prepared" QuestId="42782" GiverName="Recruiter Lee" GiverId="107934" X="-8495.111" Y="1078.7" Z="17.94479" />
+			<While Condition="DoQuest(42782)" >
+				<CustomBehavior File="InteractWith" MobId="251195" QuestId="42782" QuestObjectiveIndex="1" X="-8493.529" Y="1204.632" Z="6.094131" />
+				<CustomBehavior File="InteractWith" MobId="251233" QuestId="42782" QuestObjectiveIndex="2" X="-8392.226" Y="1200.191" Z="6.620557" />
+				<CustomBehavior File="InteractWith" MobId="251252" QuestId="42782" QuestObjectiveIndex="3" X="-8344.297" Y="1206.986" Z="6.525891" />
+				<CustomBehavior File="InteractWith" MobId="108749" QuestId="42782" QuestObjectiveIndex="4" X="-8377.196" Y="1142.623" Z="18.01496" /> <!-- NOTE: <Technical> May need to use multiple MobIds here for all the duelists. -->
+			</While>
+			<TurnIn QuestName="To Be Prepared" QuestId="42782" TurnInName="Knight Dameron" TurnInId="108916" X="-8302.408" Y="1392.946" Z="4.691516" />
+
+			<PickUp QuestName="The Battle for Broken Shore" QuestId="42740" GiverName="Knight Dameron" GiverId="108916" X="-8302.408" Y="1392.946" Z="4.691516" />
+			<While Condition="DoQuest(42740)" >
+				<!-- NOTE: <Movement> : Character is getting on a static boat object.  May need to turn the second MoveTo below into a MyCTM.
+				If no CTM is required, then remove the first MoveTo, or both entirely as InteractWith can handle movement. -->
+				<MoveTo X="-8312.751" Y="1388.978" Z="4.986953" />
+				<MoveTo X="-8336" Y="1388.817" Z="9.297382" />
+				<CustomBehavior File="InteractWith" MobId="108920" GossipOptions="1" WaitTime="2000" QuestId="42782" QuestObjectiveIndex="1" X="-8336.216" Y="1377.066" Z="9.10171" />
+				<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click();" />
+				<!-- NOTE: <CheckCode> : Need to make sure that the IsScenarioCriteriaComplete works for this.
+				In-game shows this first section as stage 1. -->
+				<CustomBehavior File="RunCode" Code="
+					await SkipCutscene();
+					await Coroutine.Wait(100000, ()=> IsScenarioCriteriaComplete(1));
+				" />
+				<!-- NOTE: <AddAvoid> : May need avoids here.  Lots of stuff hitting the grounds -->
+				<CustomBehavior File="EscortGroup" QuestId="42740" EscortNpcId="90714" StartNpcId="90714" >
+					<SearchPath>
+						<Hotspot X="489.5485" Y="2054.834" Z="0.8249747" />
+					</SearchPath>
+				</CustomBehavior>
+			</While>
+			<TurnIn QuestName="The Battle for Broken Shore" QuestId="42740" TurnInName="Genn Greymane" TurnInId="100395" X="-8400.12" Y="1373.889" Z="135.1429" />
+
+
+			<PickUp QuestName="The Fallen Lion" QuestId="40517" GiverName="Genn Greymane" GiverId="100395" X="-8400.12" Y="1373.889" Z="135.1429" />
+			<While Condition="DoQuest(40517)" >
+				<!-- NOTE: <Optimization> : Detect if we're on zeppelin before doing Objective1 as Objective1 is just an optional taxi to the next location. -->
+				<CustomBehavior File="InteractWith" MobId="100696" QuestId="40517" QuestObjectiveIndex="1" X="-8386.337" Y="1352.832" Z="136.3427" />
+				<CustomBehavior File="InteractWith" MobId="100429" GossipOptions="1" QuestId="40517" QuestObjectiveIndex="2" X="-8361.81" Y="230.6198" Z="157.9789" />
+				<CustomBehavior File="RunCode" Code="await Coroutine.Wait(100000, ()=> IsQuestCompleted(40516);" />
+			</While>
+			<TurnIn QuestName="The Fallen Lion" QuestId="40517" TurnInName="Anduin Wrynn" TurnInId="100429" X="-8361.81" Y="230.6198" Z="157.9789" />
+
+
+			<PickUp QuestName="Demons Among Us" QuestId="40593" GiverName="Jace Darkweaver" GiverId="100675" X="-8369.704" Y="240.3636" Z="155.3085" />
+			<While Condition="DoQuest(40593)" >
+				<CustomBehavior File="InteractWith" MobId="100675" GossipOptions="1" QuestId="40517" QuestObjectiveIndex="2" X="-8369.704" Y="240.3636" Z="155.3085" />
+				<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+				<CustomBehavior File="KillUntilComplete" MobId="100993" QuestId="40593" QuestObjectiveIndex="1" X="-8368.443" Y="238.7502" Z="155.8256" />
+				<CustomBehavior File="InteractWith" MobId="246706" QuestId="40593" QuestObjectiveIndex="2" X="-8318.188" Y="290.8993" Z="156.8331" />
+				<CustomBehavior File="InteractWith" MobId="246707" QuestId="40593" QuestObjectiveIndex="3" X="-8379.064" Y="322.0625" Z="147.0138" />
+			</While>
+			<TurnIn QuestName="Demons Among Us" QuestId="40593" TurnInName="Anduin Wrynn" TurnInId="100973" X="-8363.591" Y="232.7483" Z="156.9906" />
+
+			<PickUp QuestName="Illidari Allies" QuestId="44120" GiverName="Anduin Wrynn" GiverId="100973" X="-8363.591" Y="232.7483" Z="156.9906" />
+			<TurnIn QuestName="Illidari Allies" QuestId="44120" TurnInName="Elerion Bladedancer" TurnInId="101004" X="-8895.939" Y="1023.25" Z="124.4144" />
+
+			<PickUp QuestName="Needs of the Many" QuestId="43635" GiverName="Elerion Bladedancer" GiverId="101004" X="-8895.939" Y="1023.25" Z="124.4144" />
+			<While Condition="DoQuest(43635)" >
+				<CustomBehavior File="InteractWith" MobId="216350" QuestId="43635" QuestObjectiveIndex="1" X="-8509.607" Y="1020.976" Z="59.96044" />
+			</While>
+			<TurnIn QuestName="Needs of the Many" QuestId="43635" TurnInName="Emissary Auldbridge" TurnInId="111109" X="-842.3212" Y="4537.174" Z="728.9141" />
+		<!-- END Loc: Stormwind -->
+
+		<!-- Loc: Dalaran -->
+		<!-- END Loc: Dalaran -->
+
+
+	</QuestOrder>
+</HBProfile>

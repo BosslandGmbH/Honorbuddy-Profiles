@@ -1,0 +1,223 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[XX-Quest] PROFILENAME [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="Blerg" Entry="106629" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklists>
+	</Blacklists>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<PickUp QuestName="Down to Azsuna" QuestId="41220" GiverName="Archmage Khadgar" GiverId="86563" X="-833.8698" Y="4276.531" Z="746.255" />
+		<While Condition="DoQuest(41220)" >
+			<CustomBehavior File="InteractWith" MobId="86563" GossipOptions="1" QuestId="39051" QuestObjectiveIndex="1" X="-833.8698" Y="4276.531" Z="746.255" />
+			<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
+		</While>
+		<TurnIn QuestName="Down to Azsuna" QuestId="41220" TurnInName="Archmage Khadgar" TurnInId="93337" X="-79.12674" Y="6859.221" Z="30.98969" />
+
+		<PickUp QuestName="Into the Fray" QuestId="38834" GiverName="Archmage Khadgar" GiverId="93337" X="-79.12674" Y="6859.221" Z="30.98969" />
+		<TurnIn QuestName="Into the Fray" QuestId="38834" TurnInName="Kayn Sunfury" TurnInId="89362" X="-103.434" Y="6961.333" Z="12.46201" />
+
+		<PickUp QuestName="Reignite the Wards" QuestId="37658" GiverName="Jace Darkweaver" GiverId="90317" X="-109.7865" Y="6988.105" Z="12.11385" />
+		<PickUp QuestName="Demon Souls" QuestId="37653" GiverName="Allari the Souleater" GiverId="89398" X="-90.15625" Y="6978.989" Z="12.41577" />
+
+		<While Condition="DoQuest(37658)" >
+			<CustomBehavior File="InteractWith" MobId="239985" QuestId="37658" QuestObjectiveIndex="3" X="-97.22743" Y="7052.647" Z="0.2602924" />
+			<CustomBehavior File="InteractWith" MobId="239984" QuestId="37658" QuestObjectiveIndex="2" X="-168.2743" Y="7074.222" Z="3.751625" />
+			<CustomBehavior File="InteractWith" MobId="239452" QuestId="37658" QuestObjectiveIndex="1" X="-235.4271" Y="7038.738" Z="3.501538" />
+		</While>
+
+		<While Condition="DoQuest(37653)" >
+			<CustomBehavior File="InteractWith" MobIds="90241, 90230, 101944, 101943" InteractByUsingItemId="122100" MobState="Dead" QuestId="37653" >
+				<HuntingGrounds>
+					<!-- Staying near the Demon Hunters to avoid getting stuck in an endless loop of fighting mobs. -->
+					<Hotspot X="-110.4761" Y="7007.057" Z="9.384081" />
+					<Hotspot X="-131.1502" Y="6996.284" Z="8.15946" />
+					<Hotspot X="-173.1669" Y="6984.174" Z="2.666158" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<TurnIn QuestName="Reignite the Wards" QuestId="37658" TurnInName="Wolf" TurnInId="90317" X="-109.7865" Y="6988.105" Z="12.11427" />
+		<TurnIn QuestName="Demon Souls" QuestId="37653" TurnInName="Allari the Souleater" TurnInId="89398" X="-90.15625" Y="6978.989" Z="12.41578" />
+
+		<PickUp QuestName="The Scythe of Souls" QuestId="37660" GiverName="Allari the Souleater" GiverId="89398" X="-90.15625" Y="6978.989" Z="12.41578" />
+		<While Condition="DoQuest(37660)" >
+			<MoveTo X="-155.1597" Y="6906.518" Z="13.15537" />
+			<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Unit(90403, u =&gt; u.Distance &lt;= 5) != null" />
+			<CustomBehavior File="InteractWith" MobId="90403" GossipOptions="1" QuestId="37660" QuestObjectiveIndex="1" X="-155.1597" Y="6906.518" Z="13.15537" />
+
+			<CustomBehavior File="InteractWith" MobId="239338" QuestId="37660" QuestObjectiveIndex="2" X="-158.8906" Y="6893.831" Z="14.79161" />
+			<CustomBehavior File="WaitTimer" WaitTime="10000" QuestId="37660" QuestObjectiveIndex="3" />
+
+			<CustomBehavior File="InteractWith" MobId="239332" QuestId="37660" QuestObjectiveIndex="4" X="-163.9184" Y="6917.265" Z="12.65213" />
+			<CustomBehavior File="WaitTimer" WaitTime="25000" QuestId="37660" QuestObjectiveIndex="5" />
+
+			<CustomBehavior File="InteractWith" MobId="237017" QuestId="37660" QuestObjectiveIndex="6" X="-157.6337" Y="6904.867" Z="13.32249" />
+
+			<CustomBehavior File="KillUntilComplete" MobId="89673" QuestId="37660" QuestObjectiveIndex="7" X="-161.5538" Y="6903.051" Z="13.31845" />
+
+			<MoveTo X="-90.55988" Y="6976.843" Z="12.68431" />
+			<CustomBehavior File="WaitTimer" WaitTime="5000" QuestId="37660" />
+		</While>
+		<TurnIn QuestName="The Scythe of Souls" QuestId="37660" TurnInName="Allari the Souleater" TurnInId="89398" X="-90.15625" Y="6978.989" Z="12.41578" />
+
+		<PickUp QuestName="From Within" QuestId="36920" GiverName="Kayn Sunfury" GiverId="89362" X="-103.434" Y="6961.333" Z="12.46202" />
+		<TurnIn QuestName="From Within" QuestId="36920" TurnInName="Kor'vas Bloodthorn" TurnInId="90255" X="-412.9792" Y="7113.748" Z="1.571512" />
+
+		<PickUp QuestName="Fel Machinations" QuestId="37656" GiverName="Wrathguard Invader" GiverId="110988" X="-409.8965" Y="7117.188" Z="2.223603" />
+		<PickUp QuestName="Saving Stellagosa" QuestId="37450" GiverName="Wrathguard Invader" GiverId="110988" X="-409.8965" Y="7117.188" Z="2.223603" />
+
+		<While Condition="DoQuest(37450)" >
+			<If Condition="!IsObjectiveComplete(1, 37450)" >
+				<MoveTo X="-735.4157" Y="7344.977" Z="15.02042" />
+			</If>
+			<!-- NOTE: <AddAvoid> : Get out or purple stuff - it silences you. -->
+			<CustomBehavior File="InteractWith" MobId="86535" InteractByLooting="true" QuestId="37450" QuestObjectiveIndex="2" X="-670.6696" Y="7160.034" Z="27.95947" />
+			<CustomBehavior File="InteractWith" MobId="239455" NumOfTimes="3" QuestId="37450" QuestObjectiveIndex="3" X="-736.6461" Y="7338.293" Z="15.15532" />
+		</While>
+		<TurnIn QuestName="Retake Faronaar" QuestId="36811" TurnInName="Kor'vas Bloodthorn" TurnInId="110988" X="-723.8791" Y="7322.058" Z="15.21342" />
+
+		<While Condition="DoQuest(37656)" >
+			<CustomBehavior File="InteractWith" MobIds="240123, 240075, 240122" NumOfTimes="6" QuestId="37653" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<!-- Staying near the Demon Hunters to avoid getting stuck in an endless loop of fighting mobs. -->
+					<Hotspot X="-377.3905" Y="7345.168" Z="40.44294" />
+					<Hotspot X="-328.2894" Y="7383.489" Z="29.68443" />
+					<Hotspot X="-236.9479" Y="7337.977" Z="20.6036" />
+					<Hotspot X="-281.3628" Y="7258.15" Z="11.94253" />
+					<Hotspot X="-237.5313" Y="7242.109" Z="21.07804" />
+					<Hotspot X="-168.1649" Y="7272.057" Z="17.37294" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+		<TurnIn QuestName="Fel Machinations" QuestId="37656" TurnInName="Kor'vas Bloodthorn" TurnInId="110988" X="-174.0494" Y="7271.852" Z="13.4738" />
+
+		<While Condition="NeedsQuest(36811) || DoQuest(36811)" > <!-- Bonus Objective: Retake Faronaar -->
+			<MoveTo X="-320.7442" Y="7365.427" Z="27.60932" />
+			<CustomBehavior File="KillUntilComplete" MobIds="103363, 103231, 103162, 89731, 103180, 103176" QuestId="36811" >
+				<HuntingGrounds>
+					<Hotspot X="-320.7442" Y="7365.427" Z="27.60932" />
+					<Hotspot X="-257.0323" Y="7285.456" Z="9.244231" />
+					<Hotspot X="-257.0323" Y="7285.456" Z="9.244231" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<PickUp QuestName="Dark Revelations" QuestId="37449" GiverName="Kor'vas Bloodthorn" GiverId="110988" X="-174.0494" Y="7271.852" Z="13.4738" />
+		<While Condition="NeedsQuest(37449) || DoQuest(37449)" >
+			<MoveTo X="-502.8906" Y="7499.088" Z="74.15278" />
+			<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Me.Combat" />
+			<CustomBehavior File="KillUntilComplete" MobId="90621" QuestId="37449" QuestObjectiveIndex="1" X="-491.7935" Y="7501.004" Z="73.40841" />
+			<CustomBehavior File="InteractWith" MobId="90623" QuestId="37449" QuestObjectiveIndex="2" X="-518.5573" Y="7518.17" Z="74.2154" />
+			<CustomBehavior File="WaitTimer" WaitTime="47000" TerminateWhen="!Me.IsFlying" />
+		</While>
+		<TurnIn QuestName="Dark Revelations" QuestId="37449" TurnInName="Kayn Sunfury" TurnInId="89362" X="-103.434" Y="6961.333" Z="12.46136" />
+
+		<PickUp QuestName="Journey to the Repose" QuestId="38443" GiverName="Archmage Khadgar" GiverId="93326" X="-101.349" Y="6961.514" Z="12.58813" />
+		<TurnIn QuestName="Journey to the Repose" QuestId="38443" TurnInName="Archmage Khadgar" TurnInId="93354" X="611.743" Y="6672.58" Z="60.20637" />
+
+		<PickUp QuestName="The Death of the Eldest" QuestId="37853" GiverName="Archmage Khadgar" GiverId="93354" X="611.743" Y="6672.58" Z="60.20637" />
+		<While Condition="DoQuest(37853)" >
+			<CustomBehavior File="KillUntilComplete" MobIds="106630" QuestId="37853" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="870.1301" Y="6611.31" Z="56.75214" />
+					<Hotspot X="841.2068" Y="6549.64" Z="53.02852" />
+					<Hotspot X="766.4086" Y="6490.921" Z="61.68282" />
+					<Hotspot X="782.0421" Y="6458.898" Z="59.54858" />
+					<Hotspot X="888.8901" Y="6470.409" Z="50.22207" />
+				</HuntingGrounds>
+			</CustomBehavior>
+			<MoveTo X="674.113" Y="6663.514" Z="59.6697" />
+			<!-- NOTE: <TechnicalCheck> : Confirm whether or not player may need to be facing water. -->
+			<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click()" />
+		</While>
+		<TurnIn QuestName="The Death of the Eldest" QuestId="37853" TurnInName="Stellagosa" TurnInId="89794" X="613.1719" Y="6670.912" Z="60.20705" />
+
+		<PickUp QuestName="Agapanthus" QuestId="37991" GiverName="Emmigosa" GiverId="89795" X="614.3611" Y="6669.012" Z="60.23634" />
+		<TurnIn QuestName="Agapanthus" QuestId="37991" TurnInName="Agapanthus" TurnInId="90543" X="647.033" Y="6607.346" Z="60.18776" />
+
+		<PickUp QuestName="Their Dying Breaths" QuestId="42271" GiverName="Agapanthus" GiverId="90543" X="647.033" Y="6607.346" Z="60.18776" />
+		<While Condition="DoQuest(42271)" >
+			<CustomBehavior File="InteractWith" MobIds="240267" NumOfTimes="4" QuestId="42271" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="683.7028" Y="6563.665" Z="63.47566" />
+					<Hotspot X="708.5201" Y="6535.76" Z="62.61032" />
+				</HuntingGrounds>
+			</CustomBehavior>
+			<CustomBehavior File="InteractWith" MobId="90880, 90219" NumOfTimes="4" QuestId="42271" QuestObjectiveIndex="2" X="643.3144" Y="6613.538" Z="60.15187" />
+			<CustomBehavior File="InteractWith" MobId="91037" QuestId="42271" QuestObjectiveIndex="3" X="649.007" Y="6614.711" Z="60.21638" />
+		</While>
+		<TurnIn QuestName="Their Dying Breaths" QuestId="42271" TurnInName="Senegos" TurnInId="89975" X="634.6545" Y="6679.66" Z="54.25773" />
+
+		<PickUp QuestName="Those Who Remember" QuestId="37690" GiverName="Senegos" GiverId="89975" X="634.6545" Y="6679.66" Z="54.25773" />
+		<PickUp QuestName="The Last of the Last" QuestId="37855" GiverName="Senegos" GiverId="89975" X="634.6545" Y="6679.66" Z="54.25773" />
+
+	</QuestOrder>
+</HBProfile>

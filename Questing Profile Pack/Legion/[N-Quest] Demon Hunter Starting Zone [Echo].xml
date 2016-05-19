@@ -20,7 +20,6 @@
 	<TargetElites>true</TargetElites>
 
 	<AvoidMobs>
-		<Mob Name="XXX" Entry="123" />
 	</AvoidMobs>
 
 	<Blackspots>
@@ -98,7 +97,7 @@
 					</HuntingGrounds>
 				</CustomBehavior>
 				<CustomBehavior File="InteractWith" MobId="250560" QuestId="40077" QuestObjectiveIndex="2" X="1002.7" Y="2955.813" Z="-10.55572" />
-				<CustomBehavior File="RunCode" Code="SkipCutscene();" />
+				<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 			</While>
 			<TurnIn QuestName="The Invasion Begins" QuestId="40077" TurnInName="Kayn Sunfury" TurnInId="98229" X="998.9774" Y="2958.637" Z="-10.55687" />
 
@@ -156,7 +155,7 @@
 			<PickUp QuestName="Meeting With the Queen" QuestId="39050" GiverName="Jace Darkweaver" GiverId="93759" X="1059.675" Y="2576.715" Z="-37.24481" />
 			<While Condition="DoQuest(39050)" >
 				<CustomBehavior File="InteractWith" MobId="243335" QuestId="39050" QuestObjectiveIndex="1" X="1062.385" Y="2578.528" Z="-37.08225" />
-				<CustomBehavior File="RunCode" Code="SkipCutscene();" />
+				<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 			</While>
 			<TurnIn QuestName="Meeting With the Queen" QuestId="39050" TurnInName="Jace Darkweaver" TurnInId="93759" X="1059.675" Y="2576.715" Z="-37.24481" />
 
@@ -285,7 +284,7 @@
 			</While>
 			<If Condition="QuestDone(38729)" >
 				<TurnIn QuestName="Return to the Black Temple" QuestId="38729" TurnInName="Fel Portal" TurnInType="Object" TurnInId="244466" X="1636.608" Y="1414.271" Z="208.7355" />
-				<CustomBehavior File="RunCode" Code="SkipCutscene();" />
+				<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 			</If>
 		<!-- END Loc: Mardum, the Shattered Abyss -->
 
@@ -394,49 +393,7 @@
 			<TurnIn QuestName="Illidari, We Are Leaving" QuestId="39689" TurnInName="Archmage Khadgar" TurnInId="97978" X="4154.077" Y="-868.8698" Z="290.947" />
 		<!-- END Loc: Azsuma -->
 
+		<!-- NOTE: <AddFuction> : LoadProfile to next leveling zone. -->
 
-		<!-- Loc: Dalaran -->
-			<PickUp QuestName="Call of the Illidari" QuestId="39261" GiverName="Kor'vas Bloodthorn" GiverId="99343" X="-855.8668" Y="4595.054" Z="748.8666" />
-			<!-- NOTE: <NPCConflict> : In this area, Kayn Sunfury may not be availible if the player picks Altruis the Sufferer during the quest 'A New Direction(40373)' -->
-			<TurnIn QuestName="Call of the Illidari" QuestId="39261" TurnInName="Kayn Sunfury" TurnInId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
-
-			<PickUp QuestName="The Power to Survive" QuestId="40814" GiverName="Kayn Sunfury" GiverId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
-			<While Condition="DoQuest(40814)" >
-				<CustomBehavior File="UserDialog" QuestId="40373" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" Text="Choose an artifact weapon." />
-				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="QuestChoiceFrameOption1.OptionButton:Click();" /> <!-- Verus Artifact Weapon -->
-				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="StaticPopup1Button1:Click();" />
-			</While>
-			<TurnIn QuestName="The Power to Survive" QuestId="40814" TurnInName="Kayn Sunfury" TurnInId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
-
-			<PickUp QuestName="Making Arrangements" QuestId="40819" GiverName="Kayn Sunfury" GiverId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
-			<TurnIn QuestName="Making Arrangements" QuestId="40819" TurnInName="Kayn Sunfury" TurnInId="94902" X="-952.618" Y="4332.883" Z="740.184" />
-
-			<PickUp QuestName="By Any Means" QuestId="39051" GiverName="Kayn Sunfury" GiverId="94902" X="-952.618" Y="4332.883" Z="740.184" />
-			<While Condition="DoQuest(39051)" >
-				<CustomBehavior File="InteractWith" MobId="96313" GossipOptions="2,2" QuestId="39051" QuestObjectiveIndex="1" X="-957.408" Y="4329.056" Z="740.1688" />
-				<CustomBehavior File="InteractWith" MobId="242174" QuestId="39051" QuestObjectiveIndex="2" X="-960.4443" Y="4324.997" Z="740.1581" />
-				<!-- NOTE: <WIP> : This quest involves going through a door and into an instance.  Using IW to open the door, and CTM to go into portal, use TerminateWhen to shut off CTM -->
-				<CustomBehavior File="MyCTM" QuestId="39051" QuestObjectiveIndex="2" X="-965.9781" Y="4318.647" Z="740.0172" TerminateWhen="Me.MapId == XXX" />
-				<!-- NOTE: <AddAvoids> : Avoids aren't really needed, but could work good here. -->
-				<CustomBehavior File="KillUntilComplete" MobId="94731" QuestId="39051" X="1357.16" Y="-263.2" Z="38.6565" />
-			</While>
-			<TurnIn QuestName="By Any Means" QuestId="39051" TurnInName="Kayn Sunfury" TurnInId="94902" X="1300.66" Y="-260.674" Z="44.2852" />
-
-			<PickUp QuestName="The Hunt" QuestId="39247" GiverName="Kayn Sunfury" GiverId="94902" X="1300.66" Y="-260.674" Z="44.2852" />
-			<While Condition="DoQuest(39247)" >
-				<!-- NOTE: <WIP> : This quest involves going through a door and into an instance.  Using IW to open the door, and CTM to go into portal. -->
-				<If Condition="Me.MapId == XXX" >
-					<MoveTo X="1290.327" Y="-262.9491" Z="44.36398" />
-					<CustomBehavior File="MyCTM" X="1261.129" Y="-263.3456" Z="44.36398" TerminateWhen="Me.MapId == XXX" />
-				</If>
-				<CustomBehavior File="InteracWith" MobId="94321" QuestId="39247" QuestObjectiveIndex="1" X="-844.6198" Y="4253.933" Z="746.2827" />
-				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
-				<!-- User gets off at X="1263.974" Y="5235.755" Z="93.53168" -->
-			</While>
-
-
-		<!-- END Loc: Dalaran -->
-
-		<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Work in progress." />
 	</QuestOrder>
 </HBProfile>
