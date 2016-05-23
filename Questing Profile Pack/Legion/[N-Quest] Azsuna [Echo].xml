@@ -22,6 +22,8 @@
 	<AvoidMobs>
 		<Mob Name="Blerg" Entry="106629" />
 		<Mob Name="Sea Skrog" Entry="88094" />
+		<Mob Name="Hatecoil Skrog" Entry="89802" />
+		<Mob Name="Sentry Brute" Entry="88888" />
 	</AvoidMobs>
 
 	<Blackspots>
@@ -75,259 +77,514 @@
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
 
-		<PickUp QuestName="Down to Azsuna" QuestId="41220" GiverName="Archmage Khadgar" GiverId="86563" X="-833.8698" Y="4276.531" Z="746.255" />
-		<While Condition="DoQuest(41220)" >
-			<CustomBehavior File="InteractWith" MobId="86563" GossipOptions="1" QuestId="39051" QuestObjectiveIndex="1" X="-833.8698" Y="4276.531" Z="746.255" />
-			<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
-		</While>
-		<TurnIn QuestName="Down to Azsuna" QuestId="41220" TurnInName="Archmage Khadgar" TurnInId="93337" X="-79.12674" Y="6859.221" Z="30.98969" />
+		<!-- Story: Behind Legion Liones -->
+			<PickUp QuestName="Down to Azsuna" QuestId="41220" GiverName="Archmage Khadgar" GiverId="86563" X="-833.8698" Y="4276.531" Z="746.255" />
+			<While Condition="DoQuest(41220)" >
+				<CustomBehavior File="InteractWith" MobId="86563" GossipOptions="1" QuestId="39051" QuestObjectiveIndex="1" X="-833.8698" Y="4276.531" Z="746.255" />
+				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
+			</While>
+			<TurnIn QuestName="Down to Azsuna" QuestId="41220" TurnInName="Archmage Khadgar" TurnInId="93337" X="-79.12674" Y="6859.221" Z="30.98969" />
 
-		<PickUp QuestName="Into the Fray" QuestId="38834" GiverName="Archmage Khadgar" GiverId="93337" X="-79.12674" Y="6859.221" Z="30.98969" />
-		<TurnIn QuestName="Into the Fray" QuestId="38834" TurnInName="Kayn Sunfury" TurnInId="89362" X="-103.434" Y="6961.333" Z="12.46201" />
+			<PickUp QuestName="Into the Fray" QuestId="38834" GiverName="Archmage Khadgar" GiverId="93337" X="-79.12674" Y="6859.221" Z="30.98969" />
+			<TurnIn QuestName="Into the Fray" QuestId="38834" TurnInName="Kayn Sunfury" TurnInId="89362" X="-103.434" Y="6961.333" Z="12.46201" />
 
-		<PickUp QuestName="Reignite the Wards" QuestId="37658" GiverName="Jace Darkweaver" GiverId="90317" X="-109.7865" Y="6988.105" Z="12.11385" />
-		<PickUp QuestName="Demon Souls" QuestId="37653" GiverName="Allari the Souleater" GiverId="89398" X="-90.15625" Y="6978.989" Z="12.41577" />
+			<PickUp QuestName="Reignite the Wards" QuestId="37658" GiverName="Jace Darkweaver" GiverId="90317" X="-109.7865" Y="6988.105" Z="12.11385" />
+			<PickUp QuestName="Demon Souls" QuestId="37653" GiverName="Allari the Souleater" GiverId="89398" X="-90.15625" Y="6978.989" Z="12.41577" />
 
-		<While Condition="DoQuest(37658)" >
-			<CustomBehavior File="InteractWith" MobId="239985" QuestId="37658" QuestObjectiveIndex="3" X="-97.22743" Y="7052.647" Z="0.2602924" />
-			<CustomBehavior File="InteractWith" MobId="239984" QuestId="37658" QuestObjectiveIndex="2" X="-168.2743" Y="7074.222" Z="3.751625" />
-			<CustomBehavior File="InteractWith" MobId="239452" QuestId="37658" QuestObjectiveIndex="1" X="-235.4271" Y="7038.738" Z="3.501538" />
-		</While>
+			<While Condition="DoQuest(37658)" >
+				<CustomBehavior File="InteractWith" MobId="239985" QuestId="37658" QuestObjectiveIndex="3" X="-97.22743" Y="7052.647" Z="0.2602924" />
+				<CustomBehavior File="InteractWith" MobId="239984" QuestId="37658" QuestObjectiveIndex="2" X="-168.2743" Y="7074.222" Z="3.751625" />
+				<CustomBehavior File="InteractWith" MobId="239452" QuestId="37658" QuestObjectiveIndex="1" X="-235.4271" Y="7038.738" Z="3.501538" />
+			</While>
 
-		<While Condition="DoQuest(37653)" >
-			<CustomBehavior File="InteractWith" MobIds="90241, 90230, 101944, 101943" InteractByUsingItemId="122100" MobState="Dead" QuestId="37653" >
+			<While Condition="DoQuest(37653)" >
+				<CustomBehavior File="InteractWith" MobIds="90241, 90230, 101944, 101943" InteractByUsingItemId="122100" MobState="Dead" QuestId="37653" >
+					<HuntingGrounds>
+						<!-- Staying near the Demon Hunters to avoid getting stuck in an endless loop of fighting mobs. -->
+						<Hotspot X="-110.4761" Y="7007.057" Z="9.384081" />
+						<Hotspot X="-131.1502" Y="6996.284" Z="8.15946" />
+						<Hotspot X="-173.1669" Y="6984.174" Z="2.666158" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<TurnIn QuestName="Reignite the Wards" QuestId="37658" TurnInName="Wolf" TurnInId="90317" X="-109.7865" Y="6988.105" Z="12.11427" />
+			<TurnIn QuestName="Demon Souls" QuestId="37653" TurnInName="Allari the Souleater" TurnInId="89398" X="-90.15625" Y="6978.989" Z="12.41578" />
+
+			<PickUp QuestName="The Scythe of Souls" QuestId="37660" GiverName="Allari the Souleater" GiverId="89398" X="-90.15625" Y="6978.989" Z="12.41578" />
+			<While Condition="DoQuest(37660)" >
+				<MoveTo X="-155.1597" Y="6906.518" Z="13.15537" />
+				<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Unit(90403, u =&gt; u.Distance &lt;= 5) != null" />
+				<CustomBehavior File="InteractWith" MobId="90403" GossipOptions="1" QuestId="37660" QuestObjectiveIndex="1" X="-155.1597" Y="6906.518" Z="13.15537" />
+
+				<CustomBehavior File="InteractWith" MobId="239338" QuestId="37660" QuestObjectiveIndex="2" X="-158.8906" Y="6893.831" Z="14.79161" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" QuestId="37660" QuestObjectiveIndex="3" />
+
+				<CustomBehavior File="InteractWith" MobId="239332" QuestId="37660" QuestObjectiveIndex="4" X="-163.9184" Y="6917.265" Z="12.65213" />
+				<CustomBehavior File="WaitTimer" WaitTime="25000" QuestId="37660" QuestObjectiveIndex="5" />
+
+				<CustomBehavior File="InteractWith" MobId="237017" QuestId="37660" QuestObjectiveIndex="6" X="-157.6337" Y="6904.867" Z="13.32249" />
+
+				<CustomBehavior File="KillUntilComplete" MobId="89673" QuestId="37660" QuestObjectiveIndex="7" X="-161.5538" Y="6903.051" Z="13.31845" />
+
+				<MoveTo X="-90.55988" Y="6976.843" Z="12.68431" />
+				<CustomBehavior File="WaitTimer" WaitTime="5000" QuestId="37660" />
+			</While>
+			<TurnIn QuestName="The Scythe of Souls" QuestId="37660" TurnInName="Allari the Souleater" TurnInId="89398" X="-90.15625" Y="6978.989" Z="12.41578" />
+
+			<PickUp QuestName="From Within" QuestId="36920" GiverName="Kayn Sunfury" GiverId="89362" X="-103.434" Y="6961.333" Z="12.46202" />
+			<TurnIn QuestName="From Within" QuestId="36920" TurnInName="Kor'vas Bloodthorn" TurnInId="90255" X="-412.9792" Y="7113.748" Z="1.571512" />
+
+			<PickUp QuestName="Fel Machinations" QuestId="37656" GiverName="Wrathguard Invader" GiverId="110988" X="-409.8965" Y="7117.188" Z="2.223603" />
+			<PickUp QuestName="Saving Stellagosa" QuestId="37450" GiverName="Wrathguard Invader" GiverId="110988" X="-409.8965" Y="7117.188" Z="2.223603" />
+
+			<While Condition="DoQuest(37450)" >
+				<If Condition="!IsObjectiveComplete(1, 37450)" >
+					<MoveTo X="-735.4157" Y="7344.977" Z="15.02042" />
+				</If>
+				<!-- NOTE: <AddAvoid> : Get out or purple stuff - it silences you. -->
+				<CustomBehavior File="InteractWith" MobId="86535" InteractByLooting="true" QuestId="37450" QuestObjectiveIndex="2" X="-670.6696" Y="7160.034" Z="27.95947" />
+				<CustomBehavior File="InteractWith" MobId="239455" NumOfTimes="3" QuestId="37450" QuestObjectiveIndex="3" X="-736.6461" Y="7338.293" Z="15.15532" />
+			</While>
+			<TurnIn QuestName="Retake Faronaar" QuestId="36811" TurnInName="Kor'vas Bloodthorn" TurnInId="110988" X="-723.8791" Y="7322.058" Z="15.21342" />
+
+			<While Condition="DoQuest(37656)" >
+				<CustomBehavior File="InteractWith" MobIds="240123, 240075, 240122" NumOfTimes="6" QuestId="37653" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<!-- Staying near the Demon Hunters to avoid getting stuck in an endless loop of fighting mobs. -->
+						<Hotspot X="-377.3905" Y="7345.168" Z="40.44294" />
+						<Hotspot X="-328.2894" Y="7383.489" Z="29.68443" />
+						<Hotspot X="-236.9479" Y="7337.977" Z="20.6036" />
+						<Hotspot X="-281.3628" Y="7258.15" Z="11.94253" />
+						<Hotspot X="-237.5313" Y="7242.109" Z="21.07804" />
+						<Hotspot X="-168.1649" Y="7272.057" Z="17.37294" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+			<TurnIn QuestName="Fel Machinations" QuestId="37656" TurnInName="Kor'vas Bloodthorn" TurnInId="110988" X="-174.0494" Y="7271.852" Z="13.4738" />
+
+			<While Condition="NeedsQuest(36811) || DoQuest(36811)" > <!-- Bonus Objective: Retake Faronaar -->
+				<MoveTo X="-320.7442" Y="7365.427" Z="27.60932" />
+				<CustomBehavior File="KillUntilComplete" MobIds="103363, 103231, 103162, 89731, 103180, 103176" QuestId="36811" >
+					<HuntingGrounds>
+						<Hotspot X="-320.7442" Y="7365.427" Z="27.60932" />
+						<Hotspot X="-257.0323" Y="7285.456" Z="9.244231" />
+						<Hotspot X="-257.0323" Y="7285.456" Z="9.244231" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<PickUp QuestName="Dark Revelations" QuestId="37449" GiverName="Kor'vas Bloodthorn" GiverId="110988" X="-174.0494" Y="7271.852" Z="13.4738" />
+			<While Condition="NeedsQuest(37449) || DoQuest(37449)" >
+				<MoveTo X="-502.8906" Y="7499.088" Z="74.15278" />
+				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Me.Combat" />
+				<CustomBehavior File="KillUntilComplete" MobId="90621" QuestId="37449" QuestObjectiveIndex="1" X="-491.7935" Y="7501.004" Z="73.40841" />
+				<CustomBehavior File="InteractWith" MobId="90623" QuestId="37449" QuestObjectiveIndex="2" X="-518.5573" Y="7518.17" Z="74.2154" />
+				<CustomBehavior File="WaitTimer" WaitTime="47000" TerminateWhen="!Me.IsFlying" />
+			</While>
+			<TurnIn QuestName="Dark Revelations" QuestId="37449" TurnInName="Kayn Sunfury" TurnInId="89362" X="-103.434" Y="6961.333" Z="12.46136" />
+
+			<PickUp QuestName="Journey to the Repose" QuestId="38443" GiverName="Archmage Khadgar" GiverId="93326" X="-101.349" Y="6961.514" Z="12.58813" />
+			<TurnIn QuestName="Journey to the Repose" QuestId="38443" TurnInName="Archmage Khadgar" TurnInId="93354" X="611.743" Y="6672.58" Z="60.20637" />
+
+			<PickUp QuestName="The Death of the Eldest" QuestId="37853" GiverName="Archmage Khadgar" GiverId="93354" X="611.743" Y="6672.58" Z="60.20637" />
+			<While Condition="DoQuest(37853)" >
+				<CustomBehavior File="KillUntilComplete" MobId="106630" QuestId="37853" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="870.1301" Y="6611.31" Z="56.75214" />
+						<Hotspot X="841.2068" Y="6549.64" Z="53.02852" />
+						<Hotspot X="766.4086" Y="6490.921" Z="61.68282" />
+						<Hotspot X="782.0421" Y="6458.898" Z="59.54858" />
+						<Hotspot X="888.8901" Y="6470.409" Z="50.22207" />
+					</HuntingGrounds>
+				</CustomBehavior>
+				<MoveTo X="674.113" Y="6663.514" Z="59.6697" />
+				<!-- NOTE: <TechnicalCheck> : Confirm whether or not player may need to be facing water. -->
+				<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click()" />
+			</While>
+			<TurnIn QuestName="The Death of the Eldest" QuestId="37853" TurnInName="Stellagosa" TurnInId="89794" X="613.1719" Y="6670.912" Z="60.20705" />
+
+			<PickUp QuestName="Agapanthus" QuestId="37991" GiverName="Emmigosa" GiverId="89795" X="614.3611" Y="6669.012" Z="60.23634" />
+			<TurnIn QuestName="Agapanthus" QuestId="37991" TurnInName="Agapanthus" TurnInId="90543" X="647.033" Y="6607.346" Z="60.18776" />
+
+			<PickUp QuestName="Their Dying Breaths" QuestId="42271" GiverName="Agapanthus" GiverId="90543" X="647.033" Y="6607.346" Z="60.18776" />
+			<While Condition="DoQuest(42271)" >
+				<CustomBehavior File="InteractWith" MobId="240267" NumOfTimes="4" QuestId="42271" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="683.7028" Y="6563.665" Z="63.47566" />
+						<Hotspot X="708.5201" Y="6535.76" Z="62.61032" />
+					</HuntingGrounds>
+				</CustomBehavior>
+				<CustomBehavior File="InteractWith" MobId="90880, 90219" NumOfTimes="4" QuestId="42271" QuestObjectiveIndex="2" X="643.3144" Y="6613.538" Z="60.15187" />
+				<CustomBehavior File="InteractWith" MobId="91037" QuestId="42271" QuestObjectiveIndex="3" X="649.007" Y="6614.711" Z="60.21638" />
+			</While>
+			<TurnIn QuestName="Their Dying Breaths" QuestId="42271" TurnInName="Senegos" TurnInId="89975" X="634.6545" Y="6679.66" Z="54.25773" />
+
+			<PickUp QuestName="Those Who Remember" QuestId="37690" GiverName="Senegos" GiverId="89975" X="634.6545" Y="6679.66" Z="54.25773" />
+			<PickUp QuestName="The Last of the Last" QuestId="37855" GiverName="Senegos" GiverId="89975" X="634.6545" Y="6679.66" Z="54.25773" />
+
+			<TurnIn QuestName="Those Who Remember" QuestId="37690" TurnInName="Nightwatcher Idri" TurnInId="89023" X="288.5208" Y="6643.104" Z="56.0437" />
+
+			<PickUp QuestName="They Came From the Sea" QuestId="37256" GiverName="Nightwatcher Idri" GiverId="89023" X="288.5208" Y="6643.104" Z="56.0437" />
+			<While Condition="DoQuest(37256)" >
+				<CustomBehavior File="KillUntilComplete" MobId="88090" QuestId="37256" QuestObjectiveIndex="1" X="191.934" Y="6845.155" Z="72.12495" />
+				<CustomBehavior File="KillUntilComplete" MobIds="109154, 88084" QuestId="37256" QuestObjectiveIndex="2" >
+					<HuntingGrounds>
+						<Hotspot X="232.39" Y="6783.089" Z="54.90671" />
+						<Hotspot X="266.6945" Y="6691.551" Z="55.97951" />
+						<Hotspot X="124.1819" Y="6801.362" Z="50.53234" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+			<TurnIn QuestName="They Came From the Sea" QuestId="37256" TurnInName="Nightwatcher Idri" TurnInId="89023" X="288.5208" Y="6643.104" Z="56.04459" />
+
+			<PickUp QuestName="Prince Farondis" QuestId="37733" GiverName="Nightwatcher Idri" GiverId="89023" X="288.5208" Y="6643.104" Z="56.04459" />
+			<TurnIn QuestName="Prince Farondis" QuestId="37733" TurnInName="Nightwatcher Idri" TurnInId="89023" X="-4.743056" Y="6736.632" Z="55.64066" />
+
+			<PickUp QuestName="Our Very Bones" QuestId="37257" GiverName="Prince Farondis" GiverId="88115" X="-10.85069" Y="6734.116" Z="55.58853" />
+			<PickUp QuestName="A Rather Long Walk" QuestId="37492" GiverName="Lady Irisse" GiverId="88798" X="-16.15451" Y="6730.362" Z="55.64079" />.
+			<PickUp QuestName="The Magister of Mixology" QuestId="37727" GiverName="Magister Garuhod" GiverId="89341" X="-13.44271" Y="6726.504" Z="55.58865" />
+			<PickUp QuestName="Presentation is Everything" QuestId="37728" GiverName="Magister Garuhod" GiverId="89341" X="-13.44271" Y="6726.504" Z="55.58865" />
+
+			<CustomBehavior File="KillUntilComplete" MobId="89653" QuestId="37728" QuestObjectiveIndex="1" X="377.974" Y="6424.851" Z="3.794955" />
+			<While Condition="DoQuest(37727)" >
+				<CustomBehavior File="InteractWith" MobId="239692" NumOfTimes="6" QuestId="37727" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="335.9479" Y="6435.111" Z="9.073827" />
+						<Hotspot X="340.5689" Y="6354.652" Z="5.287906" />
+						<Hotspot X="357.1674" Y="6264.91" Z="2.674739" />
+						<Hotspot X="328.9573" Y="6175.972" Z="6.48738" />
+						<Hotspot X="284.4913" Y="6183.221" Z="0.3277865" />
+						<Hotspot X="287.2297" Y="6367.741" Z="4.224408" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+			<While Condition="DoQuest(37492)" >
+				<CustomBehavior File="InteractWith" MobId="88797" QuestId="37492" QuestObjectiveIndex="1" X="201.0521" Y="6424.347" Z="-22.21514" />
+			</While>
+			<While Condition="DoQuest(37257) &amp;&amp; !HasItem(122699)" >
+				<CustomBehavior File="KillUntilComplete" MobIds="107367, 88099, 88101" TerminateWhen="!DoQuest(37257) &amp;&amp; HasItem(122699)" >
+					<HuntingGrounds>
+						<Hotspot X="279.8137" Y="6475.952" Z="1.73516" />
+						<Hotspot X="256.6267" Y="6540.718" Z="3.497601" />
+						<Hotspot X="326.515" Y="6502.422" Z="8.329529" />
+						<Hotspot X="172.635" Y="6534.716" Z="0.5314069" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<TurnIn QuestName="Our Very Bones" QuestId="37257" TurnInName="Prince Farondis" TurnInId="88115" X="-10.85069" Y="6734.116" Z="55.58864" />
+			<TurnIn QuestName="A Rather Long Walk" QuestId="37492" TurnInName="Lady Irisse" TurnInId="88798" X="-16.15451" Y="6730.362" Z="55.63947" />
+			<TurnIn QuestName="Bottled Up" QuestId="38407" TurnInName="Lady Irisse" TurnInId="88798" X="-16.15451" Y="6730.362" Z="55.63947" />
+			<TurnIn QuestName="The Magister of Mixology" QuestId="37727" TurnInName="Magister Garuhod" TurnInId="89341" X="-13.44271" Y="6726.504" Z="55.58904" />
+			<TurnIn QuestName="Presentation is Everything" QuestId="37728" TurnInName="Magister Garuhod" TurnInId="89341" X="-13.44271" Y="6726.504" Z="55.58904" />
+		<!-- END Story: Behind Legion Lines -->
+
+		<PickUp QuestName="Infiltrating Shipwreck Arena" QuestId="37496" GiverName="Lady Irisse" GiverId="88798" X="-16.15451" Y="6730.362" Z="55.63947" /> <!-- Against the Giants breadcrumb. -->
+		<PickUp QuestName="Trailing the Tidestone" QuestId="37497" GiverName="Prince Farondis" GiverId="88115" X="-10.85069" Y="6734.116" Z="55.58864" /> <!-- Azsuna versus Azshara breadcrumb. -->
+
+		<!-- Story: Azsuna versus Azshara -->
+			<While Condition="DoQuest(37497)" >
+				<CustomBehavior File="InteractWith" MobId="88115" GossipOptions="1" QuestId="37497" QuestObjectiveIndex="1" X="-10.85069" Y="6734.116" Z="55.58864" />
+				<CustomBehavior File="EscortGroup" QuestId="37497" EscortCompleteWhen="QuestObjectiveComplete" QuestObjectiveIndex="2" EscortCountMax="1"
+					EscortNpcId="88869" EscortMaxFightDistance="15" SearchForNpcsRadius="30" >
+					<SearchPath>
+						<Hotspot X="-10.85069" Y="6734.116" Z="55.58864" />
+					</SearchPath>
+				</CustomBehavior>
+			</While>
+			<TurnIn QuestName="Trailing the Tidestone" QuestId="37497" TurnInName="Prince Farondis" TurnInId="88867" X="-139.941" Y="6418.818" Z="27.39929" />
+
+			<PickUp QuestName="Nar'thalas Still Suffers" QuestId="37486" GiverName="Prince Farondis" GiverId="88867" X="-139.941" Y="6418.818" Z="27.39929" />
+			<PickUp QuestName="Children of Nar'thalas" QuestId="42692" GiverName="Kallistia Starlance" GiverId="89326" X="-184.7049" Y="6320.589" Z="21.63328" />
+			<PickUp QuestName="You Never Know Until You Scry" QuestId="42693" GiverName="Olothil Starlance" GiverId="108328" X="-189.7396" Y="6313.207" Z="20.58764" />
+
+			<While Condition="DoQuest(42692)" >
+				<CustomBehavior File="InteractWith" MobId="251117" QuestId="42692" QuestObjectiveIndex="1" X="-167.8872" Y="6411.101" Z="46.26837" />
+				<CustomBehavior File="InteractWith" MobId="251121" QuestId="42692" QuestObjectiveIndex="2" X="-110.2135" Y="6406.333" Z="27.6425" />
+				<CustomBehavior File="InteractWith" MobId="251115" QuestId="42692" QuestObjectiveIndex="3" X="-115.7153" Y="6336.984" Z="20.62677" />
+			</While>
+			<CustomBehavior File="KillUntilComplete" MobId="88091" QuestId="37486" QuestObjectiveIndex="1" X="-323.2778" Y="6158.521" Z="48.07375" />
+
+			<CustomBehavior File="KillUntilComplete" MobIds="88086, 88087" QuestId="42693" QuestObjectiveIndex="1" >
 				<HuntingGrounds>
-					<!-- Staying near the Demon Hunters to avoid getting stuck in an endless loop of fighting mobs. -->
-					<Hotspot X="-110.4761" Y="7007.057" Z="9.384081" />
-					<Hotspot X="-131.1502" Y="6996.284" Z="8.15946" />
-					<Hotspot X="-173.1669" Y="6984.174" Z="2.666158" />
+					<Hotspot X="-246.0592" Y="6180.547" Z="41.15833" />
+					<Hotspot X="-208.5076" Y="6137.853" Z="40.12774" />
+					<Hotspot X="-153.4284" Y="6189.759" Z="3.504944" />
+					<Hotspot X="-206.8819" Y="6201.078" Z="4.976368" />
+					<Hotspot X="-51.22282" Y="6225.709" Z="-0.3136045" />
 				</HuntingGrounds>
 			</CustomBehavior>
-		</While>
 
-		<TurnIn QuestName="Reignite the Wards" QuestId="37658" TurnInName="Wolf" TurnInId="90317" X="-109.7865" Y="6988.105" Z="12.11427" />
-		<TurnIn QuestName="Demon Souls" QuestId="37653" TurnInName="Allari the Souleater" TurnInId="89398" X="-90.15625" Y="6978.989" Z="12.41578" />
+			<TurnIn QuestName="Children of Nar'thalas" QuestId="42692" TurnInName="Kallistia Starlance" TurnInId="89326" X="-184.7049" Y="6320.589" Z="21.63328" />
+			<TurnIn QuestName="You Never Know Until You Scry" QuestId="42693" TurnInName="Olothil Starlance" TurnInId="108328" X="-189.7396" Y="6313.207" Z="20.58771" />
 
-		<PickUp QuestName="The Scythe of Souls" QuestId="37660" GiverName="Allari the Souleater" GiverId="89398" X="-90.15625" Y="6978.989" Z="12.41578" />
-		<While Condition="DoQuest(37660)" >
-			<MoveTo X="-155.1597" Y="6906.518" Z="13.15537" />
-			<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Unit(90403, u =&gt; u.Distance &lt;= 5) != null" />
-			<CustomBehavior File="InteractWith" MobId="90403" GossipOptions="1" QuestId="37660" QuestObjectiveIndex="1" X="-155.1597" Y="6906.518" Z="13.15537" />
+			<PickUp QuestName="Back from the Dead" QuestId="42694" GiverName="Olothil Starlance" GiverId="108328" X="-189.7396" Y="6313.207" Z="20.58716" />
+			<While Condition="DoQuest(42694)" >
+				<CustomBehavior File="InteractWith" MobId="251182" QuestId="42694" QuestObjectiveIndex="1" X="-189.3819" Y="6311.526" Z="20.58729" /> 
+				<CustomBehavior File="WaitTimer" WaitTime="25000" QuestId="42694" QuestObjectiveIndex="1" /> <!-- NOTE: <ConditionCheck> : We don't want this timer terminating as soon as the interact with is done. May have to remove QuestObjectiveIndex-->
+				<CustomBehavior File="KillUntilComplete" MobId="88086" QuestId="42694" QuestObjectiveIndex="4" X="-209.7847" Y="6198.627" Z="4.976766" />
+				<CustomBehavior File="KillUntilComplete" MobId="108441" QuestId="42694" QuestObjectiveIndex="3" X="-53.2309" Y="6129.452" Z="25.73073" />
+				<CustomBehavior File="KillUntilComplete" MobIds="88099, 88100, 88101" QuestId="42694" QuestObjectiveIndex="2" X="102.6458" Y="6211.512" Z="3.477443" />
+			</While>
+			<TurnIn QuestName="Back from the Dead" QuestId="42694" TurnInName="Olothil Starlance" TurnInId="108328" X="-188.7205" Y="6317.007" Z="20.58788" />
 
-			<CustomBehavior File="InteractWith" MobId="239338" QuestId="37660" QuestObjectiveIndex="2" X="-158.8906" Y="6893.831" Z="14.79161" />
-			<CustomBehavior File="WaitTimer" WaitTime="10000" QuestId="37660" QuestObjectiveIndex="3" />
+			<TurnIn QuestName="Nar'thalas Still Suffers" QuestId="37486" TurnInName="Prince Farondis" TurnInId="88867" X="-139.941" Y="6418.818" Z="27.39911" />
 
-			<CustomBehavior File="InteractWith" MobId="239332" QuestId="37660" QuestObjectiveIndex="4" X="-163.9184" Y="6917.265" Z="12.65213" />
-			<CustomBehavior File="WaitTimer" WaitTime="25000" QuestId="37660" QuestObjectiveIndex="5" />
+			<PickUp QuestName="The Walk of Shame" QuestId="37467" GiverName="Prince Farondis" GiverId="88867" X="-139.941" Y="6418.818" Z="27.39959" />
+			<While Condition="DoQuest(37467)" >
+				<CustomBehavior File="EscortGroup" EscortCompleteWhen="QuestObjectiveComplete" EscortCountMax="1" QuestId="37467" QuestObjectiveIndex="1"
+					StartNpcId="88867" StartEscortGossipOptions="1" EscortNpcId="88889" EscortMaxFightDistance="15" SearchForNpcsRadius="30" >
+					<SearchPath>
+						<Hotspot X="-139.941" Y="6418.818" Z="27.39959" />
+					</SearchPath>
+				</CustomBehavior>
+			</While>
+			<TurnIn QuestName="The Walk of Shame" QuestId="37467" TurnInName="Prince Farondis" TurnInId="88890" X="-39.66493" Y="6260.809" Z="8.48697" />
 
-			<CustomBehavior File="InteractWith" MobId="237017" QuestId="37660" QuestObjectiveIndex="6" X="-157.6337" Y="6904.867" Z="13.32249" />
+			<!-- Bonus Objective can be placed here.  Alternatively, can be placed at BO-1.  At BO-1 this can also be added as it will act  as a connector point to the next hub.
+				<PickUp QuestName="The Broken Academy" QuestId="37466" GiverName="Wolf" GiverId="1234" X="XXX" Y="YYY" Z="ZZZ" />
+				Name="Hatecoil Riptail" Entry="88086" X="-0.2339811" Y="6267.356" Z="3.133339"
+				Name="Hatecoil Stormcaller" Entry="88087" X="-0.8961049" Y="6289.629" Z="3.090839"
+				Name="Naga Brute" Entry="91459" X="-0.4270833" Y="6180.314" Z="1.780076"
+				Name="Hatecoil Harpooner" Entry="107447" X="-75.51215" Y="6280.116" Z="1.086558"
+				Name="Bound Citizen" Entry="91449" X="-90.8316" Y="6289.807" Z="4.74719"  Interact, not really needed.
+			-->
 
-			<CustomBehavior File="KillUntilComplete" MobId="89673" QuestId="37660" QuestObjectiveIndex="7" X="-161.5538" Y="6903.051" Z="13.31845" />
-
-			<MoveTo X="-90.55988" Y="6976.843" Z="12.68431" />
-			<CustomBehavior File="WaitTimer" WaitTime="5000" QuestId="37660" />
-		</While>
-		<TurnIn QuestName="The Scythe of Souls" QuestId="37660" TurnInName="Allari the Souleater" TurnInId="89398" X="-90.15625" Y="6978.989" Z="12.41578" />
-
-		<PickUp QuestName="From Within" QuestId="36920" GiverName="Kayn Sunfury" GiverId="89362" X="-103.434" Y="6961.333" Z="12.46202" />
-		<TurnIn QuestName="From Within" QuestId="36920" TurnInName="Kor'vas Bloodthorn" TurnInId="90255" X="-412.9792" Y="7113.748" Z="1.571512" />
-
-		<PickUp QuestName="Fel Machinations" QuestId="37656" GiverName="Wrathguard Invader" GiverId="110988" X="-409.8965" Y="7117.188" Z="2.223603" />
-		<PickUp QuestName="Saving Stellagosa" QuestId="37450" GiverName="Wrathguard Invader" GiverId="110988" X="-409.8965" Y="7117.188" Z="2.223603" />
-
-		<While Condition="DoQuest(37450)" >
-			<If Condition="!IsObjectiveComplete(1, 37450)" >
-				<MoveTo X="-735.4157" Y="7344.977" Z="15.02042" />
+			<PickUp QuestName="Into the Academy" QuestId="37468" GiverName="Prince Farondis" GiverId="88890" X="-39.66493" Y="6260.809" Z="8.48697" />
+			<If Condition="DoQuest(37468) &amp;&amp; Me.Z &gt;= -10" >
+				<MoveTo X="68.94806" Y="6332.833" Z="12.69665" />
+				<CustomBehavior File="MyCTM" X="74.53338" Y="6318.028" Z="9.115507" />
+				<CustomBehavior File="MyCTM" X="59.49255" Y="6278.779" Z="-15.45908" />
 			</If>
-			<!-- NOTE: <AddAvoid> : Get out or purple stuff - it silences you. -->
-			<CustomBehavior File="InteractWith" MobId="86535" InteractByLooting="true" QuestId="37450" QuestObjectiveIndex="2" X="-670.6696" Y="7160.034" Z="27.95947" />
-			<CustomBehavior File="InteractWith" MobId="239455" NumOfTimes="3" QuestId="37450" QuestObjectiveIndex="3" X="-736.6461" Y="7338.293" Z="15.15532" />
-		</While>
-		<TurnIn QuestName="Retake Faronaar" QuestId="36811" TurnInName="Kor'vas Bloodthorn" TurnInId="110988" X="-723.8791" Y="7322.058" Z="15.21342" />
+			<TurnIn QuestName="Into the Academy" QuestId="37468" TurnInName="Thyrillion" TurnInId="89660" X="183.5035" Y="6342.241" Z="-30.70959" />
 
-		<While Condition="DoQuest(37656)" >
-			<CustomBehavior File="InteractWith" MobIds="240123, 240075, 240122" NumOfTimes="6" QuestId="37653" QuestObjectiveIndex="1" >
+			<PickUp QuestName="Dressing With Class" QuestId="37736" GiverName="Thyrillion" GiverId="89660" X="183.5035" Y="6342.241" Z="-30.70959" />
+			<PickUp QuestName="Hit the Books" QuestId="37678" GiverName="Andellis" GiverId="89849" X="182.6389" Y="6344.258" Z="-30.71036" />
+
+			<While Condition="DoQuest(37736)" >
+				<CustomBehavior File="InteractWith" MobId="238940" QuestId="37736" QuestObjectiveIndex="4" X="170.1302" Y="6332.236" Z="-30.29762" />
+				<CustomBehavior File="InteractWith" MobId="239744" QuestId="37736" QuestObjectiveIndex="1" X="152.7379" Y="6325.582" Z="-30.59168" />
+				<CustomBehavior File="InteractWith" MobId="239745" QuestId="37736" QuestObjectiveIndex="3" X="95.79514" Y="6272.96" Z="-15.24168" />
+				<CustomBehavior File="InteractWith" MobId="89669" QuestId="37736" QuestObjectiveIndex="2" X="54.71701" Y="6308.999" Z="-15.15834" />
+			</While>
+
+			<CustomBehavior File="KillUntilComplete" MobId="89834" QuestId="37678" QuestObjectiveIndex="1" >
 				<HuntingGrounds>
-					<!-- Staying near the Demon Hunters to avoid getting stuck in an endless loop of fighting mobs. -->
-					<Hotspot X="-377.3905" Y="7345.168" Z="40.44294" />
-					<Hotspot X="-328.2894" Y="7383.489" Z="29.68443" />
-					<Hotspot X="-236.9479" Y="7337.977" Z="20.6036" />
-					<Hotspot X="-281.3628" Y="7258.15" Z="11.94253" />
-					<Hotspot X="-237.5313" Y="7242.109" Z="21.07804" />
-					<Hotspot X="-168.1649" Y="7272.057" Z="17.37294" />
+					<Hotspot X="98.15534" Y="6325.168" Z="-13.35211" />
+					<Hotspot X="96.94271" Y="6326.079" Z="-12.35709" />
+					<Hotspot X="47.83603" Y="6310.509" Z="-13.35912" />
 				</HuntingGrounds>
 			</CustomBehavior>
-		</While>
-		<TurnIn QuestName="Fel Machinations" QuestId="37656" TurnInName="Kor'vas Bloodthorn" TurnInId="110988" X="-174.0494" Y="7271.852" Z="13.4738" />
 
-		<While Condition="NeedsQuest(36811) || DoQuest(36811)" > <!-- Bonus Objective: Retake Faronaar -->
-			<MoveTo X="-320.7442" Y="7365.427" Z="27.60932" />
-			<CustomBehavior File="KillUntilComplete" MobIds="103363, 103231, 103162, 89731, 103180, 103176" QuestId="36811" >
-				<HuntingGrounds>
-					<Hotspot X="-320.7442" Y="7365.427" Z="27.60932" />
-					<Hotspot X="-257.0323" Y="7285.456" Z="9.244231" />
-					<Hotspot X="-257.0323" Y="7285.456" Z="9.244231" />
-				</HuntingGrounds>
-			</CustomBehavior>
-		</While>
+			<TurnIn QuestName="Dressing With Class" QuestId="37736" TurnInName="Thyrillion" TurnInId="89660" X="183.5035" Y="6342.241" Z="-30.7095" />
+			<TurnIn QuestName="Hit the Books" QuestId="37678" TurnInName="Andellis" TurnInId="89849" X="182.6389" Y="6344.258" Z="-30.71062" />
 
-		<PickUp QuestName="Dark Revelations" QuestId="37449" GiverName="Kor'vas Bloodthorn" GiverId="110988" X="-174.0494" Y="7271.852" Z="13.4738" />
-		<While Condition="NeedsQuest(37449) || DoQuest(37449)" >
-			<MoveTo X="-502.8906" Y="7499.088" Z="74.15278" />
-			<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Me.Combat" />
-			<CustomBehavior File="KillUntilComplete" MobId="90621" QuestId="37449" QuestObjectiveIndex="1" X="-491.7935" Y="7501.004" Z="73.40841" />
-			<CustomBehavior File="InteractWith" MobId="90623" QuestId="37449" QuestObjectiveIndex="2" X="-518.5573" Y="7518.17" Z="74.2154" />
-			<CustomBehavior File="WaitTimer" WaitTime="47000" TerminateWhen="!Me.IsFlying" />
-		</While>
-		<TurnIn QuestName="Dark Revelations" QuestId="37449" TurnInName="Kayn Sunfury" TurnInId="89362" X="-103.434" Y="6961.333" Z="12.46136" />
-
-		<PickUp QuestName="Journey to the Repose" QuestId="38443" GiverName="Archmage Khadgar" GiverId="93326" X="-101.349" Y="6961.514" Z="12.58813" />
-		<TurnIn QuestName="Journey to the Repose" QuestId="38443" TurnInName="Archmage Khadgar" TurnInId="93354" X="611.743" Y="6672.58" Z="60.20637" />
-
-		<PickUp QuestName="The Death of the Eldest" QuestId="37853" GiverName="Archmage Khadgar" GiverId="93354" X="611.743" Y="6672.58" Z="60.20637" />
-		<While Condition="DoQuest(37853)" >
-			<CustomBehavior File="KillUntilComplete" MobIds="106630" QuestId="37853" QuestObjectiveIndex="1" >
-				<HuntingGrounds>
-					<Hotspot X="870.1301" Y="6611.31" Z="56.75214" />
-					<Hotspot X="841.2068" Y="6549.64" Z="53.02852" />
-					<Hotspot X="766.4086" Y="6490.921" Z="61.68282" />
-					<Hotspot X="782.0421" Y="6458.898" Z="59.54858" />
-					<Hotspot X="888.8901" Y="6470.409" Z="50.22207" />
-				</HuntingGrounds>
-			</CustomBehavior>
-			<MoveTo X="674.113" Y="6663.514" Z="59.6697" />
-			<!-- NOTE: <TechnicalCheck> : Confirm whether or not player may need to be facing water. -->
-			<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click()" />
-		</While>
-		<TurnIn QuestName="The Death of the Eldest" QuestId="37853" TurnInName="Stellagosa" TurnInId="89794" X="613.1719" Y="6670.912" Z="60.20705" />
-
-		<PickUp QuestName="Agapanthus" QuestId="37991" GiverName="Emmigosa" GiverId="89795" X="614.3611" Y="6669.012" Z="60.23634" />
-		<TurnIn QuestName="Agapanthus" QuestId="37991" TurnInName="Agapanthus" TurnInId="90543" X="647.033" Y="6607.346" Z="60.18776" />
-
-		<PickUp QuestName="Their Dying Breaths" QuestId="42271" GiverName="Agapanthus" GiverId="90543" X="647.033" Y="6607.346" Z="60.18776" />
-		<While Condition="DoQuest(42271)" >
-			<CustomBehavior File="InteractWith" MobIds="240267" NumOfTimes="4" QuestId="42271" QuestObjectiveIndex="1" >
-				<HuntingGrounds>
-					<Hotspot X="683.7028" Y="6563.665" Z="63.47566" />
-					<Hotspot X="708.5201" Y="6535.76" Z="62.61032" />
-				</HuntingGrounds>
-			</CustomBehavior>
-			<CustomBehavior File="InteractWith" MobId="90880, 90219" NumOfTimes="4" QuestId="42271" QuestObjectiveIndex="2" X="643.3144" Y="6613.538" Z="60.15187" />
-			<CustomBehavior File="InteractWith" MobId="91037" QuestId="42271" QuestObjectiveIndex="3" X="649.007" Y="6614.711" Z="60.21638" />
-		</While>
-		<TurnIn QuestName="Their Dying Breaths" QuestId="42271" TurnInName="Senegos" TurnInId="89975" X="634.6545" Y="6679.66" Z="54.25773" />
-
-		<PickUp QuestName="Those Who Remember" QuestId="37690" GiverName="Senegos" GiverId="89975" X="634.6545" Y="6679.66" Z="54.25773" />
-		<PickUp QuestName="The Last of the Last" QuestId="37855" GiverName="Senegos" GiverId="89975" X="634.6545" Y="6679.66" Z="54.25773" />
-
-		<TurnIn QuestName="Those Who Remember" QuestId="37690" TurnInName="Nightwatcher Idri" TurnInId="89023" X="288.5208" Y="6643.104" Z="56.0437" />
-
-		<PickUp QuestName="They Came From the Sea" QuestId="37256" GiverName="Nightwatcher Idri" GiverId="89023" X="288.5208" Y="6643.104" Z="56.0437" />
-		<While Condition="DoQuest(37256)" >
-			<CustomBehavior File="KillUntilComplete" MobId="88090" QuestId="37256" QuestObjectiveIndex="1" X="191.934" Y="6845.155" Z="72.12495" />
-			<CustomBehavior File="KillUntilComplete" MobIds="109154, 88084" QuestId="37256" QuestObjectiveIndex="2" >
-				<HuntingGrounds>
-					<Hotspot X="232.39" Y="6783.089" Z="54.90671" />
-					<Hotspot X="266.6945" Y="6691.551" Z="55.97951" />
-					<Hotspot X="124.1819" Y="6801.362" Z="50.53234" />
-				</HuntingGrounds>
-			</CustomBehavior>
-		</While>
-		<TurnIn QuestName="They Came From the Sea" QuestId="37256" TurnInName="Nightwatcher Idri" TurnInId="89023" X="288.5208" Y="6643.104" Z="56.04459" />
-
-		<PickUp QuestName="Prince Farondis" QuestId="37733" GiverName="Nightwatcher Idri" GiverId="89023" X="288.5208" Y="6643.104" Z="56.04459" />
-		<TurnIn QuestName="Prince Farondis" QuestId="37733" TurnInName="Nightwatcher Idri" TurnInId="89023" X="-4.743056" Y="6736.632" Z="55.64066" />
-
-		<PickUp QuestName="Our Very Bones" QuestId="37257" GiverName="Prince Farondis" GiverId="88115" X="-10.85069" Y="6734.116" Z="55.58853" />
-		<PickUp QuestName="A Rather Long Walk" QuestId="37492" GiverName="Lady Irisse" GiverId="88798" X="-16.15451" Y="6730.362" Z="55.64079" />.
-		<PickUp QuestName="The Magister of Mixology" QuestId="37727" GiverName="Magister Garuhod" GiverId="89341" X="-13.44271" Y="6726.504" Z="55.58865" />
-		<PickUp QuestName="Presentation is Everything" QuestId="37728" GiverName="Magister Garuhod" GiverId="89341" X="-13.44271" Y="6726.504" Z="55.58865" />
-
-		<CustomBehavior File="KillUntilComplete" MobId="89653" QuestId="37728" QuestObjectiveIndex="1" X="377.974" Y="6424.851" Z="3.794955" />
-		<While Condition="DoQuest(37727)" >
-			<CustomBehavior File="InteractWith" MobIds="239692" NumOfTimes="6" QuestId="37727" QuestObjectiveIndex="1" >
-				<HuntingGrounds>
-					<Hotspot X="335.9479" Y="6435.111" Z="9.073827" />
-					<Hotspot X="340.5689" Y="6354.652" Z="5.287906" />
-					<Hotspot X="357.1674" Y="6264.91" Z="2.674739" />
-					<Hotspot X="328.9573" Y="6175.972" Z="6.48738" />
-					<Hotspot X="284.4913" Y="6183.221" Z="0.3277865" />
-					<Hotspot X="287.2297" Y="6367.741" Z="4.224408" />
-				</HuntingGrounds>
-			</CustomBehavior>
-		</While>
-		<While Condition="DoQuest(37492)" >
-			<CustomBehavior File="InteractWith" MobId="88797" QuestId="37492" QuestObjectiveIndex="1" X="201.0521" Y="6424.347" Z="-22.21514" />
-		</While>
-		<While Condition="DoQuest(37257) &amp;&amp; !HasItem(122699)" >
-			<CustomBehavior File="KillUntilComplete" MobIds="107367, 88099, 88101" TerminateWhen="!DoQuest(37257) &amp;&amp; HasItem(122699)" >
-				<HuntingGrounds>
-					<Hotspot X="279.8137" Y="6475.952" Z="1.73516" />
-					<Hotspot X="256.6267" Y="6540.718" Z="3.497601" />
-					<Hotspot X="326.515" Y="6502.422" Z="8.329529" />
-					<Hotspot X="172.635" Y="6534.716" Z="0.5314069" />
-				</HuntingGrounds>
-			</CustomBehavior>
-		</While>
-
-		<TurnIn QuestName="Our Very Bones" QuestId="37257" TurnInName="Prince Farondis" TurnInId="88115" X="-10.85069" Y="6734.116" Z="55.58864" />
-		<TurnIn QuestName="A Rather Long Walk" QuestId="37492" TurnInName="Lady Irisse" TurnInId="88798" X="-16.15451" Y="6730.362" Z="55.63947" />
-		<TurnIn QuestName="Bottled Up" QuestId="38407" TurnInName="Lady Irisse" TurnInId="88798" X="-16.15451" Y="6730.362" Z="55.63947" />
-		<TurnIn QuestName="The Magister of Mixology" QuestId="37727" TurnInName="Magister Garuhod" TurnInId="89341" X="-13.44271" Y="6726.504" Z="55.58904" />
-		<TurnIn QuestName="Presentation is Everything" QuestId="37728" TurnInName="Magister Garuhod" TurnInId="89341" X="-13.44271" Y="6726.504" Z="55.58904" />
-
-		<PickUp QuestName="Infiltrating Shipwreck Arena" QuestId="37496" GiverName="Lady Irisse" GiverId="88798" X="-16.15451" Y="6730.362" Z="55.63947" />
-		<PickUp QuestName="Trailing the Tidestone" QuestId="37497" GiverName="Prince Farondis" GiverId="88115" X="-10.85069" Y="6734.116" Z="55.58864" />
-
-		<While Condition="DoQuest(37497)" >
-			<CustomBehavior File="InteractWith" MobIds="88115" GossipOptions="1" QuestId="37497" QuestObjectiveIndex="1" X="-10.85069" Y="6734.116" Z="55.58864" />
-			<CustomBehavior File="EscortGroup" QuestId="37497" EscortCompleteWhen="QuestObjectiveComplete" QuestObjectiveIndex="2" EscortCountMax="1"
-				EscortNpcId="88869" EscortMaxFightDistance="15" SearchForNpcsRadius="30" >
-				<SearchPath>
-					<Hotspot X="-10.85069" Y="6734.116" Z="55.58864" />
-				</SearchPath>
-			</CustomBehavior>
-		</While>
-		<TurnIn QuestName="Trailing the Tidestone" QuestId="37497" TurnInName="Prince Farondis" TurnInId="88867" X="-139.941" Y="6418.818" Z="27.39929" />
-
-		<PickUp QuestName="Nar'thalas Still Suffers" QuestId="37486" GiverName="Prince Farondis" GiverId="88867" X="-139.941" Y="6418.818" Z="27.39929" />
-		<PickUp QuestName="Children of Nar'thalas" QuestId="42692" GiverName="Kallistia Starlance" GiverId="89326" X="-184.7049" Y="6320.589" Z="21.63328" />
-		<PickUp QuestName="You Never Know Until You Scry" QuestId="42693" GiverName="Olothil Starlance" GiverId="108328" X="-189.7396" Y="6313.207" Z="20.58764" />
-
-		<While Condition="DoQuest(42692)" >
-			<CustomBehavior File="InteractWith" MobIds="251117" QuestId="42692" QuestObjectiveIndex="1" X="-167.8872" Y="6411.101" Z="46.26837" />
-			<CustomBehavior File="InteractWith" MobIds="251121" QuestId="42692" QuestObjectiveIndex="2" X="-110.2135" Y="6406.333" Z="27.6425" />
-			<CustomBehavior File="InteractWith" MobIds="251115" QuestId="42692" QuestObjectiveIndex="3" X="-115.7153" Y="6336.984" Z="20.62677" />
-		</While>
-		<CustomBehavior File="KillUntilComplete" MobId="88091" QuestId="37486" QuestObjectiveIndex="1" X="-323.2778" Y="6158.521" Z="48.07375" />
-
-		<CustomBehavior File="KillUntilComplete" MobIds="88086, 88087" QuestId="42693" QuestObjectiveIndex="1" >
-			<HuntingGrounds>
-				<Hotspot X="-246.0592" Y="6180.547" Z="41.15833" />
-				<Hotspot X="-208.5076" Y="6137.853" Z="40.12774" />
-				<Hotspot X="-153.4284" Y="6189.759" Z="3.504944" />
-				<Hotspot X="-206.8819" Y="6201.078" Z="4.976368" />
-				<Hotspot X="-51.22282" Y="6225.709" Z="-0.3136045" />
-			</HuntingGrounds>
-		</CustomBehavior>
-
-
-		<TurnIn QuestName="Children of Nar'thalas" QuestId="42692" TurnInName="Kallistia Starlance" TurnInId="89326" X="-184.7049" Y="6320.589" Z="21.63328" />
-		<TurnIn QuestName="You Never Know Until You Scry" QuestId="42693" TurnInName="Olothil Starlance" TurnInId="108328" X="-189.7396" Y="6313.207" Z="20.58771" />
-
-		<PickUp QuestName="Back from the Dead" QuestId="42694" GiverName="Olothil Starlance" GiverId="108328" X="-189.7396" Y="6313.207" Z="20.58716" />
-		<While Condition="DoQuest(42694)" >
-			<CustomBehavior File="InteractWith" MobIds="251182" QuestId="42694" QuestObjectiveIndex="1" X="-189.3819" Y="6311.526" Z="20.58729" /> 
-			<CustomBehavior File="WaitTimer" WaitTime="25000" QuestId="42694" QuestObjectiveIndex="1" /> <!-- NOTE: <ConditionCheck> : We don't want this timer terminating as soon as the interact with is done. -->
-			<If Condition="IsObjectiveComplete(2, 42694)" >
+			<PickUp QuestName="The Haunted Halls" QuestId="37518" GiverName="Thyrillion" GiverId="89660" X="183.5035" Y="6342.241" Z="-30.7095" />
+			<If Condition="QuestDone(37518) &amp;&amp; Me.Z &gt; -45" >
+				<CustomBehavior File="InteractWith" MobId="250264" QuestId="37518" QuestObjectiveIndex="1" X="174.3837" Y="6360.215" Z="-30.87125" />
 			</If>
-			<If Condition="IsObjectiveComplete(3, 42694)" >
-			</If>
-			<If Condition="IsObjectiveComplete(4, 42694)" >
-			</If>
-		</While>
+			<TurnIn QuestName="The Haunted Halls" QuestId="37518" TurnInName="Instructor Nidriel" TurnInId="89661" X="201.533" Y="6470.866" Z="-52.88773" />
 
-		<TurnIn QuestName="Nar'thalas Still Suffers" QuestId="37486" TurnInName="Prince Farondis" TurnInId="88867" X="-139.941" Y="6418.818" Z="27.39911" />
+			<PickUp QuestName="Wanding 101" QuestId="42370" GiverName="Instructor Nidriel" GiverId="89661" X="201.533" Y="6470.866" Z="-52.88773" />
+			<While Condition="DoQuest(42370)" >
+				<MoveTo X="200.61" Y="6451.841" Z="-53.77652" />
+				<!-- NOTE: <LogicalCheck> : This code has no null check on the wandTarget var.  Need to test this and improve when bot is availible. -->
+				<CustomBehavior File="RunCode"><![CDATA[
+						while (DoQuest(42370))
+						{
+							var wandTarget = Unit(107279);
+							wandTarget.Face();
+							await Coroutine.Sleep(678);
+							Lua.DoString("ExtraActionButton1:Click();");
+							await Coroutine.Sleep(487);
+						}
+					]]>
+				</CustomBehavior>
+			</While>
+			<TurnIn QuestName="Wanding 101" QuestId="42370" TurnInName="Instructor Nidriel" TurnInId="89661" X="201.533" Y="6470.866" Z="-52.88773" />
+
+			<PickUp QuestName="Study Hall: Combat Research" QuestId="42371" GiverName="Sythorne" GiverId="107334" X="191.3507" Y="6463.492" Z="-53.77644" />
+			<While Condition="DoQuest(42371)" >
+				<CustomBehavior File="InteractWith" MobId="239749" QuestId="42371" QuestObjectiveIndex="1" X="176.6024" Y="6470.679" Z="-52.18737" />
+				<CustomBehavior File="InteractWith" MobId="250362" QuestId="42371" QuestObjectiveIndex="2" X="193.2257" Y="6463.796" Z="-53.77782" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" QuestId="42371" QuestObjectiveIndex="3" />
+				<CustomBehavior File="InteractWith" MobId="250372" QuestId="42371" QuestObjectiveIndex="4" X="178.9427" Y="6482.029" Z="-51.56589" />
+				<CustomBehavior File="InteractWith" MobId="250362" QuestId="42371" QuestObjectiveIndex="5" X="193.2257" Y="6463.796" Z="-53.77782" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" QuestId="42371" QuestObjectiveIndex="6" />
+				<CustomBehavior File="InteractWith" MobId="250374" QuestId="42371" QuestObjectiveIndex="7" X="184.6545" Y="6482.547" Z="-52.93493" />
+				<CustomBehavior File="InteractWith" MobId="250362" QuestId="42371" QuestObjectiveIndex="8" X="193.2257" Y="6463.796" Z="-53.77782" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" QuestId="42371" QuestObjectiveIndex="9" />
+			</While>
+			<TurnIn QuestName="Study Hall: Combat Research" QuestId="42371" TurnInName="Sythorne" TurnInId="107334" X="191.3507" Y="6463.492" Z="-53.7765" />
+
+			<PickUp QuestName="Pop Quiz: Advanced Rune Drawing" QuestId="37729" GiverName="Instructor Nidriel" GiverId="89661" X="201.533" Y="6470.866" Z="-52.8875" />
+			<While Condition="DoQuest(37729)" >
+				<!-- NOTE: <PerformanceIssue> : Figure out a better way to do this.  Object must have internal flag. -->
+				<While Condition="!IsObjectiveComplete(1, 37729)" >
+					<CustomBehavior File="MyCTM" WaitTime="750" X="200.9276" Y="6461.313" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="209.6493" Y="6446.2" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="191.9068" Y="6445.898" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="200.1158" Y="6461.113" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="203.5979" Y="6452.958" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="200.1521" Y="6451.089" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="195.4355" Y="6453.668" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="200.7526" Y="6450.653" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="199.3235" Y="6444.964" Z="-53.77752" />
+				</While>
+				<While Condition="!IsObjectiveComplete(2, 37729)" >
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="187.7785" Y="6449.951" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="198.6722" Y="6462.243" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="211.7924" Y="6453.267" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="205.9761" Y="6443.927" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="197.9484" Y="6442.289" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="192.107" Y="6448.303" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="191.9873" Y="6454.247" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="201.8556" Y="6461.376" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="207.2775" Y="6454.195" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="204.5889" Y="6447.661" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="197.0366" Y="6447.748" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="193.1329" Y="6455.45" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="201.5594" Y="6459.979" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="204.7763" Y="6455.271" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="201.3139" Y="6449.964" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="195.4219" Y="6455.569" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="204.8589" Y="6454.681" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="199.0243" Y="6459.846" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="208.7705" Y="6454.823" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="209.444" Y="6446.408" Z="-53.77752" />
+				 	<CustomBehavior File="MyCTM" WaitTime="750" X="198.9925" Y="6442.02" Z="-53.77752" />
+				</While>
+				<While Condition="!IsObjectiveComplete(3, 37729)" >
+					<CustomBehavior File="MyCTM" WaitTime="750" X="192.2173" Y="6454.038" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="201.7317" Y="6459.209" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="208.7056" Y="6452.611" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="204.739" Y="6444.034" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="194.9668" Y="6446.009" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="197.6553" Y="6455.623" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="205.8468" Y="6455.014" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="205.5321" Y="6447.724" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="198.6111" Y="6445.626" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="195.2978" Y="6451.206" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="204.5495" Y="6453.639" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="203.0077" Y="6448.565" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="198.9243" Y="6446.954" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="198.2893" Y="6452.484" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="203.4569" Y="6452.109" Z="-53.77752" />
+					<CustomBehavior File="MyCTM" WaitTime="750" X="201.4615" Y="6449.665" Z="-53.77752" />
+				</While>
+			</While>
+			<TurnIn QuestName="Pop Quiz: Advanced Rune Drawing" QuestId="37729" TurnInName="Instructor Nidriel" TurnInId="89661" X="201.533" Y="6470.866" Z="-52.8875" />
+
+			<PickUp QuestName="The Headmistress' Keys" QuestId="37730" GiverName="Instructor Nidriel" GiverId="89661" X="201.533" Y="6470.866" Z="-52.8875" />
+			<While Condition="DoQuest(37730)" >
+				<CustomBehavior File="InteractWith" MobId="88859" GossipOptions="1,1,1" QuestId="37730" QuestObjectiveIndex="1" X="222.2674" Y="6475.087" Z="-51.89053" />
+				<CustomBehavior File="InteractWith" MobId="88859" InteractByLooting="true" QuestId="37730" QuestObjectiveIndex="1" X="217.0053" Y="6482.45" Z="-51.79022" />
+			</While>
+			<If Condition="QuestDone(37730) &amp;&amp; Me.Z &lt;= -45" >
+				<MoveTo X="173.1906" Y="6363.35" Z="-31.34625" />
+				<CustomBehavior File="InteractWith" MobId="250264" X="174.3837" Y="6360.215" Z="-30.87125" />
+			</If>
+			<TurnIn QuestName="The Headmistress' Keys" QuestId="37730" TurnInName="Thyrillion" TurnInId="89660" X="183.5035" Y="6342.241" Z="-30.7088" />
+
+			<PickUp QuestName="The Tidestone: Shattered" QuestId="37469" GiverName="Thyrillion" GiverId="89660" X="183.5035" Y="6342.241" Z="-30.7088" />
+			<If Condition="DoQuest(37469) &amp;&amp; Me.Z &gt;= -40" >
+				<MoveTo X="185.8689" Y="6327.859" Z="-30.73165" />
+				<CustomBehavior File="InteractWith" MobId="238979" X="187.276" Y="6325.281" Z="-31.01249" />
+				<MoveTo X="242.9581" Y="6281.21" Z="-52.89844" />
+			</If>
+			<While Condition="DoQuest(37469)" >
+				<CustomBehavior File="InteractWith" MobIds="245483, 245485, 239341, 245484" NumOfTimes="5" QuestId="37469" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="260.9445" Y="6284.271" Z="-53.77681" />
+						<Hotspot X="254.2475" Y="6244.746" Z="-53.19658" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+			<If Condition="QuestDone(37469)" >
+				<TurnIn QuestName="The Tidestone: Shattered" QuestId="37469" TurnInType="Object" TurnInName="Tidestone Core" TurnInId="240552" X="303.5608" Y="6260.765" Z="-50.3312" />
+				<CustomBehavior File="WaitTimer" WaitTime="23000" /> <!-- NOTE: <Optimization?> : Could terminate this wait timer when the player's zone Id changes.  However, this may not be a good idea as it takes some time for the quest NPC to show up anyways. -->
+			</If>
+
+			<PickUp QuestName="Save Yourself" QuestId="37530" GiverName="Prince Farondis" GiverId="89009" X="-98.34375" Y="6018.329" Z="0.4202359" />
+			<While Condition="DoQuest(37530)" >
+				<CustomBehavior File="InteractWith" MobId="89009" GossipOptions="1" NumOfTimes="6" QuestId="37530" QuestObjectiveIndex="1" X="-98.34375" Y="6018.329" Z="0.4202359" />
+				<!-- NOTE: <VehicleLogic> : The InteractWith above will get the player into the NPC-vehicle, after that the vehicle needs to move to
+
+					Spell 1: Main attack, no cooldown.
+					Spell 2: Secondary attack, 10second cooldown,  massive damage AoE
+					Spell 3: Blink teleport.  10second cooldown
+				
+					MoveTo X="-2.851773" Y="6275.382" Z="3.145893" and terminate when quest objective 2 is complete
+
+					MoveTo X="-8.0741" Y="6172.876" Z="2.924611"  and kill  Name="Athissa" Entry="89116" X="-21.28889" Y="6168.698" Z="4.330697" until objective 4 completes
+
+					MoveTo X="-17.57986" Y="5973.469" Z="0.6993846"  until objective 5 completes
+
+					Wait until objective 6 is complete
+
+					MoveTo X="-97.60731" Y="6020.879" Z="0.3597451" until objective 7 is complete
+				-->
+			</While>
+			<!-- NOTE: <CheckMe> : The NPC will show up as the player's name, but internally shows up as 'Your Doppleganger' - need to make sure bot properly interacts for the quest turnin. -->
+			<TurnIn QuestName="Save Yourself" QuestId="37530" TurnInName="Your Doppelganger" TurnInId="89090" X="-101.252" Y="6021.44" Z="0.4745495" />
+
+			<PickUp QuestName="The Head of the Snake" QuestId="37470" GiverName="Prince Farondis" GiverId="89009" X="-98.34375" Y="6018.329" Z="0.4202499" />
+			<While Condition="DoQuest(37470)" >
+				<!-- NOTE: <AddAvoid> : Could use some avoids here for this boss.  Bubbles fall from sky with stun player.    Waves also spawn from boss.
+				Avoids aren't completely needed.  Boss is easy enough. -->
+				<CustomBehavior File="KillUntilComplete" MobId="88855" QuestId="37470" QuestObjectiveIndex="1" X="-2.307292" Y="5697.265" Z="8.551732" />
+			</While>
+			<TurnIn QuestName="The Head of the Snake" QuestId="37470" TurnInName="Prince Farondis" TurnInId="91403" X="0.9027778" Y="5765.165" Z="3.281234" />
+
+
+			<While Condition="DoQuest(37779)" >
+				<CustomBehavior File="KillUntilComplete" MobIds="89024, 89025, 89811, 89025, 89808, 89803" QuestId="37779" >
+					<HuntingGrounds>
+						<Hotspot X="-142.6657" Y="5679.621" Z="9.960439" />
+						<Hotspot X="-26.14186" Y="5613.241" Z="0.3082983" />
+						<Hotspot X="123.995" Y="5702.112" Z="1.614869" />
+						<Hotspot X="99.32304" Y="5949.638" Z="7.360086" />
+						<Hotspot X="-73.44466" Y="5842.648" Z="0.4121386" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<!-- BO1 - Bot will need to move to the location: X="-57.18679" Y="6232.651" Z="1.533782" to trigger the bonus objective.
+			QuestId="37466"  -->
+		<!-- END Story: Azsuna versus Azshara --> 
+
+
+		<!-- Story: Against the Giants -->
+			<TurnIn QuestName="Infiltrating Shipwreck Arena" QuestId="37496" TurnInName="Okuna Longtusk" TurnInId="88873" X="-327.2674" Y="6535.986" Z="1.660431" />
+
+			<PickUp QuestName="Boss Whalebelly's in Charge" QuestId="37507" GiverName="Okuna Longtusk" GiverId="88873" X="-327.2674" Y="6535.986" Z="1.660431" />
+			<While Condition="DoQuest(37507)" >
+				<CustomBehavior File="InteractWith" MobId="88908" GossipOptions="1" QuestId="37507" QuestObjectiveIndex="1" X="-357.9028" Y="6595.123" Z="0.133169" />
+			</While>
+			<TurnIn QuestName="Boss Whalebelly's in Charge" QuestId="37507" TurnInName="Okuna Longtusk" TurnInId="88873" X="-327.2674" Y="6535.986" Z="1.660431" />
+
+			<PickUp QuestName="No Time for Tryouts" QuestId="37542" GiverName="Okuna Longtusk" GiverId="88873" X="-327.2674" Y="6535.986" Z="1.660431" />
+			<PickUp QuestName="Let Sleeping Giants Lie" QuestId="37528" GiverName="Okuna Longtusk" GiverId="88873" X="-327.2674" Y="6535.986" Z="1.660431" />
+
+			<While Condition="DoQuest(37528)" >
+				<MoveTo X="-404.9791" Y="6618.779" Z="0.1315016"
+				<CustomBehavior File="MyCTM" X="-425.5161" Y="6586.762" Z="0.1339368" />
+				<CustomBehavior File="InteractWith" MobId="236931" QuestId="37528" QuestObjectiveIndex="1" X="-422.9809" Y="6578.921" Z="0.2701828" />
+				<CustomBehavior File="WaitTimer" WaitTime="18000" /> <!-- NOTE: <CheckTimer> : Make sure this timer is correct. -->
+			</While>
+
+			<While Condition="DoQuest(37542)" >
+				<MoveTo X="-294.9753" Y="6592.772" Z="0.05685078" />
+				<CustomBehavior File="KillUntilComplete" MobId="89082" QuestId="37542" X="-241.6094" Y="6588.263" Z="0.4715842" />
+			</While>
+
+			<TurnIn QuestName="No Time for Tryouts" QuestId="37542" TurnInName="Okuna Longtusk" TurnInId="88873" X="-327.2674" Y="6535.986" Z="1.660431" />
+			<TurnIn QuestName="Let Sleeping Giants Lie" QuestId="37528" TurnInName="Okuna Longtusk" TurnInId="88873" X="-327.2674" Y="6535.986" Z="1.660431" />
+		<!-- END Story: Against the Giants -->
+
+
 
 	</QuestOrder>
 </HBProfile>
+
