@@ -24,6 +24,7 @@
 		<Mob Name="Sea Skrog" Entry="88094" />
 		<Mob Name="Hatecoil Skrog" Entry="89802" />
 		<Mob Name="Sentry Brute" Entry="88888" />
+		<Mob Name="Cove Skrog" Entry="89097" />
 	</AvoidMobs>
 
 	<Blackspots>
@@ -36,9 +37,11 @@
 	</Mailboxes>
 
 	<Vendors>
+		<Vendor Name="Cleave Thunderhill" Entry="89257" X="-790.5798" Y="6109.849" Z="4.647335" /> <!-- Repair + Vendor -->
 	</Vendors>
 
 	<QuestOrder> <!-- No checkpoints here. -->
+
 		<!-- RunCode Methods -->
 			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
 					bool DoQuest(params uint[] questIds)
@@ -77,7 +80,7 @@
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
 
-		<!-- Story: Behind Legion Liones -->
+		<!-- Story: Behind Legion Lines -->
 			<PickUp QuestName="Down to Azsuna" QuestId="41220" GiverName="Archmage Khadgar" GiverId="86563" X="-833.8698" Y="4276.531" Z="746.255" />
 			<While Condition="DoQuest(41220)" >
 				<CustomBehavior File="InteractWith" MobId="86563" GossipOptions="1" QuestId="39051" QuestObjectiveIndex="1" X="-833.8698" Y="4276.531" Z="746.255" />
@@ -581,10 +584,101 @@
 
 			<TurnIn QuestName="No Time for Tryouts" QuestId="37542" TurnInName="Okuna Longtusk" TurnInId="88873" X="-327.2674" Y="6535.986" Z="1.660431" />
 			<TurnIn QuestName="Let Sleeping Giants Lie" QuestId="37528" TurnInName="Okuna Longtusk" TurnInId="88873" X="-327.2674" Y="6535.986" Z="1.660431" />
+
+			<PickUp QuestName="Sternfathom's Champion" QuestId="37510" GiverName="Okuna Longtusk" GiverId="88873" X="-327.2674" Y="6535.986" Z="1.660406" />
+			<TurnIn QuestName="Sternfathom's Champion" QuestId="37510" TurnInName="Sternfathom" TurnInId="88923" X="-330.7951" Y="6673.232" Z="4.497787" />
+
+			<PickUp QuestName="Morale Booster" QuestId="37536" GiverName="Sternfathom" GiverId="88923" X="-330.7951" Y="6673.232" Z="4.497787" />
+			<While Condition="DoQuest(37536)" >
+				<CustomBehavior File="InteractWith" MobId="90086" GossipOptions="2" QuestId="37536" QuestObjectiveIndex="1" X="-380.3681" Y="6519.7" Z="3.524996" />
+			</While>
+			<TurnIn QuestName="Morale Booster" QuestId="37536" TurnInName="Sternfathom" TurnInId="88923" X="-330.7951" Y="6673.232" Z="4.497787" />
+
+			<PickUp QuestName="Round 1, Fight!" QuestId="37538" GiverName="Sternfathom" GiverId="88923" X="-330.7951" Y="6673.232" Z="4.497787" />
+			<While Condition="DoQuest(37538)" >
+				<CustomBehavior File="InteractWith" MobId="89048" GossipOptions="1" QuestId="37538" X="-330.7951" Y="6673.232" Z="4.49795" />
+				<!-- NOTE: <CheckTimer> : May be too short. -->
+				<CustomBehavior File="WaitTimer" WaitTime="60000" QuestId="37538" />
+			</While>
+			<TurnIn QuestName="Round 1, Fight!" QuestId="37538" TurnInType="Object" TurnInName="Okuna Longtusk's Pack" TurnInId="239120" X="-482.0625" Y="6676.999" Z="-2.054145" />
+
+			<PickUp QuestName="The Right Weapon for the Job" QuestId="37565" GiverName="Cove Skrog" GiverId="239120" X="-482.0625" Y="6676.999" Z="-2.054145" />
+			<!-- NOTE: <AddAvoidNPC> Need to keep the bot away from <Mob Name="Cove Skrog" Entry="89097" /> -->
+			<While Condition="DoQuest(37565)" >
+				<CustomBehavior File="InteractWith" MobIds="89104, 89113, 89110, 89111, 89112" InteractByUsingItemId="118330" QuestId="37565" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="-536.6754" Y="6738.65" Z="-2.794719" />
+						<Hotspot X="-681.6241" Y="6636.557" Z="-1.385778" />
+						<Hotspot X="-710.1645" Y="6467.388" Z="-11.65405" />
+						<Hotspot X="-769.061" Y="6497.9" Z="-2.15184" />
+						<Hotspot X="-630.0587" Y="6576.996" Z="-3.422843" />
+						<Hotspot X="-648.387" Y="6637.819" Z="-1.482823" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+
+			<PickUp QuestName="A Favor for Mr. Shackle" QuestId="38857" GiverName="Seska Seafang" GiverId="88863" X="-874.5886" Y="6514.014" Z="3.660576" /> <!-- Mak'rana and the Fate of the Queen's Reprisal breadcrumb. -->
+			<While Condition="DoQuest(38857)" >
+				<CustomBehavior File="InteractWith" MobId="241905" QuestId="38857" QuestObjectiveIndex="3" X="-873.283" Y="6444.548" Z="2.733908" />
+				<CustomBehavior File="InteractWith" MobId="241901" QuestId="38857" QuestObjectiveIndex="1" X="-959.1094" Y="6608.879" Z="0.1156936" />
+				<CustomBehavior File="InteractWith" MobId="241902" QuestId="38857" QuestObjectiveIndex="2" X="-787.2604" Y="6783.058" Z="5.482642" />
+			</While>
+
+			<TurnIn QuestName="The Right Weapon for the Job" QuestId="37565" TurnInName="Okuna Longtusk" TurnInId="89051" X="-957.2118" Y="6309.153" Z="29.77965" />
+
+			<PickUp QuestName="The Prince is Going Down" QuestId="37566" GiverName="Okuna Longtusk" GiverId="89051" X="-957.2118" Y="6309.153" Z="29.77965" />
+			<While Condition="DoQuest(37566)" >
+				<!-- NOTE: <AddAvoids> Need avoids here for this boss.  He spawns stuff on the ground, and does a melee-range AoE -->
+				<CustomBehavior File="KillUntilComplete" MobId="89101" QuestId="37566" QuestObjectiveIndex="1" X="-1008.509" Y="6294.378" Z="28.70325" />
+			</While>
+			<TurnIn QuestName="The Prince is Going Down" QuestId="37566" TurnInName="Okuna Longtusk" TurnInId="109334" X="-908.1566" Y="6408.944" Z="3.573855" />
 		<!-- END Story: Against the Giants -->
 
+		<!-- Story: Mak'rana and the Fate of the Queen's Reprisal -->
+			<TurnIn QuestName="A Favor for Mr. Shackle" QuestId="38857" TurnInName="Mr. Shackle" TurnInId="91419" X="-812.4496" Y="6101.11" Z="7.006913" /> <!-- Breadcrumb. -->
+
+			<PickUp QuestName="Maritime Law" QuestId="37654" GiverName="Mr. Shackle" GiverId="91419" X="-812.4496" Y="6101.11" Z="7.006913" />
+			<PickUp QuestName="Making the World Safe for Profit" QuestId="37657" GiverName="Mr. Shackle" GiverId="91419" X="-812.4496" Y="6101.11" Z="7.006913" />
+
+			<While Condition="DoQuest(37657)" >
+				<CustomBehavior File="KillUntilComplete" MobId="89284, 89283, 89286, 89053" QuestId="37657" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="-810.4394" Y="5925.933" Z="-0.2683554" />
+						<Hotspot X="-903.2585" Y="5860.665" Z="0.4750468" />
+						<Hotspot X="-770.2274" Y="5694.72" Z="2.059582" />
+						<Hotspot X="-975.3858" Y="5667.039" Z="37.65124" />
+						<Hotspot X="-867.7207" Y="5613.289" Z="30.04423" />
+					</HuntingGrounds>
+				</CustomBehavior>
+				<If Condition="!IsObjectiveComplete(2, 37657)" >
+					<!-- Get in cave -->
+					<MoveTo X="-904.0345" Y="5729.954" Z="1.235318" />
+					<CustomBehavior File="MyCTM" X="-895.646" Y="5694.116" Z="-12.60572" />
+					<CustomBehavior File="MyCTM" X="-961.7546" Y="5633.25" Z="3.230609" />
+
+					<!-- NOTE: <ChangeTarget> : Attack Oublion <89350> to start fight.  Once he turns immune shield on, switch target to  <89287> to kill, then switch back to 89350. -->
+					<!-- MOTE: <AddAvoid> : Mob 89287 spits water on the ground, need to dodge it. -->
+					<CustomBehavior File="KillUntilComplete" MobId="89350" QuestId="37657" QuestObjectiveIndex="2" X="-1001.184" Y="5626.036" Z="6.287228" />
+
+					<!-- Get out of cave -->
+					<MoveTo X="-975.3384" Y="5626.203" Z="4.710858" />
+					<CustomBehavior File="MyCTM" X="-899.052" Y="5682.025" Z="-10.71182" />
+					<MoveTo X="-897.24" Y="5732.023" Z="-1.675074"
+				</If>
+			</While>
+
+			<TurnIn QuestName="Maritime Law" QuestId="37654" TurnInName="Looper Allen" TurnInId="106881" X="-660.3785" Y="5596.917" Z="2.778686" />
+
+			<PickUp QuestName="The Captain's Foot Locker" QuestId="37659" GiverName="Looper Allen" GiverId="106881" X="-660.3785" Y="5596.917" Z="2.778686" />
+			<TurnIn QuestName="The Captain's Foot Locker" QuestId="37659" TurnInType="Object" TurnInName="Captain's Foot Locker" TurnInId="239328" X="-694.9913" Y="5502.919" Z="-10.44949" />
+			<PickUp QuestName="Fate of the Queen's Reprisal" QuestId="40794" GiverType="Object" GiverName="Chief Bitterbrine" GiverId="239328" X="-694.9913" Y="5502.919" Z="-10.44949" />
+			<!-- Turn in is in Dalaran --.
+		<!-- END Story: Mak'rana and the Fate of the Queen's Reprisal -->
 
 
 	</QuestOrder>
 </HBProfile>
 
+
+<!-- <PickUp QuestName="Plunder the Cove" QuestId="37495" GiverName="Cove Skrog" GiverId="1234" X="XXX" Y="YYY" Z="ZZZ" />,  bonus objective around the cave in Againts the Giants -->
