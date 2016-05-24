@@ -1,0 +1,93 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Val'sharah [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklists>
+	</Blacklists>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Story: Black Rook Hold -->
+			<If Condition="QuestDone(91172)" >
+				<TurnIn QuestName="The Tranquil Forest" QuestId="39731" TurnInName="Archmage Khadgar" TurnInId="91172" X="-825.1493" Y="4292.815" Z="746.2756" /> <!-- Breadcrumb from Class Hall -->
+			</If>
+
+			<PickUp QuestName="Tying Up Loose Ends" QuestId="39861" GiverName="Archmage Khadgar" GiverId="91172" X="-825.1493" Y="4292.815" Z="746.2756" />
+			<While Condition="DoQuest(39861)" >
+				<CustomBehavior File="InteractWith" MobId="96813" GossipOptions="1" WaitTimer="1500" QuestId="39861" QuestObjectiveIndex="1" X="-833.8698" Y="4276.531" Z="746.255" />
+				<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click();" />
+				<CustomBehavior File="WaitTimer" WaitTime="105000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
+			</While>
+			<TurnIn QuestName="Tying Up Loose Ends" QuestId="39861" TurnInName="Vaesdenarus" TurnInId="91462" X="2289.278" Y="6592.807" Z="138.6552" />
+		<!-- END Story: Black Rook Hold -->
+
+
+	</QuestOrder>
+</HBProfile>
