@@ -37,7 +37,7 @@
 	</Mailboxes>
 
 	<Vendors>
-		<Vendor Name="Cleave Thunderhill" Entry="89257" X="-790.5798" Y="6109.849" Z="4.647335" /> <!-- Repair + Vendor -->
+		<Vendor Name="Cleave Thunderhill" Type="Repair" Entry="89257" X="-790.5798" Y="6109.849" Z="4.647335" />
 	</Vendors>
 
 	<QuestOrder> <!-- No checkpoints here. -->
@@ -76,6 +76,15 @@
 						}
 						return false;
 					}
+
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
 				]]>
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
@@ -87,7 +96,7 @@
 		<!-- Story: Behind Legion Lines -->
 			<PickUp QuestName="Down to Azsuna" QuestId="41220" GiverName="Archmage Khadgar" GiverId="86563" X="-833.8698" Y="4276.531" Z="746.255" />
 			<While Condition="DoQuest(41220)" >
-				<CustomBehavior File="InteractWith" MobId="96813" GossipOptions="1" WaitTimer="1500" QuestId="41220" QuestObjectiveIndex="1" X="-833.8698" Y="4276.531" Z="746.255" />
+				<CustomBehavior File="InteractWith" MobId="96813" GossipOptions="1" WaitTime="1500" QuestId="41220" QuestObjectiveIndex="1" X="-833.8698" Y="4276.531" Z="746.255" />
 				<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click();" />
 				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
 			</While>
@@ -223,7 +232,7 @@
 						<Hotspot X="708.5201" Y="6535.76" Z="62.61032" />
 					</HuntingGrounds>
 				</CustomBehavior>
-				<CustomBehavior File="InteractWith" MobId="90880, 90219" NumOfTimes="4" QuestId="42271" QuestObjectiveIndex="2" X="643.3144" Y="6613.538" Z="60.15187" />
+				<CustomBehavior File="InteractWith" MobIds="90880, 90219" NumOfTimes="4" QuestId="42271" QuestObjectiveIndex="2" X="643.3144" Y="6613.538" Z="60.15187" />
 				<CustomBehavior File="InteractWith" MobId="91037" QuestId="42271" QuestObjectiveIndex="3" X="649.007" Y="6614.711" Z="60.21638" />
 			</While>
 			<TurnIn QuestName="Their Dying Breaths" QuestId="42271" TurnInName="Senegos" TurnInId="89975" X="634.6545" Y="6679.66" Z="54.25773" />
@@ -250,7 +259,7 @@
 			<TurnIn QuestName="Prince Farondis" QuestId="37733" TurnInName="Nightwatcher Idri" TurnInId="89023" X="-4.743056" Y="6736.632" Z="55.64066" />
 
 			<PickUp QuestName="Our Very Bones" QuestId="37257" GiverName="Prince Farondis" GiverId="88115" X="-10.85069" Y="6734.116" Z="55.58853" />
-			<PickUp QuestName="A Rather Long Walk" QuestId="37492" GiverName="Lady Irisse" GiverId="88798" X="-16.15451" Y="6730.362" Z="55.64079" />.
+			<PickUp QuestName="A Rather Long Walk" QuestId="37492" GiverName="Lady Irisse" GiverId="88798" X="-16.15451" Y="6730.362" Z="55.64079" />
 			<PickUp QuestName="The Magister of Mixology" QuestId="37727" GiverName="Magister Garuhod" GiverId="89341" X="-13.44271" Y="6726.504" Z="55.58865" />
 			<PickUp QuestName="Presentation is Everything" QuestId="37728" GiverName="Magister Garuhod" GiverId="89341" X="-13.44271" Y="6726.504" Z="55.58865" />
 
@@ -352,7 +361,7 @@
 			</While>
 
 			<While Condition="DoQuest(37959)" >
-				<CustomBehavior File="KillUntilComplete" MobId="109826, 90616" QuestId="37959" QuestObjectiveIndex="1" >
+				<CustomBehavior File="KillUntilComplete" MobIds="109826, 90616" QuestId="37959" QuestObjectiveIndex="1" >
 					<HuntingGrounds>
 						<Hotspot X="1073.741" Y="6164.798" Z="96.41445" />
 						<Hotspot X="993.0677" Y="6163.931" Z="103.657" />
@@ -378,7 +387,7 @@
 					</CustomBehavior>
 				</If>
 				<If Condition="!IsObjectiveComplete(2, 37860)" >
-					<MoveTO X="1176.89" Y="6149.698" Z="85.64617" />
+					<MoveTo X="1176.89" Y="6149.698" Z="85.64617" />
 					<CustomBehavior File="RunCode"><![CDATA[
 							Lua.DoString("ExtraActionButton1:Click();");
 							await Coroutine.Sleep(1250);
@@ -452,7 +461,7 @@
 			</While>
 
 			<While Condition="DoQuest(38014)" >
-				<CustomBehavior File="KillUntilComplete" MobId="91157, 103208" QuestId="38014" QuestObjectiveIndex="1" >
+				<CustomBehavior File="KillUntilComplete" MobIds="91157, 103208" QuestId="38014" QuestObjectiveIndex="1" >
 					<HuntingGrounds>
 						<Hotspot X="586.2235" Y="6690.787" Z="63.39612" />
 						<Hotspot X="605.4514" Y="6627.433" Z="57.94707" />
@@ -833,7 +842,7 @@
 			<PickUp QuestName="Making the World Safe for Profit" QuestId="37657" GiverName="Mr. Shackle" GiverId="91419" X="-812.4496" Y="6101.11" Z="7.006913" />
 
 			<While Condition="DoQuest(37657)" >
-				<CustomBehavior File="KillUntilComplete" MobId="89284, 89283, 89286, 89053" QuestId="37657" QuestObjectiveIndex="1" >
+				<CustomBehavior File="KillUntilComplete" MobIds="89284, 89283, 89286, 89053" QuestId="37657" QuestObjectiveIndex="1" >
 					<HuntingGrounds>
 						<Hotspot X="-810.4394" Y="5925.933" Z="-0.2683554" />
 						<Hotspot X="-903.2585" Y="5860.665" Z="0.4750468" />

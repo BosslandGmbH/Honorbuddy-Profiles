@@ -20,7 +20,7 @@
 	<TargetElites>true</TargetElites>
 
 	<AvoidMobs>
-		<Mob Name="XXX" Entry="123" />
+		<Mob Name="Gravax the Desecrator" Entry="92802" />
 	</AvoidMobs>
 
 	<Blackspots>
@@ -33,6 +33,9 @@
 	</Mailboxes>
 
 	<Vendors>
+		<Vendor Name="Javan Clawthorn" Type="Repair" Entry="92000" X="1951.083" Y="6912.71" Z="52.50054" /> <!-- NOTE: <ConditionalCheck> : UseWhen="!DoQuest(38142)" may be preferred here. -->
+		<Vendor Name="Anelas Moonstone" Type="Food" Entry="110531" X="2832.1" Y="6480.855" Z="206.4948" />
+		<Vendor Name="Vassallorand Nightmist" Type="Repair" Entry="112629" X="2876.16" Y="6754.713" Z="219.5564" />
 	</Vendors>
 
 	<QuestOrder> <!-- No checkpoints here. -->
@@ -70,6 +73,15 @@
 						}
 						return false;
 					}
+
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
 				]]>
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
@@ -81,13 +93,230 @@
 
 			<PickUp QuestName="Tying Up Loose Ends" QuestId="39861" GiverName="Archmage Khadgar" GiverId="91172" X="-825.1493" Y="4292.815" Z="746.2756" />
 			<While Condition="DoQuest(39861)" >
-				<CustomBehavior File="InteractWith" MobId="96813" GossipOptions="1" WaitTimer="1500" QuestId="39861" QuestObjectiveIndex="1" X="-833.8698" Y="4276.531" Z="746.255" />
+				<CustomBehavior File="InteractWith" MobId="96813" GossipOptions="1" WaitTime="1500" QuestId="39861" QuestObjectiveIndex="1" X="-833.8698" Y="4276.531" Z="746.255" />
 				<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click();" />
 				<CustomBehavior File="WaitTimer" WaitTime="105000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
 			</While>
 			<TurnIn QuestName="Tying Up Loose Ends" QuestId="39861" TurnInName="Vaesdenarus" TurnInId="91462" X="2289.278" Y="6592.807" Z="138.6552" />
-		<!-- END Story: Black Rook Hold -->
+
+			<PickUp QuestName="Cenarius, Keeper of the Grove" QuestId="40122" GiverName="Malfurion Stormrage" GiverId="91462" X="2289.278" Y="6592.807" Z="138.6561" />
+			<While Condition="DoQuest(40122)" >
+				<CustomBehavior File="InteractWith" MobId="91462" GossipOptions="1" QuestId="40122" QuestObjectiveIndex="1" X="2289.278" Y="6592.807" Z="138.6561" />
+				<CustomBehavior File="WaitTimer" WaitTime="60000" /> <!-- NOTE: <Optimization> : Can terminate this via detection when player gets off Malfurion --> 
+			</While>
+			<TurnIn QuestName="Cenarius, Keeper of the Grove" QuestId="40122" TurnInName="Malfurion Stormrage" TurnInId="91109" X="2610.598" Y="6745.277" Z="106.4467" />
 
 
+			<PickUp QuestName="Nature's Call" QuestId="38384" GiverName="Malfurion Stormrage" GiverId="91109" X="2610.598" Y="6745.277" Z="106.4467" />
+			<TurnIn QuestName="Nature's Call" QuestId="38384" TurnInName="Aranelle" TurnInId="94179" X="2262.594" Y="6609.824" Z="137.9406" />
+
+			<PickUp QuestName="Archdruid of the Vale" QuestId="38382" GiverName="Aranelle" GiverId="94179" X="2262.594" Y="6609.824" Z="137.9406" /> <!-- Archdruid of the Vale breadcrumb -->
+			<PickUp QuestName="Archdruid of the Claw" QuestId="38142" GiverName="Aranelle" GiverId="94179" X="2262.594" Y="6609.824" Z="137.9406" /> <!-- Archdruid of the Claw breadcrumb -->
+			<PickUp QuestName="Archdruid of Lore" QuestId="38381" GiverName="Aranelle" GiverId="94179" X="2262.594" Y="6609.824" Z="137.9406" /> <!-- Archdruid of the Lore breadcrumb -->
+		<!-- PAUSE Story: Black Rook Hold -->
+
+		<!-- Story: Archdruid of Lore -->
+			<TurnIn QuestName="Archdruid of Lore" QuestId="38381" TurnInName="Elothir" TurnInId="91066" X="2386.075" Y="6914.492" Z="110.4472" /> <!-- Archdruid of the Lore breadcrumb -->
+
+			<PickUp QuestName="Solid as a Rock" QuestId="38235" GiverName="Elothir" GiverId="91066" X="2386.075" Y="6914.492" Z="110.4472" />
+			<PickUp QuestName="Death to the Witchmother" QuestId="38225" GiverName="Elothir" GiverId="91066" X="2386.075" Y="6914.492" Z="110.4472" />
+
+			<While Condition="DoQuest(38235, 38225)" >
+				<CustomBehavior File="InteractWith" MobId="93640" QuestId="38235" QuestObjectiveIndex="2" X="2157.769" Y="7033.619" Z="71.09741" />
+				<CustomBehavior File="KillUntilComplete" MobId="91130" QuestId="38225" QuestObjectiveIndex="1" X="2105.945" Y="7083.521" Z="63.80593" />
+				<CustomBehavior File="InteractWith" MobId="93644" QuestId="38235" QuestObjectiveIndex="3" X="2198.757" Y="7193.32" Z="57.76998" />
+				<CustomBehavior File="InteractWith" MobId="93602" QuestId="38235" QuestObjectiveIndex="1" X="2385.297" Y="7193.228" Z="71.26111" />
+			</While>
+
+			<!--<While Condition="DoQuest(38372)" >  Wretched Sisters, bonus quest.
+				NOTE : <AddSupport> : If confirmed, InteractWith should be used on all Bonus Objectives.  We can hybridize InteractWith as a Interact+Kill logic for maximum efficiency.
+				InteractByLooting="true" + MobState="Alive"
+				<CustomBehavior File="KillUntilComplete" MobIds="94207, 94208, 91598" QuestId="38372" >
+				<HuntingGrounds>
+					<Hotspot X="2373.859" Y="7112.171" Z="69.56688" />
+					<Hotspot  />
+					<Hotspot  />
+					<Hotspot  />
+				</HuntingGrounds>
+			</CustomBehavior>
+			</While> -->
+
+			<TurnIn QuestName="Solid as a Rock" QuestId="38235" TurnInName="Elothir" TurnInId="91066" X="2386.075" Y="6914.492" Z="110.4475" />
+			<TurnIn QuestName="Death to the Witchmother" QuestId="38225" TurnInName="Elothir" TurnInId="91066" X="2386.075" Y="6914.492" Z="110.4475" />
+		<!-- END: Archdruid of Lore -->
+
+		<!-- Story: Archdruid of the Claw -->
+			<TurnIn QuestName="Archdruid of the Claw" QuestId="38142" TurnInName="Rylissa Bearsong" TurnInId="73426" X="1940.021" Y="6901.733" Z="51.87961" /> <!-- Archdruid of the Claw breadcrumb -->
+
+			<PickUp QuestName="Frenzied Furbolgs" QuestId="38455" GiverName="Rylissa Bearsong" GiverId="73426" X="1940.021" Y="6901.733" Z="51.87961" />
+			<PickUp QuestName="Littlefur" QuestId="38922" GiverName="Elder Sookh" GiverId="93890" X="1855.432" Y="6939.188" Z="42.00073" />
+			<TurnIn QuestName="Littlefur" QuestId="38922" TurnInName="Littlefur" TurnInId="93581" X="1859.194" Y="7057.379" Z="39.70639" />
+			<PickUp QuestName="Totemic Call" QuestId="38246" GiverName="EMPTY" GiverId="93581" X="1859.194" Y="7057.379" Z="39.70639" />
+
+			<While Condition="DoQuest(38246, 38455)" >
+				<CustomBehavior File="InteractWith" MobId="242275" QuestId="38246" QuestObjectiveIndex="1" X="1710.122" Y="6912.98" Z="27.09621" />
+				<CustomBehavior File="KillUntilComplete" MobIds="91288, 93577, 93578" QuestId="38455" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="1811.649" Y="7044.008" Z="40.66652" />
+						<Hotspot X="1861.17" Y="7009.837" Z="42.51127" />
+						<Hotspot X="1811.936" Y="6978.752" Z="44.43999" />
+						<Hotspot X="1900.844" Y="7046.604" Z="68.35616" />
+						<Hotspot X="1732.691" Y="6968.743" Z="30.87997" />
+						<Hotspot X="1781.627" Y="6928.369" Z="33.3512" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<TurnIn QuestName="Totemic Call" QuestId="38246" TurnInName="Elder Sookh" TurnInId="93890" X="1855.432" Y="6939.188" Z="42.0009" />
+			<TurnIn QuestName="Frenzied Furbolgs" QuestId="38455" TurnInName="Rylissa Bearsong" TurnInId="73426" X="1940.021" Y="6901.733" Z="51.87946" />
+
+			<PickUp QuestName="Awakening the Archdruid" QuestId="38143" GiverName="Rylissa Bearsong" GiverId="73426" X="1940.021" Y="6901.733" Z="51.87946" />
+			<TurnIn QuestName="Awakening the Archdruid" QuestId="38143" TurnInName="Koda Steelclaw" TurnInId="91223" X="1813.238" Y="6869.726" Z="-14.32845" />
+
+			<PickUp QuestName="Out of the Dream" QuestId="38145" GiverName="Koda Steelclaw" GiverId="91223" X="1813.222" Y="6869.721" Z="-14.32845" />
+			<PickUp QuestName="The Demons Below" QuestId="38144" GiverName="Koda Steelclaw" GiverId="91223" X="1813.222" Y="6869.721" Z="-14.32845" />
+			<While Condition="DoQuest(38145, 38144)" >
+				<CustomBehavior File="InteractWith" MobIds="91043" NumOfTimes="8" QuestId="38145" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="1684.212" Y="6891.877" Z="-9.799621" />
+						<Hotspot X="1738.96" Y="6998.24" Z="3.766619" />
+						<Hotspot X="1751.922" Y="6905.974" Z="8.994231" />
+					</HuntingGrounds>
+				</CustomBehavior>
+				<CustomBehavior File="KillUntilComplete" MobIds="91645, 91044" QuestId="38144" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="1684.212" Y="6891.877" Z="-9.799621" />
+						<Hotspot X="1738.96" Y="6998.24" Z="3.766619" />
+						<Hotspot X="1751.922" Y="6905.974" Z="8.994231" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+			<TurnIn QuestName="The Demons Below" QuestId="38144" TurnInName="Koda Steelclaw" TurnInId="91223" X="1728.068" Y="6860.759" Z="-0.008863658" />
+			<TurnIn QuestName="Out of the Dream" QuestId="38145" TurnInName="Koda Steelclaw" TurnInId="91223" X="1728.068" Y="6860.759" Z="-0.008863658" />
+
+			<PickUp QuestName="Entangled Dreams" QuestId="38147" GiverName="Koda Steelclaw" GiverId="91223" X="1728.068" Y="6860.759" Z="-0.008863658" />
+			<While Condition="DoQuest(38147)" >
+				<CustomBehavior File="KillUntilComplete" MobId="91045" QuestId="38147" QuestObjectiveIndex="1" X="1637.722" Y="6866.023" Z="-20.74207" />
+			</While>
+			<TurnIn QuestName="Entangled Dreams" QuestId="38147" TurnInName="Koda Steelclaw" TurnInId="91223" X="1969.271" Y="6914.577" Z="56.03535" />
+		<!-- END Story: Archdruid of the Claw -->
+
+
+		<!-- END Story: Archdruid of the Vale -->
+			<TurnIn QuestName="Archdruid of the Vale" QuestId="38382" TurnInName="Thaon Moonclaw" TurnInId="95395" X="2274.671" Y="6242.448" Z="122.8316" /> <!-- Archdruid of the Vale breadcrumb -->
+
+			<PickUp QuestName="Dishonored" QuestId="39383" GiverName="EMPTY" GiverId="95395" X="2274.671" Y="6242.448" Z="122.8316" />
+			<While Condition="DoQuest(39383)" >
+				<CustomBehavior File="KillUntilComplete" MobId="95319" QuestId="39383" QuestObjectiveIndex="1" X="2361.745" Y="6137.636" Z="128.1176" />
+			</While>
+			<TurnIn QuestName="Dishonored" QuestId="39383" TurnInName="Thaon Moonclaw" TurnInId="95396" X="2330.851" Y="6146.351" Z="126.2492" />
+
+			<PickUp QuestName="The Corruptor" QuestId="39384" GiverName="Thaon Moonclaw" GiverId="95396" X="2330.851" Y="6146.351" Z="126.2492" />
+			<While Condition="DoQuest(39384)" >
+				<!-- Obj 1 is 'go to location.' -->
+				<CustomBehavior File="KillUntilComplete" MobId="95320" QuestId="39384" QuestObjectiveIndex="2" X="2499.676" Y="6027.744" Z="127.9041" />
+			</While>
+			<TurnIn QuestName="The Corruptor" QuestId="39384" TurnInName="Evelle Nightwhisper" TurnInId="91650" X="2502.21" Y="6013.201" Z="127.5239" />
+
+			<PickUp QuestName="The Nightmare Lord" QuestId="40573" GiverName="Evelle Nightwhisper" GiverId="91650" X="2502.21" Y="6013.201" Z="127.5239" />
+			<While Condition="DoQuest(40573)" >
+				<CustomBehavior File="InteractWith" MobId="245676" QuestId="40573" QuestObjectiveIndex="1" X="2502.184" Y="6013.19" Z="127.5243" />
+				<CustomBehavior File="KillUntilComplete" MobId="95399" QuestId="40573" QuestObjectiveIndex="4" X="2119.677" Y="6059.124" Z="99.43316" />
+			</While>
+			<TurnIn QuestName="The Nightmare Lord" QuestId="40573" TurnInName="Evelle Nightwhisper" TurnInId="100573" X="2165.318" Y="6171.343" Z="133.3732" />
+			<!-- NOTE: <AddBonusObjective> : Moonclaw Vale, 39393 -->
+		<!-- Story: Archdruid of the Vale -->
+
+		<!-- Story: Into the Nightmare -->
+			<PickUp QuestName="Return to the Grove" QuestId="38323" GiverName="Evelle Nightwhisper" GiverId="100573" X="2165.318" Y="6171.343" Z="133.3732" />
+			<TurnIn QuestName="Return to the Grove" QuestId="38323" TurnInName="Malfurion Stormrage" TurnInId="91109" X="2610.598" Y="6745.277" Z="106.4467" />
+
+			<PickUp QuestName="The Emerald Queen" QuestId="38377" GiverName="Malfurion Stormrage" GiverId="91109" X="2610.598" Y="6745.277" Z="106.4467" />
+			<While Condition="DoQuest(38377)" >
+				<CustomBehavior File="InteractWith" MobId="91109" GossipOptions="1" QuestId="38377" QuestObjectiveIndex="1" X="2610.598" Y="6745.277" Z="106.4467" />
+				<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+			</While>
+			<TurnIn QuestName="The Emerald Queen" QuestId="38377" TurnInName="Malfurion Stormrage" TurnInId="100387" X="2608.81" Y="6712.01" Z="104.873" />
+
+			<PickUp QuestName="The Temple of Elune" QuestId="38641" GiverName="Ysera" GiverId="98584" X="2636.72" Y="6714.741" Z="105.8864" />
+			<TurnIn QuestName="The Temple of Elune" QuestId="38641" TurnInName="Lyanis Moonfall" TurnInId="92680" X="2871.16" Y="6771.768" Z="220.1778" />
+
+			<PickUp QuestName="Tears for Fears" QuestId="38662" GiverName="Lyanis Moonfall" GiverId="92680" X="2871.16" Y="6771.768" Z="220.1778" />
+			<PickUp QuestName="Root Cause" QuestId="38655" GiverName="Isoraen Nightstar" GiverId="92697" X="2876.512" Y="6769.636" Z="220.1773" />
+
+			<While Condition="DoQuest(38662)" >
+				<MoveTo X="2987.861" Y="6338.324" Z="251.1868" />
+			</While>
+
+			<While Condition="DoQuest(38655)" >
+				<CustomBehavior File="InteractWith" MobIds="243952, 243953, 243954" NumOfTimes="30" QuestId="38655" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="2965.469" Y="6393.951" Z="228.2658" />
+						<Hotspot X="2870.841" Y="6430.634" Z="214.0949" />
+						<Hotspot X="2827.512" Y="6346.498" Z="216.2048" />
+						<Hotspot X="2938.899" Y="6473.809" Z="206.4743" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<!-- NOTE: <AddBonusObjective> : Defend The Temple, 39029 -->
+
+
+			<TurnIn QuestName="Tears for Fears" QuestId="38662" TurnInName="Lyanis Moonfall" TurnInId="92680" X="2871.16" Y="6771.768" Z="220.1775" />
+			<TurnIn QuestName="Root Cause" QuestId="38655" TurnInName="Isoraen Nightstar" TurnInId="92697" X="2876.512" Y="6769.636" Z="220.1775" />
+
+			<PickUp QuestName="The Die is Cast" QuestId="38663" GiverName="Lyanis Moonfall" GiverId="92680" X="2871.16" Y="6771.768" Z="220.1775" />
+			<If Condition="QuestDone(38663)" >
+				<TurnIn QuestName="The Die is Cast" QuestId="38663" TurnInName="Ysera" TurnInId="98584" X="2636.72" Y="6714.741" Z="105.886" />
+				<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+			</If>
+
+			<PickUp QuestName="Malfurion's Fury" QuestId="38595" GiverName="Ysera" GiverId="92742" X="2636.72" Y="6714.741" Z="105.8862" />
+			<While Condition="DoQuest(38595)" >
+				<CustomBehavior File="InteractWith" MobId="92742" GossipOptions="1" QuestId="38595" QuestObjectiveIndex="1" X="2636.72" Y="6714.741" Z="105.8862" /> <!-- NOTE: <ConditionalCheck> : Instead of using QuestId/QuestObjectiveIndex, we may need to just have a TerminateWhen="Me.ZoneId == X or Me.MapId == X"  -->
+				<CustomBehavior File="WaitTimer" WaitTime="35000" QuestId="38595" QuestObjectiveIndex="2" />
+			</While>
+			<TurnIn QuestName="Malfurion's Fury" QuestId="38595" TurnInName="Ysera" TurnInId="92420" X="2708.047" Y="6271.056" Z="223.4982" />
+
+			<PickUp QuestName="To Old Friends" QuestId="38582" GiverName="Ysera" GiverId="92420" X="2708.047" Y="6271.056" Z="223.4982" />
+			<While Condition="DoQuest(38582)" >
+				<!-- NOTE: <AddHook> : Player recvies a zone buff which can be used for massive AoE damage.  Need to detect aggro count - and use spell accordingly as it has a 5second cooldown.
+									Ideally, the player should be pulling masses of mobs and using this spell to kill them as the kill count required to complete the quest is 50 kills.
+				--> 
+				<CustomBehavior File="KillUntilComplete" MobIds="114216, 114215, 114219, 92332" QuestId="38582" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="2695.849" Y="6112.126" Z="247.5138" />
+						<Hotspot X="2814.905" Y="6093.722" Z="242.6541" />
+						<Hotspot X="2935.454" Y="6139.794" Z="260.0298" />
+						<Hotspot X="2970.862" Y="6066.421" Z="262.0724" />
+						<Hotspot X="2876.041" Y="6029.743" Z="261.1362" />
+					</HuntingGrounds>
+				</CustomBehavior>
+				<!-- NOTE: <DisableHook> : As the player enters this new zoneId as per the KillUntilComplete, the zone spell is removed.
+										The hook should be detecting the player's current ZoneId to prevent it from casting when it can't.
+										The spell is also disabeld after quest is complete.
+				-->
+				<CustomBehavior File="KillUntilComplete" MobId="92335" QuestId="38582" QuestObjectiveIndex="3" X="2828.71" Y="5898.744" Z="234.482" />
+			</While>
+			<TurnIn QuestName="To Old Friends" QuestId="38582" TurnInName="Ysera" TurnInId="92710" X="2714.298" Y="6028.846" Z="279.3945" />
+
+			<PickUp QuestName="The Demon's Trail" QuestId="38753" GiverName="Ysera" GiverId="92710" X="2714.298" Y="6028.846" Z="279.3945" />
+			<While Condition="DoQuest(38753)" >
+				<MoveTo X="2867.59" Y="5890.754" Z="299.1172" /> <!-- NOTE: <TerminationNeeded> : This MoveTo needs to terminate once the cutscene is detected so the cutscenes can be skipped.
+																	  NOTE: <LocationCheck> : Make sure this MoveTo is close enough to trigger the cutscenes. -->
+				<CustomBehavior File="RunCode" Code="await SkipCutscene(3000, 5000);" /> <!-- NOTE: <TimerCheck> : Make sure the first cutscene skip waits long enough on the postWait. -->
+				<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+			</While>
+			<TurnIn QuestName="The Demon's Trail" QuestId="38753" TurnInName="Tyrande Whisperwind" TurnInId="102938" X="2903.66" Y="5889.236" Z="297.1159" />
+		<!-- END Story: Into the Nightmare -->
+
+		<!-- Story: All Nightmare Long -->
+			<PickUp QuestName="Love Lost" QuestId="41056" GiverName="Tyrande Whisperwind" GiverId="102938" X="2903.66" Y="5889.236" Z="297.1159" />
+			<TurnIn QuestName="Love Lost" QuestId="41056" TurnInName="Tyrande Whisperwind" TurnInId="103022" X="3145.665" Y="5774.15" Z="308.1792" />
+
+			<PickUp QuestName="Dark Side of the Moon" QuestId="41708" GiverName="Tyrande Whisperwind" GiverId="103022" X="3145.665" Y="5774.15" Z="308.1792" />
+			<PickUp QuestName="Lost in Retreat" QuestId="38671" GiverName="Mender Onelle" GiverId="94863" X="3151.359" Y="5779.863" Z="308.1489" />
+			<PickUp QuestName="Wormtalon Wreckage" QuestId="41707" GiverName="Aldos Duskwing" GiverId="95117" X="3152.448" Y="5777.948" Z="308.1564" />
+		<!-- END Story: All Nightmare Long -->
 	</QuestOrder>
 </HBProfile>
