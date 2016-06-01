@@ -36,6 +36,7 @@
 		<Vendor Name="Javan Clawthorn" Type="Repair" Entry="92000" X="1951.083" Y="6912.71" Z="52.50054" /> <!-- NOTE: <ConditionalCheck> : UseWhen="!DoQuest(38142)" may be preferred here. -->
 		<Vendor Name="Anelas Moonstone" Type="Food" Entry="110531" X="2832.1" Y="6480.855" Z="206.4948" />
 		<Vendor Name="Vassallorand Nightmist" Type="Repair" Entry="112629" X="2876.16" Y="6754.713" Z="219.5564" />
+		<Vendor Name="Faeolas Nightwhisper" Type="Food" Entry="95118" X="3149.257" Y="5772.391" Z="308.2804" />
 	</Vendors>
 
 	<QuestOrder> <!-- No checkpoints here. -->
@@ -86,7 +87,7 @@
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
 
-		<!-- Story: Black Rook Hold -->
+		<!-- Zone Introductory Quests -->
 			<If Condition="QuestDone(91172)" >
 				<TurnIn QuestName="The Tranquil Forest" QuestId="39731" TurnInName="Archmage Khadgar" TurnInId="91172" X="-825.1493" Y="4292.815" Z="746.2756" /> <!-- Breadcrumb from Class Hall -->
 			</If>
@@ -113,7 +114,7 @@
 			<PickUp QuestName="Archdruid of the Vale" QuestId="38382" GiverName="Aranelle" GiverId="94179" X="2262.594" Y="6609.824" Z="137.9406" /> <!-- Archdruid of the Vale breadcrumb -->
 			<PickUp QuestName="Archdruid of the Claw" QuestId="38142" GiverName="Aranelle" GiverId="94179" X="2262.594" Y="6609.824" Z="137.9406" /> <!-- Archdruid of the Claw breadcrumb -->
 			<PickUp QuestName="Archdruid of Lore" QuestId="38381" GiverName="Aranelle" GiverId="94179" X="2262.594" Y="6609.824" Z="137.9406" /> <!-- Archdruid of the Lore breadcrumb -->
-		<!-- PAUSE Story: Black Rook Hold -->
+		<!-- END Zone Introductory Quests -->
 
 		<!-- Story: Archdruid of Lore -->
 			<TurnIn QuestName="Archdruid of Lore" QuestId="38381" TurnInName="Elothir" TurnInId="91066" X="2386.075" Y="6914.492" Z="110.4472" /> <!-- Archdruid of the Lore breadcrumb -->
@@ -317,6 +318,110 @@
 			<PickUp QuestName="Dark Side of the Moon" QuestId="41708" GiverName="Tyrande Whisperwind" GiverId="103022" X="3145.665" Y="5774.15" Z="308.1792" />
 			<PickUp QuestName="Lost in Retreat" QuestId="38671" GiverName="Mender Onelle" GiverId="94863" X="3151.359" Y="5779.863" Z="308.1489" />
 			<PickUp QuestName="Wormtalon Wreckage" QuestId="41707" GiverName="Aldos Duskwing" GiverId="95117" X="3152.448" Y="5777.948" Z="308.1564" />
+
+			<While Condition="DoQuest(38671)" >
+				<CustomBehavior File="InteractWith" MobId="248416" NumOfTimes="5" QuestId="38671" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="3076.11" Y="5888.318" Z="279.2135" />
+						<Hotspot X="2999.976" Y="5881.062" Z="275.5592" />
+						<Hotspot X="3012.064" Y="5915.741" Z="275.668" />
+						<Hotspot X="3000.154" Y="5978.801" Z="279.0247" />
+						<Hotspot X="3080.02" Y="6016.291" Z="275.4824" />
+						<Hotspot X="3114.85" Y="5939.49" Z="285.5481" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+			<While Condition="DoQuest(38671)" >
+				<CustomBehavior File="KillUntilComplete" MobIds="95152, 95138" QuestId="41707" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="3076.11" Y="5888.318" Z="279.2135" />
+						<Hotspot X="2999.976" Y="5881.062" Z="275.5592" />
+						<Hotspot X="3012.064" Y="5915.741" Z="275.668" />
+						<Hotspot X="3000.154" Y="5978.801" Z="279.0247" />
+						<Hotspot X="3080.02" Y="6016.291" Z="275.4824" />
+						<Hotspot X="3114.85" Y="5939.49" Z="285.5481" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+			<While Condition="DoQuest(41708)" >
+				<If Condition="!IsObjectiveComplete(1, 41708)" >
+					<MoveTo X="3126.056" Y="5915.359" Z="287.155" />
+				</If>
+				<CustomBehavior File="WaitTimer" WaitTime="300000" QuestId="41708" QuestObjectiveIndex="2" />
+			</While>
+
+			<TurnIn QuestName="Dark Side of the Moon" QuestId="41708" TurnInName="Tyrande Whisperwind" TurnInId="104885" X="3123.241" Y="5918.394" Z="286.052" />
+			<!-- NOTE: <OptimizationOppertunity> : Can CTM from X="3114.07" Y="5905.733" Z="286.0641"  to X="3104.46" Y="5886.076" Z="285.0655"  after above TurnIn to quickly shortcut leave the location -->
+			<TurnIn QuestName="Lost in Retreat" QuestId="38671" TurnInName="Mender Onelle" TurnInId="94863" X="3151.359" Y="5779.863" Z="308.1495" />
+			<TurnIn QuestName="Wormtalon Wreckage" QuestId="41707" TurnInName="Aldos Duskwing" TurnInId="95117" X="3152.448" Y="5777.948" Z="308.1561" />
+
+			<PickUp QuestName="Heart of the Nightmare" QuestId="41724" GiverName="Tyrande Whisperwind" GiverId="103022" X="3145.665" Y="5774.15" Z="308.18" />
+			<TurnIn QuestName="Heart of the Nightmare" QuestId="41724" TurnInName="Tyrande Whisperwind" TurnInId="104728" X="3320.364" Y="5958.033" Z="249.0644" />
+
+			<PickUp QuestName="Reading the Leaves" QuestId="38684" GiverName="Elothir" GiverId="92783" X="-7.052065E-05" Y="7.241555E-05" Z="0.02027451" />
+			<PickUp QuestName="Given to Corruption" QuestId="41893" GiverName="Elothir" GiverId="92783" X="-7.052065E-05" Y="7.241555E-05" Z="0.02027451" />
+
+			<While Condition="DoQuest(41893)" >
+				<CustomBehavior File="KillUntilComplete" MobId="92989" QuestId="41893" QuestObjectiveIndex="1" X="3666.594" Y="5815.972" Z="227.9332" />
+			</While>
+			<While Condition="DoQuest(38684)" >
+				<CustomBehavior File="KillUntilComplete" MobIds="97338, 93155, 97337" QuestId="38684" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="3642.128" Y="5843.139" Z="228.5611" />
+						<Hotspot X="3574.607" Y="5978.045" Z="262.6809" />
+						<Hotspot X="3504.048" Y="5866.792" Z="269.4984" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<!-- NOTE: <BonusObjective> :
+				<PickUp QuestName="Flow of the Nightmare" QuestId="43241" GiverName="EMPTY" GiverId="1234" X="XXX" Y="YYY" Z="ZZZ" />
+			-->
+
+
+			<TurnIn QuestName="Reading the Leaves" QuestId="38684" TurnInName="Elothir" TurnInId="92783" X="-7.052065E-05" Y="7.241555E-05" Z="0.02027451" />
+			<TurnIn QuestName="Given to Corruption" QuestId="41893" TurnInName="Elothir" TurnInId="92783" X="-7.052065E-05" Y="7.241555E-05" Z="0.02027451" />
+
+			<PickUp QuestName="Softening the Target" QuestId="43702" GiverName="Elothir" GiverId="104728" X="3320.365" Y="5958.033" Z="249.0662" />
+			<While Condition="DoQuest(43702)" >
+				<!-- NOTE: <ConditionalCheck> : Make sure InVehicle returns true for this mob. -->
+				<If Condition="!Me.InVehicle" >
+					<CustomBehavior File="InteractWith" MobId="111359" QuestId="43702" X="3317.487" Y="5949.828" Z="251.8741" />
+				</If>
+				<!-- NOTE: <QBUsage> : Make sure this behavior is setup properly. -->
+				<CustomBehavior File="Vehicles\NoControlVehicle" QuestId="43702" TargetId1="109929" TargetId2="109932" TargetId3="109928" TargetId4="109959" TargetId5="109960" TargetId6="109927" TargetId7="109926" AttackButton="1" OftenToUse="2000" NumOfTimes="6" VehicleId="38540" MaxRange="100" TypeId="2" />
+			</While>
+			<TurnIn QuestName="Softening the Target" QuestId="43702" TurnInName="Tyrande Whisperwind" TurnInId="04728" X="3413.7" Y="6124.011" Z="211.797" />
+
+			<PickUp QuestName="Close Enough to Touch" QuestId="38687" GiverName="Tyrande Whisperwind" GiverId="104728" X="3413.7" Y="6124.011" Z="211.797" />
+			<While Condition="DoQuest(38687)" >
+				<CustomBehavior File="InteractWith" MobId="111258" QuestId="38687" QuestObjectiveIndex="2" X="3609.905" Y="6132.729" Z="178.1244" />
+				<CustomBehavior File="InteractWith" MobId="111260" QuestId="38687" QuestObjectiveIndex="3" X="3746.8" Y="6165.945" Z="183.9481" />
+				<CustomBehavior File="InteractWith" MobId="111259" QuestId="38687" QuestObjectiveIndex="4" X="3751.627" Y="6315.099" Z="186.5862" />
+				<If Condition="!IsObjectiveComplete(5, 38687)" >
+					<MoveTo X="3574.203" Y="6390.636" Z="167.4113" /> <!-- NOTE: <TerminationNeeded> : This MoveTo needs to terminate once the cutscene is detected so the cutscenes can be skipped. -->
+					<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+				</If>
+			</While>
+			<TurnIn QuestName="Close Enough to Touch" QuestId="38687" TurnInName="Tyrande Whisperwind" TurnInId="104799" X="3547.351" Y="6420.47" Z="168.303" />
+
+			<PickUp QuestName="The Fate of Val'sharah" QuestId="38743" GiverName="Tyrande Whisperwind" GiverId="102937" X="3545.144" Y="6420.871" Z="168.2894" />
+			<While Condition="DoQuest(38743)" >
+				<CustomBehavior File="InteractWith" MobId="104799" GossipOptions="1" QuestId="38743" QuestObjectiveIndex="1" X="3547.351" Y="6420.47" Z="168.303" />
+				<CustomBehavior File="WaitTimer" WaitTime="60000" QuestId="38743" QuestObjectiveIndex="2" /> <!-- NOTE: <Termination> : Can terminate this timer once player is off Tyrande's mount. -->
+				<CustomBehavior File="KillUntilComplete" MobId="93065" QuestId="38743" QuestObjectiveIndex="2" X="2912.206" Y="6647.792" Z="215.0921" />
+				<CustomBehavior File="RunCode" Code="await SkipCutscene(10000);" />
+			</While>
+			<TurnIn QuestName="The Fate of Val'sharah" QuestId="38743" TurnInName="Tyrande Whisperwind" TurnInId="104921" X="2911.557" Y="6648.017" Z="215.0923" />
+			<!-- NOTE: <BonusObjective> : <PickUp QuestName="Defend The Temple" QuestId="39029" GiverName="Tyrande Whisperwind" GiverId="1234" X="XXX" Y="YYY" Z="ZZZ" /> -->
 		<!-- END Story: All Nightmare Long -->
+
+		<!-- Zone Transition Quests -->
+			<!-- NOTE: <ComeBackToMe> :
+				<PickUp QuestName="Enter the Nightmare" QuestId="40567" GiverName="Tyrande Whisperwind" GiverId="104921" X="2911.557" Y="6648.017" Z="215.0923" />
+				This quest currently is broken on the beta.   I believe it's a 'go into dungeon and kill dungeon boss' quest so it may be removable.
+			-->
+			<PickUp QuestName="The Tears of Elune" QuestId="40890" GiverType="Object" GiverName="Tears of Elune" GiverId="248534" X="2909.45" Y="6660.596" Z="219.3251" /> <!-- End of Val'sharah transition quest. -->
+		<!-- END Zone Transition Quests -->
 	</QuestOrder>
 </HBProfile>
