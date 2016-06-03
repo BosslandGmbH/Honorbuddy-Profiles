@@ -1,0 +1,407 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Highmountain [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes>
+		<Mailbox X="4070.627" Y="4325.143" Z="768.275" /> <!-- Thunder Totem -->
+	</Mailboxes>
+
+	<Vendors>
+		<Vendor Name="Galica Bravepaw" Type="Repair" Entry="97858" X="4069.965" Y="4410.103" Z="768.1867" />
+	</Vendors>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Zone Introductory Quests -->
+			<TurnIn QuestName="The Lone Mountain" QuestId="39733" TurnInName="Warbrave Oro" TurnInId="97666" X="-827.2934" Y="4292.502" Z="746.2735" /> <!-- Breadcrumb from Class Hall -->
+
+			<PickUp QuestName="Keepers of the Hammer" QuestId="38907" GiverName="Warbrave Oro" GiverId="97666" X="-827.2934" Y="4292.502" Z="746.2735" />
+			<While Condition="DoQuest(38907)" >
+				<If Condition="!IsObjectiveComplete(1, 38907)" >
+					<MoveTo X="-863.934" Y="4298.434" Z="745.3463" />
+					<CustomBehavior File="TaxiRide" MobId="96813" DestName="Thunder Totem, Highmountain" />
+				</If>
+				<MoveTo X="4147.644" Y="4373.127" Z="767.992" />
+			</While>
+			<TurnIn QuestName="Keepers of the Hammer" QuestId="38907" TurnInName="Mayla Highmountain" TurnInId="93826" X="4083.05" Y="4385.5" Z="670.6271" />
+		<!-- END Zone Introductory Quests -->
+
+
+		<!-- Story: The Rivermane Tribe -->
+			<PickUp QuestName="The Rivermane Tribe" QuestId="38911" GiverName="Mayla Highmountain" GiverId="93826" X="4083.05" Y="4385.5" Z="670.6271" />
+			<TurnIn QuestName="The Rivermane Tribe" QuestId="38911" TurnInName="Jale Rivermane" TurnInId="93833" X="4138.714" Y="4604.009" Z="658.2969" />
+
+			<PickUp QuestName="Ormgul the Pestilent" QuestId="39491" GiverName="Jale Rivermane" GiverId="93833" X="4138.714" Y="4604.009" Z="658.2969" />
+			<PickUp QuestName="Poisoned Crops" QuestId="39272" GiverName="Farmer Maya" GiverId="95191" X="4139.162" Y="4600.486" Z="658.074" />
+			<PickUp QuestName="Infestation" QuestId="39490" GiverName="Farmer Maya" GiverId="95191" X="4139.162" Y="4600.486" Z="658.074" />
+
+			<While Condition="DoQuest(39272)" >
+				<CustomBehavior File="InteractWith" MobIds="99433, 99434, 99435, 99436" NumOfTimes="4" QuestId="39272" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="4177.017" Y="4641.941" Z="652.0767" />
+						<Hotspot X="4212.645" Y="4615.779" Z="655.0013" />
+						<Hotspot X="4260.76" Y="4635.216" Z="652.7175" />
+						<Hotspot X="4314.377" Y="4634.545" Z="652.0786" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<While Condition="DoQuest(39491)" >
+				<CustomBehavior File="KillUntilComplete" MobId="95935" QuestId="39491" QuestObjectiveIndex="1" X="4211.044" Y="4697.575" Z="643.8798" />
+				<!-- NOTE: <Functionality> : Perhaps InteractByLooting and use InteractWith as a kill method?  This mob drops an item needed to complete the quest. -->
+			</While>
+
+			<While Condition="DoQuest(39490)" >
+				<CustomBehavior File="KillUntilComplete" QuestId="39490" >
+					<HuntingGrounds>
+						<Hotspot X="4253.641" Y="4673.818" Z="648.2146" />
+						<Hotspot X="4272.623" Y="4611.793" Z="652.655" />
+						<Hotspot X="4195.535" Y="4614.488" Z="653.7449" />
+					</HuntingGrounds>
+
+					<PursuitList>
+						<PursueUnit Id="94691" PursueWhen="!IsObjectiveComplete(2, 39490)" />
+						<PursueUnit Id="94688" PursueWhen="!IsObjectiveComplete(1, 39490)" />
+					</PursuitList>
+				</CustomBehavior>
+			</While>
+
+			<TurnIn QuestName="Ormgul the Pestilent" QuestId="39491" TurnInName="Jale Rivermane" TurnInId="93833" X="4138.714" Y="4604.009" Z="658.2971" />
+			<TurnIn QuestName="Infestation" QuestId="39490" TurnInName="Farmer Maya" TurnInId="95191" X="4139.162" Y="4600.486" Z="658.0746" />
+			<TurnIn QuestName="Poisoned Crops" QuestId="39272" TurnInName="Farmer Maya" TurnInId="95191" X="4139.162" Y="4600.486" Z="658.0746" />
+
+			<PickUp QuestName="The Flow of the River" QuestId="39496" GiverName="Jale Rivermane" GiverId="93833" X="4138.714" Y="4604.009" Z="658.2971" />
+			<TurnIn QuestName="The Flow of the River" QuestId="39496" TurnInName="Angler Creel" TurnInId="95186" X="4060.99" Y="4781.447" Z="625.9194" />
+
+			<PickUp QuestName="Trapped Tauren" QuestId="39316" GiverName="Angler Creel" GiverId="95186" X="4060.99" Y="4781.447" Z="625.9194" />
+			<PickUp QuestName="Fish Out of Water" QuestId="39614" GiverName="Angler Creel" GiverId="95186" X="4060.99" Y="4781.447" Z="625.9194" />
+			<PickUp QuestName="Spray and Prey" QuestId="39277" GiverName="Jale Rivermane" GiverId="95956" X="4064.991" Y="4778.116" Z="626.1729" />
+
+			<While Condition="DoQuest(39614)" >
+				<!-- NOTE: <PerformanceIssue> : Bot must face lake prior to kicking(interacting) with the fish. Add custom code here. -->
+				<CustomBehavior File="InteractWith" MobIds="95148" InteractBlacklistTimeInSeconds="1" NumOfTimes="50" QuestId="39614" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="4038.536" Y="4775.965" Z="623.6185" />
+						<Hotspot X="3985.755" Y="4902.08" Z="624.2513" />
+						<Hotspot X="3936.748" Y="4779.066" Z="625.9948" />
+						<Hotspot X="3936.509" Y="4943.055" Z="622.6791" />
+						<Hotspot X="3904.754" Y="5002.131" Z="627.1608" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<While Condition="DoQuest(39277)" >
+				<CustomBehavior File="InteractWith" MobIds="95013, 96124" InteractByUsingItemId="127988" Range="5" IgnoreCombat="true" QuestId="39277" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="4038.536" Y="4775.965" Z="623.6185" />
+						<Hotspot X="3985.755" Y="4902.08" Z="624.2513" />
+						<Hotspot X="3936.748" Y="4779.066" Z="625.9948" />
+						<Hotspot X="3936.509" Y="4943.055" Z="622.6791" />
+						<Hotspot X="3904.754" Y="5002.131" Z="627.1608" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<PickUp QuestName="Moozy's Sojourn" QuestId="39323" GiverName="Rordan Waterwise" GiverId="96083" X="3943.739" Y="4843.707" Z="621.8448" /> <!-- Breadcrumb quest for Story: XXXX -->
+
+			<While Condition="DoQuest(39316)" >
+				<CustomBehavior File="InteractWith" MobId="243368" QuestId="39316" QuestObjectiveIndex="1" X="3987.133" Y="4657.559" Z="642.855" />
+			</While>
+
+			<!-- NOTE: <BonusObjective> : <PickUp QuestName="Defend the Riverlands" QuestId="39274" GiverName="Jale Rivermane" GiverId="95956" XXXX /> -->
+
+			<TurnIn QuestName="Trapped Tauren" QuestId="39316" TurnInName="Angler Creel" TurnInId="95186" X="4060.99" Y="4781.447" Z="625.9202" />
+			<TurnIn QuestName="Fish Out of Water" QuestId="39614" TurnInName="Angler Creel" TurnInId="95186" X="4060.99" Y="4781.447" Z="625.9202" />
+			<TurnIn QuestName="Spray and Prey" QuestId="39277" TurnInName="Jale Rivermane" TurnInId="95956" X="4064.991" Y="4778.116" Z="626.1739" />
+
+			<PickUp QuestName="Lifespring Cavern" QuestId="39661" GiverName="Jale Rivermane" GiverId="95956" X="4064.991" Y="4778.116" Z="626.1739" />
+			<TurnIn QuestName="Lifespring Cavern" QuestId="39661" TurnInName="Jale Rivermane" TurnInId="96520" X="4077.511" Y="4974.141" Z="663.2186" />
+
+			<PickUp QuestName="Balance of Elements" QuestId="39488" GiverName="Jale Rivermane" GiverId="96520" X="4077.511" Y="4974.141" Z="663.2186" />
+			<!-- NOTE: <NPCIdChange> : The NPC becomes a follower, which causes an Id change. -->
+			<PickUp QuestName="Invading Spelunkers" QuestId="39489" GiverName="Jale Rivermane" GiverId="95973" X="4069.751" Y="4975.878" Z="662.8732" />
+
+			<While Condition="DoQuest(39488)" >
+				<CustomBehavior File="InteractWith" MobIds="243639" NumOfTimes="10" QuestId="39488" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="4176.417" Y="5008.643" Z="645.3951"* />
+						<Hotspot X="4210.141" Y="5036.455" Z="652.2859" />
+						<Hotspot X="4235.343" Y="5063.03" Z="652.2601" />
+						<Hotspot X="4180.616" Y="5082.789" Z="660.3372" />
+						<Hotspot X="4223.156" Y="5110.615" Z="669.6387" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<While Condition="DoQuest(39489)" >
+				<CustomBehavior File="KillUntilComplete" MobIds="95916, 95866" QuestId="39489" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="4216" Y="5105.166" Z="669.8068" />
+						<Hotspot X="4107.565" Y="5106.719" Z="676.3578" />
+						<Hotspot X="4220.652" Y="5088.407" Z="703.9309" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<TurnIn QuestName="Balance of Elements" QuestId="39488" TurnInName="Jale Rivermane" TurnInId="95973" X="4222.013" Y="5092.705" Z="703.6729" />
+			<TurnIn QuestName="Invading Spelunkers" QuestId="39489" TurnInName="Jale Rivermane" TurnInId="95973" X="4222.013" Y="5092.705" Z="703.6729" />
+
+			<PickUp QuestName="Crystal Fury" QuestId="39487" GiverName="Jale Rivermane" GiverId="95973" X="4222.013" Y="5092.705" Z="703.6729" />
+			<While Condition="DoQuest(39487)" >
+				<CustomBehavior File="KillUntilComplete" MobId="95881" QuestId="39487" QuestObjectiveIndex="1" X="4265.129" Y="5107.484" Z="708.971" />
+			</While>
+			<TurnIn QuestName="Crystal Fury" QuestId="39487" TurnInName="Jale Rivermane" TurnInId="95973" X="4270.49" Y="5101.572" Z="708.8771" />
+
+			<PickUp QuestName="High Water" QuestId="39498" GiverName="Jale Rivermane" GiverId="95973" X="4270.49" Y="5101.572" Z="708.8771" />
+			<TurnIn QuestName="High Water" QuestId="39498" TurnInName="Jale Rivermane" TurnInId="97662" X="3583.474" Y="4836.208" Z="700.3303" />
+		<!-- END Story: The Rivermane Tribe -->
+
+		<!-- Story: Riverbend -->
+			<PickUp QuestName="The Underking Comes" QuestId="42104" GiverName="Jale Rivermane" GiverId="97662" X="3583.474" Y="4836.208" Z="700.3303" />
+			<While Condition="DoQuest(42104)" >
+				<!-- NOTE: <Improve> : This can be improved. -->
+				<MoveTo X="3658.93" Y="4836.998" Z="688.731" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="ExtraActionButton1:Click();" />
+				<MoveTo X="3634.189" Y="4891.154" Z="682.9647" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="ExtraActionButton1:Click();" />
+				<MoveTo X="3668.64" Y="4897.01" Z="681.988" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="ExtraActionButton1:Click();" />
+				<MoveTo X="3704.925" Y="4871.203" Z="679.8173" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="ExtraActionButton1:Click();" />
+				<MoveTo X="3724.296" Y="4846.906" Z="681.0002" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="ExtraActionButton1:Click();" />
+			</While>
+			<If Condition="QuestDone(42104)" >
+				<TurnIn QuestName="The Underking Comes" QuestId="42104" TurnInName="Spiritwalker Ebonhorn" TurnInId="93805" X="3708.767" Y="4962.487" Z="671.2761" />
+				<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+			</If>
+
+			<PickUp QuestName="Grasp of the Underking" QuestId="39025" GiverName="Spiritwalker Ebonhorn" GiverId="93805" X="3737.774" Y="4959.208" Z="670.8829" />
+			<PickUp QuestName="The Drogbar" QuestId="39026" GiverName="Spiritwalker Ebonhorn" GiverId="93805" X="3737.774" Y="4959.208" Z="670.8829" />
+
+			<While Condition="DoQuest(39025)" >
+				<CustomBehavior File="InteractWith" MobId="97648" QuestId="39025" QuestObjectiveIndex="2" X="3736.111" Y="4887.467" Z="675.6513" />
+				<CustomBehavior File="InteractWith" MobId="97648" QuestId="39025" QuestObjectiveIndex="1" X="3649.892" Y="4908.655" Z="685.0859" />
+				<CustomBehavior File="InteractWith" MobId="97648" QuestId="39025" QuestObjectiveIndex="3" X="3575.872" Y="4839.522" Z="700.2889" />
+			</While>
+
+			<While Condition="DoQuest(39026)" >
+				<CustomBehavior File="KillUntilComplete" MobIds="103067, 102274, 94846" QuestId="39026" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="3568.237" Y="4846.711" Z="700.9561" />
+						<Hotspot X="3615.923" Y="4772.635" Z="717.7861" />
+						<Hotspot X="3725.579" Y="4917.6" Z="673.3043" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<TurnIn QuestName="Grasp of the Underking" QuestId="39025" TurnInName="Warbrave Oro" TurnInId="97553" X="3541.17" Y="4770.213" Z="714.2067" />
+			<TurnIn QuestName="The Drogbar" QuestId="39026" TurnInName="Warbrave Oro" TurnInId="97553" X="3541.17" Y="4770.213" Z="714.2067" />
+
+			<PickUp QuestName="Bitestone Enclave" QuestId="39043" GiverName="Warbrave Oro" GiverId="97553" X="3541.17" Y="4770.213" Z="714.2067" />
+			<While Condition="DoQuest(39043)" >
+				<CustomBehavior File="KillUntilComplete" QuestId="39043" >
+					<HuntingGrounds>
+						<Hotspot X="3503.413" Y="4580.504" Z="680.7924" />
+						<Hotspot X="3441.987" Y="4449.904" Z="680.4611" />
+						<Hotspot X="3374.287" Y="4484.193" Z="705.421" />
+					</HuntingGrounds>
+
+					<PursuitList>
+						<PursueUnit Id="98653" PursueWhen="!IsObjectiveComplete(2, 39043)" />
+						<PursueUnit Id="94261" PursueWhen="!IsObjectiveComplete(1, 39043)" />
+						<PursueUnit Id="102297" PursueWhen="!IsObjectiveComplete(1, 39043)" />
+						<PursueUnit Id="102283" PursueWhen="!IsObjectiveComplete(1, 39043)" /
+					</PursuitList>
+				</CustomBehavior>
+			</While>
+			<TurnIn QuestName="Bitestone Enclave" QuestId="39043" TurnInName="Warbrave Oro" TurnInId="97553" X="3482.253" Y="4601.077" Z="681.6348" />
+
+			<PickUp QuestName="Dargrul and the Hammer" QuestId="39027" GiverName="Warbrave Oro" GiverId="97553" X="3482.253" Y="4601.077" Z="681.6348" />
+			<While Condition="DoQuest(39027)" >
+        <MoveTo X="3464.436" Y="4511.601" Z="679.8839" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" />
+				<!-- NOTE: <TechnicalCheck> : Something weird happens here.  When the player is caught in the grasp, all mobs around the player become 5500+ yards away from the player, this is why this IW has a range of 6000.
+											May also remove the WaitForNpcs="false" on the IW, and instead, have the IW terminate on a detection. -->
+				<CustomBehavior File="InteractWith" MobId="97781" Range="6000" WaitForNpcs="false" QuestId="39027" X="3466.416" Y="4518.513" Z="680.0645" />
+				<MoveTo X="3738.184" Y="4957.429" Z="670.7311" />
+			</While>
+			<TurnIn QuestName="Dargrul and the Hammer" QuestId="39027" TurnInName="Spiritwalker Ebonhorn" TurnInId="93805" X="3737.774" Y="4959.208" Z="670.8829" />
+
+			<PickUp QuestName="Get to High Ground" QuestId="38909" GiverName="Spiritwalker Ebonhorn" GiverId="93805" X="3737.774" Y="4959.208" Z="670.8829" />
+			<While Condition="DoQuest(38909)" >
+				<MoveTo X="4083.05" Y="4385.5" Z="670.6257" />
+			</While>
+			<TurnIn QuestName="Get to High Ground" QuestId="38909" TurnInName="Mayla Highmountain" TurnInId="93826" X="4083.05" Y="4385.5" Z="670.6257" />
+
+		<!-- END Story: Riverbend -->
+
+		<!-- Breadcrumb Quests -->
+			<PickUp QuestName="The Skyhorn Tribe" QuestId="38913" GiverName="Mayla Highmountain" GiverId="93826" X="4083.05" Y="4385.5" Z="670.6257" /> <!-- Breadcrumb for Skyhorn Tribe story -->
+			<PickUp QuestName="The Bloodtotem Tribe" QuestId="38912" GiverName="Mayla Highmountain" GiverId="93826" X="4083.05" Y="4385.5" Z="670.6257" /> <!-- Breadcrumb for Bloodtotem Tribe story. -->
+			<PickUp QuestName="A Walk With the Spirits" QuestId="40515" GiverName="Mayla Highmountain" GiverId="93826" X="4083.05" Y="4385.5" Z="670.6257" />
+		<!-- END Breadcrumb Quests -->
+
+
+		<!-- Story: XXX -->
+			<TurnIn QuestName="A Walk With the Spirits" QuestId="40515" TurnInName="Spiritwalker Ebonhorn" TurnInId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
+
+			<PickUp QuestName="The Story of Huln" QuestId="40167" GiverName="Spiritwalker Ebonhorn" GiverId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
+			<While Condition="DoQuest(40167)" >
+				<CustomBehavior File="InteractWith" MobId="98825" GossipOptions="1" QuestId="40167" QuestObjectiveIndex="1" X="4057.205" Y="4320.374" Z="675.4365" />
+				<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+			</While>
+			<TurnIn QuestName="The Story of Huln" QuestId="40167" TurnInName="Spiritwalker Ebonhorn" TurnInId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
+
+			<PickUp QuestName="To See the Past" QuestId="40520" GiverName="Spiritwalker Ebonhorn" GiverId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
+			<While Condition="DoQuest(40520)" >
+				<CustomBehavior File="InteractWith" MobId="100437" InteractByBuyingItemId="132247" QuestId="40520" QuestObjectiveIndex="1" X="4252.739" Y="4470.258" Z="671.394" />
+				<CustomBehavior File="InteractWith" MobId="100418" QuestId="40520" QuestObjectiveIndex="3" X="4444.325" Y="4497.946" Z="704.1635" />
+				<!-- NOTE: <TechnicalIssue> : Water pushes player down stream, MoveTo is to make player stand out of the water before intearct takes place. -->
+				<MoveTo QuestId="40520" QuestObjectiveIndex="2" X="4330.602" Y="4262.781" Z="656.9888" />
+				<CustomBehavior File="InteractWith" MobId="245620" Range="8" QuestId="40520" QuestObjectiveIndex="2" X="4335.485" Y="4260.884" Z="656.0594" />
+			</While>
+			<TurnIn QuestName="To See the Past" QuestId="40520" TurnInName="Spiritwalker Ebonhorn" TurnInId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
+		<!-- END Story: XXXX -->
+
+
+		<!-- Story: Huln's War -->
+			<PickUp QuestName="Huln's War - The Arrival" QuestId="39983" GiverName="Spiritwalker Ebonhorn" GiverId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
+			<While Condition="DoQuest(39983)" >
+				<CustomBehavior File="InteractWith" MobId="98825" GossipOptions="1" QuestId="39983" QuestObjectiveIndex="1" X="4057.205" Y="4320.374" Z="675.4365" />
+				<!-- NOTE: <AddSupport> : From this point on, the player will be inside of a vehicle.  Need to push 1 2 and 3 buttons. Look for comment below for ending.
+									Button 1 is primary attack, it is all that needs to be used.
+									Mobs don't auto-aggro. Only questId 39983 needs to kill NPCs -->
+				<CustomBehavior File="RunCode" Code="Logging.Write(&quot;[ADD SUPPORT HERE]: Check profile comments for details.  Line 337&quot;);" />
+				<CustomBehavior File="Halt" />
+			</While>
+			<TurnIn QuestName="Huln's War - The Arrival" QuestId="39983" TurnInName="Unng Ak" TurnInId="97891" X="3935.031" Y="-4996.425" Z="147.5277" />
+
+			<PickUp QuestName="Huln's War - Malorne's Favored" QuestId="40112" GiverName="Unng Ak" GiverId="97891" X="3935.031" Y="-4996.425" Z="147.5277" />
+			<TurnIn QuestName="Huln's War - Malorne's Favored" QuestId="40112" TurnInName="Eche'ro" TurnInId="98794" X="3640.411" Y="-4914.465" Z="127.2173" />
+
+			<PickUp QuestName="Huln's War - Stormrage" QuestId="39988" GiverName="Eche'ro" GiverId="98794" X="3640.411" Y="-4914.465" Z="127.2173" />
+			<TurnIn QuestName="Huln's War - Stormrage" QuestId="39988" TurnInName="Malfurion Stormrage" TurnInId="97892" X="3477.784" Y="-4911.186" Z="145.7449" />
+
+			<PickUp QuestName="Huln's War - Reinforcements" QuestId="39990" GiverName="Malfurion Stormrage" GiverId="97892" X="3477.784" Y="-4911.186" Z="145.7449" />
+			<While Condition="DoQuest(39990)" >
+				<MoveTo X="3476.682" Y="-4893.174" Z="140.0279" />
+				<CustomBehavior File="WaitTimer" WaitTime="180000" QuestId="39990" />
+			</While
+			<TurnIn QuestName="Huln's War - Reinforcements" QuestId="39990" TurnInName="Malfurion Stormrage" TurnInId="97892" X="3477.784" Y="-4911.186" Z="145.7449" />
+
+			<PickUp QuestName="Huln's War - Shadowsong" QuestId="40388" GiverName="Malfurion Stormrage" GiverId="97892" X="3477.784" Y="-4911.186" Z="145.7449" />
+			<TurnIn QuestName="Huln's War - Shadowsong" QuestId="40388" TurnInName="Jarod Shadowsong" TurnInId="97903" X="3451.221" Y="-5101.295" Z="85.30394" />
+
+			<PickUp QuestName="Huln's War - The Nathrezim" QuestId="39992" GiverName="Jarod Shadowsong" GiverId="97903" X="3451.221" Y="-5101.295" Z="85.30394" />
+			<While Condition="DoQuest(39992)" >
+				<!-- NOTE: <AddFunctionality> : Need to kill this mob using the vehicle abilities.
+						Name="Tichondrius" Entry="97956" X="3545.834" Y="-5259.268" Z="99.5213"
+				-->
+				<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Me.MapId != XX" /> <!-- Terminate when we load out of the zone. -->
+				<!-- NOTE: <AddSupport> : FRom this point up, the player will be inside of a vehicle.  Need to push 1 2 and 3 buttons. Look for comment above for start. -->
+			</While>
+			<TurnIn QuestName="Huln's War - The Nathrezim" QuestId="39992" TurnInName="Spiritwalker Ebonhorn" TurnInId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
+		<!-- END Story: Huln's War -->
+
+			<PickUp QuestName="Secrets of Highmountain" QuestId="38916" GiverName="Spiritwalker Ebonhorn" GiverId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
+
+			<!-- NOTE: <AddLater> : This is a side quest.  Add later.
+			<PickUp QuestName="Ceremonial Drums" QuestId="42622" GiverName="Torv Dubstomp" GiverId="108017" X="4050.932" Y="4385.313" Z="667.7916" />
+
+			<While Condition="DoQuest(42622)" >
+				<CustomBehavior File="InteractWith" QuestId="42622" >
+					<HuntingGrounds>
+						<Hotspot X="4123.049" Y="4405.591" Z="667.7467" />
+						<Hotspot X="4086.152" Y="4308.324" Z="768.3868" /> 
+						<Hotspot X="4019.743" Y="4332.312" Z="768.4916" />
+						<Hotspot X="4052.286" Y="4420.277" Z="768.3255" />
+						<Hotspot  />
+						<Hotspot  />
+					</HuntingGrounds>
+
+					<PursuitList>
+						<PursueGameObject Id="250904" PursueWhen="!IsObjectiveComplete(2, 42622)" />
+						<PursueGameObject Id="250905" PursueWhen="!IsObjectiveComplete(3, 42622)" />
+						<PursueUnit Id="108145" ConvertWhen="!IsObjectiveComplete(3, 42622)" PursueWhen="!IsObjectiveComplete(3, 42622)" ConvertBy="Killing" />  
+					</PursuitList>
+				</CustomBehavior>
+			</While> -->
+
+
+
+	</QuestOrder>
+</HBProfile>
