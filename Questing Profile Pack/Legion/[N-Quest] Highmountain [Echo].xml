@@ -20,7 +20,7 @@
 	<TargetElites>true</TargetElites>
 
 	<AvoidMobs>
-		<Mob Name="XXX" Entry="123" />
+		<Mob Name="Gornoth the Lost" Entry="103656" />
 	</AvoidMobs>
 
 	<Blackspots>
@@ -35,6 +35,11 @@
 
 	<Vendors>
 		<Vendor Name="Galica Bravepaw" Type="Repair" Entry="97858" X="4069.965" Y="4410.103" Z="768.1867" />
+		<Vendor Name="Lucas Sigmund" Type="Repair" Entry="94100" X="4494.187" Y="4865.437" Z="662.1328" />
+		<Vendor Name="Bar'tu Silverstream" Type="Repair" Entry="97869" X="5114.556" Y="4973.081" Z="752.5872" />
+		<Vendor Name="Shale Greyfeather" Type="Repair" Entry="99905" X="4106.347" Y="4405.938" Z="768.1934" /> <!-- Thunder Totem -->
+		<Vendor Name="Cale Fireheart" Type="Repair" Entry="97876" X="3935.39" Y="3899.267" Z="905.3173" />
+		<Vendor Name="Darbrul" Type="Repair" Entry="99205" X="5867.962" Y="4547.085" Z="614.298" UseWhen="IsQuestCompleted(40229)" />
 	</Vendors>
 
 	<InitOrder>
@@ -188,13 +193,18 @@
 				</CustomBehavior>
 			</While>
 
-			<PickUp QuestName="Moozy's Sojourn" QuestId="39323" GiverName="Rordan Waterwise" GiverId="96083" X="3943.739" Y="4843.707" Z="621.8448" /> <!-- Breadcrumb quest for Story: XXXX -->
+			<PickUp QuestName="Moozy's Sojourn" QuestId="39323" GiverName="Rordan Waterwise" GiverId="96083" X="3943.739" Y="4843.707" Z="621.8448" />
 
 			<While Condition="DoQuest(39316)" >
 				<CustomBehavior File="InteractWith" MobId="243368" QuestId="39316" QuestObjectiveIndex="1" X="3987.133" Y="4657.559" Z="642.855" />
 			</While>
 
 			<!-- NOTE: <BonusObjective> : <PickUp QuestName="Defend the Riverlands" QuestId="39274" GiverName="Jale Rivermane" GiverId="95956" XXXX /> -->
+
+			<TurnIn QuestName="Moozy's Sojourn" QuestId="39323" TurnInName="Moozy Waterwise" TurnInId="95130" X="3932.338" Y="5040.542" Z="619.6666" />
+
+			<PickUp QuestName="Moozy's Adventure" QuestId="39572" GiverName="Moozy Waterwise" GiverId="95130" X="3932.338" Y="5040.542" Z="619.6666" />
+			<TurnIn QuestName="Moozy's Adventure" QuestId="39572" TurnInName="Sella Waterwise" TurnInId="96084" X="4231.368" Y="4860.691" Z="655.5359" />
 
 			<TurnIn QuestName="Trapped Tauren" QuestId="39316" TurnInName="Angler Creel" TurnInId="95186" X="4060.99" Y="4781.447" Z="625.9202" />
 			<TurnIn QuestName="Fish Out of Water" QuestId="39614" TurnInName="Angler Creel" TurnInId="95186" X="4060.99" Y="4781.447" Z="625.9202" />
@@ -370,10 +380,10 @@
 			<TurnIn QuestName="Huln's War - Stormrage" QuestId="39988" TurnInName="Malfurion Stormrage" TurnInId="97892" X="3477.784" Y="-4911.186" Z="145.7449" />
 
 			<PickUp QuestName="Huln's War - Reinforcements" QuestId="39990" GiverName="Malfurion Stormrage" GiverId="97892" X="3477.784" Y="-4911.186" Z="145.7449" />
-      <While Condition="DoQuest(39990)" >
-        <MoveTo X="3476.682" Y="-4893.174" Z="140.0279" />
-        <CustomBehavior File="WaitTimer" WaitTime="180000" QuestId="39990" />
-      </While>
+			<While Condition="DoQuest(39990)" >
+				<MoveTo X="3476.682" Y="-4893.174" Z="140.0279" />
+				<CustomBehavior File="WaitTimer" WaitTime="180000" QuestId="39990" />
+			</While>
 			<TurnIn QuestName="Huln's War - Reinforcements" QuestId="39990" TurnInName="Malfurion Stormrage" TurnInId="97892" X="3477.784" Y="-4911.186" Z="145.7449" />
 
 			<PickUp QuestName="Huln's War - Shadowsong" QuestId="40388" GiverName="Malfurion Stormrage" GiverId="97892" X="3477.784" Y="-4911.186" Z="145.7449" />
@@ -390,6 +400,7 @@
 			<TurnIn QuestName="Huln's War - The Nathrezim" QuestId="39992" TurnInName="Spiritwalker Ebonhorn" TurnInId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
 		<!-- END Story: Huln's War -->
 
+		<!-- Story: Secrets of Highmountain -->
 			<PickUp QuestName="Secrets of Highmountain" QuestId="38916" GiverName="Spiritwalker Ebonhorn" GiverId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
 
 			<!-- NOTE: <AddLater> : This is a side quest.  Add later.
@@ -414,7 +425,390 @@
 				</CustomBehavior>
 			</While> -->
 
+			<TurnIn QuestName="The Bloodtotem Tribe" QuestId="38916" TurnInName="Spiritwalker Ebonhorn" TurnInId="94571" X="3865.907" Y="4516.458" Z="776.5803" />
 
+			<PickUp QuestName="The Path of Huln" QuestId="39575" GiverName="Spiritwalker Ebonhorn" GiverId="94571" X="3865.907" Y="4516.458" Z="776.5803" />
+			<While Condition="DoQuest(39575)" >
+				<!-- NOTE: <AddAvoid> : Need to add avoids here to avoid the Ettin's attacks. -->
+				<MoveTo X="3868.524" Y="4515.501" Z="776.5807" />
+				<CustomBehavior File="EscortGroup" QuestId="39575" EscortCompleteWhen="QuestObjectiveComplete" QuestObjectiveIndex="1" EscortCountMax="1"
+				EscortNpcId="96164" EscortMaxFightDistance="15" SearchForNpcsRadius="30" >
+					<SearchPath>
+						<Hotspot X="3843.838" Y="4514.991" Z="776.7822" />
+					</SearchPath>
+				</CustomBehavior>
+				<If Condition="!IsObjectiveComplete(2, 39575)" >
+					<MoveTo X="3614.548" Y="4404.908" Z="765.1949" />
+					<CustomBehavior File="ForcedDismount" />
+					<UseMount Value="false" />
+					<DisableBehavior Name="Combat" /> <!-- Player will die if there's a speed buff -->
+					<CustomBehavior File="MyCTM" X="3612.067" Y="4398.523" Z="661.208" />
+					<UseMount Value="null" />
+					<EnableBehavior Name="Combat" />
+				</If>
+			</While>
+			<TurnIn QuestName="The Path of Huln" QuestId="39575" TurnInName="Spiritwalker Ebonhorn" TurnInId="99153" X="3652.255" Y="4340.963" Z="664.8455" />
+
+			<PickUp QuestName="In Defiance of Deathwing" QuestId="40219" GiverName="Spiritwalker Ebonhorn" GiverId="99153" X="3652.255" Y="4340.963" Z="664.8455" />
+			<While Condition="DoQuest(40219)" >
+				<CustomBehavior File="InteractWith" MobId="250916" QuestId="40219" QuestObjectiveIndex="1" X="3551.038" Y="4376.373" Z="663.0094" />
+				<CustomBehavior File="InteractWith" MobId="250978" QuestId="40219" QuestObjectiveIndex="1" X="3639.228" Y="4276.268" Z="665.6868" />
+				<CustomBehavior File="InteractWith" MobId="250979" QuestId="40219" QuestObjectiveIndex="1" X="3512.604" Y="4292.382" Z="680.8919" />
+			</While>
+			<TurnIn QuestName="In Defiance of Deathwing" QuestId="40219" TurnInName="Spiritwalker Ebonhorn" TurnInId="94571" X="3510.827" Y="4287.72" Z="680.5923" />
+
+
+			<PickUp QuestName="Titanic Showdown" QuestId="39578" GiverName="Spiritwalker Ebonhorn" GiverId="94571" X="3517.177" Y="4286.464" Z="680.1006" />
+			<While Condition="DoQuest(39578)" >
+				<CustomBehavior File="InteractWith" MobId="250994" QuestId="39578" QuestObjectiveIndex="1" X="3429.875" Y="4303.342" Z="704.294" />
+				<CustomBehavior File="KillUntilComplete" MobId="97056" QuestId="39578" QuestObjectiveIndex="2" X="3417.842" Y="4264.483" Z="704.6413" />
+			</While>
+			<TurnIn QuestName="Titanic Showdown" QuestId="39578" TurnInName="Spiritwalker Ebonhorn" TurnInId="99190" X="3420.367" Y="4294.182" Z="703.812" />
+
+			<PickUp QuestName="An Ancient Secret" QuestId="39577" GiverName="Spiritwalker Ebonhorn" GiverId="99190" X="3420.367" Y="4294.182" Z="703.812" />
+			<While Condition="DoQuest(39577)" >
+				<CustomBehavior File="InteractWith" MobId="251031" QuestId="39577" QuestObjectiveIndex="2" X="3394.936" Y="4211.083" Z="720.0948" />
+				<CustomBehavior File="EscortGroup" QuestId="39577" EscortCompleteWhen="QuestObjectiveComplete" QuestObjectiveIndex="1" EscortCountMax="1"
+				EscortNpcId="96387" EscortMaxFightDistance="15" SearchForNpcsRadius="30" >
+					<SearchPath>
+						<Hotspot X="3402.059" Y="4188.73" Z="722.0405" />
+					</SearchPath>
+				</CustomBehavior>
+			</While>
+			<TurnIn QuestName="An Ancient Secret" QuestId="39577" TurnInName="Ebyssian" TurnInId="96270" X="3419.826" Y="4198.662" Z="721.3149" />
+
+			<PickUp QuestName="The Backdoor" QuestId="39579" GiverName="Ebyssian" GiverId="96270" X="3419.826" Y="4198.662" Z="721.3149" />
+			<TurnIn QuestName="The Backdoor" QuestId="39579" TurnInName="Mayla Highmountain" TurnInId="108305" X="2969.533" Y="4332.866" Z="651.5734" />
+
+			<!-- NOTE: <BonusObjective> : Bonus quest for this area: <PickUp QuestName="Echoes of Deathwing" QuestId="39576" GiverName="Azureback Broodmother" GiverId="108014" XXXX />
+				This is where it needs to be. -->
+
+			<PickUp QuestName="The High Chieftain" QuestId="39580" GiverName="Mayla Highmountain" GiverId="108305" X="2969.533" Y="4332.866" Z="651.5734" />
+			<While Condition="DoQuest(39580)" >
+				<If Condition="Unit(96565) != null" >
+					<CustomBehavior File="TaxiRide" MobId="96565" DestName="Thunder Totem, Highmountain" />
+				</If>
+			</While>
+			<TurnIn QuestName="The High Chieftain" QuestId="39580" TurnInName="Mayla Highmountain" TurnInId="108434" X="4083.142" Y="4385.414" Z="670.626" />
+		<!-- END Story: Secrets of Highmountain -->
+
+		<!-- Story: Skyhorn Tribe -->
+			<TurnIn QuestName="The Skyhorn Tribe" QuestId="38913" TurnInName="Lasan Skyhorn" TurnInId="93841" X="4855.699" Y="3979.478" Z="832.155" />
+
+			<PickUp QuestName="Nursing the Wounds" QuestId="39318" GiverName="Lasan Skyhorn" GiverId="93841" X="4855.699" Y="3979.478" Z="832.155" />
+			<While Condition="DoQuest(39318)" >
+				<CustomBehavior File="InteractWith" MobId="95403" GossipOptions="1" QuestId="39318" QuestObjectiveIndex="1" X="4688.664" Y="3891.091" Z="830.9029" />
+				<While Condition="!IsQuestCompleted(2, 39318)" >
+					<!-- NOTE: <Improve> : Improve this.  Can make it a lot better. -->
+					<MoveTo QuestId="39318" X="4676.615" Y="3877.472" Z="830.101" />
+					<CustomBehavior File="RunCode" QuestId="39318" ><![CDATA[
+							while (Unit(95261, u => u.Distance <= 19) != null)
+							{
+								WoWUnit firePoi = Unit(95261);
+								StyxWoW.Me.SetFacing(firePoi);
+								await Coroutine.Sleep(750);
+								Lua.DoString("ExtraActionButton1:Click();");
+								await Coroutine.Sleep(750);
+								Spellmanager.ClickRemoteLocation(firePoi.Location);
+								await Coroutine.Sleep(1000);
+							}
+						]]>
+					</CustomBehavior>
+
+					<MoveTo QuestId="39318" X="4777.842" Y="3896.039" Z="817.3372" />
+					<CustomBehavior File="RunCode" QuestId="39318" ><![CDATA[
+							while (Unit(95261, u => u.Distance <= 19) != null)
+							{
+								WoWUnit firePoi = Unit(95261);
+								StyxWoW.Me.SetFacing(firePoi);
+								await Coroutine.Sleep(750);
+								Lua.DoString("ExtraActionButton1:Click();");
+								await Coroutine.Sleep(750);
+								Spellmanager.ClickRemoteLocation(firePoi.Location);
+								await Coroutine.Sleep(1000);
+							}
+						]]>
+					</CustomBehavior>
+
+					<MoveTo QuestId="39318" X="4800.041" Y="3927.792" Z="829.0881" />
+					<CustomBehavior File="RunCode" QuestId="39318" ><![CDATA[
+							while (Unit(95261, u => u.Distance <= 19) != null)
+							{
+								WoWUnit firePoi = Unit(95261);
+								StyxWoW.Me.SetFacing(firePoi);
+								await Coroutine.Sleep(750);
+								Lua.DoString("ExtraActionButton1:Click();");
+								await Coroutine.Sleep(750);
+								Spellmanager.ClickRemoteLocation(firePoi.Location);
+								await Coroutine.Sleep(1000);
+							}
+						]]>
+					</CustomBehavior>
+				</While>
+			</While>
+			<TurnIn QuestName="Nursing the Wounds" QuestId="39318" TurnInName="Lasan Skyhorn" TurnInId="93841" X="4855.699" Y="3979.478" Z="832.1546" />
+
+			<PickUp QuestName="Rocs vs Eagles" QuestId="38910" GiverName="Lasan Skyhorn" GiverId="93841" X="4855.699" Y="3979.478" Z="832.1546" />
+			<While Condition="DoQuest(38910)" >
+				<CustomBehavior File="InteractWith" MobId="94991" NumOfTimes="7" QuestId="38910" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="4952.185" Y="4152.331" Z="821.8495" />
+						<Hotspot X="4882.544" Y="4119.929" Z="836.452" />
+						<Hotspot X="5017.504" Y="4071.149" Z="794.1622" />
+						<Hotspot X="5106.593" Y="3982.121" Z="811.1218" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+			<!-- NOTE: <BonusObjective> : <PickUp QuestName="Siege of Crawliac" QuestId="39317" GiverName="Hati" GiverId="100324" XXXX /> -->
+			<TurnIn QuestName="Rocs vs Eagles" QuestId="38910" TurnInName="Lasan Skyhorn" TurnInId="95410" X="5246.301" Y="3989.95" Z="815.5788" />
+
+			<PickUp QuestName="The Three" QuestId="39321" GiverName="Lasan Skyhorn" GiverId="95410" X="5246.301" Y="3989.95" Z="815.5788" />
+			<PickUp QuestName="Assaulting the Haglands" QuestId="39429" GiverName="Lasan Skyhorn" GiverId="95410" X="5246.301" Y="3989.95" Z="815.5788" />
+
+
+			<While Condition="DoQuest(39321)" >
+				<CustomBehavior File="KillUntilComplete" MobId="95194" QuestId="39321" QuestObjectiveIndex="1" X="5389.364" Y="3978.481" Z="816.6586" />
+				<CustomBehavior File="KillUntilComplete" MobId="95195" QuestId="39321" QuestObjectiveIndex="2" X="5448.787" Y="4144.175" Z="813.1237" /> 
+				<CustomBehavior File="KillUntilComplete" MobId="95196" QuestId="39321" QuestObjectiveIndex="3" X="5292.383" Y="4113.406" Z="932.7659" /> 
+			</While>
+
+			<While Condition="DoQuest(39429)" >
+				<CustomBehavior File="KillUntilComplete" QuestId="39429" >
+					<HuntingGrounds>
+						<Hotspot X="5427.406" Y="4104.124" Z="823.7021" />
+						<Hotspot X="5410.049" Y="4174.924" Z="805.4987" />
+						<Hotspot X="5306.97" Y="3943.854" Z="816.3747" />
+						<Hotspot X="5272.818" Y="4151.819" Z="930.1882" />
+					</HuntingGrounds>
+
+					<PursuitList>
+						<PursueUnit Id="95265" PursueWhen="!IsObjectiveComplete(1, 39429)" />
+						<PursueUnit Id="95266" PursueWhen="!IsObjectiveComplete(1, 39429)" />
+						<PursueUnit Id="94688" PursueWhen="!IsObjectiveComplete(2, 39429)" />
+					</PursuitList>
+				</CustomBehavior>
+			</While>
+
+			<TurnIn QuestName="The Three" QuestId="39321" TurnInName="Lasan Skyhorn" TurnInId="95410" X="5238.109" Y="4209.419" Z="943.1345" />
+			<TurnIn QuestName="Assaulting the Haglands" QuestId="39429" TurnInName="Lasan Skyhorn" TurnInId="95410" X="5238.109" Y="4209.419" Z="943.1345" />
+
+			<PickUp QuestName="The Witchqueen" QuestId="39322" GiverName="Lasan Skyhorn" GiverId="95410" X="5238.109" Y="4209.419" Z="943.1345" />
+			<While Condition="DoQuest(39322)" >
+				<CustomBehavior File="KillUntilComplete" MobId="95153" QuestId="39322" QuestObjectiveIndex="1" X="5082.304" Y="4419.196" Z="1041.61" />
+			</While>
+			<TurnIn QuestName="The Witchqueen" QuestId="39322" TurnInName="Lasan Skyhorn" TurnInId="95410" X="5082.304" Y="4419.196" Z="1041.61" />
+
+			<PickUp QuestName="The Bloodtotem Tribe" QuestId="38912" GiverName="Lasan Skyhorn" GiverId="95410" X="5117.721" Y="4458.951" Z="1022.652" />
+			<While Condition="DoQuest(38912)" >
+				<If Condition="Unit(98777) != null" >
+					<CustomBehavior File="InteractWith" MobId="98777" X="5121.456" Y="4461.573" Z="1021.617" />
+					<!-- NOTE: <AddTermination> : This wait timer can be terminatable once the player gets off the "vehicle" -->
+					<CustomBehavior File="WaitTimer" WaitTime="40000" />
+				</If>
+				<CustomBehavior File="InteractWith" MobId="98773" GossipOptions="1" QuestId="38912" QuestObjectiveIndex="2" X="4192.526" Y="4406.968" Z="659.2631" />
+				<MoveTo QuestId="38912" QuestObjectiveIndex="2" X="4085.01" Y="4385.548" Z="670.6269" />
+				<CustomBehavior File="WaitTimer" QuestId="38912" QuestObjectiveIndex="2" WaitTime="60000" />
+			</While>
+			<TurnIn QuestName="The Skies of Highmountain" QuestId="39387" TurnInName="Mayla Highmountain" TurnInId="108434" X="4083.142" Y="4385.414" Z="670.6261" />
+		<!-- END Story: Skyhorn Tribe -->
+
+		<!-- Story: The Bloodtotem Tribe -->
+			<TurnIn QuestName="The Bloodtotem Tribe" QuestId="38912" TurnInName="Oakin Ironbull" TurnInId="95256" X="5221.074" Y="4902.253" Z="711.7547" />
+
+			<PickUp QuestName="Witch of the Wood" QuestId="39372" GiverName="Oakin Ironbull" GiverId="95256" X="5221.074" Y="4902.253" Z="711.7547" />
+			<PickUp QuestName="Hags of a Feather" QuestId="39373" GiverName="Oakin Ironbull" GiverId="95256" X="5221.074" Y="4902.253" Z="711.7547" />
+
+			<PickUp QuestName="I Have a Bad Feeling About This" QuestId="39873" GiverName="Navarrogg" GiverId="97667" X="5202.087" Y="4935.929" Z="710.6815" />
+			<While Condition="DoQuest(39873)" >
+				<CustomBehavior File="InteractWith" MobId="244625" QuestId="39873" QuestObjectiveIndex="1" X="5320.737" Y="4933.171" Z="693.3184" />
+			</While>
+			<TurnIn QuestName="I Have a Bad Feeling About This" QuestId="39873" TurnInName="Navarrogg's Cage" TurnInId="243402" X="5201.837" Y="4936.044" Z="710.4338" />
+
+			<!-- NOTE: <AddAvoid> : Need to add an Avoid behavior here for the bot to stay away from a level 110 elite:
+									Name="Gornoth the Lost" Entry="103656" X="5591.57" Y="4684.78" Z="663.5714"
+				See NOTE1 for where to remove.
+			-->
+
+			<While Condition="DoQuest(39372)" >
+				<CustomBehavior File="KillUntilComplete" MobId="95311" QuestId="39372" QuestObjectiveIndex="1" X="5649.847" Y="4774.805" Z="676.5629" />
+			</While>
+
+			<While Condition="DoQuest(39373)" >
+				<CustomBehavior File="KillUntilComplete" MobIds="95310" QuestId="39373" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="5629.729" Y="4753.325" Z="674.7219" />
+						<Hotspot X="5522.022" Y="4762.646" Z="659.0364" />
+						<Hotspot X="5574.595" Y="4696.752" Z="660.9986" />
+						<Hotspot X="5386.854" Y="4789.693" Z="658.2443" />
+						<Hotspot X="5671.902" Y="4701.65" Z="676.8252" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<!-- NOTE: <BonusObjective> : <PickUp QuestName="Witches of the Sky" QuestId="39371" GiverName="Witchwood Hag" GiverId="95310" XXXX /> -->
+
+			<TurnIn QuestName="Witch of the Wood" QuestId="39372" TurnInName="Oakin Ironbull" TurnInId="95256" X="5221.074" Y="4902.253" Z="711.7546" />
+			<TurnIn QuestName="Hags of a Feather" QuestId="39373" TurnInName="Oakin Ironbull" TurnInId="95256" X="5221.074" Y="4902.253" Z="711.7546" />
+
+			<PickUp QuestName="An Audience with Torok" QuestId="39374" GiverName="Oakin Ironbull" GiverId="95256" X="5221.074" Y="4902.253" Z="711.7546" />
+			<While Condition="DoQuest(39374)" >
+				<MoveTo QuestId="39374" X="5332.99" Y="4919.495" Z="691.7177" />
+			</While>
+			<TurnIn QuestName="An Audience with Torok" QuestId="39374" TurnInName="Oakin Ironbull" TurnInId="95256" X="5335.489" Y="4919.663" Z="691.8871" />
+
+			<PickUp QuestName="Cave of the Blood Trial" QuestId="39455" GiverName="Oakin Ironbull" GiverId="95256" X="5335.489" Y="4919.663" Z="691.8871" />
+			<While Condition="DoQuest(39455)" >
+				<MoveTo X="5394.246" Y="5034.519" Z="651.3091" /> <!-- So the bot doesn't get confused while trying to enter the cave, can remove if needed. -->
+				<MoveTo X="5310.635" Y="4994.739" Z="627.2947" />
+				<CustomBehavior File="InteractWith" MobId="244564" QuestId="39455" QuestObjectiveIndex="1" X="5307.563" Y="4997.418" Z="627.4985" /> <!-- Both MoveTos above can be removed if there's no navigation issues. -->
+				<CustomBehavior File="KillUntilComplete" MobId="97544" QuestId="39455" QuestObjectiveIndex="2" X="5309.822" Y="4978.952" Z="626.4682" />
+			</While>
+			<TurnIn QuestName="Cave of the Blood Trial" QuestId="39455" TurnInName="Torok Bloodtotem" TurnInId="93836" X="5293.963" Y="4965.946" Z="626.6917" />
+
+			<PickUp QuestName="Rite of Blood" QuestId="39860" GiverName="Torok Bloodtotem" GiverId="93836" X="5293.963" Y="4965.946" Z="626.6917" />
+			<While Condition="DoQuest(39860)" >
+				<MoveTo QuestId="39860" QuestObjectiveIndex="1" X="5110.94" Y="5071.741" Z="627.2762" />
+				<CustomBehavior File="KillUntilComplete" MobId="97418" QuestId="39860" QuestObjectiveIndex="2" X="5111.842" Y="5064.063" Z="627.4364" />
+			</While>
+			<TurnIn QuestName="Rite of Blood" QuestId="39860" TurnInName="Navarrogg" TurnInId="95259" X="5108.871" Y="5060.603" Z="627.3237" /> <!-- WoWAPI returns several Ids for this NPC.  May need to check it. This applies for all occurences of this MobId -->
+
+			<PickUp QuestName="Rock Troll in a Hard Place" QuestId="39381" GiverName="Navarrogg" GiverId="96286" X="5108.871" Y="5060.603" Z="627.3237" />
+			<While Condition="DoQuest(39381)" >
+				<CustomBehavior File="InteractWith" MobId="95259" GossipOptions="1" QuestId="39381" QuestObjectiveIndex="1" X="5111.675" Y="5058.204" Z="627.42" />
+				<CustomBehavior File="WaitTimer" WaitTime="3500" />
+			</While>
+			<TurnIn QuestName="Rock Troll in a Hard Place" QuestId="39381" TurnInName="Navarrogg" TurnInId="95421" X="5429.645" Y="4492.733" Z="641.6826" />
+
+			<PickUp QuestName="Pet Rocks" QuestId="39391" GiverName="Navarrogg" GiverId="95421" X="5429.645" Y="4492.733" Z="641.6826" />
+			<PickUp QuestName="Stonedark Crystal" QuestId="39425" GiverName="Navarrogg" GiverId="95421" X="5429.645" Y="4492.733" Z="641.6826" />
+			<PickUp QuestName="They Will Pay With Blood" QuestId="39588" GiverName="Navarrogg" GiverId="95421" X="5429.645" Y="4492.733" Z="641.6826" />
+
+			<While Condition="DoQuest(39391)" >
+				<CustomBehavior File="InteractWith" MobId="95276" QuestId="39391" QuestObjectiveIndex="2" X="5376.994" Y="4610.713" Z="637.8018" />
+				<CustomBehavior File="InteractWith" MobId="95273" QuestId="39391" QuestObjectiveIndex="1" X="5624.228" Y="4612.62" Z="649.4909" />
+				<CustomBehavior File="InteractWith" MobId="95272" QuestId="39391" QuestObjectiveIndex="3" X="5662.877" Y="4485.671" Z="650.6655" />
+			</While>
+
+			<While Condition="DoQuest(39588, 39425)" >
+				<CustomBehavior File="KillUntilComplete" MobIds="95290, 104323, 104328" TerminateWhen="!DoQuest(39588, 39425)" >
+					<HuntingGrounds>
+						<Hotspot X="5594.787" Y="4460.441" Z="647.7125" />
+						<Hotspot X="5442.837" Y="4598.405" Z="633.9626" />
+						<Hotspot X="5409.614" Y="4641.926" Z="632.9194" />
+						<Hotspot X="5393.513" Y="4638.206" Z="630.945" />
+						<Hotspot X="5704.298" Y="4547.971" Z="652.5223" />
+						<Hotspot X="5640.969" Y="4410.331" Z="663.6159" />
+						<Hotspot X="5756.513" Y="4241.004" Z="656.9818" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<TurnIn QuestName="Pet Rocks" QuestId="39391" TurnInName="Navarrogg" TurnInId="95421" X="5429.645" Y="4492.733" Z="641.6829" />
+			<TurnIn QuestName="Stonedark Crystal" QuestId="39425" TurnInName="Navarrogg" TurnInId="95421" X="5429.645" Y="4492.733" Z="641.6829" />
+			<TurnIn QuestName="They Will Pay With Blood" QuestId="39588" TurnInName="Navarrogg" TurnInId="95421" X="5429.645" Y="4492.733" Z="641.6829" />
+
+			<PickUp QuestName="Blood Debt" QuestId="39426" GiverName="Navarrogg" GiverId="95421" X="5429.645" Y="4492.733" Z="641.6829" />
+			<While Condition="DoQuest(39426)" >
+				<CustomBehavior File="KillUntilComplete" MobId="95707" QuestId="39426" QuestObjectiveIndex="1" X="5849.952" Y="4188.59" Z="716.9656" />
+			</While>
+			<TurnIn QuestName="Blood Debt" QuestId="39426" TurnInName="Navarrogg" TurnInId="95392" X="5821.911" Y="4201.273" Z="709.0323" />
+			<!-- NOTE: <BonusObjective> : <PickUp QuestName="Vengeance for the Stonedark" QuestId="42373" GiverName="Feltotem Warmonger" GiverId="95290" XXXX /> -->		
+		<!-- END Story: The Bloodtotem Tribe -->
+
+			<PickUp QuestName="Step into the Dark" QuestId="40229" GiverName="EMPTY" GiverId="95392" X="5821.911" Y="4201.273" Z="709.0323" />
+			<TurnIn QuestName="Step into the Dark" QuestId="40229" TurnInName="Navarrogg" TurnInId="95392" X="5870.035" Y="4577.615" Z="629.2573" />
+
+			<PickUp QuestName="Unexpected Allies" QuestId="39456" GiverName="Navarrogg" GiverId="95392" X="5870.035" Y="4577.615" Z="629.2573" />
+			<!-- NOTE: <QuestOpportunity> : Can add "You Lift, Brul?" quest here. -->
+			<While Condition="DoQuest(39456)" >
+				<CustomBehavior File="InteractWith" MobId="99619" GossipOptions="1" QuestId="39456" QuestObjectiveIndex="1" X="4123.887" Y="4475.311" Z="660.1113" />
+				<MoveTo QuestId="39456" QuestObjectiveIndex="2" X="4084.514" Y="4386.992" Z="670.6257" />
+				<CustomBehavior File="WaitTimer" QuestId="39456" QuestObjectiveIndex="2" WaitTime="23000" />
+			</While>
+			<TurnIn QuestName="Unexpected Allies" QuestId="39456" TurnInName="Mayla Highmountain" TurnInId="108434" X="4083.142" Y="4385.414" Z="670.6258" />
+
+			<PickUp QuestName="Battle of Snowblind Mesa" QuestId="38915" GiverName="Mayla Highmountain" GiverId="108434" X="4083.142" Y="4385.414" Z="670.6258" /> <!-- Breadcrumb for Battle of Snowblind Mesa -->
+			<PickUp QuestName="An Offering of Ammo" QuestId="40217" GiverName="Shale Greyfeather" GiverId="99905" X="4106.347" Y="4405.938" Z="768.1934" /> <!-- Breadcrumb for Nesignwary quests. -->
+
+		<!-- Story: Battle of Snowblind Mesa -->
+			<TurnIn QuestName="Battle of Snowblind Mesa" QuestId="38915" TurnInName="Mayla Highmountain" TurnInId="93846" X="3944.177" Y="3922.587" Z="905.1755" />
+
+			<PickUp QuestName="Battle Worms" QuestId="39776" GiverName="Mayla Highmountain" GiverId="93846" X="3944.177" Y="3922.587" Z="905.1755" />
+			<PickUp QuestName="Buy Us Time" QuestId="39777" GiverName="Jale Rivermane" GiverId="97344" X="3946.407" Y="3916.945" Z="905.1759" />
+			<PickUp QuestName="The Siegebrul" QuestId="39862" GiverName="Navarrogg" GiverId="97301" X="3941.136" Y="3915.171" Z="905.1761" />
+
+			<While Condition="DoQuest(39776, 39862)" >
+				<!-- NOTE: <AddFunctionality> : Bot needs to push ExtraActionButton1 when engaging the mobs for quest 39776.  Only push once per engagement. 
+												Button only appears when you get close to the mob.
+				-->
+				<CustomBehavior File="KillUntilComplete" MobId="99217" QuestId="39776" QuestObjectiveIndex="1" X="4206.714" Y="3944.478" Z="915.8086" />
+				<CustomBehavior File="KillUntilComplete" MobId="99214" QuestId="39862" QuestObjectiveIndex="1" X="4306.117" Y="3985.762" Z="950.802" />
+				<CustomBehavior File="KillUntilComplete" MobId="97013" QuestId="39776" QuestObjectiveIndex="3" X="4282.72" Y="3877.282" Z="941.5201" />
+				<CustomBehavior File="KillUntilComplete" MobId="99216" QuestId="39776" QuestObjectiveIndex="2" X="4184.425" Y="3827.324" Z="912.4977" />
+			</While>
+
+			<While Condition="DoQuest(39777)" >
+				<CustomBehavior File="KillUntilComplete" MobIdS="96690, 96691" QuestId="39777" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="4144.368" Y="3833.892" Z="913.0787" />
+						<Hotspot X="4125.081" Y="3914.817" Z="901.1848" />
+						<Hotspot X="4016.092" Y="3917.235" Z="903.1" />
+						<Hotspot X="4029.489" Y="3951.152" Z="890.1929" />
+						<Hotspot X="4133.103" Y="3977.3" Z="888.8749" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<TurnIn QuestName="The Siegebrul" QuestId="39862" TurnInName="Navarrogg" TurnInId="97301" X="3941.136" Y="3915.171" Z="905.176" />
+			<TurnIn QuestName="Buy Us Time" QuestId="39777" TurnInName="Jale Rivermane" TurnInId="97344" X="3946.407" Y="3916.945" Z="905.176" />
+			<TurnIn QuestName="Battle Worms" QuestId="39776" TurnInName="Mayla Highmountain" TurnInId="93846" X="3944.177" Y="3922.587" Z="905.1754" />
+
+			<PickUp QuestName="Evacuate Snowmane" QuestId="42088" GiverName="Mayla Highmountain" GiverId="93846" X="3944.177" Y="3922.587" Z="905.1754" />
+			<While Condition="DoQuest(42088)" >
+				<CustomBehavior File="InteractWith" MobId="106153" GossipOptions="1" QuestId="42088" QuestObjectiveIndex="2" X="3799.688" Y="3919.536" Z="915.9227" />
+				<CustomBehavior File="InteractWith" MobId="106115" GossipOptions="1" QuestId="42088" QuestObjectiveIndex="1" X="3821.014" Y="4012.692" Z="898.3751" />
+				<CustomBehavior File="InteractWith" MobId="106191" GossipOptions="1" QuestId="42088" QuestObjectiveIndex="3" X="3687.918" Y="3918.762" Z="988.7416" />
+			</While>
+			<TurnIn QuestName="Evacuate Snowmane" QuestId="42088" TurnInName="Mayla Highmountain" TurnInId="93846" X="3856.439" Y="3992.633" Z="896.3563" />
+
+			<PickUp QuestName="Highmountain Stands" QuestId="42512" GiverName="Mayla Highmountain" GiverId="93846" X="3856.439" Y="3992.633" Z="896.3563" />
+			<While Condition="DoQuest(42512)" >
+				<MoveTo QuestId="42512" QuestObjectiveIndex="1" X="3870.962" Y="3886.591" Z="901.2258" />
+				<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+			</While>
+			<TurnIn QuestName="Highmountain Stands" QuestId="42512" TurnInName="Lasan Skyhorn" TurnInId="97407" X="3926.542" Y="3924.102" Z="905.2615" />
+
+			<PickUp QuestName="Justice Rains from Above" QuestId="40594" GiverName="Lasan Skyhorn" GiverId="97407" X="3926.542" Y="3924.102" Z="905.2615" />
+			<While Condition="DoQuest(40594)" >
+
+				<!-- NOTE: <ConditionalCheck> : Make sure InVehicle returns true for this mob. -->
+				<If Condition="!Me.InVehicle" >
+					<CustomBehavior File="InteractWith" MobId="100712" QuestId="40594" X="3931.498" Y="3929.8" Z="905.2336" />
+				</If>
+				<!-- NOTE: <QBUsage> : Make sure this behavior is setup properly. -->
+				<CustomBehavior File="Vehicles\NoControlVehicle" QuestId="40594" TargetId1="97217" TargetId2="97235" AttackButton="1" OftenToUse="2000" VehicleId="100711" MaxRange="100" />
+			</While>
+			<TurnIn QuestName="Justice Rains from Above" QuestId="40594" TurnInName="Lasan Skyhorn" TurnInId="97407" X="3721.273" Y="3931.289" Z="915.0441" />
+
+			<PickUp QuestName="The Underking" QuestId="39780" GiverName="Lasan Skyhorn" GiverId="97407" X="3721.273" Y="3931.289" Z="915.0441" />
+			<While Condition="DoQuest(39780)" >
+				<CustomBehavior File="InteractWith" MobId="97352" QuestId="39780" QuestObjectiveIndex="1" X="3654.333" Y="3928.675" Z="906.7861" />
+				<CustomBehavior File="KillUntilComplete" MobId="97266" QuestId="39780" QuestObjectiveIndex="2" X="3644.132" Y="3928.645" Z="906.3824" />
+			</While>
+			<TurnIn QuestName="The Underking" QuestId="39780" TurnInName="Mayla Highmountain" TurnInId="93846" X="3662.013" Y="3928.4" Z="906.681" />
+		<!-- END Story: Battle of Snowblind Mesa -->
+
+			<!--
+				<PickUp QuestName="Neltharion's Lair" QuestId="39781" GiverName="Mayla Highmountain" GiverId="93846" X="3662.013" Y="3928.4" Z="906.681" />
+				<While Condition="DoQuest(39781)" >
+					<CustomBehavior File="InteractWith" MobId="97304" GossipOptions="1" QuestId="39781" QuestObjectiveIndex="X" X="3730.497" Y="4174.226" Z="891.5688" />
+				</While>
+				Dungeon quest...
+			-->
+
+		<!-- Highmountain is done story-wise from this point.  But there's some more quests we're going to do. -->
+
+		
 
 	</QuestOrder>
 </HBProfile>
