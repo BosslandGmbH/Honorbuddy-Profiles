@@ -3870,10 +3870,24 @@
 			</If>
 			<PickUp QuestName="Murder Was The Case That They Gave Me" QuestId="26209"
 					GiverName="Lieutenant Horatio Laine" GiverId="42308" />
-			<CustomBehavior File="InteractWith" QuestId="26209"
-							MobId="42386" MobId2="42384" MobId3="42391" MobId4="42383" MobState="Alive"
-							NumOfTimes="1000" InteractByGossipOptions="1" CollectionDistance="100"
-							X="-9819.229" Y="974.2356" Z="29.13065" />
+			<If Condition="Me.Copper &gt; 30" >
+				<While Condition="!IsQuestCompleted(26209)">
+					<CustomBehavior File="InteractWith"
+						MobId="42386" MobId2="42384" MobId3="42391" MobId4="42383" MobState="Alive"
+						NumOfTimes="1" CollectionDistance="100"
+						X="-9819.229" Y="974.2356" Z="29.13065" />
+					<CustomBehavior File="RunMacro" Macro="/click GossipTitleButton2" />
+					<CustomBehavior File="WaitTimer" WaitTime="500" />
+					<CustomBehavior File="Message" Text="Confirming spending 2 copper" LogColor="CornflowerBlue" />
+					<CustomBehavior File="RunMacro" Macro="/click StaticPopup1Button1" />
+				</While>
+			<Else>
+				<CustomBehavior File="InteractWith" QuestId="26209"
+					MobId="42386" MobId2="42384" MobId3="42391" MobId4="42383" MobState="Alive"
+					NumOfTimes="1000" InteractByGossipOptions="1" CollectionDistance="100"
+					X="-9819.229" Y="974.2356" Z="29.13065" />
+			</Else>
+			</If>
 			<TurnIn QuestName="Murder Was The Case That They Gave Me" QuestId="26209"
 					TurnInName="Lieutenant Horatio Laine" TurnInId="42308" />
 			<PickUp QuestName="Hot On the Trail: The Riverpaw Clan" QuestId="26213"
