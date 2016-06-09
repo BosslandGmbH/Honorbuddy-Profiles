@@ -48,6 +48,44 @@
 	</InitOrder>
 
 	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
 		<!-- Loc: Dalaran -->
 			<PickUp QuestName="Call of the Illidari" QuestId="39261" GiverName="Kor'vas Bloodthorn" GiverId="99343" X="-855.8668" Y="4595.054" Z="748.8666" />
 			<!-- NOTE: <NPCConflict> : In this area, Kayn Sunfury may not be availible if the player picks Altruis the Sufferer during the quest 'A New Direction(40373)' -->

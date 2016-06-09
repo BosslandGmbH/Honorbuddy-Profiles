@@ -315,7 +315,7 @@
 
 			<PickUp QuestName="Dargrul and the Hammer" QuestId="39027" GiverName="Warbrave Oro" GiverId="97553" X="3482.253" Y="4601.077" Z="681.6348" />
 			<While Condition="DoQuest(39027)" >
-        <MoveTo X="3464.436" Y="4511.601" Z="679.8839" />
+    		    <MoveTo X="3464.436" Y="4511.601" Z="679.8839" />
 				<CustomBehavior File="WaitTimer" WaitTime="10000" />
 				<!-- NOTE: <TechnicalCheck> : Something weird happens here.  When the player is caught in the grasp, all mobs around the player become 5500+ yards away from the player, this is why this IW has a range of 6000.
 											May also remove the WaitForNpcs="false" on the IW, and instead, have the IW terminate on a detection. -->
@@ -443,7 +443,9 @@
 					<UseMount Value="false" />
 					<DisableBehavior Name="Combat" /> <!-- Player will die if there's a speed buff -->
 					<CustomBehavior File="MyCTM" X="3612.067" Y="4398.523" Z="661.208" />
-					<UseMount Value="null" />
+					<!-- NOTE: <AddSupport> : This needs to default to player setting <UseMount Value="null" />
+											Currently Null is causing errors on profile load.
+					-->
 					<EnableBehavior Name="Combat" />
 				</If>
 			</While>
@@ -498,7 +500,7 @@
 			<PickUp QuestName="Nursing the Wounds" QuestId="39318" GiverName="Lasan Skyhorn" GiverId="93841" X="4855.699" Y="3979.478" Z="832.155" />
 			<While Condition="DoQuest(39318)" >
 				<CustomBehavior File="InteractWith" MobId="95403" GossipOptions="1" QuestId="39318" QuestObjectiveIndex="1" X="4688.664" Y="3891.091" Z="830.9029" />
-				<While Condition="!IsQuestCompleted(2, 39318)" >
+				<While Condition="!IsObjectiveComplete(2, 39318)" >
 					<!-- NOTE: <Improve> : Improve this.  Can make it a lot better. -->
 					<MoveTo QuestId="39318" X="4676.615" Y="3877.472" Z="830.101" />
 					<CustomBehavior File="RunCode" QuestId="39318" ><![CDATA[
@@ -509,7 +511,7 @@
 								await Coroutine.Sleep(750);
 								Lua.DoString("ExtraActionButton1:Click();");
 								await Coroutine.Sleep(750);
-								Spellmanager.ClickRemoteLocation(firePoi.Location);
+								SpellManager.ClickRemoteLocation(firePoi.Location);
 								await Coroutine.Sleep(1000);
 							}
 						]]>
@@ -524,7 +526,7 @@
 								await Coroutine.Sleep(750);
 								Lua.DoString("ExtraActionButton1:Click();");
 								await Coroutine.Sleep(750);
-								Spellmanager.ClickRemoteLocation(firePoi.Location);
+								SpellManager.ClickRemoteLocation(firePoi.Location);
 								await Coroutine.Sleep(1000);
 							}
 						]]>
@@ -539,7 +541,7 @@
 								await Coroutine.Sleep(750);
 								Lua.DoString("ExtraActionButton1:Click();");
 								await Coroutine.Sleep(750);
-								Spellmanager.ClickRemoteLocation(firePoi.Location);
+								SpellManager.ClickRemoteLocation(firePoi.Location);
 								await Coroutine.Sleep(1000);
 							}
 						]]>
