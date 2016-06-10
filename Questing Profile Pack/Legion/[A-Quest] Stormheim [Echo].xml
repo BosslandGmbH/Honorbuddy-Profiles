@@ -1,0 +1,136 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[A-Quest] Stormheim [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="sssss" Entry="xxxxx" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Zone Introductory Quests -->
+			<TurnIn QuestName="Stormheim" QuestId="39735" TurnInName="Sky Admiral Rogers" TurnInId="96644" X="-840.5087" Y="4633.81" Z="749.4136" />
+
+			<PickUp QuestName="A Royal Summons" QuestId="38035" GiverName="Sky Admiral Rogers" GiverId="96644" X="-840.5087" Y="4633.81" Z="749.4136" />
+			<While Condition="DoQuest(38035)" >
+				<CustomBehavior File="UseItem" ItemId="128687" QuestId="38035" QuestObjectiveIndex="1" />
+				<CustomBehavior File="InteractWith" MobId="244567" QuestId="38035" QuestObjectiveIndex="2" X="-830.9566" Y="4655.491" Z="749.6113" />
+			</While>
+			<TurnIn QuestName="A Royal Summons" QuestId="38035" TurnInName="Sky Admiral Rogers" TurnInId="96644" X="-8491.159" Y="1394.033" Z="196.3758" />
+
+			<PickUp QuestName="Making the Rounds" QuestId="38206" GiverName="Sky Admiral Rogers" GiverId="96644" X="-8491.159" Y="1394.033" Z="196.3758" />
+			<While Condition="DoQuest(38206)" >
+				<CustomBehavior File="InteractWith" MobId="110898" QuestId="38206" QuestObjectiveIndex="1" X="-8534.451" Y="1400.251" Z="198.6206" />
+				<MoveTo QuestId="38206" QuestObjectiveIndex="2" X="-8548.114" Y="1399.016" Z="193.6293" />
+				<CustomBehavior File="Misc\RunLua" QuestId="38206" QuestObjectiveIndex="2" Lua="ExtraActionButton1:Click();" />
+				<MoveTo QuestId="38206" QuestObjectiveIndex="3" X="-8584.947" Y="1399.771" Z="196.4226" />
+				<CustomBehavior File="WaitTimer" QuestId="38206" QuestObjectiveIndex="3" WaitTime="30000" />
+			</While>
+			<TurnIn QuestName="Making the Rounds" QuestId="38206" TurnInName="Genn Greymane" TurnInId="96663" X="-8587.822" Y="1398.612" Z="196.5768" />
+
+			<PickUp QuestName="Greymane's Gambit" QuestId="39800" GiverName="EMPTY" GiverId="96663" X="-8587.822" Y="1398.612" Z="196.5768" />
+			<While Condition="DoQuest(39800)" >
+				<While Condition="!IsScenarioCriteriaComplete(1)" >
+					<CustomBehavior File="InteractWith" MobId="92957" X="5045.783" Y="3137.939" Z="369.9213" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+					<CustomBehavior File="Vehicles\NoControlVehicle" TargetId1="XXXX" TargetId2="XXXX" AttackButton="1" OftenToUse="2000" VehicleId="92957" MaxRange="XXX" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+				</While>
+
+			</While>
+		<!-- END Zone Introductory Quests -->
+
+
+
+
+		<!-- Load class-based profile to transition to a new questing zone. -->
+
+
+	</QuestOrder>
+</HBProfile>
