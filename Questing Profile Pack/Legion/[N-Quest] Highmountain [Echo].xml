@@ -39,6 +39,7 @@
 		<Vendor Name="Bar'tu Silverstream" Type="Repair" Entry="97869" X="5114.556" Y="4973.081" Z="752.5872" />
 		<Vendor Name="Shale Greyfeather" Type="Repair" Entry="99905" X="4106.347" Y="4405.938" Z="768.1934" /> <!-- Thunder Totem -->
 		<Vendor Name="Cale Fireheart" Type="Repair" Entry="97876" X="3935.39" Y="3899.267" Z="905.3173" />
+		<Vendor Name="Crafty Palu" Type="Repair" Entry="108537" X="6470.426" Y="4746.604" Z="12.73519" />
 		<Vendor Name="Darbrul" Type="Repair" Entry="99205" X="5867.962" Y="4547.085" Z="614.298" UseWhen="IsQuestCompleted(40229)" />
 	</Vendors>
 
@@ -810,7 +811,227 @@
 
 		<!-- Highmountain is done story-wise from this point.  But there's some more quests we're going to do. -->
 
-		
+		<!-- SideQuests: Nesingwary's Retreat -->
+			<TurnIn QuestName="An Offering of Ammo" QuestId="40217" TurnInName="Hemet Nesingwary" TurnInId="94409" X="4500.406" Y="4858.703" Z="661.8898" />
+
+			<PickUp QuestName="Amateur Hour" QuestId="40170" GiverName="Hemet Nesingwary" GiverId="94409" X="4500.406" Y="4858.703" Z="661.8898" />
+			<PickUp QuestName="Note-Eating Goats" QuestId="39859" GiverName="Addie Fizzlebog" GiverId="94434" X="4501.019" Y="4866.559" Z="662.0485" />
+
+			<While Condition="DoQuest(40170, 39859)" >
+				<CustomBehavior File="InteractWith" TerminateWhen="!DoQuest(40170, 39859)" >
+					<HuntingGrounds>
+						<Hotspot X="4473.76" Y="4797.701" Z="658.9086" />
+						<Hotspot X="4411.5" Y="4773.652" Z="654.4877" /> 
+						<Hotspot X="4551.579" Y="4794.254" Z="669.1888" />
+						<Hotspot X="4458.153" Y="4708.652" Z="649.8495" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueUnit Id="96591" PursueWhen="!IsObjectiveComplete(1, 40170)" />
+						<PursueUnit Id="98804" PursueWhen="!IsObjectiveComplete(1, 40170)" />
+						<PursueUnit Id="98808" ConvertWhen="!IsObjectiveComplete(1, 39859)" PursueWhen="!IsObjectiveComplete(1, 39859)" ConvertBy="Killing" />  
+					</PursuitList>
+				</CustomBehavior>
+			</While>
+
+			<TurnIn QuestName="Amateur Hour" QuestId="40170" TurnInName="Hemet Nesingwary" TurnInId="94409" X="4500.406" Y="4858.703" Z="661.8903" />
+			<TurnIn QuestName="Note-Eating Goats" QuestId="39859" TurnInName="Hemet Nesingwary" TurnInId="94409" X="4500.406" Y="4858.703" Z="661.8903" />
+
+			<PickUp QuestName="A Hunter at Heart" QuestId="40216" GiverName="Hemet Nesingwary" GiverId="94409" X="4500.406" Y="4858.703" Z="661.8903" />
+			<PickUp QuestName="Lion Stalkin'" QuestId="39123" GiverName="Hemet Nesingwary" GiverId="94409" X="4500.406" Y="4858.703" Z="661.8903" />
+			<PickUp QuestName="Moose Shootin'" QuestId="39124" GiverName="Hemet Nesingwary" GiverId="94409" X="4500.406" Y="4858.703" Z="661.8903" />
+			<PickUp QuestName="Bear Huntin'" QuestId="39392" GiverName="Hemet Nesingwary" GiverId="94409" X="4500.406" Y="4858.703" Z="661.8903" />
+
+			<While Condition="DoQuest(40216, 39123, 39124, 39392)" >
+				<!-- NOTE: <AddFailsafe> : Can detect if Addie is nearby by checking the HasAura.  May need to use this interactwith if she disapears. -->
+				<CustomBehavior File="InteractWith" MobId="94434" GossipOptions="1" QuestId="40216" QuestObjectiveIndex="1" X="4501.019" Y="4866.559" Z="662.0496" />
+
+				<CustomBehavior File="KillUntilComplete" MobId="94151" QuestId="39124" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="4425.542" Y="4668.432" Z="651.3508" />
+						<Hotspot X="4572.676" Y="4664.5" Z="670.3569" />
+						<Hotspot X="4545.864" Y="4581.248" Z="678.6174" />
+						<Hotspot X="4600.127" Y="4518.751" Z="683.9646" />
+						<Hotspot X="4722.389" Y="4568.881" Z="685.6401" />
+					</HuntingGrounds>
+				</CustomBehavior>
+
+				<CustomBehavior File="KillUntilComplete" MobId="94149" QuestId="39123" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="4586.22" Y="4654.041" Z="671.7511" />
+						<Hotspot X="4657.758" Y="4702.048" Z="680.5712" />
+						<Hotspot X="4577.381" Y="4764.453" Z="675.0428" />
+						<Hotspot X="4635.454" Y="4900.287" Z="700.4786" />
+						<Hotspot X="4688.603" Y="4971.055" Z="728.9846" />
+					</HuntingGrounds>
+				</CustomBehavior>
+
+				<CustomBehavior File="KillUntilComplete" MobId="96146, 99571" QuestId="39392" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="4818.637" Y="5093.706" Z="773.2156" />
+						<Hotspot X="4933.624" Y="5091.12" Z="783.2698" />
+						<Hotspot X="4954.339" Y="5020.648" Z="785.8166" />
+						<Hotspot X="5019.267" Y="4983.726" Z="777.357" />
+					</HuntingGrounds>
+				</CustomBehavior>
+
+
+				<CustomBehavior File="KillUntilComplete" MobId="94149" QuestId="40216" >
+					<HuntingGrounds>
+						<Hotspot X="4586.22" Y="4654.041" Z="671.7511" />
+						<Hotspot X="4657.758" Y="4702.048" Z="680.5712" />
+						<Hotspot X="4577.381" Y="4764.453" Z="675.0428" />
+						<Hotspot X="4635.454" Y="4900.287" Z="700.4786" />
+						<Hotspot X="4688.603" Y="4971.055" Z="728.9846" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<TurnIn QuestName="A Hunter at Heart" QuestId="40216" TurnInName="Hemet Nesingwary" TurnInId="94409" X="4500.406" Y="4858.703" Z="661.8901" />
+			<TurnIn QuestName="Lion Stalkin'" QuestId="39123" TurnInName="Hemet Nesingwary" TurnInId="94409" X="4500.406" Y="4858.703" Z="661.8901" />
+			<TurnIn QuestName="Moose Shootin'" QuestId="39124" TurnInName="Hemet Nesingwary" TurnInId="94409" X="4500.406" Y="4858.703" Z="661.8901" />
+			<TurnIn QuestName="Bear Huntin'" QuestId="39392" TurnInName="Hemet Nesingwary" TurnInId="94409" X="4500.406" Y="4858.703" Z="661.8901" />
+
+			<PickUp QuestName="Scout It Out" QuestId="40228" GiverName="Hemet Nesingwary" GiverId="94409" X="4500.406" Y="4858.703" Z="661.8901" />
+			<While Condition="DoQuest(40228)" >
+				<MoveTo X="4849.4" Y="4613.782" Z="761.7373" />
+				<CustomBehavior	File="UseItem" ItemId="130074" />
+			</While>
+			<TurnIn QuestName="Scout It Out" QuestId="40228" TurnInName="Hemet Nesingwary" TurnInId="94409" X="4500.406" Y="4858.703" Z="661.8901" />
+
+
+			<PickUp QuestName="Procuring a Prototype" QuestId="39386" GiverName="Hemet Nesingwary" GiverId="94409" X="4500.406" Y="4858.703" Z="661.8901" /> <!-- SideQuests: Shipwreck Cove breadcrumb -->
+			<PickUp QuestName="That Guy in the Costume" QuestId="40244" GiverName="Hemet Nesingwary" GiverId="94409" X="4500.406" Y="4858.703" Z="661.8901" /> <!-- SideQuests: Icepine Point breadcrumb -->
+		<!-- END SideQuests: Nesingwary's Retreat -->
+
+		<!-- SideQuests: Shipwreck Cove -->
+			<While Condition="DoQuest(40244)" >
+				<CustomBehavior File="InteractWith" MobId="94973" GossipOptions="1" QuestId="40244" QuestObjectiveIndex="1" X="4479.038" Y="4845.356" Z="662.822" />
+			</While>
+			<TurnIn QuestName="That Guy in the Costume" QuestId="40244" TurnInName="King Mrgl-Mrgl" TurnInId="98067" X="6447.201" Y="4667.913" Z="13.13865" />
+
+			<PickUp QuestName="Nature vs. Nurture" QuestId="40045" GiverName="King Mrgl-Mrgl" GiverId="98067" X="6447.201" Y="4667.913" Z="13.13865" />
+			<PickUp QuestName="I'll Huff, I'll Puff..." QuestId="40047" GiverName="King Mrgl-Mrgl" GiverId="98067" X="6447.201" Y="4667.913" Z="13.13865" />
+			<PickUp QuestName="Slime Time" QuestId="40049" GiverName="King Mrgl-Mrgl" GiverId="98067" X="6447.201" Y="4667.913" Z="13.13865" />
+
+			<While Condition="DoQuest(40045)" >
+				<CustomBehavior File="InteractWith" MobIds="98046" NumOfTimes="10" QuestId="40045" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="6558.298" Y="4579.138" Z="0.3649234" />
+						<Hotspot X="6606.302" Y="4532.553" Z="2.193296" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<While Condition="DoQuest(40049)" >
+				<CustomBehavior File="InteractWith" MobIds="99173" GossipOptions="1" NumOfTimes="6" MinRange="1" QuestId="40049" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="6601.702" Y="4506.358" Z="-0.05986659"/>
+						<Hotspot X="6542.439" Y="4527.12" Z="0.07956004" />
+						<Hotspot X="6534.744" Y="4619.489" Z="-0.2430591" />
+						<Hotspot X="6606.11" Y="4642.431" Z="-0.3817267" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<While Condition="DoQuest(40047)" >
+				<CustomBehavior File="KillUntilComplete" MobId="98037" QuestId="40047" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="6650.078" Y="4549.668" Z="-7.480359" />
+						<Hotspot X="6722.042" Y="4568.344" Z="-3.345249" />
+						<Hotspot X="6661.362" Y="4526.528" Z="-3.831292" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<!-- NOTE: <BonusObjective> : <PickUp QuestName="Shipwreck Cove" QuestId="40050" GiverName="Pufferfish" GiverId="98037" XXXX /> -->
+
+			<TurnIn QuestName="Nature vs. Nurture" QuestId="40045" TurnInName="King Mrgl-Mrgl" TurnInId="98067" X="6447.201" Y="4667.913" Z="13.13795" />
+			<TurnIn QuestName="I'll Huff, I'll Puff..." QuestId="40047" TurnInName="King Mrgl-Mrgl" TurnInId="98067" X="6447.201" Y="4667.913" Z="13.13795" />
+			<TurnIn QuestName="Slime Time" QuestId="40049" TurnInName="King Mrgl-Mrgl" TurnInId="98067" X="6447.201" Y="4667.913" Z="13.13795" />
+
+			<PickUp QuestName="Murlocs: The Next Generation" QuestId="40102" GiverName="King Mrgl-Mrgl" GiverId="98067" X="6447.201" Y="4667.913" Z="13.13795" />
+			<PickUp QuestName="Oh, the Clawdacity!" QuestId="40230" GiverName="King Mrgl-Mrgl" GiverId="98067" X="6447.201" Y="4667.913" Z="13.13795" />
+
+			<While Condition="DoQuest(40102, 40230)" >
+				<CustomBehavior File="InteractWith" MobId="89630" QuestId="40102" QuestObjectiveIndex="1" X="6448.142" Y="4665.566" Z="13.05069" />
+				<!-- NOTE: <AddSupport> : From this point on, the player will be inside of a vehicle.
+									Button 1+4 = Attacks.
+									Button 2   = ClickRemoteLocation attack.
+									Button 3   = Invunerable + heal, can't attack while using.
+					Mobs don't auto-aggro. Only questId 39983 needs to kill NPCs
+
+					Bot must kill 10: Name="Cavemoss Clacker" Entry="98194" X="6399.344" Y="4366.635" Z="27.64305"
+										X="6383.071" Y="4342.565" Z="38.00792"
+								  1 :  Name="Clawdayshus" Entry="98809" X="6210.485" Y="4184.985" Z="70.7027"
+					Bot can kill the 10 Clackers while going to kill Clawdashus -->
+			</While>
+			<TurnIn QuestName="Murlocs: The Next Generation" QuestId="40102" TurnInName="King Mrgl-Mrgl" TurnInId="98067" X="6210.309" Y="4184.444" Z="70.66591" />
+			<TurnIn QuestName="Oh, the Clawdacity!" QuestId="40230" TurnInName="King Mrgl-Mrgl" TurnInId="98067" X="6210.309" Y="4184.444" Z="70.66591" />
+		<!-- END SideQuests: Shipwreck Cove -->
+
+		<!-- SideQuests: Icepine Point -->
+			<TurnIn QuestName="Procuring a Prototype" QuestId="39386" TurnInName="Razik Gazbolt" TurnInId="96513" X="4294.724" Y="3614.605" Z="898.6747" />
+			
+			<PickUp QuestName="Critter Scatter Shot" QuestId="39670" GiverName="Razik Gazbolt" GiverId="96513" X="4294.724" Y="3614.605" Z="898.6747" />
+			<PickUp QuestName="A True Hunter" QuestId="40000" GiverName="Lorna Stoutfoot" GiverId="97974" X="4304.073" Y="3617.26" Z="898.8616" />
+
+			<While Condition="DoQuest(39670, 40000)" >
+				<CustomBehavior File="InteractWith" NumOfTimes="12" >
+					<HuntingGrounds>
+						<Hotspot X="4165.068" Y="3644.004" Z="885.2387" />
+						<Hotspot X="4111.521" Y="3690.364" Z="879.6372" />
+						<Hotspot X="4053.116" Y="3645.582" Z="884.1232" />
+						<Hotspot X="4031.118" Y="3781.509" Z="879.7571" />
+					</HuntingGrounds>
+
+					<PursuitList>
+						<PursueUnit Id="96548" PursueWhen="!IsObjectiveComplete(1, 39670)" />
+						<PursueUnit Id="97976" ConvertWhen="!IsObjectiveComplete(1, 40000)" PursueWhen="!IsObjectiveComplete(1, 40000)" ConvertBy="Killing" />  
+					</PursuitList>
+				</CustomBehavior>
+			</While>
+
+			<TurnIn QuestName="A True Hunter" QuestId="40000" TurnInName="Lorna Stoutfoot" TurnInId="97974" X="4304.073" Y="3617.26" Z="898.8616" />
+			<TurnIn QuestName="Critter Scatter Shot" QuestId="39670" TurnInName="Razik Gazbolt" TurnInId="96513" X="4294.724" Y="3614.605" Z="898.6751" />
+
+			<PickUp QuestName="Wolf Pack Attack" QuestId="39656" GiverName="Razik Gazbolt" GiverId="96513" X="4294.724" Y="3614.605" Z="898.6751" />
+			<If Condition="DoQuest(39656)" >
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="CritterHandCannon" UseWhen="DoQuest(39656) &amp;&amp; Unit(94098, u =&gt; u.Aggro &amp;&amp; u.CurrentTarget.IsMe &amp;&amp; u.Distance &lt;= 8) != null &amp;&amp; Unit(97957, u =&gt; u.Aggro &amp;&amp; u.CurrentTarget.IsMe) != null" >
+					<CustomBehavior File="RunCode"><![CDATA[
+							var packLeader = Unit(97957, u => u.Aggro && u.CurrentTarget.IsMe);
+							if (packLeader != null) 
+							{
+								LevelBot.BehaviorFlags &= ~BehaviorFlags.Combat;
+								WoWItem handCannon = StyxWoW.Me.BagItems.Where(i => i.Entry == 128651);
+								handCannon.Use();
+								await Coroutine.Sleep(350);
+								SpellManager.ClickRemoteLocation(packLeader.Location);
+								await Coroutine.Sleep(3250);
+								LevelBot.BehaviorFlags |= BehaviorFlags.Combat;
+							}
+						]]>
+					</CustomBehavior>
+				</CustomBehavior> 
+			</If>
+			<While Condition="DoQuest(39656)" >
+				<CustomBehavior File="KillUntilComplete" MobId="97957" QuestId="39656" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="4330.51" Y="3744.639" Z="867.6182" />
+						<Hotspot X="4392.15" Y="3724.92" Z="874.9041" />
+						<Hotspot X="4414.124" Y="3753.873" Z="873.5325" />
+						<Hotspot X="4360.146" Y="3711.471" Z="870.327" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+			<If Condition="QuestDone(39656)" >
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="CritterHandCannon" Command="Remove" />
+				<TurnIn QuestName="Wolf Pack Attack" QuestId="39656" TurnInName="Razik Gazbolt" TurnInId="96513" X="4294.724" Y="3614.605" Z="898.6747" />
+				<CustomBehavior File="UseItem" ItemId="131933" />
+			</If>
+		<!-- END SideQuests: Icepine Point -->
+
+		<!-- Load class-based profile to transition to a new questing zone. -->
+
 
 	</QuestOrder>
 </HBProfile>
