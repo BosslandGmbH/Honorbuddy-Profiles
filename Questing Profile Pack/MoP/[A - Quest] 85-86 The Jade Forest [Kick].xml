@@ -1054,6 +1054,7 @@
 		<PickUp QuestName="The Fall of Ga'trul" QuestId="30070" GiverName="Sully &quot;The Pickle&quot; McLeary"
 				GiverId="54616" />
 		<Objective QuestName="The Fall of Ga'trul" QuestId="30070" Type="KillMob" MobId="66276" KillCount="1" />
+
 		<If Condition="HasQuest(30070) &amp;&amp; IsQuestCompleted(30070)" >
 			<MoveTo X="-31.60938" Y="-1443.189" Z="138.5014" />
 			<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Unit(66581) != null || Unit(54617) != null" />
@@ -1065,8 +1066,17 @@
 			</If>
 		</If>
 
-		<PickUp QuestName="Onward and Inward" QuestId="31745" GiverName="Rell Nightwind" GiverId="66581"
-				X="-31.60938" Y="-1443.189" Z="138.5014" />
+		<If Condition="!HasQuest(31745) &amp;&amp; !IsQuestCompleted(31745)" >
+			<MoveTo X="-31.60938" Y="-1443.189" Z="138.5014" />
+			<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Unit(66581) != null || Unit(54617) != null" />
+			<If Condition="Unit(66581) != null" >
+				<PickUp QuestName="Onward and Inward" QuestId="31745" GiverName="Rell Nightwind" GiverId="66581" X="-31.60938" Y="-1443.189" Z="138.5014" />
+			</If>
+			<If Condition="Unit(54617) != null" >
+				<PickUp QuestName="Onward and Inward" QuestId="31745" GiverName="Rell Nightwind" GiverId="54617" X="-31.60938" Y="-1443.189" Z="138.5014" />
+			</If>
+		</If>
+
 		<If Condition="HasQuest(31745) &amp;&amp; !IsQuestCompleted(31745)">
 			<CustomBehavior File="Vehicles\MountVehOnly" VehicleMountId="67067"
 							X="-59.82118" Y="-1446.536" Z="139.5281" />
