@@ -3606,20 +3606,14 @@
 			<PickUp QuestName="A Race Against Time" QuestId="11671" GiverName="Librarian Donathan"
 					GiverId="25262" Nav="Fly" />
 
-			<While Condition="HasQuest(11671) &amp;&amp; !IsQuestCompleted(11671)">
-				<CustomBehavior File="FlyTo" DestName="Salrand's Platform" X="3409.926" Y="6167.298" Z="79.83141" />
-				<CustomBehavior File="ForcedDismount" />
-				<MoveTo DestName="Get agro1" X="3383.029" Y="6164.223" Z="79.83228" />
-				<MoveTo DestName="Get agro2" X="3407.141" Y="6142.331" Z="79.79015" />
-				<MoveTo DestName="Get agro3" X="3396.517" Y="6176.755" Z="79.83206" />
-				<MoveTo DestName="Bust Bubble" X="3393.017" Y="6161" Z="79.83092" />
-				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:34897&quot;)" />
-				<CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for Salrand {TimeRemaining}" />
-				<MoveTo DestName="Bust Bubble" X="3393.017" Y="6161" Z="79.83092" />
-				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:34897&quot;)" />
-				<CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for Salrand {TimeRemaining}" />
-				<Objective QuestName="A Race Against Time" QuestId="11671" Type="CollectItem" ItemId="34909"
-						   CollectCount="1" />
+			<While Condition="!IsQuestCompleted(11671)" >
+				<MoveTo Nav="Fly" X="3395.55" Y="6159.77" Z="79.83096" />
+				<While Condition="Unit(25584, u =&gt; u.HasAura(45775)) != null &amp;&amp; Object(187875) == null" >
+					<CustomBehavior File="RunCode" Code="Me.SetFacing(Unit(25584).Location); await Coroutine.Sleep(750);" />
+					<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:34897&quot;)" />
+					<CustomBehavior File="WaitTimer" WaitTime="28000" GoalText="Waiting for cast {TimeRemaining}" TerminateWhen="Unit(25584, u =&gt; !u.HasAura(45775)) != null" />
+				</While>
+				<CustomBehavior File="InteractWith" MobIds="25584, 187875" WaitForNpcs="false" MovementBy="NavigatorOnly" InteractByLooting="true" QuestId="11671" QuestObjectiveIndex="1" X="3395.55" Y="6159.77" Z="79.83096" />
 			</While>
 			<If Condition="HasQuest(11671) &amp;&amp; IsQuestCompleted(11671)">
 				<CustomBehavior File="FlyTo" DestName="Turnin Quest" X="3611.695" Y="5961.401" Z="136.215" />
