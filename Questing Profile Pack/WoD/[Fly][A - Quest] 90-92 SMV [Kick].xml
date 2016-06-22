@@ -164,9 +164,13 @@
 			<If Condition="Me.ZoneId != 4 &amp;&amp; Me.ZoneId != 7025"> <!-- Blasted Lands || Tanaan -->
 				<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" StopOnContinue="True" SoundCueInterval="1" Text="Go to SW or Blasted Lands and push start" />
 			</If>
+			<!-- Avoid killing high level mobs as the 100% will perform death for bad gear toons -->
+			<CustomBehavior Nav="Fly" File="NoCombatMoveTo" X="4066.427" Y="-2372.571" Z="94.59667" />
 			<TurnIn Nav="Fly" QuestName="The Dark Portal" QuestId="34398" TurnInName="Archmage Khadgar" TurnInId="78558" X="4066.427" Y="-2372.571" Z="94.59667" />
 		</If>
 		<If Condition="HasQuest(36881)" >
+			<!-- Avoid killing high level mobs as the 100% will perform death for bad gear toons -->
+			<CustomBehavior Nav="Fly" File="NoCombatMoveTo" X="4066.427" Y="-2372.571" Z="94.59667" />
 			<TurnIn Nav="Fly" QuestName="The Dark Portal" QuestId="36881" TurnInName="Archmage Khadgar" TurnInId="78558" X="4066.427" Y="-2372.571" Z="94.59667" />
 		</If>
 		<!-- End of SW / Callboard -->
@@ -963,6 +967,46 @@
 			</While>
 			<TurnIn Nav="Fly" QuestName="Speaker for the Dead" QuestId="34789" TurnInName="Exarch Maladaar" TurnInId="88972" X="1491.712" Y="-2182.271" Z="88.80315" />
 			<PickUp Nav="Fly" QuestName="The Traitor's True Name" QuestId="34792" GiverName="Exarch Maladaar" GiverId="88972" X="1491.712" Y="-2182.271" Z="88.80315" />
+
+
+			<!-- Bonus Objective and + Side quest // Added by Alisha -->
+			<PickUp Nav="Fly" QuestName="The Big Haul" QuestId="33084" GiverName="Traevar Gunnermark"  GiverId="74233" X="1015.635" Y="-1916.8" Z="0.5158978" />
+			<!-- ID: 34496, Bonus Objective: The Hills of Valuun -->
+			<If Condition="HasQuest(33084) &amp;&amp; !IsQuestCompleted(33084) || !IsQuestCompleted(34496)" >
+				<CustomBehavior File="KillUntilComplete" QuestId="33084" ImmediatelySwitchToHighestPriorityTarget="True" TerminateWhen="IsQuestCompleted(33084)" >
+					<PursuitList>
+						<PursueUnit Id="87698" PursueWhen="!IsQuestCompleted(33084)" />
+						<PursueUnit Id="87700" PursueWhen="!IsQuestCompleted(33084)" />
+
+						<PursueUnit Id="75483" PursueWhen="!IsQuestCompleted(34496)" Priority="5000" />
+						<PursueUnit Id="82354" PursueWhen="!IsQuestCompleted(34496)" Priority="5000" />
+					</PursuitList>
+					<HuntingGrounds WaypointVisitStrategy="Random" >
+						<Hotspot X="1264.068" Y="-2065.562" Z="16.6147" />
+						<Hotspot X="1175.371" Y="-2076.714" Z="14.40964" />
+						<Hotspot X="1038.087" Y="-2048.315" Z="17.19504" />
+					</HuntingGrounds>
+				</CustomBehavior>
+
+				<CustomBehavior File="KillUntilComplete" QuestId="34496" ImmediatelySwitchToHighestPriorityTarget="True" TerminateWhen="IsQuestCompleted(34496)" >
+					<PursuitList>
+						<PursueUnit Id="87698" PursueWhen="!IsQuestCompleted(33084)" />
+						<PursueUnit Id="87700" PursueWhen="!IsQuestCompleted(33084)" />
+						<PursueUnit Id="87699" PursueWhen="!IsQuestCompleted(33084)" />
+
+						<PursueUnit Id="75483" PursueWhen="!IsQuestCompleted(34496)" Priority="5000" />
+						<PursueUnit Id="82354" PursueWhen="!IsQuestCompleted(34496)" Priority="5000" />
+					</PursuitList>
+					<HuntingGrounds WaypointVisitStrategy="Random" >
+						<Hotspot X="1264.068" Y="-2065.562" Z="16.6147" />
+						<Hotspot X="1175.371" Y="-2076.714" Z="14.40964" />
+						<Hotspot X="1038.087" Y="-2048.315" Z="17.19504" />
+						<Hotspot X="958.4991" Y="-1914.251" Z="6.905532" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</If>
+			<TurnIn Nav="Fly" QuestName="The Big Haul" QuestId="33084" TurnInName="Traevar Gunnermark" TurnInId="74233" X="1015.635" Y="-1916.8" Z="0.5158978" />
+
 			<If Condition="HasQuest(34792) &amp;&amp; !IsQuestCompleted(34792)" > <!-- The Traitor's True Name -->
 				<While Condition="!IsObjectiveComplete(1, 34792)">
 					<CustomBehavior File="InteractWith" QuestId="34792" MobId="233077" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" WaitTime="2000" Range="4" X="1741.566" Y="-1787.983" Z="155.5779" />
@@ -972,7 +1016,7 @@
 				</While>
 				<While Condition="!IsObjectiveComplete(3, 34792)">
 					<!-- fight stuff - replace with KUC -->
-					<CustomBehavior File="InteractWith" QuestId="34792" QuestObjectiveIndex="3" MobId="80076" MobId2="82625" MobId3="233077" NumOfTimes="3"  X="1733.351" Y="-1791.01" Z="156.3891" />
+					<CustomBehavior File="InteractWith" QuestId="34792" MobId="80076" MobId2="82625" WaitTime="15000" X="1733.351" Y="-1791.01" Z="156.3891" />
 				</While>
 				<!--
                  Name="Exarch Othaar" Entry="80076" Type="Repair" X="1744.552" Y="-1786.462" Z="156.3895" />
@@ -1536,7 +1580,6 @@
 					<CustomBehavior File="InteractWith" QuestId="33419" ProactiveCombatStrategy="ClearMobsTargetingUs" Range="4" QuestObjectiveIndex="3" MobId="78891" X="1103.96" Y="756.2066" Z="102.5669" /> <!-- 3 - Zuulo -->
 				</While>
 			</If>
-
 			<If Condition="HasQuest(33419) &amp;&amp; HasQuest(34504) &amp;&amp; !IsQuestCompleted(34504)" > <!-- Bonus Objective: Bloodthorn Cave -->
 				<!--<PickUp Nav="Fly" QuestName="Bonus Objective: Bloodthorn Cave" QuestId="34504" GiverName="" GiverId="" /> -->
 				<CustomBehavior File="InteractWith" QuestId="34504" MobIds="78902,78903" NumOfTimes="20" TerminateWhen="IsObjectiveComplete(2,34504)" IgnoreMobsInBlackspots="True" Range="4" NonCompeteDistance="0" CollectionDistance="250" >
@@ -1558,6 +1601,29 @@
 					</GrindArea>
 				</SetGrindArea>
 				<GrindTo Condition="IsObjectiveComplete(1, 34076) || IsQuestCompleted(34076)" GoalText="Completing Bonus Objective! - Bloodthorn Cave" />
+			<Else>
+				<If Condition="!IsQuestCompleted(34504)">
+					<CustomBehavior File="InteractWith" QuestId="34504" MobIds="78902,78903" NumOfTimes="20" TerminateWhen="IsObjectiveComplete(2,34504)" IgnoreMobsInBlackspots="True" Range="4" NonCompeteDistance="0" CollectionDistance="250" >
+						<HuntingGrounds WaypointVisitStrategy="InOrder" >
+							<Hotspot X="1140.238" Y="816.809" Z="101.6229" /> <!-- 1 - Arekk -->
+							<Hotspot X="1136.71" Y="748.7014" Z="97.0798" /> <!-- 2 - Diana -->
+							<Hotspot X="1103.96" Y="756.2066" Z="102.5669" /> <!-- 3 - Zuulo -->
+						</HuntingGrounds>
+					</CustomBehavior>
+
+					<SetGrindArea>
+						<GrindArea>
+							<MobIds>76382</MobIds>
+							<Hotspots>
+								<Hotspot X="1140.238" Y="816.809" Z="101.6229" /> <!-- 1 - Arekk -->
+								<Hotspot X="1136.71" Y="748.7014" Z="97.0798" /> <!-- 2 - Diana -->
+								<Hotspot X="1103.96" Y="756.2066" Z="102.5669" /> <!-- 3 - Zuulo -->
+							</Hotspots>
+						</GrindArea>
+					</SetGrindArea>
+					<GrindTo Condition="!IsObjectiveComplete(1,34504)" GoalText="Completing Bonus Objective! - Bloodthorn Cave" />
+				</If>
+			</Else>
 			</If>
 
 			<If Condition="HasQuest(33419)"> <!-- A Matter of Life and Death -->
