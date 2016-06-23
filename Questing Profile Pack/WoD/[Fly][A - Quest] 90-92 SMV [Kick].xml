@@ -1015,8 +1015,10 @@
 					<CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for objective to complete {TimeRemaining}" />
 				</While>
 				<While Condition="!IsObjectiveComplete(3, 34792)">
-					<!-- fight stuff - replace with KUC -->
-					<CustomBehavior File="InteractWith" QuestId="34792" MobId="80076" MobId2="82625" WaitTime="15000" X="1733.351" Y="-1791.01" Z="156.3891" />
+					<!-- at this stage crystal can be still active and need interaction for some cases-->
+					<CustomBehavior File="InteractWith" QuestId="34792" MobId="233077" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" WaitTime="2000" Range="4" X="1741.566" Y="-1787.983" Z="155.5779" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for objective to complete {TimeRemaining}" />
+					<CustomBehavior File="InteractWith" QuestId="34792" MobId="80076" PreInteractMountStrategy="Dismount" MobId2="82625" WaitTime="15000" X="1733.351" Y="-1791.01" Z="156.3891" />
 				</While>
 				<!--
                  Name="Exarch Othaar" Entry="80076" Type="Repair" X="1744.552" Y="-1786.462" Z="156.3895" />
@@ -1219,11 +1221,15 @@
 			<PickUp Nav="Fly" QuestName="The Dark that Blinds Us" QuestId="33078" GiverName="Loreseeker Heidii" GiverId="74121" X="98.24653" Y="-554.7396" Z="18.75069" /> <!-- Auto accept Bonus Objective -->
 			<!--<PickUp Nav="Fly" QuestName="Bonus Objective: The Burial Fields" QuestId="34076" GiverName="Loreseeker Heidii" GiverId="74121" X="98.24653" Y="-554.7396" Z="18.75069" /> -->
 			<While Condition="HasQuest(33078) &amp;&amp; !IsQuestCompleted(33078)" > <!-- The Dark that Blinds Us -->
+				<CustomBehavior File="ForcedDismount" />
 				<CustomBehavior File="InteractWith" QuestId="33078" MobId="224705" Range="8" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" TerminateWhen="IsObjectiveComplete(1, 33078)" X="-40.16449" Y="-758.5936" Z="24.70023" /> <!-- Eastern -->
+				<CustomBehavior File="ForcedDismount" />
 				<CustomBehavior File="InteractWith" QuestId="33078" MobId="224706" Range="8" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" TerminateWhen="IsObjectiveComplete(2, 33078)" X="16.10787" Y="-713.0391" Z="23.55025" /> <!-- Northern -->
+				<CustomBehavior File="ForcedDismount" />
 				<CustomBehavior File="InteractWith" QuestId="33078" MobId="224708" Range="8" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" TerminateWhen="IsObjectiveComplete(3, 33078)" X="-45.65149" Y="-664.2499" Z="24.90166" /> <!-- Western -->
 				<MoveTo Nav="Fly" DestName="The Dark that Blinds Us (a)" X="-172.091" Y="-710.9433" Z="5.181043" /> <!-- Southern -->
 				<MoveTo DestName="The Dark that Blinds Us (b)" X="-180.844" Y="-709.108" Z="6.031713" /> <!-- Southern -->
+				<CustomBehavior File="ForcedDismount" />
 				<CustomBehavior File="InteractWith" QuestId="33078" MobId="224707" Range="8" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" TerminateWhen="IsObjectiveComplete(4, 33078)" X="-172.091" Y="-710.9433" Z="5.181043" /> <!-- Southern -->
 			</While>
 
@@ -1274,14 +1280,21 @@
 				<CustomBehavior File="InteractWith" WaitTime="2500" ProactiveCombatStrategy="ClearMobsTargetingUs" Range="7" WaitForNpcs="False" MobIds="223533" X="-178.9792" Y="-711.6042" Z="5.958009" TerminateWhen="IsQuestCompleted(33384)" />
 				<CustomBehavior File="WaitTimer" WaitTime="500" />
 			</While>
+
 		END Grab some Treasures -->
 
-			<If Condition="HasQuest(33078) &amp;&amp; HasQuest(34076) &amp;&amp; !IsQuestCompleted(34076)" > <!-- Bonus Objective: The Burial Fields - part of: The Dark that Blinds Us -->
-				<MoveTo Nav="Fly" ArrivalTolerance="50" X="-145.1454" Y="-635.7947" Z="14.49851" />
-				<SetGrindArea>
-					<GrindArea>
-						<Factions>1917</Factions>
-						<Hotspots>
+			<If Condition="!IsQuestCompleted(34076)" > <!-- Bonus Objective: The Burial Fields - part of: The Dark that Blinds Us   76K EXP-->
+				<CustomBehavior File="KillUntilComplete" QuestId="34076" ImmediatelySwitchToHighestPriorityTarget="True" TerminateWhen="IsQuestCompleted(34076)" >
+					<PursuitList>
+						<!-- Objective #1 -->
+						<PursueUnit Id="82196" PursueWhen="!IsObjectiveComplete(1, 34076)" Priority="5000"  />
+						<!-- Objective #2 -->
+						<PursueUnit Id="82220" PursueWhen="!IsObjectiveComplete(2, 34076)" Priority="5000"  />
+						<!-- Objective #3 -->
+						<PursueUnit Id="79148" PursueWhen="!IsObjectiveComplete(3, 34076)" Priority="5000"  />
+						<PursueUnit Id="79149" PursueWhen="!IsObjectiveComplete(3, 34076)" Priority="5000"  />
+					</PursuitList>
+					<HuntingGrounds WaypointVisitStrategy="Random" >
 							<Hotspot X="-145.1454" Y="-635.7947" Z="14.49851" />
 							<Hotspot X="-245.0284" Y="-622.8435" Z="14.3087" />
 							<Hotspot X="-314.2461" Y="-593.7631" Z="19.66578" />
@@ -1289,15 +1302,6 @@
 							<Hotspot X="-273.5406" Y="-775.6212" Z="14.75543" />
 							<Hotspot X="-143.0979" Y="-813.8969" Z="15.27185" />
 							<Hotspot X="-84.22952" Y="-790.0365" Z="14.03948" />
-						</Hotspots>
-					</GrindArea>
-				</SetGrindArea>
-				<GrindTo Condition="IsObjectiveComplete(3, 34076) || IsQuestCompleted(34076)" GoalText="Completing Bonus Objective! - Pearltusk" />
-
-				<SetGrindArea>
-					<GrindArea>
-						<Factions>16 1711 2000</Factions>
-						<Hotspots>
 							<Hotspot X="64.27989" Y="-567.9501" Z="15.0295" />
 							<Hotspot X="84.83012" Y="-666.8835" Z="11.92863" />
 							<Hotspot X="159.0977" Y="-686.1683" Z="12.66856" />
@@ -1309,10 +1313,9 @@
 							<Hotspot X="-180.2688" Y="-673.3466" Z="11.24423" />
 							<Hotspot X="-33.43029" Y="-736.6577" Z="15.56651" />
 							<Hotspot X="-5.663828" Y="-683.6739" Z="18.75719" />
-						</Hotspots>
-					</GrindArea>
-				</SetGrindArea>
-				<GrindTo Condition="IsQuestCompleted(34076)" GoalText="Completing Bonus Objective! - The Burial Fields"  />
+					</HuntingGrounds>
+				</CustomBehavior>
+
 			</If>
 
 			<!--<TurnIn Nav="Fly" QuestName="Bonus Objective: The Burial Fields" QuestId="34076" /> --> <!-- Auto Complete -->
@@ -1698,7 +1701,14 @@
 				<CustomBehavior File="WaitTimer" WaitTime="4000" GoalText="Waiting for cutscene to end {TimeRemaining}" />
 			</While>
 			<TurnIn Nav="Fly" QuestName="Darkness Falls" QuestId="33837" TurnInName="Yrel" TurnInId="73395" X="599.0781" Y="-1230.387" Z="-21.42323" />
-			<PickUp Nav="Fly" QuestName="The Righteous March" QuestId="33255" GiverName="Vindicator Maraad" GiverId="77312" X="603.873" Y="-1230.87" Z="-21.42327" />
+			
+			<!-- Can have different ID if quest was Abandoned -->
+			<If Condition="!HasQuest(33255) &amp;&amp; Unit(77312)!=null">
+				<PickUp Nav="Fly" QuestName="The Righteous March" QuestId="33255" GiverName="Vindicator Maraad" GiverId="77312" X="603.873" Y="-1230.87" Z="-21.42327" />
+			</If>
+			<If Condition="!HasQuest(33255) &amp;&amp; Unit(75145)!=null">
+				<PickUp Nav="Fly" QuestName="The Righteous March" QuestId="33255" GiverName="Vindicator Maraad" GiverId="75145" X="603.873" Y="-1230.87" Z="-21.42327" />
+			</If>
 			<!-- Grab some Treasures 
 			<If Condition="!IsQuestCompleted(33568)" >
 				<MoveTo Nav="Fly" DestName="Kaliri Egg" X="640.5179" Y="-1605.801" Z="-2.724974" />
@@ -1718,10 +1728,14 @@
 			<While Condition="HasQuest(33255) &amp;&amp; !IsQuestCompleted(33255)" > <!-- The Righteous March -->
 				<While Condition="(!IsObjectiveComplete(1, 33255))">
 					<MoveTo Nav="Fly" QuestId="33255" X="603.873" Y="-1230.87" Z="-21.42327" />
-					<CustomBehavior File="WaitTimer" WaitTime="15000" GoalText="Waiting for Yrel to spawn {TimeRemaining}" />				
+					<CustomBehavior File="WaitTimer" WaitTime="15000" GoalText="Waiting for Yrel to spawn {TimeRemaining}" TerminateWhen="Unit(73395) != null" />				
 					<While Condition="Unit(73395) != null &amp;&amp; !IsQuestCompleted(33255) &amp;&amp; !Me.IsOnTransport"> <!-- Yrel / Get on Transport -->
 						<CustomBehavior File="InteractWith" QuestId="33255" MobId="77312" MobId2="75145" WaitForNpcs="False" WaitTime="40000" PreInteractMountStrategy="DismountOrCancelShapeshift" NonCompeteDistance="0" GossipOptions="1" X="603.873" Y="-1230.87" Z="-21.42327" TerminateWhen="Me.IsOnTransport" /> <!-- Maraad -->
 					</While>
+					<If Condition="GossipFrame.Instance.IsVisible &amp;&amp; GossipFrame.Instance.GossipOptionEntries.Count &gt; 0">
+						<CustomBehavior File="InteractWith" QuestId="33255" MobId="75145" Range="5" InteractByGossipOptions="1" NonCompeteDistance="0" WaitTime="1000" />
+					</If>
+
 
 					<While Condition="Unit(73395) == null &amp;&amp; !IsQuestCompleted(33255)"> <!-- Yrel not here Kill Mobs - Me.IsOnTransport doesn't work here -->
 						<!-- before first stairs	-->
@@ -1937,6 +1951,7 @@
 				<CustomBehavior File="Misc\RunLua" Lua="VehicleExit()" WaitTime="1000" />
 			</While>
 			<TurnIn Nav="Fly" QuestName="The Righteous March" QuestId="33255" TurnInName="Exarch Akama" TurnInId="72413" X="980.2604" Y="-2921.111" Z="99.33604" />
+	
 			<PickUp Nav="Fly" QuestName="The Defense of Karabor" QuestId="33256" GiverName="Exarch Akama" GiverId="72413" X="980.2604" Y="-2921.111" Z="99.33604" />
 			<If Condition="HasQuest(33256) &amp;&amp; !IsQuestCompleted(33256)" > <!-- The Defense of Karabor -->
 				<If Condition="Me.MapId != 1277" > <!-- 1277 = DefenseOfKaraborScenario -->
@@ -2015,6 +2030,19 @@
 						<CustomBehavior File="InteractWith" QuestId="33256" MobId="74715" WaitForNpcs="False" MobState="Alive" X="579.946" Y="-3127.99" Z="58.4295" /> <!-- Kill Vorka -->
 					</While>
 					<CustomBehavior File="WaitTimer" WaitTime="20000" GoalText="Waiting for quest to complete {TimeRemaining}" />
+				
+					<!-- Sometime scenario not flagged completed - probably wow bug, moving to this spot + reloading UI help to complete it after few seconds -->
+					<If Condition="IsQuestCompleted(33256)">
+						<MoveTo Nav="Fly" X="930.9711" Y="-2911.626" Z="99.33549" />
+						<CustomBehavior File="Message" Text="No Npc Viable to Turn In, Reloading UI to Fix it" LogColor="CornflowerBlue" />
+						<CustomBehavior File="Misc\RunLua" Lua="ReloadUI();" />
+						<CustomBehavior File="WaitTimer" WaitTime="5000" />
+						<While Condition="!StyxWoW.IsInWorld">
+							<CustomBehavior File="WaitTimer" WaitTime="1000" />
+						</While>
+						<CustomBehavior File="WaitTimer" WaitTime="2000" />
+					</If>
+
 				</While>
 
 				<If Condition="Me.MapId == 1277" > <!-- 1277 = DefenseOfKaraborScenario -->
