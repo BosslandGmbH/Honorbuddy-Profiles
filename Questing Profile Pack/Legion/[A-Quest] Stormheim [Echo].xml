@@ -1,6 +1,6 @@
 <HBProfile xsi:noNamespaceSchemaLocation="../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<!-- Original contribution by EchoTiger -->
-	<Name>[A-Quest] Stormheim [Echo]</Name>
+	<Name>[N-Quest] Stormheim [Echo]</Name>
 
 	<MinDurability>0.3</MinDurability>
 	<MinFreeBagSlots>3</MinFreeBagSlots>
@@ -20,7 +20,6 @@
 	<TargetElites>true</TargetElites>
 
 	<AvoidMobs>
-		<Mob Name="sssss" Entry="xxxxx" />
 	</AvoidMobs>
 
 	<Blackspots>
@@ -36,6 +35,7 @@
 		<Vendor Name="Supplier Barleyfoot" Type="Repair" Entry="110521" X="3211.746" Y="3086.97" Z="440.2122" />
 		<Vendor Name="Tinkmaster Overspark" Type="Repair" Entry="90866" X="3395.593" Y="3077.832" Z="526.3278" UseWhen="IsQuestCompleted(38060)" />
 		<Vendor Name="Supplier Barleyfoot" Type="Repair" Entry="110521" X="2702.516" Y="2855.519" Z="308.8194" />
+		<Vendor Name="Hankerin Ferinale" Type="Repair" Entry="98109" X="2832.689" Y="903.7344" Z="77.96029" UseWhen="Me.IsAlliance" />
 		
 		<Vendor Name="Kah'chu" Type="Repair" Entry="27188" X="373.0156" Y="358.8663" Z="28.41259" /> <!-- UseWhen="Me.MapId == XXX" Need the MapId for Helheim -->
 	</Vendors>
@@ -101,126 +101,132 @@
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
 
-		<!-- Zone Introductory Quests -->
-			<TurnIn QuestName="Stormheim" QuestId="39735" TurnInName="Sky Admiral Rogers" TurnInId="96644" X="-840.5087" Y="4633.81" Z="749.4136" />
+		<!-- [A] Zone Introductory Quests -->
+			<If Condition="Me.IsAlliance" >
+				<TurnIn QuestName="Stormheim" QuestId="39735" TurnInName="Sky Admiral Rogers" TurnInId="96644" X="-840.5087" Y="4633.81" Z="749.4136" />
 
-			<PickUp QuestName="A Royal Summons" QuestId="38035" GiverName="Sky Admiral Rogers" GiverId="96644" X="-840.5087" Y="4633.81" Z="749.4136" />
-			<While Condition="DoQuest(38035)" >
-				<CustomBehavior File="UseItem" ItemId="128687" QuestId="38035" QuestObjectiveIndex="1" />
-				<CustomBehavior File="InteractWith" MobId="244567" QuestId="38035" QuestObjectiveIndex="2" X="-830.9566" Y="4655.491" Z="749.6113" />
-			</While>
-			<TurnIn QuestName="A Royal Summons" QuestId="38035" TurnInName="Sky Admiral Rogers" TurnInId="96644" X="-8491.159" Y="1394.033" Z="196.3758" />
-
-			<PickUp QuestName="Making the Rounds" QuestId="38206" GiverName="Sky Admiral Rogers" GiverId="96644" X="-8491.159" Y="1394.033" Z="196.3758" />
-			<While Condition="DoQuest(38206)" >
-				<CustomBehavior File="InteractWith" MobId="110898" QuestId="38206" QuestObjectiveIndex="1" X="-8534.451" Y="1400.251" Z="198.6206" />
-				<MoveTo QuestId="38206" QuestObjectiveIndex="2" X="-8548.114" Y="1399.016" Z="193.6293" />
-				<CustomBehavior File="Misc\RunLua" QuestId="38206" QuestObjectiveIndex="2" Lua="ExtraActionButton1:Click();" />
-				<MoveTo QuestId="38206" QuestObjectiveIndex="3" X="-8584.947" Y="1399.771" Z="196.4226" />
-				<CustomBehavior File="WaitTimer" QuestId="38206" QuestObjectiveIndex="3" WaitTime="30000" />
-			</While>
-			<TurnIn QuestName="Making the Rounds" QuestId="38206" TurnInName="Genn Greymane" TurnInId="96663" X="-8587.822" Y="1398.612" Z="196.5768" />
-		<!-- END Zone Introductory Quests -->
-
-		<!-- Story: Greymane's Gambit -->
-			<PickUp QuestName="Greymane's Gambit" QuestId="39800" GiverName="EMPTY" GiverId="96663" X="-8587.822" Y="1398.612" Z="196.5768" />
-			<While Condition="DoQuest(39800)" >
-				<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-					<CustomBehavior File="InteractWith" MobId="92957" X="5045.783" Y="3137.939" Z="369.9213" TerminateWhen="IsScenarioCriteriaComplete(1) &amp;&amp; IsScenarioCriteriaComplete(2)" />
-					<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="93113" AttackButton="1" OftenToUse="2000" VehicleId="92957" MaxRange="300" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2 || !Me.InVehicle" />
+				<PickUp QuestName="A Royal Summons" QuestId="38035" GiverName="Sky Admiral Rogers" GiverId="96644" X="-840.5087" Y="4633.81" Z="749.4136" />
+				<While Condition="DoQuest(38035)" >
+					<CustomBehavior File="UseItem" ItemId="128687" QuestId="38035" QuestObjectiveIndex="1" />
+					<CustomBehavior File="InteractWith" MobId="244567" QuestId="38035" QuestObjectiveIndex="2" X="-830.9566" Y="4655.491" Z="749.6113" />
 				</While>
-				<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
-					<CustomBehavior File="InteractWith" MobId="240210" WaitTime="18000" X="5000.963" Y="2937.803" Z="115.4159" TerminateWhen="Me.Z &lt; 25 || IsScenarioCriteriaComplete(1)" />
-					<CustomBehavior File="KillUntilComplete" MobId="93560" X="4791.23" Y="2871.738" Z="7.923726" TerminateWhen="IsScenarioCriteriaComplete(1)" />
-					<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Unit(97444) != null" />
+				<TurnIn QuestName="A Royal Summons" QuestId="38035" TurnInName="Sky Admiral Rogers" TurnInId="96644" X="-8491.159" Y="1394.033" Z="196.3758" />
 
-
-					<CustomBehavior File="InteractWith" MobId="97444" WaitTime="7000" X="4792.927" Y="2882.502" Z="7.866116" TerminateWhen="Unit(97444) == null || IsScenarioCriteriaComplete(2)" />
-					<CustomBehavior File="KillUntilComplete" MobId="93563" X="4720.513" Y="2937.574" Z="7.894721" TerminateWhen="IsScenarioCriteriaComplete(2)" />
-					<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Unit(97444) != null" />
-
-
-					<CustomBehavior File="InteractWith" MobId="97444" WaitTime="7000" X="4729.429" Y="2928.727" Z="7.846226" TerminateWhen="Unit(97444) == null || IsScenarioCriteriaComplete(3)" />
-					<CustomBehavior File="KillUntilComplete" MobId="93486" X="4602.096" Y="2860.15" Z="16.20909" TerminateWhen="IsScenarioCriteriaComplete(3)" />
-					<CustomBehavior File="WaitTimer" WaitTime="7000" /> 
+				<PickUp QuestName="Making the Rounds" QuestId="38206" GiverName="Sky Admiral Rogers" GiverId="96644" X="-8491.159" Y="1394.033" Z="196.3758" />
+				<While Condition="DoQuest(38206)" >
+					<CustomBehavior File="InteractWith" MobId="110898" QuestId="38206" QuestObjectiveIndex="1" X="-8534.451" Y="1400.251" Z="198.6206" />
+					<MoveTo QuestId="38206" QuestObjectiveIndex="2" X="-8548.114" Y="1399.016" Z="193.6293" />
+					<CustomBehavior File="Misc\RunLua" QuestId="38206" QuestObjectiveIndex="2" Lua="ExtraActionButton1:Click();" />
+					<MoveTo QuestId="38206" QuestObjectiveIndex="3" X="-8584.947" Y="1399.771" Z="196.4226" />
+					<CustomBehavior File="WaitTimer" QuestId="38206" QuestObjectiveIndex="3" WaitTime="30000" />
 				</While>
-				<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
-					<CustomBehavior File="InteractWith" MobId="97444" WaitTime="14000" X="4625.241" Y="2853.797" Z="7.844262" TerminateWhen="Me.Z &gt; 139 || IsScenarioCriteriaComplete(1)" />
-					<CustomBehavior File="InteractWith" MobId="242380" NumOfTimes="7" TerminateWhen="IsScenarioCriteriaComplete(1)" >
+				<TurnIn QuestName="Making the Rounds" QuestId="38206" TurnInName="Genn Greymane" TurnInId="96663" X="-8587.822" Y="1398.612" Z="196.5768" />
+			</If>
+		<!-- [A] END Zone Introductory Quests -->
+
+		<!-- [A] Story: Greymane's Gambit -->
+			<If Condition="Me.IsAlliance" >
+				<PickUp QuestName="Greymane's Gambit" QuestId="39800" GiverName="EMPTY" GiverId="96663" X="-8587.822" Y="1398.612" Z="196.5768" />
+				<While Condition="DoQuest(39800)" >
+					<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+						<CustomBehavior File="InteractWith" MobId="92957" X="5045.783" Y="3137.939" Z="369.9213" TerminateWhen="IsScenarioCriteriaComplete(1) &amp;&amp; IsScenarioCriteriaComplete(2)" />
+						<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="93113" AttackButton="1" OftenToUse="2000" VehicleId="92957" MaxRange="300" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2 || !Me.InVehicle" />
+					</While>
+					<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+						<CustomBehavior File="InteractWith" MobId="240210" WaitTime="18000" X="5000.963" Y="2937.803" Z="115.4159" TerminateWhen="Me.Z &lt; 25 || IsScenarioCriteriaComplete(1)" />
+						<CustomBehavior File="KillUntilComplete" MobId="93560" X="4791.23" Y="2871.738" Z="7.923726" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+						<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Unit(97444) != null" />
+
+
+						<CustomBehavior File="InteractWith" MobId="97444" WaitTime="7000" X="4792.927" Y="2882.502" Z="7.866116" TerminateWhen="Unit(97444) == null || IsScenarioCriteriaComplete(2)" />
+						<CustomBehavior File="KillUntilComplete" MobId="93563" X="4720.513" Y="2937.574" Z="7.894721" TerminateWhen="IsScenarioCriteriaComplete(2)" />
+						<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Unit(97444) != null" />
+
+
+						<CustomBehavior File="InteractWith" MobId="97444" WaitTime="7000" X="4729.429" Y="2928.727" Z="7.846226" TerminateWhen="Unit(97444) == null || IsScenarioCriteriaComplete(3)" />
+						<CustomBehavior File="KillUntilComplete" MobId="93486" X="4602.096" Y="2860.15" Z="16.20909" TerminateWhen="IsScenarioCriteriaComplete(3)" />
+						<CustomBehavior File="WaitTimer" WaitTime="7000" /> 
+					</While>
+					<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+						<CustomBehavior File="InteractWith" MobId="97444" WaitTime="14000" X="4625.241" Y="2853.797" Z="7.844262" TerminateWhen="Me.Z &gt; 139 || IsScenarioCriteriaComplete(1)" />
+						<CustomBehavior File="InteractWith" MobId="242380" NumOfTimes="7" TerminateWhen="IsScenarioCriteriaComplete(1)" >
+							<HuntingGrounds>
+								<Hotspot X="4577.12" Y="2670.771" Z="138.8441" />
+								<Hotspot X="4539.003" Y="2656.705" Z="138.5784" />
+								<Hotspot X="4550.333" Y="2696.075" Z="138.5546" />
+							</HuntingGrounds>
+						</CustomBehavior>
+					</While>
+					<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+						<CustomBehavior File="KillUntilComplete" MobId="95852" X="4534.616" Y="2672.977" Z="164.2988" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+						<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+					</While>
+				</While>
+				<TurnIn QuestName="Greymane's Gambit" QuestId="39800" TurnInName="Sky Admiral Rogers" TurnInId="90749" X="3203.195" Y="3077.215" Z="440.2122" />
+			</If>
+		<!-- [A] END Story: Greymane's Gambit -->
+
+		<!-- [A] Story: The Aftermath -->
+			<If Condition="Me.IsAlliance" >
+				<PickUp QuestName="Boarded!" QuestId="38052" GiverName="Genn Greymane" GiverId="90749" X="3203.195" Y="3077.215" Z="440.2122" />
+				<PickUp QuestName="Supplies From the Skies" QuestId="38036" GiverName="Mishka" GiverId="90783" X="3213.321" Y="3074.431" Z="440.2117" />
+				<PickUp QuestName="Assault and Battery" QuestId="38053" GiverName="Tinkmaster Overspark" GiverId="90866" X="3210.996" Y="3083.518" Z="440.2122" />
+				<PickUp QuestName="See Ya Later, Oscillator" QuestId="38558" GiverName="Tinkmaster Overspark" GiverId="90866" X="3210.996" Y="3083.518" Z="440.2122" />
+
+				<While Condition="DoQuest(38052, 38036)" >
+					<CustomBehavior File="InteractWith" NumOfTimes="13" TerminateWhen="!DoQuest(38052, 38036)">
 						<HuntingGrounds>
-							<Hotspot X="4577.12" Y="2670.771" Z="138.8441" />
-							<Hotspot X="4539.003" Y="2656.705" Z="138.5784" />
-							<Hotspot X="4550.333" Y="2696.075" Z="138.5546" />
+							<Hotspot X="3094.188" Y="3026.487" Z="422.5561" />
+							<Hotspot X="3112.146" Y="2990.337" Z="424.4672" />
+							<Hotspot X="3101.098" Y="2983.318" Z="411.4773" />
+							<Hotspot X="2975.045" Y="3057.561" Z="419.728" />
+						</HuntingGrounds>
+						<PursuitList>
+							<PursueGameObject Id="241275" PursueWhen="!IsObjectiveComplete(1, 38036)" />
+							<PursueUnit Id="92224" ConvertWhen="!IsObjectiveComplete(1, 38052)" PursueWhen="!IsObjectiveComplete(1, 38052)" ConvertBy="Killing" />
+							<PursueUnit Id="90899" ConvertWhen="!IsObjectiveComplete(1, 38052)" PursueWhen="!IsObjectiveComplete(1, 38052)" ConvertBy="Killing" />
+						</PursuitList>
+					</CustomBehavior>
+				</While>
+
+				<While Condition="DoQuest(38558)" >
+					<CustomBehavior File="InteractWith" MobId="240286" QuestId="38558" QuestObjectiveIndex="1" X="2962.239" Y="3081.73" Z="420.6721" />
+				</While>
+
+				<While Condition="DoQuest(38053)" >
+					<CustomBehavior File="KillUntilComplete" MobId="90902" QuestId="38053" QuestObjectiveIndex="1" X="3085.081" Y="2983.764" Z="433.0568" />
+				</While>
+
+				<TurnIn QuestName="Boarded!" QuestId="38052" TurnInName="Sky Admiral Rogers" TurnInId="90749" X="3203.195" Y="3077.215" Z="440.2126" />
+				<TurnIn QuestName="Supplies From the Skies" QuestId="38036" TurnInName="Mishka" TurnInId="90783" X="3213.321" Y="3074.431" Z="440.2125" />
+				<TurnIn QuestName="Assault and Battery" QuestId="38053" TurnInName="Tinkmaster Overspark" TurnInId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
+				<TurnIn QuestName="See Ya Later, Oscillator" QuestId="38558" TurnInName="Tinkmaster Overspark" TurnInId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
+
+				<PickUp QuestName="Lightning Rod" QuestId="38058" GiverName="Tinkmaster Overspark" GiverId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
+				<While Condition="DoQuest(38058)" >
+					<!-- NOTE: <AddSupport> : Need DoWhen here that detects area triggers.   Area triggers are for the lightnign that's on the ground.
+											The lightning charges the transponder and is randomly placed in the area.
+											Also lightning spawns from killing mobs in the area.
+					-->
+					<CustomBehavior File="KillUntilComplete" MobIds="90903, 92415" QuestId="38058" QuestObjectiveIndex="1" >
+						<HuntingGrounds>
+							<Hotspot X="2903.743" Y="3257.384" Z="536.3052" />
+							<Hotspot X="2897.153" Y="3418.166" Z="514.3953" />
+							<Hotspot X="2958.013" Y="3325.15" Z="521.1562" />
 						</HuntingGrounds>
 					</CustomBehavior>
 				</While>
-				<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
-					<CustomBehavior File="KillUntilComplete" MobId="95852" X="4534.616" Y="2672.977" Z="164.2988" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
-					<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+				<TurnIn QuestName="Lightning Rod" QuestId="38058" TurnInName="Tinkmaster Overspark" TurnInId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
+
+				<PickUp QuestName="Signal Boost" QuestId="38060" GiverName="Tinkmaster Overspark" GiverId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
+				<While Condition="DoQuest(38060)" >
+					<MoveTo QuestId="38060" X="3256.109" Y="3165.785" Z="526.7354" />
+					<!-- NOTE: <AddFunction> : Not sure if mobs here auto-aggro or not. May need the bot kill any enemy that gets close in order to defend POI more efficiently. -->
+					<CustomBehavior File="WaitTimer" QuestId="38060" WaitTime="10000" />
 				</While>
-			</While>
-			<TurnIn QuestName="Greymane's Gambit" QuestId="39800" TurnInName="Sky Admiral Rogers" TurnInId="90749" X="3203.195" Y="3077.215" Z="440.2122" />
-		<!-- END Story: Greymane's Gambit -->
-
-		<!-- Story: The Aftermath -->
-			<PickUp QuestName="Boarded!" QuestId="38052" GiverName="Genn Greymane" GiverId="90749" X="3203.195" Y="3077.215" Z="440.2122" />
-			<PickUp QuestName="Supplies From the Skies" QuestId="38036" GiverName="Mishka" GiverId="90783" X="3213.321" Y="3074.431" Z="440.2117" />
-			<PickUp QuestName="Assault and Battery" QuestId="38053" GiverName="Tinkmaster Overspark" GiverId="90866" X="3210.996" Y="3083.518" Z="440.2122" />
-			<PickUp QuestName="See Ya Later, Oscillator" QuestId="38558" GiverName="Tinkmaster Overspark" GiverId="90866" X="3210.996" Y="3083.518" Z="440.2122" />
-
-			<While Condition="DoQuest(38052, 38036)" >
-				<CustomBehavior File="InteractWith" NumOfTimes="13" TerminateWhen="!DoQuest(38052, 38036)">
-					<HuntingGrounds>
-						<Hotspot X="3094.188" Y="3026.487" Z="422.5561" />
-						<Hotspot X="3112.146" Y="2990.337" Z="424.4672" />
-						<Hotspot X="3101.098" Y="2983.318" Z="411.4773" />
-						<Hotspot X="2975.045" Y="3057.561" Z="419.728" />
-					</HuntingGrounds>
-					<PursuitList>
-						<PursueGameObject Id="241275" PursueWhen="!IsObjectiveComplete(1, 38036)" />
-						<PursueUnit Id="92224" ConvertWhen="!IsObjectiveComplete(1, 38052)" PursueWhen="!IsObjectiveComplete(1, 38052)" ConvertBy="Killing" />
-						<PursueUnit Id="90899" ConvertWhen="!IsObjectiveComplete(1, 38052)" PursueWhen="!IsObjectiveComplete(1, 38052)" ConvertBy="Killing" />
-					</PursuitList>
-				</CustomBehavior>
-			</While>
-
-			<While Condition="DoQuest(38558)" >
-				<CustomBehavior File="InteractWith" MobId="240286" QuestId="38558" QuestObjectiveIndex="1" X="2962.239" Y="3081.73" Z="420.6721" />
-			</While>
-
-			<While Condition="DoQuest(38053)" >
-				<CustomBehavior File="KillUntilComplete" MobId="90902" QuestId="38053" QuestObjectiveIndex="1" X="3085.081" Y="2983.764" Z="433.0568" />
-			</While>
-
-			<TurnIn QuestName="Boarded!" QuestId="38052" TurnInName="Sky Admiral Rogers" TurnInId="90749" X="3203.195" Y="3077.215" Z="440.2126" />
-			<TurnIn QuestName="Supplies From the Skies" QuestId="38036" TurnInName="Mishka" TurnInId="90783" X="3213.321" Y="3074.431" Z="440.2125" />
-			<TurnIn QuestName="Assault and Battery" QuestId="38053" TurnInName="Tinkmaster Overspark" TurnInId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
-			<TurnIn QuestName="See Ya Later, Oscillator" QuestId="38558" TurnInName="Tinkmaster Overspark" TurnInId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
-
-			<PickUp QuestName="Lightning Rod" QuestId="38058" GiverName="Tinkmaster Overspark" GiverId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
-			<While Condition="DoQuest(38058)" >
-				<!-- NOTE: <AddSupport> : Need DoWhen here that detects area triggers.   Area triggers are for the lightnign that's on the ground.
-										The lightning charges the transponder and is randomly placed in the area.
-										Also lightning spawns from killing mobs in the area.
-				-->
-				<CustomBehavior File="KillUntilComplete" MobIds="90903, 92415" QuestId="38058" QuestObjectiveIndex="1" >
-					<HuntingGrounds>
-						<Hotspot X="2903.743" Y="3257.384" Z="536.3052" />
-						<Hotspot X="2897.153" Y="3418.166" Z="514.3953" />
-						<Hotspot X="2958.013" Y="3325.15" Z="521.1562" />
-					</HuntingGrounds>
-				</CustomBehavior>
-			</While>
-			<TurnIn QuestName="Lightning Rod" QuestId="38058" TurnInName="Tinkmaster Overspark" TurnInId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
-
-			<PickUp QuestName="Signal Boost" QuestId="38060" GiverName="Tinkmaster Overspark" GiverId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
-			<While Condition="DoQuest(38060)" >
-				<MoveTo QuestId="38060" X="3256.109" Y="3165.785" Z="526.7354" />
-				<!-- NOTE: <AddFunction> : Not sure if mobs here auto-aggro or not. May need the bot kill any enemy that gets close in order to defend POI more efficiently. -->
-				<CustomBehavior File="WaitTimer" QuestId="38060" WaitTime="10000" />
-			</While>
-			<TurnIn QuestName="Signal Boost" QuestId="38060" TurnInName="Sky Admiral Rogers" TurnInId="90749" X="3396.464" Y="3071.967" Z="526.5197" />
-		<!-- END Story: The Aftermath -->
+				<TurnIn QuestName="Signal Boost" QuestId="38060" TurnInName="Sky Admiral Rogers" TurnInId="90749" X="3396.464" Y="3071.967" Z="526.5197" />
+			</If>
+		<!-- [A] END Story: The Aftermath -->
 
 		<!-- Story: The Trial of Might -->
 			<PickUp QuestName="The Ancient Trials" QuestId="38210" GiverName="Muninn" GiverId="97306" X="3403.811" Y="3075.332" Z="526.5199" />
@@ -603,7 +609,7 @@
 			</While>
 
 			<While Condition="DoQuest(38816)" >
-				<CustomBehavior File="KillUntilComplete" MobId="93071, 108940, 108939" QuestId="38816" QuestObjectiveIndex="1" >
+				<CustomBehavior File="KillUntilComplete" MobIds="93071, 108940, 108939" QuestId="38816" QuestObjectiveIndex="1" >
 					<HuntingGrounds>
 						<Hotspot X="3406.175" Y="980.4618" Z="102.8668" />
 						<Hotspot X="3460.495" Y="1010.033" Z="102.0813" />
@@ -672,7 +678,7 @@
 			</While>
 
 			<While Condition="DoQuest(38339)" >
-				<CustomBehavior File="KillUntilComplete" MobId="91575" QuestId="38339" QuestObjectiveIndex="X" >
+				<CustomBehavior File="KillUntilComplete" MobId="91575" QuestId="38339" QuestObjectiveIndex="1" >
 					<HuntingGrounds>
 						<Hotspot X="455.9214" Y="383.256" Z="0.9923107" />
 						<Hotspot X="534.2488" Y="371.9657" Z="0.6675625" />
@@ -689,7 +695,7 @@
 			<While Condition="DoQuest(38347)" >
 				<UseMount Value="false" /> <!-- Mounting is disabled for this quest. -->
 				<MoveTo QuestId="38347" X="454.3062" Y="590.1446" Z="-0.7855093" />
-				<UseMount Value="null" /> <!-- User default. -->
+				<UseMount Value="true" />
 			</While>
 			<TurnIn QuestName="Stealth by Seaweed" QuestId="38347" TurnInName="Ashildir" TurnInId="97419" X="453.019" Y="587.0473" Z="-0.7856194" />
 
@@ -712,9 +718,203 @@
 
 			<PickUp QuestName="Sundered" QuestId="39850" GiverName="Ashildir" GiverId="97480" X="327.8507" Y="574.3993" Z="6.265927" />
 			<PickUp QuestName="Allies in Death" QuestId="39851" GiverName="Ashildir" GiverId="97480" X="327.8507" Y="574.3993" Z="6.265927" />
-			<!-- NOTE: <AddBonusObjective> : <PickUp QuestName="Raze Hel" QuestId="38343" GiverName="Ashildir" GiverId="97319" X="XXX" Y="YYY" Z="ZZZ" /> -->
 
+			<While Condition="DoQuest(39851)" >
+				<CustomBehavior File="InteractWith" MobId="97469" NumOfTimes="8" QuestId="39851" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="319.0163" Y="492.7758" Z="2.860995" />
+						<Hotspot X="196.5518" Y="452.5547" Z="0.67696" />
+						<Hotspot X="158.1877" Y="519.7659" Z="-0.08732875" />
+						<Hotspot X="145.2423" Y="610.2613" Z="1.061988" />
+						<Hotspot X="83.74753" Y="623.7702" Z="13.44469" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<While Condition="DoQuest(39850)" >
+				<CustomBehavior File="InteractWith" MobId="97356" QuestId="39850" QuestObjectiveIndex="1" X="232.783" Y="377.2969" Z="7.558586" />
+				<CustomBehavior File="InteractWith" MobId="97570" QuestId="39850" QuestObjectiveIndex="2" X="109.4497" Y="449.408" Z="-12.67941" />
+				<CustomBehavior File="InteractWith" MobId="97571" QuestId="39850" QuestObjectiveIndex="3" X="117.6076" Y="708.4722" Z="18.14151" />
+			</While>
+
+			<TurnIn QuestName="Sundered" QuestId="39850" TurnInName="Ashildir" TurnInId="97480" X="327.8507" Y="574.3993" Z="6.266064" />
+			<TurnIn QuestName="Allies in Death" QuestId="39851" TurnInName="Ashildir" TurnInId="97480" X="327.8507" Y="574.3993" Z="6.266064" />
+
+			<PickUp QuestName="Victory is Eternal" QuestId="39853" GiverName="Ashildir" GiverId="97480" X="327.8507" Y="574.3993" Z="6.266064" />
+			<While Condition="DoQuest(39853)" >
+				<CustomBehavior File="KillUntilComplete" MobId="91948" QuestId="39853" QuestObjectiveIndex="1" X="209.8542" Y="587.158" Z="-4.136475" />
+			</While>
+			<TurnIn QuestName="Victory is Eternal" QuestId="39853" TurnInName="Ashildir" TurnInId="97558" X="210.9591" Y="600.8348" Z="-3.927668" />
+
+			<PickUp QuestName="Paid in Lifeblood" QuestId="39855" GiverName="Ashildir" GiverId="97558" X="210.9591" Y="600.8348" Z="-3.927668" />
+			<While Condition="DoQuest(39855)" >
+				<CustomBehavior File="InteractWith" MobId="244559" GossipOptions="1" QuestId="39855" QuestObjectiveIndex="1" X="490.4288" Y="721.3958" Z="22.35966" />
+				<CustomBehavior File="WaitTimer" QuestId="39855" WaitTime="60000" />
+			</While>
+			<!-- NOTE: <AddBonusObjective> : <PickUp QuestName="Raze Hel" QuestId="38343" GiverName="Ashildir" GiverId="97319" X="XXX" Y="YYY" Z="ZZZ" /> -->
+			<TurnIn QuestName="Paid in Lifeblood" QuestId="39855" TurnInName="Havi" TurnInId="92539" X="3214.377" Y="1543.611" Z="180.6394" />
 		<!-- END Story: To Helheim and Back -->
+
+		<!-- Story: The Champion of Stormheim -->
+			<PickUp QuestName="A Heavy Burden" QuestId="40078" GiverName="Havi" GiverId="92539" X="3214.377" Y="1543.611" Z="180.6394" />
+			<While Condition="DoQuest(40078)" >
+				<CustomBehavior File="InteractWith" MobId="244867" QuestId="40078" QuestObjectiveIndex="1" X="3219.631" Y="1555.299" Z="180.4717" />
+				<CustomBehavior File="MyCTM" X="3196.399" Y="1523.409" Z="180.5488" /> <!-- NOTE: <TechnicalIssue> : Using CTM because MoveTo may get mad. -->
+				<CustomBehavior File="InteractWith" MobId="244872" QuestId="40078" QuestObjectiveIndex="1" X="3194.478" Y="1519.95" Z="183.2737" />
+			</While>
+			<TurnIn QuestName="A Heavy Burden" QuestId="40078" TurnInName="Havi" TurnInId="92539" X="3214.377" Y="1543.611" Z="180.6394" />
+
+			<PickUp QuestName="Knocking on Valor's Door" QuestId="40001" GiverName="Havi" GiverId="92539" X="3214.377" Y="1543.611" Z="180.6394" />
+			<TurnIn QuestName="Knocking on Valor's Door" QuestId="40001" TurnInName="Vethir" TurnInId="97979" X="2875.261" Y="1208.984" Z="188.6805" />
+
+			<PickUp QuestName="A Familiar Fate" QuestId="40002" GiverName="Vethir" GiverId="97979" X="2875.261" Y="1208.984" Z="188.6805" />
+			<While Condition="DoQuest(40002)" >
+				<CustomBehavior File="KillUntilComplete" MobId="97890" QuestId="40002" X="2946.896" Y="1239.424" Z="185.3323" TerminateWhen="HasItem(129106)" />
+				<CustomBehavior File="InteractWith" MobId="91743" GossipOptions="1" QuestId="40002" QuestObjectiveIndex="2" X="2873.212" Y="1207.078" Z="188.68" />
+			</While>
+			<TurnIn QuestName="A Familiar Fate" QuestId="40002" TurnInName="Vethir" TurnInId="97979" X="2875.261" Y="1208.984" Z="188.6802" />
+
+			<PickUp QuestName="Stem the Tide" QuestId="40003" GiverName="Vethir" GiverId="97979" X="2875.261" Y="1208.984" Z="188.6802" />
+			<PickUp QuestName="Break the Spine" QuestId="40004" GiverName="Vethir" GiverId="97979" X="2875.261" Y="1208.984" Z="188.6802" />
+
+			<!-- NOTE: <AddDoWhen> #1 : Need to use extra action button - it changes when used. -->
+
+			<While Condition="DoQuest(40003) || DoQuest(40004)" >
+				<CustomBehavior File="KillUntilComplete" MobId="97944" QuestId="40004" QuestObjectiveIndex="3" X="2555.114" Y="1163.288" Z="205.8028" />
+				<CustomBehavior File="KillUntilComplete" MobId="97859" QuestId="40004" QuestObjectiveIndex="2" X="2512.513" Y="1073.33" Z="216.6867" />
+				<CustomBehavior File="InteractWith" MobId="244681" InteractByUsingItemId="129161" QuestId="40003" QuestObjectiveIndex="3" X="2469.833" Y="1058.2" Z="216.179" />
+				<CustomBehavior File="KillUntilComplete" MobId="97822" QuestId="40004" QuestObjectiveIndex="1" X="2634.317" Y="1021.606" Z="218.5453" />
+				<CustomBehavior File="InteractWith" MobId="244681" InteractByUsingItemId="129161" QuestId="40003" QuestObjectiveIndex="2" X="2601.84" Y="981.4288" Z="215.86" />
+				<CustomBehavior File="KillUntilComplete" MobId="97942" QuestId="40004" QuestObjectiveIndex="4" X="2673.397" Y="891.9393" Z="206.0122" />
+				<CustomBehavior File="InteractWith" MobId="244681" InteractByUsingItemId="129161" QuestId="40003" QuestObjectiveIndex="1" X="2714.29" Y="969.3021" Z="205.2874" />
+			</While>
+
+			<TurnIn QuestName="Stem the Tide" QuestId="40003" TurnInName="Vethir" TurnInId="97986" X="2488.99" Y="959.9774" Z="241.4456" />
+			<TurnIn QuestName="Break the Spine" QuestId="40004" TurnInName="Vethir" TurnInId="97986" X="2488.99" Y="959.9774" Z="241.4456" />
+
+			<PickUp QuestName="Stormheim's Salvation" QuestId="40005" GiverName="Vethir" GiverId="97986" X="2488.99" Y="959.9774" Z="241.4456" />
+			<While Condition="DoQuest(40005)" >
+				<CustomBehavior File="InteractWith" MobId="97986" GossipOptions="1" QuestId="40005" X="2488.99" Y="959.9774" Z="241.4456" />
+				<CustomBehavior File="WaitTimer" WaitTime="45000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <ConditionalCheck> : Make sure this vehicle is considered as flying -->
+				<!-- NOTE: <AddAvoid> : Add avoid Name="Fel Orb" Entry="96091" X="2453.87" Y="921.71" Z="596.3068"
+										Little ball that moves around slowly, does AoE damage if player is within range. 
+										I'm guessing range is about 8.
+				-->
+				<CustomBehavior File="KillUntilComplete" QuestId="40005" QuestObjectiveIndex="1" X="2449.323" Y="907.8177" Z="596.1414" >
+					<PursuitList>
+						<PursueUnit Id="96489" Priority="500" />
+						<PursueUnit Id="92224" Priority="300" />
+						<PursueUnit Id="96491" Priority="300" />
+						<PursueUnit Id="96090" Priority="300" />
+						<PursueUnit Id="92307" Priority="100" />
+					</PursuitList>
+				</CustomBehavior>
+				<!-- detect player z this is a high loc -->
+				<CustomBehavior File="InteractWith" MobId="98190" GossipOptions="1" X="2488.314" Y="945.1337" Z="596.1414" />
+				<CustomBehavior File="WaitTimer" WaitTime="45000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <ConditionalCheck> : Make sure this vehicle is considered as flying -->
+			</While>
+			<TurnIn QuestName="Stormheim's Salvation" QuestId="40005" TurnInName="Havi" TurnInId="97988" X="2497.892" Y="956.9375" Z="241.4456" />
+			<!-- NOTE: <BonusObjective> : <PickUp QuestName="Drive Back the Tideskorn" QuestId="39998" GiverName="Servant of Skovald" GiverId="95620" X="XXX" Y="YYY" Z="ZZZ" /> -->
+			<!-- NOTE: <RemoveDoWhen> #1 : Remove use of extra action button. -->
+		<!-- END Story: The Champion of Stormheim -->
+
+		<!-- [A] Story: Secrets of the Shieldmaidens -->
+			<If Condition="Me.IsAlliance" >
+				<PickUp QuestName="Combustible Contagion" QuestId="39060" GiverName="Genn Greymane" GiverId="94318" X="2862.65" Y="882.9323" Z="79.52061" />
+				<PickUp QuestName="Whispers from the Dark" QuestId="39061" GiverName="Genn Greymane" GiverId="94318" X="2862.65" Y="882.9323" Z="79.52061" />
+				<PickUp QuestName="Cut Out the Heart" QuestId="39472" GiverName="Forsaken Battle Plans" GiverType="GameObject" GiverId="243700" X="2816.588" Y="832.2153" Z="116.1006" />
+
+
+				<While Condition="DoQuest(39060)" >
+					<If Condition="!IsObjectiveComplete(3, 39060)" >
+						<MoveTo X="2824.045" Y="822.4512" Z="115.8041" />
+						<CustomBehavior File="UseItemTargetLocation" MobId="243343" ItemId="127295" UseType="PointToObject" X="2815.386" Y="827.439" Z="115.634" />
+					</If>
+					<If Condition="!IsObjectiveComplete(2, 39060)" >
+						<MoveTo X="2742.615" Y="775.2521" Z="104.2236" />
+						<CustomBehavior File="UseItemTargetLocation" MobId="243344" ItemId="127295" UseType="PointToObject" X="2732.556" Y="768.3316" Z="104.4448" />
+					</If>
+					<If Condition="!IsObjectiveComplete(1, 39060)" >
+						<MoveTo X="2742.615" Y="775.2521" Z="104.2236" />
+						<CustomBehavior File="UseItemTargetLocation" MobId="243339" ItemId="127295" UseType="PointToObject" X="2921.231" Y="712.9722" Z="85.23955" />
+					</If>
+				</While>
+
+				<While Condition="DoQuest(39472)" >
+					<CustomBehavior File="KillUntilComplete" MobId="93987" QuestId="39472" QuestObjectiveIndex="1" X="2778.665" Y="680.6719" Z="103.5451" />
+				</While>
+
+				<While Condition="DoQuest(39061)" >
+					<CustomBehavior File="KillUntilComplete" MobId="94338" QuestId="39061" QuestObjectiveIndex="1" >
+						<HuntingGrounds>
+							<Hotspot X="2852.206" Y="702.8812" Z="95.18153" />
+							<Hotspot X="2749.245" Y="798.0727" Z="103.0218" />
+							<Hotspot X="2775.295" Y="883.8316" Z="95.97731" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</While>
+
+				<TurnIn QuestName="Combustible Contagion" QuestId="39060" TurnInName="Genn Greymane" TurnInId="94318" X="2862.65" Y="882.9323" Z="79.52075" />
+				<TurnIn QuestName="Whispers from the Dark" QuestId="39061" TurnInName="Genn Greymane" TurnInId="94318" X="2862.65" Y="882.9323" Z="79.52075" />
+				<TurnIn QuestName="Whispers from the Dark" QuestId="39061" TurnInName="Genn Greymane" TurnInId="94318" X="2862.65" Y="882.9323" Z="79.52075" />
+
+				<PickUp QuestName="To Skold-Ashil" QuestId="39062" GiverName="Genn Greymane" GiverId="94318" X="2862.65" Y="882.9323" Z="79.52075" />
+				<TurnIn QuestName="To Skold-Ashil" QuestId="39062" TurnInName="Commander Lorna Crowley" TurnInId="93779" X="2862.65" Y="882.9323" Z="79.52075" />
+
+				<PickUp QuestName="Shielded Secrets" QuestId="39063" GiverName="Commander Lorna Crowley" GiverId="93779" X="2862.65" Y="882.9323" Z="79.52075" />
+				<PickUp QuestName="Stories of Battle" QuestId="39405" GiverName="Ashilvara, Verse 1" GiverType="GameObject" GiverId="251571" X="2672.653" Y="1352.054" Z="43.45657" />
+
+				<While Condition="DoQuest(39063)" >
+					<!-- NOTE: <GameClientIssue?> : Objects must be interacted with twice for credit.  First interaction does nothing. -->
+					<CustomBehavior File="InteractWith" MobIds="251561, 251557, 251558, 251559, 251560, 242673" NumOfTimes="6" QuestId="39063" QuestObjectiveIndex="1" >
+						<HuntingGrounds>
+							<Hotspot X="2676.834" Y="1354" Z="42.38579" />
+							<Hotspot X="2662.72" Y="1424.462" Z="27.68061" />
+							<Hotspot X="2724.359" Y="1467.645" Z="23.25597" />
+							<Hotspot X="2780.955" Y="1477.915" Z="23.42056" />
+							<Hotspot X="2854.148" Y="1526.928" Z="8.720257" />
+							<Hotspot X="2714.638" Y="1638.527" Z="14.57451" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</While>
+				<While Condition="DoQuest(39405)" >
+					<CustomBehavior File="KillUntilComplete" MobId="94856" QuestId="39405" QuestObjectiveIndex="1" >
+						<HuntingGrounds>
+							<Hotspot X="2713.493" Y="1593.419" Z="12.75224" />
+							<Hotspot X="2786.372" Y="1466.445" Z="23.25648" />
+							<Hotspot X="2688.976" Y="1458.818" Z="24.56635" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</While>
+
+				<!-- NOTE: <AddBonus> : <PickUp QuestName="Assault on Skold-Ashil" QuestId="39119" GiverName="Tideskorn Warbear" GiverId="98955" X="XXX" Y="YYY" Z="ZZZ" /> -->
+
+
+				<!-- NOTE: <QuestAttributes> : This turn in has no NPC or NPCId.  -->
+				<TurnIn QuestName="Stories of Battle" QuestId="39405" X="2663.134" Y="1521.894" Z="30.21644" />
+				<TurnIn QuestName="Shielded Secrets" QuestId="39063" TurnInName="Commander Lorna Crowley" TurnInId="95921" X="2659.46" Y="1517.764" Z="30.31409" />
+
+				<PickUp QuestName="Becoming the Ascendant" QuestId="39092" GiverName="Commander Lorna Crowley" GiverId="95921" X="2659.46" Y="1517.764" Z="30.31409" />
+				<While Condition="DoQuest(39092)" >
+					<CustomBehavior File="InteractWith" MobId="242998" QuestId="39092" QuestObjectiveIndex="4" X="2597.937" Y="1474.281" Z="25.42198" />
+					<CustomBehavior File="InteractWith" MobId="242996" QuestId="39092" QuestObjectiveIndex="3" X="2597.619" Y="1525.91" Z="26.23458" />
+					<CustomBehavior File="InteractWith" MobId="242995" QuestId="39092" QuestObjectiveIndex="2" X="2485.953" Y="1525.799" Z="25.8883" />
+					<CustomBehavior File="InteractWith" MobId="242994" QuestId="39092" QuestObjectiveIndex="1" X="2485.97" Y="1473.634" Z="25.38543" />
+					<CustomBehavior File="InteractWith" MobId="94393" GossipOptions="1" QuestId="39092" QuestObjectiveIndex="5" X="2541.853" Y="1445.712" Z="26.85922" />
+					<!-- NOTE: <CheckTimer> : Could increase time and add terminatewhen to further optimize -->
+					<CustomBehavior File="WaitTimer" WaitTime="25000" />
+				</While>
+				<TurnIn QuestName="Becoming the Ascendant" QuestId="39092" TurnInName="Genn Greymane" TurnInId="95804" X="2542.802" Y="1418.168" Z="32.51095" />
+
+				<PickUp QuestName="Ending the New Beginning" QuestId="39122" GiverName="Genn Greymane" GiverId="95804" X="2542.802" Y="1418.168" Z="32.51095" />
+				<While Condition="DoQuest(39122)" >
+					<MoveTo QuestId="39122" QuestObjectiveIndex="1" X="2825.3" Y="877.51" Z="78.18" />
+					<!-- NOTE: <CheckCode> : Currently in beta, nothing happens here.  But it's assumed a cutscene starts which needs to be skipped. -->
+					<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+				</While>
+				<TurnIn QuestName="Ending the New Beginning" QuestId="39122" TurnInName="Commander Lorna Crowley" TurnInId="95932" X="2833.457" Y="887.2101" Z="78.51015" />
+			</If>
+		<!-- [A] END Story: Secrets of the Shieldmaidens -->
 
 		<!-- Load class-based profile to transition to a new questing zone. -->
 
