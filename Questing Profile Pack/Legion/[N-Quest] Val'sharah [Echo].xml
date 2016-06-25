@@ -21,24 +21,21 @@
 
 	<AvoidMobs>
 		<Mob Name="Gravax the Desecrator" Entry="92802" />
+		<Mob Name="Magoria" Entry="110423" />
 	</AvoidMobs>
 
-	<Blackspots>
-	</Blackspots>
-
-	<Blacklist>
-	</Blacklist>
-
-	<Mailboxes> 
+	<Mailboxes>
+		<!-- Mailboxes in this zone don't seem to be avtive at the moment. -->
 	</Mailboxes>
 
 	<Vendors>
+		<Vendor Name="Callista Swiftglaive" Type="Repair" Entry="93464" X="2319.413" Y="6611.955" Z="140.3525" /> <!-- Loriathil -->
 		<Vendor Name="Javan Clawthorn" Type="Repair" Entry="92000" X="1951.083" Y="6912.71" Z="52.50054" /> <!-- NOTE: <ConditionalCheck> : UseWhen="!DoQuest(38142)" may be preferred here. -->
 		<Vendor Name="Anelas Moonstone" Type="Food" Entry="110531" X="2832.1" Y="6480.855" Z="206.4948" />
 		<Vendor Name="Vassallorand Nightmist" Type="Repair" Entry="112629" X="2876.16" Y="6754.713" Z="219.5564" />
 		<Vendor Name="Faeolas Nightwhisper" Type="Food" Entry="95118" X="3149.257" Y="5772.391" Z="308.2804" />
 		<Vendor Name="Vassallorand Nightmist" Type="Repair" Entry="112629" X="2876.16" Y="6754.713" Z="219.5563" />
-		<Vendor Name="Rhys Carrington" Type="Repair" Entry="93945" X="2817.958" Y="7264.667" Z="22.13581" />
+		<Vendor Name="Rhys Carrington" Type="Repair" Entry="93945" X="2817.958" Y="7264.667" Z="22.13581" /> <!-- Bradensbrook -->
 	</Vendors>
 
 	<InitOrder>
@@ -130,6 +127,65 @@
 			<PickUp QuestName="Archdruid of the Claw" QuestId="38142" GiverName="Aranelle" GiverId="94179" X="2262.594" Y="6609.824" Z="137.9406" /> <!-- Archdruid of the Claw breadcrumb -->
 			<PickUp QuestName="Archdruid of Lore" QuestId="38381" GiverName="Aranelle" GiverId="94179" X="2262.594" Y="6609.824" Z="137.9406" /> <!-- Archdruid of the Lore breadcrumb -->
 		<!-- END Zone Introductory Quests -->
+
+		<!-- Side Quests -->
+			<PickUp QuestName="Thorny Dancing" QuestId="40220" GiverName="Saylanna Riverbreeze" GiverId="93600" X="2032.776" Y="6644.257" Z="84.91025" />
+			<PickUp QuestName="Spread Your Lunarwings and Fly" QuestId="40221" GiverName="Saylanna Riverbreeze" GiverId="93600" X="2032.776" Y="6644.257" Z="84.91025" />
+
+			<While Condition="DoQuest(40221)" >
+				<CustomBehavior File="InteractWith" MobId="93489" NumOfTimes="8" QuestId="40221" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="1990.604" Y="6707.348" Z="74.22243" />
+						<Hotspot X="1930.482" Y="6704.452" Z="75.16626" />
+						<Hotspot X="1888.888" Y="6569.999" Z="74.17926" />
+						<Hotspot X="1800.472" Y="6560.104" Z="75.57483" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<While Condition="DoQuest(40220)" >
+				<CustomBehavior File="KillUntilComplete" MobId="93444" QuestId="40220" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="1888.74" Y="6524.705" Z="74.65449" />
+						<Hotspot X="1971.427" Y="6571.291" Z="77.63254" />
+						<Hotspot X="1910.443" Y="6721.511" Z="80.28133" />
+						<Hotspot X="2009.188" Y="6742.221" Z="77.49535" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<While Condition="DoQuest(38862) || NeedsQuest(38862)" > <!-- Dropped Quest Item: Auto Accept, - Thieving Thistleleaf -->
+				<CustomBehavior File="KillUntilComplete" MobIds="91472, 91474, 93444" QuestId="38862" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="1888.74" Y="6524.705" Z="74.65449" />
+						<Hotspot X="1971.427" Y="6571.291" Z="77.63254" />
+						<Hotspot X="1910.443" Y="6721.511" Z="80.28133" />
+						<Hotspot X="2009.188" Y="6742.221" Z="77.49535" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<While Condition="!IsQuestCompleted(38842)" > <!-- Bonus Objective: Faerie Fracas -->
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(38842)" >
+					<HuntingGrounds>
+						<Hotspot X="1888.74" Y="6524.705" Z="74.65449" />
+						<Hotspot X="1971.427" Y="6571.291" Z="77.63254" />
+						<Hotspot X="1910.443" Y="6721.511" Z="80.28133" />
+						<Hotspot X="2009.188" Y="6742.221" Z="77.49535" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueUnit Id="93489" />
+						<PursueUnit Id="91472" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="91474" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="93444" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					</PursuitList>
+				</CustomBehavior>
+			</While>
+
+			<TurnIn QuestName="Thorny Dancing" QuestId="40220" TurnInName="Saylanna Riverbreeze" TurnInId="93600" X="2032.776" Y="6644.257" Z="84.90976" />
+			<TurnIn QuestName="Spread Your Lunarwings and Fly" QuestId="40221" TurnInName="Saylanna Riverbreeze" TurnInId="93600" X="2032.776" Y="6644.257" Z="84.90976" />
+			<TurnIn QuestName="Thieving Thistleleaf" QuestId="38862" TurnInName="Saylanna Riverbreeze" TurnInId="93600" X="2032.776" Y="6644.257" Z="84.90976" />
+		<!-- END Side Quests -->
 
 		<!-- Story: Archdruid of Lore -->
 			<TurnIn QuestName="Archdruid of Lore" QuestId="38381" TurnInName="Elothir" TurnInId="91066" X="2386.075" Y="6914.492" Z="110.4472" /> <!-- Archdruid of the Lore breadcrumb -->
@@ -390,9 +446,22 @@
 				</CustomBehavior>
 			</While>
 
-			<!-- NOTE: <BonusObjective> :
-				<PickUp QuestName="Flow of the Nightmare" QuestId="43241" GiverName="EMPTY" GiverId="1234" X="XXX" Y="YYY" Z="ZZZ" />
-			-->
+			<While Condition="DoQuest(43241)" > <!-- Bonus Objective: Flow of the Nightmare -->
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(43241)" >
+					<HuntingGrounds>
+						<Hotspot X="3239.613" Y="5935.024" Z="263.8969" />
+						<Hotspot X="3248.459" Y="6066.122" Z="242.1524" />
+						<Hotspot X="3084.166" Y="6120.797" Z="242.1078" />
+						<Hotspot X="3142.568" Y="6082.146" Z="244.2564" />
+						<Hotspot X="3320.537" Y="6082.48" Z="248.5293" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueGameObject Id="251766" />
+						<PursueUnit Id="95951" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="92383" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					</PursuitList>
+				</CustomBehavior>
+			</While>
 
 
 			<TurnIn QuestName="Reading the Leaves" QuestId="38684" TurnInName="Elothir" TurnInId="92783" X="-7.052065E-05" Y="7.241555E-05" Z="0.02027451" />
@@ -568,6 +637,26 @@
 			<TurnIn QuestName="Illidari Freedom" QuestId="38719" TurnInName="Asha Ravensong" TurnInId="95028" X="3089.549" Y="7450.205" Z="52.49718" />
 			<TurnIn QuestName="Lieutenant of the Tower" QuestId="38721" TurnInName="Maiev Shadowsong" TurnInId="93149" X="3094.365" Y="7464.921" Z="52.85364" />
 			<!-- bonus <PickUp QuestName="Black Rook Hold" QuestId="38716" GiverName="Kaldorei Windgryph" GiverId="91839" XXXX /> -->
+
+			<While Condition="!IsQuestCompleted(38716)" >
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(38716)" >
+					<HuntingGrounds>
+						<Hotspot X="3046.359" Y="7337.608" Z="64.76704" />
+						<Hotspot X="3020.972" Y="7250.142" Z="52.79372" />
+						<Hotspot X="3042.34" Y="7307.839" Z="51.55747" />
+						<Hotspot X="3061.086" Y="7199.141" Z="51.48189" />
+						<Hotspot X="2957.162" Y="7293.915" Z="64.76637" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueGameObject Id="244994" />
+						<PursueGameObject Id="241741" />
+						<PursueUnit Id="91860" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="95430" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="92954" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="93061" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					</PursuitList>
+				</CustomBehavior>
+			</While>
 		<!-- END Story: Black Rook Hold -->
 
 
