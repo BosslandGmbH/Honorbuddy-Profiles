@@ -27,17 +27,19 @@
 		<Mob Name="Cove Skrog" Entry="89097" />
 	</AvoidMobs>
 
-	<Blackspots>
-	</Blackspots>
-
-	<Blacklist>
-	</Blacklist>
-
-	<Mailboxes> 
+	<Mailboxes>
+		<Mailbox Name="Shackle's Den" X="-799.2031" Y="6102.301" Z="5.190535" />
+		<Mailbox Name="Challane's Terrace" X="1373.33" Y="7154.679" Z="61.87209" />
+		<Mailbox Name="Azurewing Repose" X="663.3299" Y="6599.911" Z="60.71575" />
+		<Mailbox Name="Illidari Stand" X="-64.97396" Y="6966.936" Z="15.38536" />
 	</Mailboxes>
 
 	<Vendors>
-		<Vendor Name="Cleave Thunderhill" Type="Repair" Entry="89257" X="-790.5798" Y="6109.849" Z="4.647335" />
+		<Vencor Name="Gentle Rosh" Type="Food" Entry="91457" X="-811.0851" Y="6098.343" Z="7.00528" />
+		<Vendor Name="Cleave Thunderhill" Type="Repair" Entry="89257" X="-790.5798" Y="6109.849" Z="4.647335" /> <!-- Shackle's Den -->
+		<Vendor Name="Vestulio the Servant" Type="Repair" Entry="90638" X="1402.411" Y="7129.866" Z="60.92487" /> <!-- Challane's Terrace -->
+		<Vendor Name="Enchanted Claw of Ceruledan" Type="Repair" Entry="89938" X="624.4566" Y="6616.471" Z="61.76412" /> <!-- Azurewing Repose -->
+		<Vendor Name="Falara Nightsong" Type="Repair" Entry="89640" X="-89.1441" Y="6951.358" Z="14.10535" /> <!-- Illidari Strand -->
 	</Vendors>
 
 	<InitOrder>
@@ -347,7 +349,34 @@
 				</CustomBehavior>
 			</While>
 
-			<!-- Bonus quest can be completed here. 'A Tainted Vintage' -->
+			<PickUp QuestName="Challiane Vineyards" QuestId="38203" GiverName="Cellarman Voodani" GiverId="91061" X="1396.776" Y="7144.244" Z="59.96989" />
+			<While Condition="DoQuest(91065)" >
+				<CustomBehavior File="InteractWith" MobId="90547" InteractByLooting="true" QuestId="91065" QuestObjectiveIndex="3" X="1433.429" Y="7005.435" Z="90.79688" />
+				<CustomBehavior File="InteractWith" MobId="90537" InteractByLooting="true" QuestId="91065" QuestObjectiveIndex="2" X="1243.832" Y="6826.204" Z="120.8751" />
+				<CustomBehavior File="InteractWith" MobId="90541" InteractByLooting="true" QuestId="91065" QuestObjectiveIndex="1" X="1439.657" Y="6723.007" Z="87.88544" />
+			</While>
+			<TurnIn QuestName="Challiane Vineyards" QuestId="38203" TurnInName="Cellarman Voodani" TurnInId="91061" X="1396.776" Y="7144.244" Z="59.96974" />
+
+			<While Condition="DoQuest(37965)" > <!-- Bonus quest: 'A Tainted Vintage' -->
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="!IsQuestCompleted(37965)" >
+					<HuntingGrounds>
+						<Hotspot X="1280.752" Y="6749.125" Z="106.4029" />
+						<Hotspot X="1325.041" Y="6820.668" Z="106.602" />
+						<Hotspot X="1391.928" Y="6956.63" Z="92.99943" />
+						<Hotspot X="1434.908" Y="6970.988" Z="90.33741" />
+						<Hotspot X="1460.784" Y="7004.989" Z="87.23361" />
+						<Hotspot X="1293.588" Y="6936.071" Z="110.4564" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueGameObject Id="91041" />
+						<PursueGameObject Id="91372" />
+						<PursueUnit Id="90480" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="90526" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="90985" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="90542" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					</PursuitList>
+				</CustomBehavior>
+			</While>
 
 			<TurnIn QuestName="The Consumed" QuestId="37859" TurnInName="Projection of Senegos" TurnInId="89978" X="1076.594" Y="6590.372" Z="139.6548" />
 			<TurnIn QuestName="Runas the Shamed" QuestId="37957" TurnInName="Projection of Senegos" TurnInId="89978" X="1076.594" Y="6590.372" Z="139.6548" />
@@ -771,6 +800,51 @@
 			QuestId="37466"  -->
 		<!-- END Story: Azsuna versus Azshara --> 
 
+		<!-- Side Quests -->
+			<PickUp QuestName="Eye See You" QuestId="42375" GiverName="Tehd Shoemaker" GiverId="107244" X="XXX" Y="YYY" Z="ZZZ" />
+			<While Condition="DoQuest(42375)" >
+				<!-- NOTE: <CheckLogic> : LegionBuddy is keeping the XYZ of the player instead of the controlled eye.  Avoid won't work if this remains this way. -->
+				<CustomBehavior File="Hooks\Avoid" AvoidName="EyeOfZoth" Command="Add" ObjectType="Npc" ObjectId="107352" Radius="8" AvoidWhen="Me.HasAura(42375)" />
+				<If Condition="!Me.HasAura(212754)" >
+					<CustomBehavior File="InteractWith" MobId="107252" QuestId="42375" X="532.7066" Y="5623.68" Z="76.85637" />
+				</If>
+				<CustomBehavior File="NoCombatMoveTo" QuestId="42375" QuestObjectiveIndex="1" X="530.3498" Y="5624.368" Z="76.40353" TerminateWhen="!Me.HasAura(212754)" />
+				<CustomBehavior File="NoCombatMoveTo" QuestId="42375" QuestObjectiveIndex="3" X="530.3498" Y="5624.368" Z="76.40353" TerminateWhen="!Me.HasAura(212754)" />
+				<CustomBehavior File="NoCombatMoveTo" QuestId="42375" QuestObjectiveIndex="2" X="530.3498" Y="5624.368" Z="76.40353" TerminateWhen="!Me.HasAura(212754)" />
+				<If Condition="IsQuestCompleted(42375) &amp;&amp; Me.HasAura(42375)" >
+					<CustomBehavior File="Misc\RunLua" Lua="PossessButton2:Click();" />
+				</If>
+			</While>
+			<TurnIn QuestName="Eye See You" QuestId="42375" TurnInName="Tehd Shoemaker" TurnInId="107244" X="534.8368" Y="5623.675" Z="77.29916" />
+
+			<PickUp QuestName="They're Doing it Wrong" QuestId="42369" GiverName="Tehd Shoemaker" GiverId="107244" X="534.8368" Y="5623.675" Z="77.29916" />
+			<PickUp QuestName="Quantity Over Quality" QuestId="42368" GiverName="Marius Felbane" GiverId="107245" X="537.368" Y="5622.202" Z="77.62994" />
+			<PickUp QuestName="Arkethrax" QuestId="42367" GiverName="Marius Felbane" GiverId="107245" X="537.368" Y="5622.202" Z="77.62994" />
+
+			<While Condition="DoQuest(42369)" >
+				<CustomBehavior File="InteractWith" MobId="250361" NumOfTimes="4" QuestId="42369" QuestObjectiveIndex="1" X="589.074" Y="5387.316" Z="51.9563" />
+			</While>
+
+			<While Condition="DoQuest(42367)" >
+				<CustomBehavior File="KillUntilComplete" MobId="106583" QuestId="42367" QuestObjectiveIndex="1" X="457.2517" Y="5399.274" Z="36.3518" />
+			</While>
+
+			<While Condition="DoQuest(42368)" >
+				<CustomBehavior File="KillUntilComplete" MobIds="92447, 92445, 92450" QuestId="42368" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="551.8718" Y="5441.654" Z="52.55776" />
+						<Hotspot X="696.9565" Y="5473.462" Z="70.22731" />
+						<Hotspot X="682.4058" Y="5395.087" Z="54.88621" />
+						<Hotspot X="462.9832" Y="5525.989" Z="63.13039" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<TurnIn QuestName="They're Doing it Wrong" QuestId="42369" TurnInName="Tehd Shoemaker" TurnInId="107244" X="534.8368" Y="5623.675" Z="77.29911" />
+			<TurnIn QuestName="Quantity Over Quality" QuestId="42368" TurnInName="Marius Felbane" TurnInId="107245" X="537.368" Y="5622.202" Z="77.62996" />
+			<TurnIn QuestName="Arkethrax" QuestId="42367" TurnInName="Marius Felbane" TurnInId="107245" X="537.368" Y="5622.202" Z="77.62996" />
+		<!-- END Side Quests -->
+
 		<!-- Story: Against the Giants -->
 			<TurnIn QuestName="Infiltrating Shipwreck Arena" QuestId="37496" TurnInName="Okuna Longtusk" TurnInId="88873" X="-327.2674" Y="6535.986" Z="1.660431" />
 
@@ -784,7 +858,7 @@
 			<PickUp QuestName="Let Sleeping Giants Lie" QuestId="37528" GiverName="Okuna Longtusk" GiverId="88873" X="-327.2674" Y="6535.986" Z="1.660431" />
 
 			<While Condition="DoQuest(37528)" >
-        <MoveTo X="-404.9791" Y="6618.779" Z="0.1315016" />
+				<MoveTo X="-404.9791" Y="6618.779" Z="0.1315016" />
 				<CustomBehavior File="MyCTM" X="-425.5161" Y="6586.762" Z="0.1339368" />
 				<CustomBehavior File="InteractWith" MobId="236931" QuestId="37528" QuestObjectiveIndex="1" X="-422.9809" Y="6578.921" Z="0.2701828" />
 				<CustomBehavior File="WaitTimer" WaitTime="18000" /> <!-- NOTE: <CheckTimer> : Make sure this timer is correct. -->
@@ -877,7 +951,7 @@
 					<!-- Get out of cave -->
 					<MoveTo X="-975.3384" Y="5626.203" Z="4.710858" />
 					<CustomBehavior File="MyCTM" X="-899.052" Y="5682.025" Z="-10.71182" />
-          <MoveTo X="-897.24" Y="5732.023" Z="-1.675074" />
+      			    <MoveTo X="-897.24" Y="5732.023" Z="-1.675074" />
 				</If>
 			</While>
 
