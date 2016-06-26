@@ -123,6 +123,16 @@
 			<PickUp Nav="Fly" QuestName="Welcome to Gorgrond" QuestId="35033" GiverName="Yrel" GiverId="80978" X="6472.39" Y="-165.4722" Z="120.0714" />
 		</If>
 
+
+		<If Condition="HasQuest(35033) &amp;&amp; !IsQuestCompleted(35033)" > <!-- Welcome to Gorgrond -->
+			<While Condition="!IsObjectiveComplete(1, 35033)"> 
+				<MoveTo Nav="Fly" DestName="Welcome to Gorgrond 1" X="6709.346" Y="-125.2724" Z="77.22012" />
+			</While>
+			<While Condition="!IsObjectiveComplete(2, 35033)"> 
+				<MoveTo Nav="Fly" DestName="Welcome to Gorgrond 2" X="6760.303" Y="-183.2191" Z="86.40382" /> <!-- Inside of cave -->
+			</While>
+		</If>
+
 		
 		<If Condition="!IsQuestCompleted(36571)" > <!-- Quest Bonus Objective: Iyun Weald 74k EXP -->
 			<MoveTo Nav="Fly" X="6693.523" Y="83.60176" Z="73.745" />
@@ -150,14 +160,8 @@
 		</If>
 
 
-		<If Condition="HasQuest(35033) &amp;&amp; !IsQuestCompleted(35033)" > <!-- Welcome to Gorgrond -->
-			<While Condition="!IsObjectiveComplete(1, 35033)"> 
-				<MoveTo Nav="Fly" DestName="Welcome to Gorgrond 1" X="6709.346" Y="-125.2724" Z="77.22012" />
-			</While>
-			<While Condition="!IsObjectiveComplete(2, 35033)"> 
-				<MoveTo Nav="Fly" DestName="Welcome to Gorgrond 2" X="6760.303" Y="-183.2191" Z="86.40382" /> <!-- Inside of cave -->
-			</While>
-		</If>
+
+
 		<While Condition="HasQuest(35033) &amp;&amp; !IsQuestCompleted(35033) " > <!-- Welcome to Gorgrond -->
 			<TurnIn Nav="Fly" QuestName="Welcome to Gorgrond" QuestId="35033" TurnInName="Rangari D'kaan" TurnInId="80921" X="6758.518" Y="-183.8646" Z="86.4031" />
 		</While>
@@ -172,9 +176,9 @@
 		<PickUp Nav="Fly" QuestName="Rescue Rangari" QuestId="35050" GiverName="Rangari D'kaan" GiverId="75146" X="6741.146" Y="-102.5382" Z="75.95283" />
 		<PickUp Nav="Fly" QuestName="Lost Mole Machines" QuestId="35055" GiverName="Thaelin Darkanvil" GiverId="75136" X="6733.364" Y="-98.94097" Z="76.86278" />
 		<While Condition="HasQuest(35050) &amp;&amp; !IsQuestCompleted(35050)" > <!-- Rescue Rangari -->
-			<CustomBehavior File="InteractWith" QuestId="35050" MobId="81018" GossipOptions="1" Range="5" TerminateWhen="IsObjectiveComplete(1, 35050)" X="6691.192" Y="205.0382" Z="57.9416" />
-			<CustomBehavior File="InteractWith" QuestId="35050" MobId="81013" GossipOptions="1" Range="5" TerminateWhen="IsObjectiveComplete(2, 35050)" X="6630.991" Y="348.1615" Z="65.5507" />
-			<CustomBehavior File="InteractWith" QuestId="35050" MobId="81020" GossipOptions="1" Range="5" TerminateWhen="IsObjectiveComplete(3, 35050)" X="6397.988" Y="564.0382" Z="94.98792" />
+			<CustomBehavior File="InteractWith" QuestId="35050" MobId="81018" GossipOptions="1" Range="5" NonCompeteDistance="0" TerminateWhen="IsObjectiveComplete(1, 35050)" X="6691.192" Y="205.0382" Z="57.9416" />
+			<CustomBehavior File="InteractWith" QuestId="35050" MobId="81013" GossipOptions="1" Range="5" NonCompeteDistance="0" TerminateWhen="IsObjectiveComplete(2, 35050)" X="6630.991" Y="348.1615" Z="65.5507" />
+			<CustomBehavior File="InteractWith" QuestId="35050" MobId="81020" GossipOptions="1" Range="5" NonCompeteDistance="0" TerminateWhen="IsObjectiveComplete(3, 35050)" X="6397.988" Y="564.0382" Z="94.98792" />
 		</While>
 		<While Condition="HasQuest(35055) &amp;&amp; !IsQuestCompleted(35055)" > <!-- Lost Mole Machines -->
 			<CustomBehavior File="InteractWith" QuestId="35055" MobId="84766" Range="5" X="6312.124" Y="654.2969" Z="101.6551" /> <!-- Gilrin -->
@@ -204,6 +208,7 @@
 		<If Condition="!HasQuest(36432) &amp;&amp; !IsQuestCompleted(36432) &amp;&amp; IsQuestCompleted(35050)" > <!-- Seeking the Scout -->
 			<PickUp Nav="Fly" QuestName="Seeking the Scout" QuestId="36432" GiverName="Rangari D'kaan" GiverId="75146" X="6325.343" Y="706.8889" Z="114.1237" />
 		</If>
+
 		<PickUp Nav="Fly" QuestName="Rangari in the Red" QuestId="35666" GiverName="Rangari D'kaan" GiverId="75146" X="6325.343" Y="706.8889" Z="114.1233" />
 
 		<!-- START ARENA CHAIN HERE -->
@@ -915,15 +920,78 @@
 		<!-- Possibly add an avoid here bc we fail -->
 		<Objective Nav="Fly" QuestName="Heart of the Fen" QuestId="35659" Type="KillMob" MobId="86282" KillCount="1" />
 		<TurnIn Nav="Fly" QuestName="Heart of the Fen" QuestId="35659" TurnInName="Rangari D'kaan" TurnInId="75146" X="6325.343" Y="706.8889" Z="114.1236" />
-		<If Condition="HasQuest(36432)" >
+
+		<If Condition="HasQuest(36432) &amp;&amp; IsQuestCompleted(36432)" >
 			<TurnIn Nav="Fly" QuestName="Seeking the Scout" QuestId="36432" TurnInName="Altauur" TurnInId="85426" X="6883.931" Y="1027.418" Z="72.03157" />
 		</If>
+
+		<If Condition="!IsQuestCompleted(36480)" > <!-- Bonus Objective: Valley of Destruction 76K EXP-->
+			<While Condition="!IsQuestCompleted(36480)" >
+				<If Condition="!HasQuest(36480)">
+					<MoveTo Nav="Fly" X="6967.935" Y="1388.052" Z="30.13299" /> <!-- Move to Start point as it won't proceed Bonus Objective instead if we not in it's zone (i.e. do not have quest) -->
+				</If>
+				<CustomBehavior File="InteractWith" QuestId="36480" Range="1">
+					<HuntingGrounds WaypointVisitStrategy="Random" >
+						<Hotspot X="6967.935" Y="1388.052" Z="30.13299" />
+						<Hotspot X="6943.165" Y="1240.635" Z="36.54565" />
+						<Hotspot X="7000.502" Y="1157.175" Z="27.91434" />
+					</HuntingGrounds>
+					
+					<PursuitList>
+						<!-- Objective #1 <WoWUnit Name="Canyon Boulderbreaker" Entry="81937" X="7129.042" Y="1059.563" Z="33.5094" /> -->
+						<PursueUnit Id="81937" PursueWhen="UNIT.IsAlive &amp;&amp; !IsObjectiveComplete(1, 36480)" ConvertBy="Killing"  Priority="10000"  />
+						<PursueUnit Id="81246" PursueWhen="UNIT.IsAlive &amp;&amp; !IsObjectiveComplete(1, 36480)" ConvertBy="Killing"  Priority="10000"  />
+						<!-- Objective #2 <WoWUnit Name="Goren Nibbler" Entry="81775" X="6988.297" Y="1193.447" Z="27.46465" />-->
+						<PursueUnit Id="81775" PursueWhen="UNIT.IsAlive &amp;&amp; !IsObjectiveComplete(2, 36480)" ConvertBy="Killing" Priority="1000"  />
+						<!-- Objective #3 <WoWUnit Name="Goren Egg" Entry="85567" X="6978.904" Y="1196.587" Z="27.46981" /> -->
+						<PursueUnit Id="85567" PursueWhen="!IsObjectiveComplete(3, 36480)" ConvertBy="Killing" Priority="5000"   />
+					</PursuitList>
+				</CustomBehavior>
+			</While>
+		</If>
+
+		<If Condition="!IsQuestCompleted(36476)" > <!-- Bonus Objective: South Gronn Canyon // For Lumber Mill Only 76K EXP-->
+			<While Condition="!IsQuestCompleted(36476) &amp;&amp; SpellManager.HasSpell(164050)" >
+				<If Condition="!HasQuest(36476)">
+					<MoveTo Nav="Fly" X="6778.184" Y="1350.642" Z="27.24974" /> <!-- Move to Start point as it won't proceed Bonus Objective instead if we not in it's zone (i.e. do not have quest) -->
+				</If>
+				<CustomBehavior File="InteractWith" QuestId="36476" Range="1">
+					<HuntingGrounds WaypointVisitStrategy="Random" >
+						<Hotspot X="6778.184" Y="1350.642" Z="27.24974" />
+						<Hotspot X="6844.147" Y="1479.596" Z="11.49281" />
+						<Hotspot X="6692.038" Y="1486.874" Z="16.81921" />
+						<Hotspot X="6707.415" Y="1217.681" Z="29.08781" />
+					</HuntingGrounds>
+					
+					<PursuitList>
+						<!-- Objective #1 
+							<WoWUnit Name="Drywind Bonepicker" Entry="81207" X="6688.695" Y="1198.996" Z="36.86477" /> 
+							<WoWUnit Name="Boneyard Tunneler" Entry="81518" X="6727.151" Y="1378.922" Z="24.18364" />
+							<WoWUnit Name="Boneyard Gorger" Entry="81206" X="6764.64" Y="1431.203" Z="17.823" />
+						-->
+						<PursueUnit Id="81207" PursueWhen="UNIT.IsAlive &amp;&amp; !IsObjectiveComplete(1, 36476) &amp;&amp; Navigator.CanNavigateFully(Me.Location,UNIT.Location)" Priority="2000" ConvertBy="Killing"   />
+						<PursueUnit Id="81518" PursueWhen="UNIT.IsAlive &amp;&amp; !IsObjectiveComplete(1, 36476) &amp;&amp; Navigator.CanNavigateFully(Me.Location,UNIT.Location)" Priority="5000" ConvertBy="Killing"   />
+						<PursueUnit Id="81206" PursueWhen="UNIT.IsAlive &amp;&amp; !IsObjectiveComplete(1, 36476) &amp;&amp; Navigator.CanNavigateFully(Me.Location,UNIT.Location)" Priority="5000" ConvertBy="Killing"   />
+						<!-- Objective #2
+							<WoWUnit Name="Grom'kar Grunt" Entry="83657" X="6701.367" Y="1209.635" Z="30.55526" />
+							<WoWUnit Name="Grom'kar Grunt" Entry="75091" X="6692.102" Y="1199.008" Z="37.53736" />
+						-->
+						<PursueUnit Id="83657" PursueWhen="UNIT.IsAlive &amp;&amp; !IsObjectiveComplete(2, 36476) &amp;&amp; Navigator.CanNavigateFully(Me.Location,UNIT.Location)" Priority="1000" ConvertBy="Killing" />
+						<PursueUnit Id="75091" PursueWhen="UNIT.IsAlive &amp;&amp; !IsObjectiveComplete(2, 36476) &amp;&amp; Navigator.CanNavigateFully(Me.Location,UNIT.Location)" Priority="1000" ConvertBy="Killing" />
+						<!-- Objective #3 <WoWUnit Name="Grom'kar Peon" Entry="85540" X="6702.273" Y="1219.908" Z="28.32097" /> -->
+						<PursueUnit Id="85540" PursueWhen="UNIT.IsAlive &amp;&amp; !IsObjectiveComplete(3, 36476) &amp;&amp; Navigator.CanNavigateFully(Me.Location,UNIT.Location)" Priority="10000" ConvertBy="Killing"  />
+					</PursuitList>
+				</CustomBehavior>
+			</While>
+		</If>
+
 		<PickUp Nav="Fly" QuestName="Plant Pruning" QuestId="36436" GiverName="Altauur" GiverId="85426" X="6883.931" Y="1027.418" Z="72.03157" />
 		<PickUp Nav="Fly" QuestName="Ambassador to the Ancient" QuestId="36437" GiverName="Altauur" GiverId="85426" X="6883.931" Y="1027.418" Z="72.03157" />
 		<While Condition="HasQuest(36437) &amp;&amp; !IsQuestCompleted(36437)" > <!-- Ambassador to the Ancient -->
 			<CustomBehavior File="InteractWith" QuestId="36437" MobId="81723" Range="5" GossipOptions="1,1,1" PreInteractMountStrategy="Dismount" NonCompeteDistance="0" X="7000" Y="955" Z="80.08334" /> <!-- Birchus -->
 		</While>
 		<Objective Nav="Fly" QuestName="Plant Pruning" QuestId="36436" Type="KillMob" MobId="81721" KillCount="12" />
+
 		<TurnIn Nav="Fly" QuestName="Ambassador to the Ancient" QuestId="36437" TurnInName="Altauur" TurnInId="85432" X="6975.458" Y="869.9393" Z="93.22194" />
 		<TurnIn Nav="Fly" QuestName="Plant Pruning" QuestId="36436" TurnInName="Altauur" TurnInId="85432" X="6975.458" Y="869.9393" Z="93.22194" />
 		<If Condition="IsQuestCompleted(36576)" > <!-- Arena - Beatface vs. Boulder -->
@@ -935,9 +1003,13 @@
 			</If>
 			<TurnIn Nav="Fly" QuestName="Beatface vs. Boulder" QuestId="36438" TurnInName="Altauur" TurnInId="85431" X="6788.46" Y="902.1683" Z="148.9969" />
 		</If>
-		<If Condition="IsQuestCompleted(36575)" > <!-- LM - Shredder vs. Saberon -->
-			<PickUp Nav="Fly" QuestName="Shredder vs. Saberon" QuestId="36439" GiverName="Altauur" GiverId="85432" X="6975.458" Y="869.9393" Z="93.22194" />
-			<MoveTo Nav="Fly" X="7092.143" Y="835.4748" Z="73.02531" /> <!-- Make sure navigator doesn't calculate a bad path through the M2 objects -->
+
+
+		<If Condition="IsQuestCompleted(36575) &amp;&amp; !IsQuestCompleted(36439)" > <!-- LM - Shredder vs. Saberon -->
+			<If Condition="!IsQuestCompleted(36439)">
+				<PickUp Nav="Fly" QuestName="Shredder vs. Saberon" QuestId="36439" GiverName="Altauur" GiverId="85432" X="6975.458" Y="869.9393" Z="93.22194" />
+				<MoveTo Nav="Fly" X="7092.143" Y="835.4748" Z="73.02531" /> <!-- Make sure navigator doesn't calculate a bad path through the M2 objects -->
+			</If>
 			<While Condition="HasQuest(36439) &amp;&amp; !IsQuestCompleted(36439)" > <!-- Shredder vs. Saberon -->
 				<MoveTo X="6943.51" Y="796.7389" Z="147.5094" />
 				<CustomBehavior File="RunCode"><![CDATA[
@@ -1001,6 +1073,7 @@
 			<PickUp Nav="Fly" QuestName="Trophy of Glory: Erosian" QuestId="35808" GiverName="Crystalized Steam" GiverId="113445" GiverType="Item" />
 			<TurnIn Nav="Fly" QuestName="Trophy of Glory: Erosian" QuestId="35808" TurnInName="Vindicator Maraad" TurnInId="75127" X="6337.186" Y="745.6736" Z="116.6775" />
 		</If>
+		
 
 		<If Condition="Me.Level &lt; 94" > <!-- Get to Level 94 -->
 
@@ -1011,66 +1084,6 @@
 			<Objective Nav="Fly" QuestName="Bonus Objective: Valley of Destruction" QuestId="36480" Type="KillMob" MobId="85567" KillCount="15" />
 			<TurnIn Nav="Fly" QuestName="Bonus Objective: Valley of Destruction" QuestId="36480" TurnInName="" TurnInId="" />
 				-->
-			<If Condition="!HasQuest(36480) &amp;&amp; !IsQuestCompleted(36480)" > <!-- 'Pickup' Bonus Objective: Valley of Destruction -->
-				<MoveTo Nav="Fly" DestName="Pick Up Bonus Objective: Valley of Destruction" X="7020.825" Y="1404.965" Z="26.15269" />
-				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for quest to Pick Up {TimeRemaining}" />
-			</If>
-			<If Condition="HasQuest(36480) &amp;&amp; !IsQuestCompleted(36480)" > <!-- 'Complete' Bonus Objective: Valley of Destruction -->
-				<CustomBehavior File="InteractWith" QuestId="36480" MobId="85567" NonCompeteDistance="0" NumOfTimes="20" TerminateWhen="IsObjectiveComplete(3, 36480)"
-												WaitTime="2000" Range="3" CollectionDistance="200" PreInteractMountStrategy="DismountOrCancelShapeshift" >
-					<HuntingGrounds WaypointVisitStrategy="Random" >
-						<Hotspot X="6999.726" Y="1116.282" Z="28.83911" />
-						<Hotspot X="6994.985" Y="1123.327" Z="28.77155" />
-						<Hotspot X="6965.941" Y="1150.213" Z="28.06948" />
-						<Hotspot X="6961.689" Y="1147.142" Z="28.12299" />
-						<Hotspot X="6960.641" Y="1151.604" Z="28.14313" />
-						<Hotspot X="6927.087" Y="1148.004" Z="29.47584" />
-						<Hotspot X="6922.383" Y="1145.63" Z="29.34525" />
-						<Hotspot X="6922.383" Y="1145.63" Z="29.34525" />
-						<Hotspot X="6994.985" Y="1123.327" Z="28.77155" />
-						<Hotspot X="6945.437" Y="1224.083" Z="28.10672" />
-						<Hotspot X="6986.52" Y="1200.704" Z="27.38369" />
-						<Hotspot X="7021.673" Y="1288.212" Z="31.40257" />
-					</HuntingGrounds>
-				</CustomBehavior>
-				<SetGrindArea>
-					<GrindArea>
-						<Factions>2030 2738 14 2716 16</Factions> <!-- 85567 - Goren Egg -->
-						<Hotspots>
-							<Hotspot X="6963.894" Y="1423.057" Z="26.15977" />
-							<Hotspot X="7020.825" Y="1404.965" Z="26.15269" />
-							<Hotspot X="7098.308" Y="1411.323" Z="28.63545" />
-							<Hotspot X="7244.334" Y="1454.366" Z="66.28596" />
-							<Hotspot X="7224.933" Y="1396.552" Z="61.57901" />
-							<Hotspot X="7207.611" Y="1294.929" Z="63.79519" />
-							<Hotspot X="7162.582" Y="1381.233" Z="39.67509" />
-							<Hotspot X="7097.381" Y="1339.029" Z="25.0119" />
-							<Hotspot X="7048" Y="1331.029" Z="27.49425" />
-							<Hotspot X="7067.241" Y="1273.838" Z="27.40787" />
-							<Hotspot X="7107.521" Y="1216.483" Z="26.76979" />
-							<Hotspot X="7114.781" Y="1210.919" Z="26.66657" />
-							<Hotspot X="7173.17" Y="1160.427" Z="30.46492" />
-							<Hotspot X="7038.875" Y="1176.767" Z="38.62389" />
-							<Hotspot X="6993.186" Y="1123.632" Z="29.07555" />
-							<!-- Eggs -->
-							<Hotspot X="6999.726" Y="1116.282" Z="28.83911" />
-							<Hotspot X="6994.985" Y="1123.327" Z="28.77155" />
-							<Hotspot X="6965.941" Y="1150.213" Z="28.06948" />
-							<Hotspot X="6961.689" Y="1147.142" Z="28.12299" />
-							<Hotspot X="6960.641" Y="1151.604" Z="28.14313" />
-							<Hotspot X="6927.087" Y="1148.004" Z="29.47584" />
-							<Hotspot X="6922.383" Y="1145.63" Z="29.34525" />
-							<Hotspot X="6922.383" Y="1145.63" Z="29.34525" />
-							<Hotspot X="6994.985" Y="1123.327" Z="28.77155" />
-							<Hotspot X="6945.437" Y="1224.083" Z="28.10672" />
-							<Hotspot X="6986.52" Y="1200.704" Z="27.38369" />
-							<Hotspot X="7021.673" Y="1288.212" Z="31.40257" />
-						</Hotspots>
-					</GrindArea>  
-				</SetGrindArea>
-				<GrindTo Condition="IsQuestCompleted(36480)" GoalText="Completing Bonus Objective: Valley of Destruction"  />
-				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for quest to Complete {TimeRemaining}" />
-			</If>
 
 			<!-- Get Bonus Objective: Brimstone Springs
 			<PickUp Nav="Fly" QuestName="Bonus Objective: Brimstone Springs" QuestId="36603" GiverName="" GiverId="" /> West of Brimstone Canyon 
@@ -1079,6 +1092,8 @@
 				<Objective Nav="Fly" QuestName="Bonus Objective: Brimstone Springs" QuestId="36603" Type="KillMob" MobId="85942" KillCount="3" />
 			<TurnIn Nav="Fly" QuestName="Bonus Objective: Brimstone Springs" QuestId="36603" TurnInName="" TurnInId="" />
 			-->
+
+
 			<If Condition="!HasQuest(36603) &amp;&amp; !IsQuestCompleted(36603) &amp;&amp; Me.Level &lt; 94" > <!-- 'Pickup' Bonus Objective: Brimstone Springs -->
 				<MoveTo Nav="Fly" DestName="Pick Up Bonus Objective: Brimstone Springs" X="6869.919" Y="1752.798" Z="40.92949" />
 				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for quest to Pick Up {TimeRemaining}" />
@@ -1176,6 +1191,7 @@
 			<CustomBehavior File="Hooks\Avoid" AvoidName="AcidPool" Command="Remove" />
 		</If>
 
+
 		<If Condition="HasItem(113449)" >
 			<If Condition="!HasQuest(35812)" >
 				<PickUp Nav="Fly" QuestName="Trophy of Glory: Crater Lord Igneous" QuestId="35812" GiverName="" GiverId="113449" GiverType="Item" />
@@ -1230,9 +1246,7 @@
 		</If>
 
 
-
-
-		<If Condition="!HasQuest(36495) &amp;&amp; !IsQuestCompleted(36495)" > <!-- News from Talador -->
+		<If Condition="!HasQuest(36495) &amp;&amp; !IsQuestCompleted(36495)  &amp;&amp; !IsQuestCompleted(37183)" > <!-- News from Talador  wont appear to PickUp if completed any Quest from Talador -->
 			<PickUp Nav="Fly" QuestName="News from Talador" QuestId="36495" GiverName="Vindicator Maraad" GiverId="75127" X="6337.186" Y="745.6736" Z="116.6775" />
 			<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:110560&quot;)" WaitTime="15000" /> <!-- Garrison Hearthstone -->
 		</If>
@@ -1241,7 +1255,9 @@
 		<!-- END OF GORGROND -->
 
 		<!-- Garrison -->
-		<TurnIn Nav="Fly" QuestName="News from Talador" QuestId="36495" TurnInName="Bodrick Grey" TurnInId="81492" X="1941.726" Y="330.4358" Z="88.96596" />
+		<If Condition="HasQuest(36495)">
+			<TurnIn Nav="Fly" QuestName="News from Talador" QuestId="36495" TurnInName="Bodrick Grey" TurnInId="81492" X="1941.726" Y="330.4358" Z="88.96596" />
+		</If>
 		<PickUp Nav="Fly" QuestName="The Critical Path" QuestId="37183" GiverName="Bodrick Grey" GiverId="81492" X="1941.726" Y="330.4358" Z="88.96596" />
 
 		<If Condition="HasItem(119317)">
@@ -1299,9 +1315,9 @@
 		<TurnIn Nav="Fly" QuestName="Catching His Eye" QuestId="33062" TurnInName="Archmage Khadgar" TurnInId="77184" X="1510.826" Y="312.0347" Z="66.69157" />
 		<PickUp Nav="Fly" QuestName="Shrouding Stones" QuestId="33115" GiverName="Archmage Khadgar" GiverId="77184" X="1510.826" Y="312.0347" Z="66.69157" />
 		<While Condition="HasQuest(33115) &amp;&amp; !IsQuestCompleted(33115)" > <!-- Shrouding Stones -->
-			<CustomBehavior File="InteractWith" QuestId="33115" MobId="227271" MinRange="5" Range="8" TerminateWhen="IsObjectiveComplete(3, 33115)" PreInteractMountStrategy="Dismount" X="1373.582" Y="672.4375" Z="100.1952" /> <!-- Southern -->
-			<CustomBehavior File="InteractWith" QuestId="33115" MobId="222690" MinRange="5" Range="8" TerminateWhen="IsObjectiveComplete(1, 33115)" PreInteractMountStrategy="Dismount" X="1565.097" Y="726.1684" Z="55.23597" /> <!-- Central -->
-			<CustomBehavior File="InteractWith" QuestId="33115" MobId="227272" MinRange="5" Range="8" TerminateWhen="IsObjectiveComplete(2, 33115)" PreInteractMountStrategy="Dismount" X="1953.625" Y="524.3333" Z="14.86616" /> <!-- Northern -->
+			<CustomBehavior File="InteractWith" QuestId="33115" MobId="227271" MinRange="6" Range="8" TerminateWhen="IsObjectiveComplete(3, 33115)" PreInteractMountStrategy="Dismount" X="1373.582" Y="672.4375" Z="100.1952" /> <!-- Southern -->
+			<CustomBehavior File="InteractWith" QuestId="33115" MobId="222690" MinRange="6" Range="8" TerminateWhen="IsObjectiveComplete(1, 33115)" PreInteractMountStrategy="Dismount" X="1565.097" Y="726.1684" Z="55.23597" /> <!-- Central -->
+			<CustomBehavior File="InteractWith" QuestId="33115" MobId="227272" MinRange="6" Range="8" TerminateWhen="IsObjectiveComplete(2, 33115)" PreInteractMountStrategy="Dismount" X="1953.625" Y="524.3333" Z="14.86616" /> <!-- Northern -->
 		</While>
 		<Objective Nav="Fly" QuestName="A Curse Upon the Woods" QuestId="33120" Type="KillMob" MobId="73101" KillCount="10" />
 		<TurnIn Nav="Fly" QuestName="A Curse Upon the Woods" QuestId="33120" TurnInName="Delas Moonfang" TurnInId="72623" X="1564.929" Y="293.6667" Z="63.66102" />

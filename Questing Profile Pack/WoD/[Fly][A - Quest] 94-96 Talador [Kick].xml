@@ -839,11 +839,18 @@
 				<CustomBehavior File="InteractWith" MobId="86671" WaitTime="0" X="3040.497" Y="2826.125" Z="67.02023" /> <!-- Iron Star -->
 				<CustomBehavior File="WaitTimer" WaitTime="1000" GoalText="Waiting for objective to complete {TimeRemaining}" />
 			</While>
-			<While Condition="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber == 3">
-				<If Condition="!Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(1).IsComplete">
-					<If Condition="!Me.IsOnTransport" > 
-						<CustomBehavior File="InteractWith" MobId="86671" WaitTime="0" X="3040.497" Y="2826.125" Z="67.02023" /> <!-- Iron Star -->
-					</If>
+
+			<!-- Prevent Singular and other CR to cast spells etc -->
+			<If Condition="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber == 3">
+				<CustomBehavior File="RunCode" Code="RoutineManager.SetCapabilityState(CapabilityFlags.Movement, CapabilityState.Disallowed, &quot;Run like Hell&quot;);" />
+				<While Condition="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber == 3">
+					<If Condition="!Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(1).IsComplete">
+						<If Condition="!Me.IsOnTransport" > 
+							<CustomBehavior File="InteractWith" MobId="86671" WaitTime="0" X="3040.497" Y="2826.125" Z="67.02023" /> <!-- Iron Star -->
+							<CustomBehavior File="Misc\RunLua" Lua="ClearTarget();" />
+							<CustomBehavior File="WaitTimer" WaitTime="1000" />
+						</If>
+					
 					<CustomBehavior File="RunLikeHell" AllowCombat="false" UseCTM="true" >
 						<Hotspot X="3040.458" Y="2863.921" Z="61.915" />
 						<Hotspot X="3040.428" Y="2894.201" Z="47.8164" />
@@ -855,12 +862,15 @@
 						<Hotspot X="3268.361" Y="3035.26" Z="20.14467" />
 						<Hotspot X="3294.136" Y="3105.582" Z="20.1447" />
 						<Hotspot X="3358.575" Y="3109.967" Z="20.1451" />
-						<Hotspot X="3433.123" Y="3125.799" Z="20.1449" />					
+						<Hotspot X="3433.123" Y="3125.799" Z="20.1449" />
 					</CustomBehavior>
-				</If>
-				<CustomBehavior File="InteractWith" MobId="77195" GossipOptions="1" X="3451.258" Y="3127.955" Z="20.2411" /> <!-- Khadgar -->
-				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for objective to complete {TimeRemaining}" />
-			</While>
+					</If>
+					<CustomBehavior File="InteractWith" MobId="77195" GossipOptions="1" X="3451.258" Y="3127.955" Z="20.2411" /> <!-- Khadgar -->
+					<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for objective to complete {TimeRemaining}" />
+				</While>
+				<CustomBehavior File="RunCode" Code=" RoutineManager.SetCapabilityState(CapabilityFlags.Movement, CapabilityState.DontCare, &quot;Run like Hell Done&quot;);" />
+			</If>
+
 			<While Condition="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber == 4">
 				<!-- kill mobs / guard khadgar -->
 				<MoveTo Nav="Fly" DestName="The Battle for Shattrath: Stage 4" X="3505.512" Y="3126.001" Z="1.546924" />
