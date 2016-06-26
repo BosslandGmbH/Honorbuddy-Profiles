@@ -297,12 +297,16 @@
 		
 		<PickUp QuestName="Follow that Gyro-Copter!" QuestId="24491" GiverName="Hands Springsprocket" GiverId="6782" />
 		<MoveTo X="-6247.197" Y="306.993" Z="383.5723" />
-		<If Condition="Unit(37113) == null" >
-				<CustomBehavior File="Message" Text="No Npc Viable to Turn In, Reloading UI to Fix it" LogColor="CornflowerBlue" />
-				<CustomBehavior File="Misc\RunLua" Lua="ReloadUI();" />
-				<CustomBehavior File="WaitTimer" WaitTime="5000" />
-				<CustomBehavior File="Misc\RunLua" Lua="AcceptQuest();" />
-		</If>
+        <While Condition="Unit(37113) == null" >
+                <CustomBehavior File="Message" Text="No Npc Viable to Turn In, Reloading UI to Fix it" LogColor="CornflowerBlue" />
+                <CustomBehavior File="Misc\RunLua" Lua="ReloadUI();" />
+                <CustomBehavior File="WaitTimer" WaitTime="5000" />
+                <While Condition="!StyxWoW.IsInWorld">
+                    <CustomBehavior File="WaitTimer" WaitTime="1000" />
+                </While>
+                <CustomBehavior File="WaitTimer" WaitTime="1000" />
+                <CustomBehavior File="Misc\RunLua" Lua="if QuestFrameAcceptButton then QuestFrameAcceptButton:Click(); end" /> <!-- If quest frame is still visible due to client-side error, it will mess up our TurnIn. -->
+        </While>
         <TurnIn QuestName="Follow that Gyro-Copter!" QuestId="24491" TurnInName="Milo Geartwinge" TurnInId="37113" />
         
 		<PickUp QuestName="Pack Your Bags" QuestId="24492" GiverName="Milo Geartwinge" GiverId="37113" />
