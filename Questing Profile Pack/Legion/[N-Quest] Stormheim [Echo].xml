@@ -35,7 +35,7 @@
 		<Vendor Name="Supplier Barleyfoot" Type="Repair" Entry="110521" X="3211.746" Y="3086.97" Z="440.2122" />
 		<Vendor Name="Tinkmaster Overspark" Type="Repair" Entry="90866" X="3395.593" Y="3077.832" Z="526.3278" UseWhen="IsQuestCompleted(38060)" />
 		<Vendor Name="Supplier Barleyfoot" Type="Repair" Entry="110521" X="2702.516" Y="2855.519" Z="308.8194" />
-		<Vendor Name="Hankerin Ferinale" Type="Repair" Entry="98109" X="2832.689" Y="903.7344" Z="77.96029" UseWhen="Me.IsAlliance" />
+		<Vendor Name="Hankerin Ferinale" Type="Repair" Entry="98109" X="2832.689" Y="903.7344" Z="77.96029" UseWhen="Me.IsAlliance" /> <!-- Greywatch -->
 		
 		<Vendor Name="Kah'chu" Type="Repair" Entry="27188" X="373.0156" Y="358.8663" Z="28.41259" /> <!-- UseWhen="Me.MapId == XXX" Need the MapId for Helheim -->
 	</Vendors>
@@ -173,21 +173,32 @@
 				<PickUp QuestName="Assault and Battery" QuestId="38053" GiverName="Tinkmaster Overspark" GiverId="90866" X="3210.996" Y="3083.518" Z="440.2122" />
 				<PickUp QuestName="See Ya Later, Oscillator" QuestId="38558" GiverName="Tinkmaster Overspark" GiverId="90866" X="3210.996" Y="3083.518" Z="440.2122" />
 
-				<While Condition="DoQuest(38052, 38036)" >
-					<CustomBehavior File="InteractWith" NumOfTimes="13" TerminateWhen="!DoQuest(38052, 38036)">
+				<PickUp QuestName="The Lost Legion" QuestId="38057" GiverName="Mishka" GiverId="90783" X="3213.321" Y="3074.431" Z="440.2121" />
+				<TurnIn QuestName="The Lost Legion" QuestId="38057" TurnInName="Knight-Captain Rhodes" TurnInId="92414" X="2934.813" Y="3224.209" Z="529.3346" />
+				<PickUp QuestName="Pins and Needles" QuestId="38059" GiverName="Knight-Captain Rhodes" GiverId="92414" X="2934.813" Y="3224.209" Z="529.3346" />
+
+
+				<While Condition="DoQuest(38052, 38036, 38059)" >
+					<CustomBehavior File="InteractWith" NumOfTimes="20" MobState="Dead" TerminateWhen="!DoQuest(38052, 38036)">
 						<HuntingGrounds>
 							<Hotspot X="3094.188" Y="3026.487" Z="422.5561" />
 							<Hotspot X="3112.146" Y="2990.337" Z="424.4672" />
 							<Hotspot X="3101.098" Y="2983.318" Z="411.4773" />
 							<Hotspot X="2975.045" Y="3057.561" Z="419.728" />
+							<Hotspot X="2891.03" Y="3338.137" Z="515.7325" />
+							<Hotspot X="3045.282" Y="3367.531" Z="546.4993" />
+							<Hotspot X="3127.656" Y="3278.747" Z="547.641" />
 						</HuntingGrounds>
 						<PursuitList>
 							<PursueGameObject Id="241275" PursueWhen="!IsObjectiveComplete(1, 38036)" />
-							<PursueUnit Id="92224" ConvertWhen="!IsObjectiveComplete(1, 38052)" PursueWhen="!IsObjectiveComplete(1, 38052)" ConvertBy="Killing" />
-							<PursueUnit Id="90899" ConvertWhen="!IsObjectiveComplete(1, 38052)" PursueWhen="!IsObjectiveComplete(1, 38052)" ConvertBy="Killing" />
+							<PursueUnit Id="92224" PursueWhen="!IsObjectiveComplete(1, 38052) &amp;&amp; (UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+							<PursueUnit Id="90899" PursueWhen="!IsObjectiveComplete(1, 38052) &amp;&amp; (UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+							<PursueUnit Id="90948" PursueWhen="!IsObjectiveComplete(1, 38059)" />
 						</PursuitList>
 					</CustomBehavior>
 				</While>
+				
+				<TurnIn QuestName="Pins and Needles" QuestId="38059" TurnInName="Mishka" TurnInId="90783" />
 
 				<While Condition="DoQuest(38558)" >
 					<CustomBehavior File="InteractWith" MobId="240286" QuestId="38558" QuestObjectiveIndex="1" X="2962.239" Y="3081.73" Z="420.6721" />
@@ -324,7 +335,23 @@
 				<CustomBehavior File="WaitTimer" QuestId="39597" QuestObjectiveIndex="1" WaitTime="18000" />
 			</While>
 
-			<!-- NOTE: <BonusObjective>: <PickUp QuestName="A Worthy Challenger" QuestId="38442" GiverName="God-King Skovald" GiverId="96314" XXXX /> -->
+			<While Condition="!IsQuestCompleted(96314)" > <!-- Bonus Objective: A Worthy Challenger -->
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(96314)" >
+					<HuntingGrounds>
+						<Hotspot X="3340.818" Y="2479.66" Z="253.7271" />
+						<Hotspot X="3460.473" Y="2516.221" Z="270.6031" />
+						<Hotspot X="3469.948" Y="2457.49" Z="255.4726" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueGameObject Id="243842" />
+						<PursueGameObject Id="100435" />
+						<PursueUnit Id="108306" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="108289" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="96135" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="108283" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					</PursuitList>
+				</CustomBehavior>
+			</While>
 
 			<TurnIn QuestName="The Blessing of the Watchers" QuestId="39597" TurnInName="Havi" TurnInId="96254" X="3275.418" Y="2528.082" Z="301.0428" />
 		<!-- END Story: The Trial of Might -->
@@ -751,7 +778,35 @@
 				<CustomBehavior File="InteractWith" MobId="244559" GossipOptions="1" QuestId="39855" QuestObjectiveIndex="1" X="490.4288" Y="721.3958" Z="22.35966" />
 				<CustomBehavior File="WaitTimer" QuestId="39855" WaitTime="60000" />
 			</While>
+
 			<!-- NOTE: <AddBonusObjective> : <PickUp QuestName="Raze Hel" QuestId="38343" GiverName="Ashildir" GiverId="97319" X="XXX" Y="YYY" Z="ZZZ" /> -->
+			<While Condition="!IsQuestCompleted(38343)" >
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(38343)" >
+					<HuntingGrounds>
+						<Hotspot X="491.6612" Y="388.845" Z="2.042655" />
+						<Hotspot X="467.4048" Y="305.7835" Z="2.389256" />
+						<Hotspot X="506.0259" Y="240.4055" Z="1.436843" />
+						<Hotspot X="382.5127" Y="415.3322" Z="18.28056" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueGameObject Id="241832" />
+						<PursueGameObject Id="241779" />
+						<PursueGameObject Id="241693" />
+						<PursueGameObject Id="244587" />
+						<PursueGameObject Id="241729" />
+						<PursueGameObject Id="244587" />
+						<PursueGameObject Id="241782" />
+						<PursueGameObject Id="241688" />
+						<PursueGameObject Id="244587" />
+						<PursueUnit Id="91818" />
+						<PursueUnit Id="91384" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="91575" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="93377" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					</PursuitList>
+				</CustomBehavior>
+			</While>
+
+
 			<TurnIn QuestName="Paid in Lifeblood" QuestId="39855" TurnInName="Havi" TurnInId="92539" X="3214.377" Y="1543.611" Z="180.6394" />
 		<!-- END Story: To Helheim and Back -->
 
@@ -915,6 +970,25 @@
 				<TurnIn QuestName="Ending the New Beginning" QuestId="39122" TurnInName="Commander Lorna Crowley" TurnInId="95932" X="2833.457" Y="887.2101" Z="78.51015" />
 			</If>
 		<!-- [A] END Story: Secrets of the Shieldmaidens -->
+
+		<!-- Note sure where to wedge this in.
+			<PickUp QuestName="The Brood of Nithogg" QuestId="42431" GiverName="Adult Squallhunter" GiverId="99223" X="XXX" Y="YYY" Z="ZZZ" />
+			<While Condition="!IsQuestCompleted(42431)" >
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(42431)" >
+					<HuntingGrounds>
+						<Hotspot X="3764.815" Y="2363.997" Z="400.5123" />
+						<Hotspot X="3808.989" Y="2319.056" Z="395.0925" />
+						<Hotspot X="4032.355" Y="2445.337" Z="316.3226" />
+						<Hotspot X="4078.506" Y="2551.034" Z="253.6078" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueGameObject Id="250427" />
+						<PursueUnit Id="99223" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="107258" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="107455" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					</PursuitList>
+				</CustomBehavior>
+			</While> -->
 
 		<!-- Load class-based profile to transition to a new questing zone. -->
 
