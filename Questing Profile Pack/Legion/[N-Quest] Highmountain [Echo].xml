@@ -31,18 +31,20 @@
 
 	<Mailboxes>
 		<Mailbox X="4070.627" Y="4325.143" Z="768.275" /> <!-- Thunder Totem -->
-		<Mailbox X="4067.306" Y="4324.686" Z="768.1508" /> <!-- Thunder Totem --.
-		<Mailbox X="4853.22" Y="3958.505" Z="832.6034" --> <!-- Skyhorn -->
+		<Mailbox X="4067.306" Y="4324.686" Z="768.1508" /> <!-- Thunder Totem -->
+		<Mailbox X="4853.22" Y="3958.505" Z="832.6034" /> <!-- Skyhorn -->
+		<Mailbox Name="CLiff's Edge" X="5215.825" Y="4898.948" Z="710.8175" /> <!-- CLiff's Edge -->
 	</Mailboxes>
 
 	<Vendors>
 		<Vendor Name="Galica Bravepaw" Type="Repair" Entry="97858" X="4069.965" Y="4410.103" Z="768.1867" />
 		<Vendor Name="Lucas Sigmund" Type="Repair" Entry="94100" X="4494.187" Y="4865.437" Z="662.1328" />
-		<Vendor Name="Bar'tu Silverstream" Type="Repair" Entry="97869" X="5114.556" Y="4973.081" Z="752.5872" />
+		<Vendor Name="Bar'tu Silverstream" Type="Repair" Entry="97869" X="5114.556" Y="4973.081" Z="752.5872" /> <!-- The Witchwood -->
 		<Vendor Name="Shale Greyfeather" Type="Repair" Entry="99905" X="4106.347" Y="4405.938" Z="768.1934" /> <!-- Thunder Totem -->
 		<Vendor Name="De'tu Frostwing" Type="Repair" Entry="97865" X="4814.677" Y="3915.732" Z="826.8667" /> <!-- Skyhorn -->
 		<Vendor Name="Cale Fireheart" Type="Repair" Entry="97876" X="3935.39" Y="3899.267" Z="905.3173" />
-		<Vendor Name="Crafty Palu" Type="Repair" Entry="108537" X="6470.426" Y="4746.604" Z="12.73519" />
+		<Vendor Name="Crafty Palu" Type="Repair" Entry="108537" X="6470.426" Y="4746.604" Z="12.73519" /> <!-- Shipwreck Cove -->
+		<Vendor Name="Adaleigh Mae Nelson" Type="Food" Entry="108534" X="6455.857" Y="4732.254" Z="13.12072" /> <!-- Shipwreck Cove -->
 		<Vendor Name="Darbrul" Type="Repair" Entry="99205" X="5867.962" Y="4547.085" Z="614.298" UseWhen="IsQuestCompleted(40229)" />
 	</Vendors>
 
@@ -671,7 +673,21 @@
 				</CustomBehavior>
 			</While>
 
-			<!-- NOTE: <BonusObjective> : <PickUp QuestName="Witches of the Sky" QuestId="39371" GiverName="Witchwood Hag" GiverId="95310" XXXX /> -->
+			<While Condition="!IsQuestCompleted(39371)" > <!-- Bonus Objective: Witches of the Sky -->
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(39371)" >
+					<HuntingGrounds>
+						<Hotspot X="5425.975" Y="4756.039" Z="665.6051" />
+						<Hotspot X="5561.418" Y="4789.268" Z="664.9429" />
+						<Hotspot X="5666.565" Y="4703.388" Z="676.524" />
+						<Hotspot X="5523.857" Y="4718.088" Z="661.813" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueGameObject Id="243401" />
+						<PursueUnit Id="95310" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="95270" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					</PursuitList>
+				</CustomBehavior>
+			</While>
 
 			<TurnIn QuestName="Witch of the Wood" QuestId="39372" TurnInName="Oakin Ironbull" TurnInId="95256" X="5221.074" Y="4902.253" Z="711.7546" />
 			<TurnIn QuestName="Hags of a Feather" QuestId="39373" TurnInName="Oakin Ironbull" TurnInId="95256" X="5221.074" Y="4902.253" Z="711.7546" />
@@ -738,7 +754,21 @@
 				<CustomBehavior File="KillUntilComplete" MobId="95707" QuestId="39426" QuestObjectiveIndex="1" X="5849.952" Y="4188.59" Z="716.9656" />
 			</While>
 			<TurnIn QuestName="Blood Debt" QuestId="39426" TurnInName="Navarrogg" TurnInId="95392" X="5821.911" Y="4201.273" Z="709.0323" />
-			<!-- NOTE: <BonusObjective> : <PickUp QuestName="Vengeance for the Stonedark" QuestId="42373" GiverName="Feltotem Warmonger" GiverId="95290" XXXX /> -->		
+
+			<While Condition="!IsQuestCompleted(42373)" > <!-- Bonus Objective: Vengeance for the Stonedark -->
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(42373)" >
+					<HuntingGrounds>
+						<Hotspot X="5665.234" Y="4269.152" Z="694.9038" />
+						<Hotspot X="5675.331" Y="4308.199" Z="699.7321" />
+						<Hotspot X="5800.514" Y="4369.218" Z="686.517" />
+					</HuntingGrounds>
+					<PursuitList>
+						<!-- <PursueGameObject Id="1234" />, NOTE: <CheckLater> : objects glow around the area as if they can be used, but I think it's broken. -->
+						<PursueUnit Id="104323" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="95290" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					</PursuitList>
+				</CustomBehavior>
+			</While>	
 		<!-- END Story: The Bloodtotem Tribe -->
 
 			<PickUp QuestName="Step into the Dark" QuestId="40229" GiverName="EMPTY" GiverId="95392" X="5821.911" Y="4201.273" Z="709.0323" />
@@ -993,7 +1023,23 @@
 				</CustomBehavior>
 			</While>
 
-			<!-- NOTE: <BonusObjective> : <PickUp QuestName="Shipwreck Cove" QuestId="40050" GiverName="Pufferfish" GiverId="98037" XXXX /> -->
+			<While Condition="!IsQuestCompleted(40050)" > <!-- Bonus Objective: Shipwreck Cove -->
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(40050)" >
+					<HuntingGrounds>
+						<Hotspot X="6549.021" Y="4641.655" Z="2.444716" />
+						<Hotspot X="6478.498" Y="4581.215" Z="3.787579" />
+						<Hotspot X="6581.625" Y="4560.955" Z="-0.2623894" />
+						<Hotspot X="6560.754" Y="4480.689" Z="0.8049188" />
+						<Hotspot X="6509.261" Y="4498.851" Z="3.715424" />
+						<Hotspot X="6642.09" Y="4437.276" Z="9.893691" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueGameObject Id="245350" />
+						<PursueUnit Id="97919" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="97920" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					</PursuitList>
+				</CustomBehavior>
+			</While>
 
 			<TurnIn QuestName="Nature vs. Nurture" QuestId="40045" TurnInName="King Mrgl-Mrgl" TurnInId="98067" X="6447.201" Y="4667.913" Z="13.13795" />
 			<TurnIn QuestName="I'll Huff, I'll Puff..." QuestId="40047" TurnInName="King Mrgl-Mrgl" TurnInId="98067" X="6447.201" Y="4667.913" Z="13.13795" />
