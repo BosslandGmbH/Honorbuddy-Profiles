@@ -1,0 +1,206 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Hunter - Survial - Talonclaw Artifact [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+			<If Condition="HasQuest(40618)" > <!-- Loc: Dalaran -->
+				<TurnIn QuestName="Weapons of Legend" QuestId="40618" TurnInName="Emmarel Shadewarden" TurnInId="102478" X="-876.658" Y="4379.09" Z="739.1406" />
+			</If>
+
+			<!-- Story: Artifact Weapon - Talonclaw -->
+				<If Condition="Me.Specialization == WoWSpec.Survival &amp;&amp; !HasItem(128808)" >
+					<PickUp QuestName="Preparation for the Hunt" QuestId="41542" GiverName="Emmarel Shadewarden" GiverId="102478" X="-876.658" Y="4379.09" Z="739.1406" />
+					<TurnIn QuestName="Preparation for the Hunt" QuestId="41542" TurnInName="Apata Highmountain" TurnInId="104382" X="-858.3577" Y="4287.647" Z="746.2834" />
+
+					<PickUp QuestName="The Eagle Spirit's Blessing" QuestId="39427" GiverName="Apata Highmountain" GiverId="104382" X="-858.3577" Y="4287.647" Z="746.2834" />
+					<While Condition="DoQuest(39427)" >
+						<CustomBehavior File="InteractWith" MobId="100965" QuestId="39427" QuestObjectiveIndex="1" X="-859.3976" Y="4282.78" Z="746.283" />
+						<CustomBehavior File="WaitTimer" QuestId="39427" QuestObjectiveIndex="1" WaitTime="120000" />
+						<MoveTo QuestId="39428" QuestObjectiveIndex="2" X="3143.619" Y="3458.598" Z="773.808" />
+						<CustomBehavior File="KillUntilComplete" MobId="110685" QuestId="39427" QuestObjectiveIndex="3" X="3139.728" Y="3530.74" Z="771.322" />
+						<MoveTo QuestId="39427" QuestObjectiveIndex="4" X="3152.996" Y="3392.207" Z="773.7906" />
+						<!-- NOTE: <Check> : May need to wait a little bit for the NPC to catch up. -->
+						<CustomBehavior File="InteractWith" MobId="110901" QuestId="39427" QuestObjectiveIndex="4" X="3154.5" Y="3380.82" Z="774.186" />
+					</While>
+					<TurnIn QuestName="The Eagle Spirit's Blessing" QuestId="39427" TurnInName="Apata Highmountain" TurnInId="110821" X="3148.192" Y="3391.234" Z="773.7953" />
+
+					<PickUp QuestName="The Spear in the Shadow" QuestId="40385" GiverName="Apata Highmountain" GiverId="110986" X="3148.169" Y="3391.162" Z="773.7974" />
+					<While Condition="DoQuest(40385)" >
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+							<CustomBehavior File="InteractWith" MobId="110985" QuestId="40385" QuestObjectiveIndex="1" X="3154.497" Y="3380.818" Z="774.2692" />
+							<CustomBehavior File="WaitTimer" QuestId="40385" QuestObjectiveIndex="1" WaitTime="60000" />
+							<CustomBehavior File="InteractWith" MobId="99374" GossipOptions="1" QuestId="40385" QuestObjectiveIndex="2" X="3371.664" Y="1915.839" Z="1.61386" />
+							<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+						</If>
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2">
+							<MoveTo X="3371.443" Y="1723.903" Z="-0.2859921" />
+						</If>
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+							<CustomBehavior File="KillUntilComplete" MobId="100173" X="3379.159" Y="1696.113" Z="0.202059" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+							<!-- Defeat with Freezing Trap, but it should complete without using Freezing Trap. -->
+						</If>
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+							<CustomBehavior File="InteractWith" MobId="101325" X="3383.265" Y="1690.875" Z="2.709126" />
+						</If>
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+							<CustomBehavior File="InteractWith" MobId="101325" WaitForNpcs="false" X="3439.378" Y="1621.321" Z="11.61867" />
+							<CustomBehavior File="InteractWith" MobId="101325" WaitForNpcs="false" X="3495.175" Y="1631.854" Z="7.509228" />
+							<CustomBehavior File="InteractWith" MobId="101325" WaitForNpcs="false" X="3484.626" Y="1551.488" Z="7.51373" />
+						</If>
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+							<CustomBehavior File="InteractWith" MobId="100221" GossipOptions="1,1" X="3534.677" Y="1823.814" Z="0.8274691" />
+							<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+						</If>
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+							<CustomBehavior File="InteractWith" MobId="245212" X="3531.51" Y="1817.118" Z="0.6998095" />
+							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 7" />
+						</If>
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8" >
+							<MoveTo X="3611.785" Y="1788.806" Z="2.892792" />
+							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 7" />
+							<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+						</If>
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 9" >
+							<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Me.Combat" />
+							<CustomBehavior File="RunCode" Code="
+								SpellManager.Cast(1543);
+								await Coroutine.Sleep(750);
+								SpellManager.ClickRemoteLocation(Me.Location);" />
+						</If>
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 10" >
+							<CustomBehavior File="InteractWith" MobId="100367" X="3663.116" Y="1847.524" Z="1.001017" />
+							<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 10" />
+						</If>
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 11" >
+							<CustomBehavior File="InteractWith" MobId="100367" X="3734.792" Y="1704.929" Z="0.8333333" />
+							<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 11" />
+						</If>
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 12" >
+							<CustomBehavior File="KillUntilComplete" MobId="99480" X="3872.277" Y="1637.849" Z="-0.328723" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 12" />
+						</If>
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 13" >
+							<CustomBehavior File="InteractWith" MobId="248834" InteractByLooting="true" WaitTime="1500"w X="3879.121" Y="1639.92" Z="-0.07389323" />
+							<!-- There's two Talonclaws here? 
+							Name="Talonclaw" Entry="100310" X="3879.201" Y="1639.851" Z="0.01306631" -->
+							<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+							<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+						</If>
+						<If Condition="HasItem(128808)" >
+							<CustomBehavior File="RunCode"><![CDATA[
+								WoWItem dalHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+								var currentZoneId == StyxWoW.Me.ZoneId;
+								if (dalHearth.Cooldown != 0) {
+									Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[PROFILE]: Awaiting Hearthstone cooldown before attempting hearth!");
+									await Coroutine.Wait(910000, () => dalHearth.Cooldown == 0);
+								}
+								dalHearth.Interact();
+								await Coroutine.Wait(60000, () => MeZoneId != currentZoneId);
+								await Coroutine.Sleep(1500);
+								]]>
+							</CustomBehavior>
+						</If>
+					</While>
+					<TurnIn QuestName="The Spear in the Shadow" QuestId="40385" TurnInName="Emmarel Shadewarden" TurnInId="102478" X="-876.658" Y="4379.09" Z="739.1406" />
+				</If>
+			<!-- END Story: Artifact Weapon - Talonclaw -->
+
+
+			<PickUp QuestName="On Eagle's Wings" QuestId="40953" GiverName="Emmarel Shadewarden" GiverId="102478" X="-876.658" Y="4379.09" Z="739.1407" />
+			<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
+
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Hunter [Echo].xml" />
+
+	</QuestOrder>
+</HBProfile>

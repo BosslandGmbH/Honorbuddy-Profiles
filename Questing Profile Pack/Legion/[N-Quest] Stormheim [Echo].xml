@@ -1,4 +1,4 @@
-<HBProfile xsi:noNamespaceSchemaLocation="../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<HBProfile xsi:noNamespaceSchemaLocation="../Schemas/EchoSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<!-- Original contribution by EchoTiger -->
 	<Name>[N-Quest] Stormheim [Echo]</Name>
 
@@ -36,6 +36,9 @@
 		<Vendor Name="Tinkmaster Overspark" Type="Repair" Entry="90866" X="3395.593" Y="3077.832" Z="526.3278" UseWhen="IsQuestCompleted(38060)" />
 		<Vendor Name="Supplier Barleyfoot" Type="Repair" Entry="110521" X="2702.516" Y="2855.519" Z="308.8194" />
 		<Vendor Name="Hankerin Ferinale" Type="Repair" Entry="98109" X="2832.689" Y="903.7344" Z="77.96029" UseWhen="Me.IsAlliance" /> <!-- Greywatch -->
+		<Vendor Name="Provisioner Sheldon" Type="Repair" Entry="110534" X="4099.574" Y="2940.889" Z="27.33306" UseWhen="Me.IsHorde &amp;&amp; IsQuestCompleted(39801)" /> <!-- Cove of Nashal -->
+		<Vendor Name="Quartermaster Ricard" Type="Repair" Entry="91535" X="3974.075" Y="2892.368" Z="241.747" UseWhen="Me.IsHorde &amp;&amp; IsQuestCompleted(38362)" />
+		<Vendor Name="Julietta Smythe" Type="Repair" Entry="92839" X="2403.472" Y="1842.389" Z="18.8205" UseWhen="Me.IsHorde" />
 		
 		<Vendor Name="Kah'chu" Type="Repair" Entry="27188" X="373.0156" Y="358.8663" Z="28.41259" /> <!-- UseWhen="Me.MapId == XXX" Need the MapId for Helheim -->
 	</Vendors>
@@ -101,175 +104,373 @@
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
 
-		<!-- [A] Zone Introductory Quests -->
-			<If Condition="Me.IsAlliance" >
-				<TurnIn QuestName="Stormheim" QuestId="39735" TurnInName="Sky Admiral Rogers" TurnInId="96644" X="-840.5087" Y="4633.81" Z="749.4136" />
+		<!-- [A] Alliance Quest Section -->
+			<!-- [A] Zone Introductory Quests -->
+				<If Condition="Me.IsAlliance" >
+					<TurnIn QuestName="Stormheim" QuestId="39735" TurnInName="Sky Admiral Rogers" TurnInId="96644" X="-840.5087" Y="4633.81" Z="749.4136" />
 
-				<PickUp QuestName="A Royal Summons" QuestId="38035" GiverName="Sky Admiral Rogers" GiverId="96644" X="-840.5087" Y="4633.81" Z="749.4136" />
-				<While Condition="DoQuest(38035)" >
-					<CustomBehavior File="UseItem" ItemId="128687" QuestId="38035" QuestObjectiveIndex="1" />
-					<CustomBehavior File="InteractWith" MobId="244567" QuestId="38035" QuestObjectiveIndex="2" X="-830.9566" Y="4655.491" Z="749.6113" />
-				</While>
-				<TurnIn QuestName="A Royal Summons" QuestId="38035" TurnInName="Sky Admiral Rogers" TurnInId="96644" X="-8491.159" Y="1394.033" Z="196.3758" />
-
-				<PickUp QuestName="Making the Rounds" QuestId="38206" GiverName="Sky Admiral Rogers" GiverId="96644" X="-8491.159" Y="1394.033" Z="196.3758" />
-				<While Condition="DoQuest(38206)" >
-					<CustomBehavior File="InteractWith" MobId="110898" QuestId="38206" QuestObjectiveIndex="1" X="-8534.451" Y="1400.251" Z="198.6206" />
-					<MoveTo QuestId="38206" QuestObjectiveIndex="2" X="-8548.114" Y="1399.016" Z="193.6293" />
-					<CustomBehavior File="Misc\RunLua" QuestId="38206" QuestObjectiveIndex="2" Lua="ExtraActionButton1:Click();" />
-					<MoveTo QuestId="38206" QuestObjectiveIndex="3" X="-8584.947" Y="1399.771" Z="196.4226" />
-					<CustomBehavior File="WaitTimer" QuestId="38206" QuestObjectiveIndex="3" WaitTime="30000" />
-				</While>
-				<TurnIn QuestName="Making the Rounds" QuestId="38206" TurnInName="Genn Greymane" TurnInId="96663" X="-8587.822" Y="1398.612" Z="196.5768" />
-			</If>
-		<!-- [A] END Zone Introductory Quests -->
-
-		<!-- [A] Story: Greymane's Gambit -->
-			<If Condition="Me.IsAlliance" >
-				<PickUp QuestName="Greymane's Gambit" QuestId="39800" GiverName="EMPTY" GiverId="96663" X="-8587.822" Y="1398.612" Z="196.5768" />
-				<While Condition="DoQuest(39800)" >
-					<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-						<CustomBehavior File="InteractWith" MobId="92957" X="5045.783" Y="3137.939" Z="369.9213" TerminateWhen="IsScenarioCriteriaComplete(1) &amp;&amp; IsScenarioCriteriaComplete(2)" />
-						<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="93113" AttackButton="1" OftenToUse="2000" VehicleId="92957" MaxRange="300" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2 || !Me.InVehicle" />
+					<PickUp QuestName="A Royal Summons" QuestId="38035" GiverName="Sky Admiral Rogers" GiverId="96644" X="-840.5087" Y="4633.81" Z="749.4136" />
+					<While Condition="DoQuest(38035)" >
+						<CustomBehavior File="UseItem" ItemId="128687" QuestId="38035" QuestObjectiveIndex="1" />
+						<CustomBehavior File="InteractWith" MobId="244567" QuestId="38035" QuestObjectiveIndex="2" X="-830.9566" Y="4655.491" Z="749.6113" />
 					</While>
-					<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
-						<CustomBehavior File="InteractWith" MobId="240210" WaitTime="18000" X="5000.963" Y="2937.803" Z="115.4159" TerminateWhen="Me.Z &lt; 25 || IsScenarioCriteriaComplete(1)" />
-						<CustomBehavior File="KillUntilComplete" MobId="93560" X="4791.23" Y="2871.738" Z="7.923726" TerminateWhen="IsScenarioCriteriaComplete(1)" />
-						<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Unit(97444) != null" />
+					<TurnIn QuestName="A Royal Summons" QuestId="38035" TurnInName="Sky Admiral Rogers" TurnInId="96644" X="-8491.159" Y="1394.033" Z="196.3758" />
 
-
-						<CustomBehavior File="InteractWith" MobId="97444" WaitTime="7000" X="4792.927" Y="2882.502" Z="7.866116" TerminateWhen="Unit(97444) == null || IsScenarioCriteriaComplete(2)" />
-						<CustomBehavior File="KillUntilComplete" MobId="93563" X="4720.513" Y="2937.574" Z="7.894721" TerminateWhen="IsScenarioCriteriaComplete(2)" />
-						<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Unit(97444) != null" />
-
-
-						<CustomBehavior File="InteractWith" MobId="97444" WaitTime="7000" X="4729.429" Y="2928.727" Z="7.846226" TerminateWhen="Unit(97444) == null || IsScenarioCriteriaComplete(3)" />
-						<CustomBehavior File="KillUntilComplete" MobId="93486" X="4602.096" Y="2860.15" Z="16.20909" TerminateWhen="IsScenarioCriteriaComplete(3)" />
-						<CustomBehavior File="WaitTimer" WaitTime="7000" /> 
+					<PickUp QuestName="Making the Rounds" QuestId="38206" GiverName="Sky Admiral Rogers" GiverId="96644" X="-8491.159" Y="1394.033" Z="196.3758" />
+					<While Condition="DoQuest(38206)" >
+						<CustomBehavior File="InteractWith" MobId="110898" QuestId="38206" QuestObjectiveIndex="1" X="-8534.451" Y="1400.251" Z="198.6206" />
+						<MoveTo QuestId="38206" QuestObjectiveIndex="2" X="-8548.114" Y="1399.016" Z="193.6293" />
+						<CustomBehavior File="Misc\RunLua" QuestId="38206" QuestObjectiveIndex="2" Lua="ExtraActionButton1:Click();" />
+						<MoveTo QuestId="38206" QuestObjectiveIndex="3" X="-8584.947" Y="1399.771" Z="196.4226" />
+						<CustomBehavior File="WaitTimer" QuestId="38206" QuestObjectiveIndex="3" WaitTime="30000" />
 					</While>
-					<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
-						<CustomBehavior File="InteractWith" MobId="97444" WaitTime="14000" X="4625.241" Y="2853.797" Z="7.844262" TerminateWhen="Me.Z &gt; 139 || IsScenarioCriteriaComplete(1)" />
-						<CustomBehavior File="InteractWith" MobId="242380" NumOfTimes="7" TerminateWhen="IsScenarioCriteriaComplete(1)" >
+					<TurnIn QuestName="Making the Rounds" QuestId="38206" TurnInName="Genn Greymane" TurnInId="96663" X="-8587.822" Y="1398.612" Z="196.5768" />
+				</If>
+			<!-- [A] END Zone Introductory Quests -->
+
+			<!-- [A] Story: Greymane's Gambit -->
+				<If Condition="Me.IsAlliance" >
+					<PickUp QuestName="Greymane's Gambit" QuestId="39800" GiverName="EMPTY" GiverId="96663" X="-8587.822" Y="1398.612" Z="196.5768" />
+					<While Condition="DoQuest(39800)" >
+						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+							<CustomBehavior File="InteractWith" MobId="92957" X="5045.783" Y="3137.939" Z="369.9213" TerminateWhen="IsScenarioCriteriaComplete(1) &amp;&amp; IsScenarioCriteriaComplete(2)" />
+							<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="93113" AttackButton="1" OftenToUse="2000" VehicleId="92957" MaxRange="300" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2 || !Me.InVehicle" />
+						</While>
+						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+							<CustomBehavior File="InteractWith" MobId="240210" WaitTime="18000" X="5000.963" Y="2937.803" Z="115.4159" TerminateWhen="Me.Z &lt; 25 || IsScenarioCriteriaComplete(1)" />
+							<CustomBehavior File="KillUntilComplete" MobId="93560" X="4791.23" Y="2871.738" Z="7.923726" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+							<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Unit(97444) == null" />
+
+
+							<CustomBehavior File="InteractWith" MobId="97444" WaitTime="7000" X="4792.927" Y="2882.502" Z="7.866116" TerminateWhen="Unit(97444) == null || IsScenarioCriteriaComplete(2)" />
+							<CustomBehavior File="KillUntilComplete" MobId="93563" X="4720.513" Y="2937.574" Z="7.894721" TerminateWhen="IsScenarioCriteriaComplete(2)" />
+							<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Unit(97444) == null" />
+
+
+							<CustomBehavior File="InteractWith" MobId="97444" WaitTime="7000" X="4729.429" Y="2928.727" Z="7.846226" TerminateWhen="Unit(97444) == null || IsScenarioCriteriaComplete(3)" />
+							<CustomBehavior File="KillUntilComplete" MobId="93486" X="4602.096" Y="2860.15" Z="16.20909" TerminateWhen="IsScenarioCriteriaComplete(3)" />
+							<CustomBehavior File="WaitTimer" WaitTime="7000" /> 
+						</While>
+						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+							<CustomBehavior File="InteractWith" MobId="97444" WaitTime="14000" X="4625.241" Y="2853.797" Z="7.844262" TerminateWhen="Me.Z &gt; 139 || IsScenarioCriteriaComplete(1)" />
+							<CustomBehavior File="InteractWith" MobId="242380" NumOfTimes="7" TerminateWhen="IsScenarioCriteriaComplete(1)" >
+								<HuntingGrounds>
+									<Hotspot X="4577.12" Y="2670.771" Z="138.8441" />
+									<Hotspot X="4539.003" Y="2656.705" Z="138.5784" />
+									<Hotspot X="4550.333" Y="2696.075" Z="138.5546" />
+								</HuntingGrounds>
+							</CustomBehavior>
+						</While>
+						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+							<CustomBehavior File="KillUntilComplete" MobId="95852" X="4534.616" Y="2672.977" Z="164.2988" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+							<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+						</While>
+					</While>
+					<TurnIn QuestName="Greymane's Gambit" QuestId="39800" TurnInName="Sky Admiral Rogers" TurnInId="90749" X="3203.195" Y="3077.215" Z="440.2122" />
+				</If>
+			<!-- [A] END Story: Greymane's Gambit -->
+
+			<!-- [A] Story: The Aftermath -->
+				<If Condition="Me.IsAlliance" >
+					<PickUp QuestName="Boarded!" QuestId="38052" GiverName="Genn Greymane" GiverId="90749" X="3203.195" Y="3077.215" Z="440.2122" />
+					<PickUp QuestName="Supplies From the Skies" QuestId="38036" GiverName="Mishka" GiverId="90783" X="3213.321" Y="3074.431" Z="440.2117" />
+					<PickUp QuestName="Assault and Battery" QuestId="38053" GiverName="Tinkmaster Overspark" GiverId="90866" X="3210.996" Y="3083.518" Z="440.2122" />
+					<PickUp QuestName="See Ya Later, Oscillator" QuestId="38558" GiverName="Tinkmaster Overspark" GiverId="90866" X="3210.996" Y="3083.518" Z="440.2122" />
+
+					<PickUp QuestName="The Lost Legion" QuestId="38057" GiverName="Mishka" GiverId="90783" X="3213.321" Y="3074.431" Z="440.2121" />
+					<TurnIn QuestName="The Lost Legion" QuestId="38057" TurnInName="Knight-Captain Rhodes" TurnInId="92414" X="2934.813" Y="3224.209" Z="529.3346" />
+					<PickUp QuestName="Pins and Needles" QuestId="38059" GiverName="Knight-Captain Rhodes" GiverId="92414" X="2934.813" Y="3224.209" Z="529.3346" />
+
+
+					<While Condition="DoQuest(38052, 38036, 38059)" >
+						<CustomBehavior File="InteractWith" NumOfTimes="20" MobState="Dead" TerminateWhen="!DoQuest(38052, 38036)">
 							<HuntingGrounds>
-								<Hotspot X="4577.12" Y="2670.771" Z="138.8441" />
-								<Hotspot X="4539.003" Y="2656.705" Z="138.5784" />
-								<Hotspot X="4550.333" Y="2696.075" Z="138.5546" />
+								<Hotspot X="3094.188" Y="3026.487" Z="422.5561" />
+								<Hotspot X="3112.146" Y="2990.337" Z="424.4672" />
+								<Hotspot X="3101.098" Y="2983.318" Z="411.4773" />
+								<Hotspot X="2975.045" Y="3057.561" Z="419.728" />
+								<Hotspot X="2891.03" Y="3338.137" Z="515.7325" />
+								<Hotspot X="3045.282" Y="3367.531" Z="546.4993" />
+								<Hotspot X="3127.656" Y="3278.747" Z="547.641" />
+							</HuntingGrounds>
+							<PursuitList>
+								<PursueGameObject Id="241275" PursueWhen="!IsObjectiveComplete(1, 38036)" />
+								<PursueUnit Id="92224" PursueWhen="!IsObjectiveComplete(1, 38052) &amp;&amp; (UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+								<PursueUnit Id="90899" PursueWhen="!IsObjectiveComplete(1, 38052) &amp;&amp; (UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+								<PursueUnit Id="90948" PursueWhen="!IsObjectiveComplete(1, 38059)" />
+							</PursuitList>
+						</CustomBehavior>
+					</While>
+					
+					<TurnIn QuestName="Pins and Needles" QuestId="38059" TurnInName="Mishka" TurnInId="90783" />
+
+					<While Condition="DoQuest(38558)" >
+						<CustomBehavior File="InteractWith" MobId="240286" QuestId="38558" QuestObjectiveIndex="1" X="2962.239" Y="3081.73" Z="420.6721" />
+					</While>
+
+					<While Condition="DoQuest(38053)" >
+						<CustomBehavior File="KillUntilComplete" MobId="90902" QuestId="38053" QuestObjectiveIndex="1" X="3085.081" Y="2983.764" Z="433.0568" />
+					</While>
+
+					<TurnIn QuestName="Boarded!" QuestId="38052" TurnInName="Sky Admiral Rogers" TurnInId="90749" X="3203.195" Y="3077.215" Z="440.2126" />
+					<TurnIn QuestName="Supplies From the Skies" QuestId="38036" TurnInName="Mishka" TurnInId="90783" X="3213.321" Y="3074.431" Z="440.2125" />
+					<TurnIn QuestName="Assault and Battery" QuestId="38053" TurnInName="Tinkmaster Overspark" TurnInId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
+					<TurnIn QuestName="See Ya Later, Oscillator" QuestId="38558" TurnInName="Tinkmaster Overspark" TurnInId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
+
+					<PickUp QuestName="Lightning Rod" QuestId="38058" GiverName="Tinkmaster Overspark" GiverId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
+					<While Condition="DoQuest(38058)" >
+						<!-- NOTE: <AddSupport> : Need DoWhen here that detects area triggers.   Area triggers are for the lightnign that's on the ground.
+												The lightning charges the transponder and is randomly placed in the area.
+												Also lightning spawns from killing mobs in the area.
+						-->
+						<CustomBehavior File="KillUntilComplete" MobIds="90903, 92415" QuestId="38058" QuestObjectiveIndex="1" >
+							<HuntingGrounds>
+								<Hotspot X="2903.743" Y="3257.384" Z="536.3052" />
+								<Hotspot X="2897.153" Y="3418.166" Z="514.3953" />
+								<Hotspot X="2958.013" Y="3325.15" Z="521.1562" />
 							</HuntingGrounds>
 						</CustomBehavior>
 					</While>
-					<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
-						<CustomBehavior File="KillUntilComplete" MobId="95852" X="4534.616" Y="2672.977" Z="164.2988" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
-						<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+					<TurnIn QuestName="Lightning Rod" QuestId="38058" TurnInName="Tinkmaster Overspark" TurnInId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
+
+					<PickUp QuestName="Signal Boost" QuestId="38060" GiverName="Tinkmaster Overspark" GiverId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
+					<While Condition="DoQuest(38060)" >
+						<MoveTo QuestId="38060" X="3256.109" Y="3165.785" Z="526.7354" />
+						<!-- NOTE: <AddFunction> : Not sure if mobs here auto-aggro or not. May need the bot kill any enemy that gets close in order to defend POI more efficiently. -->
+						<CustomBehavior File="WaitTimer" QuestId="38060" WaitTime="10000" />
 					</While>
-				</While>
-				<TurnIn QuestName="Greymane's Gambit" QuestId="39800" TurnInName="Sky Admiral Rogers" TurnInId="90749" X="3203.195" Y="3077.215" Z="440.2122" />
-			</If>
-		<!-- [A] END Story: Greymane's Gambit -->
+					<TurnIn QuestName="Signal Boost" QuestId="38060" TurnInName="Sky Admiral Rogers" TurnInId="90749" X="3396.464" Y="3071.967" Z="526.5197" />
+				</If>
+			<!-- [A] END Story: The Aftermath -->
+		<!-- [A] END Alliance Quest Section -->
 
-		<!-- [A] Story: The Aftermath -->
-			<If Condition="Me.IsAlliance" >
-				<PickUp QuestName="Boarded!" QuestId="38052" GiverName="Genn Greymane" GiverId="90749" X="3203.195" Y="3077.215" Z="440.2122" />
-				<PickUp QuestName="Supplies From the Skies" QuestId="38036" GiverName="Mishka" GiverId="90783" X="3213.321" Y="3074.431" Z="440.2117" />
-				<PickUp QuestName="Assault and Battery" QuestId="38053" GiverName="Tinkmaster Overspark" GiverId="90866" X="3210.996" Y="3083.518" Z="440.2122" />
-				<PickUp QuestName="See Ya Later, Oscillator" QuestId="38558" GiverName="Tinkmaster Overspark" GiverId="90866" X="3210.996" Y="3083.518" Z="440.2122" />
+		<!-- [H] Horde Quest Section -->
+			<!-- [H] Zone Introductory Quests -->
+				<If Condition="Me.IsHorde" >
+					<TurnIn QuestName="Stormheim" QuestId="39864" TurnInName="Nathanos Blightcaller" TurnInId="96683" X="-840.5087" Y="4633.81" Z="749.415" />
 
-				<PickUp QuestName="The Lost Legion" QuestId="38057" GiverName="Mishka" GiverId="90783" X="3213.321" Y="3074.431" Z="440.2121" />
-				<TurnIn QuestName="The Lost Legion" QuestId="38057" TurnInName="Knight-Captain Rhodes" TurnInId="92414" X="2934.813" Y="3224.209" Z="529.3346" />
-				<PickUp QuestName="Pins and Needles" QuestId="38059" GiverName="Knight-Captain Rhodes" GiverId="92414" X="2934.813" Y="3224.209" Z="529.3346" />
+					<PickUp QuestName="The Warchief Beckons" QuestId="38307" GiverName="Nathanos Blightcaller" GiverId="96683" X="-840.5087" Y="4633.81" Z="749.415" />
+					<While Condition="DoQuest(38307)" >
+						<CustomBehavior File="UseItem" ItemId="128692" QuestId="38307" QuestObjectiveIndex="1" />
+						<CustomBehavior File="InteractWith" MobId="244571" QuestId="38307" QuestObjectiveIndex="2" X="-830.9566" Y="4655.491" Z="749.6113" />
+					</While>
+					<TurnIn QuestName="The Warchief Beckons" QuestId="38307" TurnInName="Nathanos Blightcaller" TurnInId="96683" X="1493.664" Y="-5206.232" Z="10.71481" />
+
+					<PickUp QuestName="Making the Rounds" QuestId="39698" GiverName="Lady Sylvanas Windrunner" GiverId="96686" X="1496.027" Y="-5207.587" Z="11.05675" />
+					<While Condition="DoQuest(39698)" >
+						<CustomBehavior File="InteractWith" MobId="247491" QuestId="39698" QuestObjectiveIndex="1" X="1458.342" Y="-5209.025" Z="13.16844" />
+						<MoveTo QuestId="39698" QuestObjectiveIndex="2" X="1481.318" Y="-5206.711" Z="5.265435" />
+						<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Lua.GetReturnVal&lt;bool&gt;(&quot;return ExtraActionButton1:IsVisible()&quot;, 0);" /> <!-- NOTE: <TechnicalCheck> : ExtraActionButton1 needs to appear before this timer ends. -->
+						<CustomBehavior File="Misc\RunLua" QuestId="39698" QuestObjectiveIndex="2" Lua="ExtraActionButton1:Click();" />
+						<MoveTo QuestId="39698" QuestObjectiveIndex="3" X="1500.211" Y="-5211.048" Z="11.59994" />
+						<CustomBehavior File="WaitTimer" QuestId="39698" QuestObjectiveIndex="3" WaitTime="50000" />
+					</While>
+					<TurnIn QuestName="Making the Rounds" QuestId="39698" TurnInName="Lady Sylvanas Windrunner" TurnInId="96686" X="1499.171" Y="-5213.979" Z="11.37206" /> 
+				</If>
+			<!-- [H] END Zone Introductory Quests -->
+
+			<!-- [H] Greymane's Gambit -->
+				<If Condition="Me.IsHorde" >
+					<PickUp QuestName="The Splintered Fleet" QuestId="39801" GiverName="Lady Sylvanas Windrunner" GiverId="96686" X="1499.171" Y="-5213.979" Z="11.37206" />
+					<While Condition="DoQuest(39801)" >
+						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+							<CustomBehavior File="InteractWith" MobId="94419" X="4623.434" Y="2853.851" Z="7.856867" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+							<CustomBehavior File="WaitTimer" WaitTime="32000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+						</While>
+						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+							<CustomBehavior File="InteractWith" MobId="94436" WaitTime="21000" WaitForNpcs="false" MinRange="4" X="4623.411" Y="2873.97" Z="9.060152" TerminateWhen="Unit(94436) == null" />
+
+							<If Condition="Unit(94550, u =&gt; u.Distance &lt; 65) != null" >
+								<!-- NOTE: <AddAvoid> : May need to avoid the mage's attacks.  Mage casts two different AOEs that can be avoided. -->
+								<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="94576" AttackButton="1" OftenToUse="1000" VehicleId="94550" MaxRange="300" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2 || !Me.InVehicle" /> <!-- X="4820.018" Y="2998.036" Z="16.44233" -->
+								<CustomBehavior File="KillUntilComplete" MobId="94737" X="4836.879" Y="3013.312" Z="7.854728" TerminateWhen="!Unit(94737, u =&gt; u.IsAlive) != null || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+							</If>
+						</While>
+						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+							<CustomBehavior File="InteractWith" MobId="95316" WaitTime="11000" X="4846.247" Y="3026.302" Z="13.71893" TerminateWhen="Unit(95316) == null" />
+							<CustomBehavior File="KillUntilComplete" MobId="94809" X="4709.772" Y="3012.469" Z="7.857271" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" /> <!-- NOTE: <AddIds> : There's other mobs here that needs to be killed. -->
+						</While>
+						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+							<CustomBehavior File="InteractWith" MobId="95316" WaitTime="6000" X="4728.907" Y="3013.009" Z="13.87013" TerminateWhen="Unit(95316) == null" />
+							<CustomBehavior File="KillUntilComplete" MobIds="94820, 94822" X="4726.273" Y="2935.89" Z="7.857867" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+						</While>
+						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+							<CustomBehavior File="InteractWith" MobId="95316" WaitTime="16000" X="4729.154" Y="2929.965" Z="7.847277" TerminateWhen="Unit(95316) == null" />
+							<CustomBehavior File="InteractWith" MobId="243244" NumOfTimes="7" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" >
+								<HuntingGrounds>
+									<Hotspot X="4572.109" Y="2657.29" Z="138.8272" />
+									<Hotspot X="4530.208" Y="2660.132" Z="138.5548" />
+									<Hotspot X="4571.669" Y="2691.366" Z="138.6208" />
+									<Hotspot X="4530.654" Y="2696.788" Z="138.5498" />
+									<Hotspot X="4579.002" Y="2657.986" Z="153.3686" />
+									<Hotspot X="4596.64" Y="2674.568" Z="153.3974" />
+								</HuntingGrounds>
+							</CustomBehavior>
+						</While>
+						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+							<MoveTo QuestId="39801" X="4538.623" Y="2677.645" Z="164.41" />
+							<CustomBehavior File="KillUntilComplete" MobId="95451" QuestId="39801" X="4500.429" Y="2685.104" Z="167.2789" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+							<CustomBehavior File="await SkipCutscene();" />
+						</While>
+					</While>
+					<TurnIn QuestName="The Splintered Fleet" QuestId="39801" TurnInName="Dread-Rider Cullen" TurnInId="91473" X="4110.878" Y="2940.145" Z="27.33373" />
+				</If>
+			<!-- [H] END Greymane's Gambit -->
+
+			<!-- [H] The Aftermath -->
+				<If Condition="Me.IsHorde" >
+					<PickUp QuestName="The Ranger Lord" QuestId="38332" GiverName="Dread-Rider Cullen" GiverId="91473" X="4110.878" Y="2940.145" Z="27.3336" />
+					<PickUp QuestName="Pump it Up" QuestId="38358" GiverName="Apothecary Withers" GiverId="91590" X="4118.591" Y="2938.464" Z="27.33373" />
+					<PickUp QuestName="Side Effects May Include Mild Undeath" QuestId="38357" GiverName="Apothecary Withers" GiverId="91590" X="4118.591" Y="2938.464" Z="27.33373" />
+
+					<While Condition="DoQuest(38358)" >
+						<CustomBehavior File="InteractWith" MobIds="249829, 240600" NumOfTimes="6" QuestId="38358" QuestObjectiveIndex="X" >
+							<HuntingGrounds>
+								<Hotspot X="4214.415" Y="2944.853" Z="-0.4814495" />
+								<Hotspot X="4228.398" Y="2982.138" Z="-0.5409754" />
+								<Hotspot X="4253.3" Y="3014.916" Z="-0.5409754" />
+							</HuntingGrounds>
+						</CustomBehavior>
+					</While>
+
+					<While Condition="DoQuest(38357)" >
+						<CustomBehavior File="KillUntilComplete" MobIds="91563, 91569" QuestId="38357" QuestObjectiveIndex="1" >
+							<HuntingGrounds>
+								<Hotspot X="4214.415" Y="2944.853" Z="-0.4814495" />
+								<Hotspot X="4228.398" Y="2982.138" Z="-0.5409754" />
+								<Hotspot X="4253.3" Y="3014.916" Z="-0.5409754" />
+								<Hotspot X="4145.515" Y="2996.986" Z="16.40069" />
+								<Hotspot X="4184.312" Y="3033.907" Z="9.736444" />
+								<Hotspot X="4116.055" Y="2992.014" Z="20.45614" />
+							</HuntingGrounds>
+						</CustomBehavior>	
+					</While>
+
+					<TurnIn QuestName="Pump it Up" QuestId="38358" TurnInName="Apothecary Withers" TurnInId="91590" X="4118.591" Y="2938.464" Z="27.33334" />
+					<TurnIn QuestName="Side Effects May Include Mild Undeath" QuestId="38357" TurnInName="Apothecary Withers" TurnInId="91590" X="4118.591" Y="2938.464" Z="27.33334" />
+					<TurnIn QuestName="The Ranger Lord" QuestId="38332" TurnInName="Nathanos Blightcaller" TurnInId="91158" X="4343.363" Y="2834.09" Z="1.749025" />
 
 
-				<While Condition="DoQuest(38052, 38036, 38059)" >
-					<CustomBehavior File="InteractWith" NumOfTimes="20" MobState="Dead" TerminateWhen="!DoQuest(38052, 38036)">
-						<HuntingGrounds>
-							<Hotspot X="3094.188" Y="3026.487" Z="422.5561" />
-							<Hotspot X="3112.146" Y="2990.337" Z="424.4672" />
-							<Hotspot X="3101.098" Y="2983.318" Z="411.4773" />
-							<Hotspot X="2975.045" Y="3057.561" Z="419.728" />
-							<Hotspot X="2891.03" Y="3338.137" Z="515.7325" />
-							<Hotspot X="3045.282" Y="3367.531" Z="546.4993" />
-							<Hotspot X="3127.656" Y="3278.747" Z="547.641" />
-						</HuntingGrounds>
-						<PursuitList>
-							<PursueGameObject Id="241275" PursueWhen="!IsObjectiveComplete(1, 38036)" />
-							<PursueUnit Id="92224" PursueWhen="!IsObjectiveComplete(1, 38052) &amp;&amp; (UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
-							<PursueUnit Id="90899" PursueWhen="!IsObjectiveComplete(1, 38052) &amp;&amp; (UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
-							<PursueUnit Id="90948" PursueWhen="!IsObjectiveComplete(1, 38059)" />
-						</PursuitList>
-					</CustomBehavior>
-				</While>
-				
-				<TurnIn QuestName="Pins and Needles" QuestId="38059" TurnInName="Mishka" TurnInId="90783" />
+					<PickUp QuestName="The Windrunner's Fate" QuestId="38360" GiverName="Nathanos Blightcaller" GiverId="91158" X="4343.363" Y="2834.09" Z="1.749025" />
+					<PickUp QuestName="Wrath of the Blightcaller" QuestId="38361" GiverName="Nathanos Blightcaller" GiverId="91158" X="4343.363" Y="2834.09" Z="1.749025" />
 
-				<While Condition="DoQuest(38558)" >
-					<CustomBehavior File="InteractWith" MobId="240286" QuestId="38558" QuestObjectiveIndex="1" X="2962.239" Y="3081.73" Z="420.6721" />
-				</While>
+					<While Condition="DoQuest(38360)" >
+						<CustomBehavior File="InteractWith" MobId="241031" QuestId="38360" QuestObjectiveIndex="1" X="4422.204" Y="2743.809" Z="2.927413" />
+						<CustomBehavior File="InteractWith" MobId="91904" QuestId="38360" QuestObjectiveIndex="2" X="4413.555" Y="2612.518" Z="1.736115" />
+						<CustomBehavior File="InteractWith" MobId="241032" QuestId="38360" QuestObjectiveIndex="3" X="4481.096" Y="2471.378" Z="1.698976" />
+					</While>
 
-				<While Condition="DoQuest(38053)" >
-					<CustomBehavior File="KillUntilComplete" MobId="90902" QuestId="38053" QuestObjectiveIndex="1" X="3085.081" Y="2983.764" Z="433.0568" />
-				</While>
+					<While Condition="DoQuest(38361)" >
+						<CustomBehavior File="KillUntilComplete" MobIds="91581, 91414" QuestId="38361" QuestObjectiveIndex="1" >
+							<HuntingGrounds>
+								<Hotspot X="4376.662" Y="2768.022" Z="0.9265123" />
+								<Hotspot X="4420.671" Y="2733.62" Z="1.058779" />
+								<Hotspot X="4436.735" Y="2670.79" Z="0.3029737" />
+								<Hotspot X="4474.405" Y="2645.808" Z="0.5243458" />
+								<Hotspot X="4472.775" Y="2586.685" Z="1.709262" />
+								<Hotspot X="4499.569" Y="2527.341" Z="1.499254" />
+							</HuntingGrounds>
+						</CustomBehavior>
+					</While>
 
-				<TurnIn QuestName="Boarded!" QuestId="38052" TurnInName="Sky Admiral Rogers" TurnInId="90749" X="3203.195" Y="3077.215" Z="440.2126" />
-				<TurnIn QuestName="Supplies From the Skies" QuestId="38036" TurnInName="Mishka" TurnInId="90783" X="3213.321" Y="3074.431" Z="440.2125" />
-				<TurnIn QuestName="Assault and Battery" QuestId="38053" TurnInName="Tinkmaster Overspark" TurnInId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
-				<TurnIn QuestName="See Ya Later, Oscillator" QuestId="38558" TurnInName="Tinkmaster Overspark" TurnInId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
+					<TurnIn QuestName="The Windrunner's Fate" QuestId="38360" TurnInName="Nathanos Blightcaller" TurnInId="91158" X="4473.658" Y="2473.425" Z="1.773116" />
+					<TurnIn QuestName="Wrath of the Blightcaller" QuestId="38361" TurnInName="Nathanos Blightcaller" TurnInId="91158" X="4473.658" Y="2473.425" Z="1.773116" />
 
-				<PickUp QuestName="Lightning Rod" QuestId="38058" GiverName="Tinkmaster Overspark" GiverId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
-				<While Condition="DoQuest(38058)" >
-					<!-- NOTE: <AddSupport> : Need DoWhen here that detects area triggers.   Area triggers are for the lightnign that's on the ground.
-											The lightning charges the transponder and is randomly placed in the area.
-											Also lightning spawns from killing mobs in the area.
+					<PickUp QuestName="A Grim Trophy" QuestId="38362" GiverName="Nathanos Blightcaller" GiverId="91158" X="4473.658" Y="2473.425" Z="1.773116" />
+					<While Condition="DoQuest(38362)" >
+						<CustomBehavior File="InteractWith" MobId="91571" InteractByLooting="true" MobState="Dead" QuestId="38362" QuestObjectiveIndex="1" X="4340.732" Y="2595.119" Z="39.1095" />
+					</While>
+					<!-- While moving between these locations, there's an elevator:  
+							Top Loc: X="4007.165" Y="2914.864" Z="241.8564"
 					-->
-					<CustomBehavior File="KillUntilComplete" MobIds="90903, 92415" QuestId="38058" QuestObjectiveIndex="1" >
-						<HuntingGrounds>
-							<Hotspot X="2903.743" Y="3257.384" Z="536.3052" />
-							<Hotspot X="2897.153" Y="3418.166" Z="514.3953" />
-							<Hotspot X="2958.013" Y="3325.15" Z="521.1562" />
-						</HuntingGrounds>
-					</CustomBehavior>
-				</While>
-				<TurnIn QuestName="Lightning Rod" QuestId="38058" TurnInName="Tinkmaster Overspark" TurnInId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
-
-				<PickUp QuestName="Signal Boost" QuestId="38060" GiverName="Tinkmaster Overspark" GiverId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
-				<While Condition="DoQuest(38060)" >
-					<MoveTo QuestId="38060" X="3256.109" Y="3165.785" Z="526.7354" />
-					<!-- NOTE: <AddFunction> : Not sure if mobs here auto-aggro or not. May need the bot kill any enemy that gets close in order to defend POI more efficiently. -->
-					<CustomBehavior File="WaitTimer" QuestId="38060" WaitTime="10000" />
-				</While>
-				<TurnIn QuestName="Signal Boost" QuestId="38060" TurnInName="Sky Admiral Rogers" TurnInId="90749" X="3396.464" Y="3071.967" Z="526.5197" />
-			</If>
-		<!-- [A] END Story: The Aftermath -->
+					<TurnIn QuestName="A Grim Trophy" QuestId="38362" TurnInName="Nathanos Blightcaller" TurnInId="91158" X="3979.866" Y="2896.111" Z="241.5713" />
+				</If>
+			<!-- [H] END The Aftermath -->
+		<!-- [H] END Horde Quest Section -->
 
 		<!-- Story: The Trial of Might -->
-			<PickUp QuestName="The Ancient Trials" QuestId="38210" GiverName="Muninn" GiverId="97306" X="3403.811" Y="3075.332" Z="526.5199" />
+			<If Condition="Me.IsAlliance" >
+				<PickUp QuestName="The Ancient Trials" QuestId="38210" GiverName="Muninn" GiverId="97306" X="3403.811" Y="3075.332" Z="526.5199" />
 
-			<While Condition="!IsQuestCompleted(39775)" >
-				<CustomBehavior File="InteractWith" MobId="107840" QuestId="39775" X="3407.027" Y="3071.241" Z="526.5193" />
-				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
-			</While>
+				<While Condition="!IsQuestCompleted(39775)" >
+					<CustomBehavior File="InteractWith" MobId="107840" QuestId="39775" X="3407.027" Y="3071.241" Z="526.5193" />
+					<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+				</While>
 
-			<TurnIn QuestName="The Ancient Trials" QuestId="38210" TurnInName="Havi" TurnInId="96254" X="3275.418" Y="2528.082" Z="301.0436" />
+				<TurnIn QuestName="The Ancient Trials" QuestId="38210" TurnInName="Havi" TurnInId="96254" X="3275.418" Y="2528.082" Z="301.0436" />
 
-			<PickUp QuestName="Havi's Test" QuestId="38331" GiverName="Havi" TurnInId="96254" X="3275.418" Y="2528.082" Z="301.0436" />
-			<While Condition="DoQuest(38331)" >
-				<If Condition="!IsObjectiveComplete(1, 38331)" >
-					<CustomBehavior File="InteractWith" MobId="252074" QuestId="38331" QuestObjectiveIndex="1" X="3277.933" Y="2544.112" Z="302.1056" />
-					<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="244479" AttackButton="4" OftenToUse="1000" VehicleId="252074" MaxRange="50" TerminateWhen="IsObjectiveComplete(1, 38331)" />
-					<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarLeaveFrameLeaveButton:Click();" />
-				</If>
-				<If Condition="!IsObjectiveComplete(2, 38331)" >
-					<CustomBehavior File="InteractWith" MobId="252076" QuestId="38331" QuestObjectiveIndex="2" X="3266.861" Y="2544.11" Z="299.6038" />
-					<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="244479" AttackButton="4" OftenToUse="1000" VehicleId="252076" MaxRange="50" TerminateWhen="IsObjectiveComplete(2, 38331)" />
-					<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarLeaveFrameLeaveButton:Click();" />
-				</If>
-				<If Condition="!IsObjectiveComplete(3, 38331)" >
-					<CustomBehavior File="InteractWith" MobId="252080" QuestId="38331" QuestObjectiveIndex="3" X="3264.604" Y="2533.243" Z="302.732" />
-					<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="244479" AttackButton="4" OftenToUse="1000" VehicleId="252080" MaxRange="50" TerminateWhen="IsObjectiveComplete(3, 38331)" />
-					<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarLeaveFrameLeaveButton:Click();" />
-				</If>
-			</While>
-			<TurnIn QuestName="Havi's Test" QuestId="38331" TurnInName="Havi" TurnInId="96254" X="3275.418" Y="2528.082" Z="301.0433" />
+				<PickUp QuestName="Havi's Test" QuestId="38331" GiverName="Havi" GiverId="96254" X="3275.418" Y="2528.082" Z="301.0436" />
+				<While Condition="DoQuest(38331)" >
+					<If Condition="!IsObjectiveComplete(1, 38331)" >
+						<CustomBehavior File="InteractWith" MobId="252074" QuestId="38331" QuestObjectiveIndex="1" X="3277.933" Y="2544.112" Z="302.1056" />
+						<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="244479" AttackButton="4" OftenToUse="1000" VehicleId="252074" MaxRange="50" TerminateWhen="IsObjectiveComplete(1, 38331)" />
+						<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarLeaveFrameLeaveButton:Click();" />
+					</If>
+					<If Condition="!IsObjectiveComplete(2, 38331)" >
+						<CustomBehavior File="InteractWith" MobId="252076" QuestId="38331" QuestObjectiveIndex="2" X="3266.861" Y="2544.11" Z="299.6038" />
+						<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="244479" AttackButton="4" OftenToUse="1000" VehicleId="252076" MaxRange="50" TerminateWhen="IsObjectiveComplete(2, 38331)" />
+						<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarLeaveFrameLeaveButton:Click();" />
+					</If>
+					<If Condition="!IsObjectiveComplete(3, 38331)" >
+						<CustomBehavior File="InteractWith" MobId="252080" QuestId="38331" QuestObjectiveIndex="3" X="3264.604" Y="2533.243" Z="302.732" />
+						<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="244479" AttackButton="4" OftenToUse="1000" VehicleId="252080" MaxRange="50" TerminateWhen="IsObjectiveComplete(3, 38331)" />
+						<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarLeaveFrameLeaveButton:Click();" />
+					</If>
+				</While>
+				<TurnIn QuestName="Havi's Test" QuestId="38331" TurnInName="Havi" TurnInId="96254" X="3275.418" Y="2528.082" Z="301.0433" />
 
-			<PickUp QuestName="Ahead of the Game" QuestId="39590" GiverName="Havi" GiverId="96254" X="3275.418" Y="2528.082" Z="301.0433" />
+				<PickUp QuestName="Ahead of the Game" QuestId="39590" GiverName="Havi" GiverId="96254" X="3275.418" Y="2528.082" Z="301.0433" />
+			</If>
+
+			<If Condition="Me.IsHorde" >
+				<PickUp QuestName="The Ancient Trials" QuestId="38459" GiverName="Huginn" GiverId="97305" X="3976.914" Y="2898.343" Z="241.5873" />
+
+				<While Condition="!IsQuestCompleted(39775)" 
+					<CustomBehavior File="InteractWith" MobId="107840" QuestId="39775" X="3945.718" Y="2888.738" Z="241.7468" />
+					<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+				</While>
+
+				<!-- Horde Side Quests -->
+					<PickUp QuestName="Eyes in the Overlook" QuestId="38308" GiverName="Cullen's Scouting Report" GiverType="GameObject" GiverId="244453" X="3973.075" Y="2901.516" Z="242.0252" />
+					<While Condition="DoQuest(38308)" >
+						<CustomBehavior File="InteractWith" MobId="91470" QuestId="38308" QuestObjectiveIndex="1" X="3961.721" Y="3099.903" Z="323.8865" />
+					</While>
+					<TurnIn QuestName="Eyes in the Overlook" QuestId="38308" />
+
+					<PickUp QuestName="Masters of Disguise" QuestId="38317" />
+					<While Condition="DoQuest(38317)" >
+						<CustomBehavior File="KillUntilComplete" MobId="91468" QuestId="38317" QuestObjectiveIndex="1" X="3865.123" Y="3004.167" Z="362.4647" />
+						<CustomBehavior File="KillUntilComplete" MobId="91460" QuestId="38317" QuestObjectiveIndex="2" X="3735.319" Y="3044.874" Z="455.0429" />
+					</While>
+					<TurnIn QuestName="Masters of Disguise" QuestId="38317" TurnInName="Forsaken Bat-Rider" TurnInId="97250" X="3764.071" Y="2918.253" Z="431.0836" />
+				<!-- END Horde Side Quests -->
+
+				<TurnIn QuestName="The Ancient Trials" QuestId="38459" TurnInName="Havi" TurnInId="96254" X="3510.713" Y="2605.906" Z="318.9001" />
+
+				<PickUp QuestName="Havi's Test" QuestId="38331" GiverName="Havi" GiverId="96254" X="3510.713" Y="2605.906" Z="318.9" />
+				<While Condition="DoQuest(38331)" >
+					<If Condition="!IsObjectiveComplete(1, 38331)" >
+						<CustomBehavior File="InteractWith" MobId="252074" QuestId="38331" QuestObjectiveIndex="1" X="3518.058" Y="2618.411" Z="321.147" />
+						<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="244480" AttackButton="4" OftenToUse="1000" VehicleId="252074" MaxRange="50" TerminateWhen="IsObjectiveComplete(1, 38331)" />
+						<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarLeaveFrameLeaveButton:Click();" />
+					</If>
+					<If Condition="!IsObjectiveComplete(2, 38331)" >
+						<CustomBehavior File="InteractWith" MobId="252076" QuestId="38331" QuestObjectiveIndex="2" X="3528.491" Y="2620.874" Z="318.0343" />
+						<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="244480" AttackButton="4" OftenToUse="1000" VehicleId="252076" MaxRange="50" TerminateWhen="IsObjectiveComplete(2, 38331)" />
+						<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarLeaveFrameLeaveButton:Click();" />
+					</If>
+					<If Condition="!IsObjectiveComplete(3, 38331)" >
+						<CustomBehavior File="InteractWith" MobId="252080" QuestId="38331" QuestObjectiveIndex="3" X="3523.836" Y="2606.339" Z="320.3575" />
+						<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="244480" AttackButton="4" OftenToUse="1000" VehicleId="252080" MaxRange="50" TerminateWhen="IsObjectiveComplete(3, 38331)" />
+						<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarLeaveFrameLeaveButton:Click();" />
+					</If>
+				</While>
+				<TurnIn QuestName="Havi's Test" QuestId="38331" TurnInName="Havi" TurnInId="96254" X="3510.713" Y="2605.906" Z="318.9" />
+
+				<PickUp QuestName="Ahead of the Game" QuestId="39590" GiverName="Havi" GiverId="96254" X="3510.713" Y="2605.906" Z="318.9" />
+			</If>
+
+
 			<While Condition="DoQuest(39590)" >
 				<!-- NOTE: <FunctionalityChange> : May need to change this to InteractWith with InteractByLooting since each one of these mini-bosses need to be looted. -->
 				<CustomBehavior File="KillUntilComplete" MobId="90734" QuestId="39590" QuestObjectiveIndex="2" X="3394.143" Y="2591.466" Z="292.5534" />
@@ -344,6 +545,7 @@
 					</HuntingGrounds>
 					<PursuitList>
 						<PursueGameObject Id="243842" />
+						<PursueGameObject Id="243840" />
 						<PursueGameObject Id="100435" />
 						<PursueUnit Id="108306" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
 						<PursueUnit Id="108289" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
@@ -353,60 +555,120 @@
 				</CustomBehavior>
 			</While>
 
-			<TurnIn QuestName="The Blessing of the Watchers" QuestId="39597" TurnInName="Havi" TurnInId="96254" X="3275.418" Y="2528.082" Z="301.0428" />
+			<If Condition="Me.IsAlliance" >
+				<TurnIn QuestName="The Blessing of the Watchers" QuestId="39597" TurnInName="Havi" TurnInId="96254" X="3275.418" Y="2528.082" Z="301.0428" />
+			</If>
+
+			<If Condition="Me.IsHorde" >
+				<TurnIn QuestName="The Blessing of the Watchers" QuestId="39597" TurnInName="Havi" TurnInId="96254" X="3510.713" Y="2605.906" Z="318.8996" />
+			</If>
 		<!-- END Story: The Trial of Might -->
 
 		<!-- Story: The Trial of Will -->
-			<PickUp QuestName="Will of the Thorignir" QuestId="38473" GiverName="Havi" GiverId="96254" X="3275.418" Y="2528.082" Z="301.0428" />
-			<TurnIn QuestName="Will of the Thorignir" QuestId="38473" TurnInName="Commander Lorna Crowley" TurnInId="91222" X="2706.913" Y="2864.66" Z="309.4812" />
+			<If Condition="Me.IsAlliance" >
+				<PickUp QuestName="Will of the Thorignir" QuestId="38473" GiverName="Havi" GiverId="96254" X="3275.418" Y="2528.082" Z="301.0428" />
+				<TurnIn QuestName="Will of the Thorignir" QuestId="38473" TurnInName="Commander Lorna Crowley" TurnInId="91222" X="2706.913" Y="2864.66" Z="309.4812" />
 
-			<PickUp QuestName="A Grapple a Day" QuestId="38312" GiverName="Commander Lorna Crowley" GiverId="91222" X="2706.913" Y="2864.66" Z="309.4812" />
-			<TurnIn QuestName="A Grapple a Day" QuestId="38312" TurnInName="Commander Lorna Crowley" TurnInId="91481" X="2682.455" Y="2595.35" Z="230.9535" />
+				<PickUp QuestName="A Grapple a Day" QuestId="38312" GiverName="Commander Lorna Crowley" GiverId="91222" X="2706.913" Y="2864.66" Z="309.4812" />
+				<TurnIn QuestName="A Grapple a Day" QuestId="38312" TurnInName="Commander Lorna Crowley" TurnInId="91481" X="2682.455" Y="2595.35" Z="230.9535" />
 
-			<PickUp QuestName="No Wings Required" QuestId="38318" GiverName="Commander Lorna Crowley" GiverId="91481" X="2682.455" Y="2595.35" Z="230.9537" />
-			<PickUp QuestName="To Weather the Storm" QuestId="38405" GiverName="Commander Lorna Crowley" GiverId="91481" X="2682.455" Y="2595.35" Z="230.9537" />
+				<PickUp QuestName="No Wings Required" QuestId="38318" GiverName="Commander Lorna Crowley" GiverId="91481" X="2682.455" Y="2595.35" Z="230.9537" />
+				<PickUp QuestName="To Weather the Storm" QuestId="38405" GiverName="Commander Lorna Crowley" GiverId="91481" X="2682.455" Y="2595.35" Z="230.9537" />
 
-			<While Condition="DoQuest(38318)" >
-				<!-- NOTE: <LocationLogic> : This below InteractWith gets the player into the area.  Need a way to detect if player isn't in the area, perhaps via BonusObjective trigger. -->
-				<CustomBehavior File="InteractWith" MobId="91983" Range="49" WaitTime="10000" QuestId="38318" QuestObjectiveIndex="1" X="2668.16" Y="2545.319" Z="238.6316" />
-			</While>
+				<While Condition="DoQuest(38318)" >
+					<!-- NOTE: <LocationLogic> : This below InteractWith gets the player into the area.  Need a way to detect if player isn't in the area, perhaps via BonusObjective trigger. -->
+					<CustomBehavior File="InteractWith" MobId="91983" Range="49" WaitTime="10000" QuestId="38318" QuestObjectiveIndex="1" X="2668.16" Y="2545.319" Z="238.6316" />
+				</While>
 
-			<While Condition="DoQuest(38405)" >
-				<CustomBehavior File="InteractWith" MobId="240677" QuestId="38405" QuestObjectiveIndex="2" X="2529.326" Y="2605.128" Z="239.0104" />
-				<CustomBehavior File="KillUntilComplete" MobId="91517" QuestId="38405" QuestObjectiveIndex="1" X="2587.474" Y="2482.269" Z="223.5762" />
-				<CustomBehavior File="InteractWith" MobId="240681" QuestId="38405" QuestObjectiveIndex="3" X="2599.272" Y="2382.064" Z="235.4944" />
-			</While>
+				<While Condition="DoQuest(38405)" >
+					<CustomBehavior File="InteractWith" MobId="240677" InteractByLooting="true" QuestId="38405" QuestObjectiveIndex="2" X="2529.326" Y="2605.128" Z="239.0104" />
+					<CustomBehavior File="InteractWith" MobId="91517" MobState="Dead" InteractByLooting="true" QuestId="38405" QuestObjectiveIndex="1" X="2587.474" Y="2482.269" Z="223.5762" />
+					<CustomBehavior File="InteractWith" MobId="240681" InteractByLooting="true" QuestId="38405" QuestObjectiveIndex="3" X="2599.272" Y="2382.064" Z="235.4944" />
+				</While>
 
-			<TurnIn QuestName="No Wings Required" QuestId="38318" TurnInName="Commander Lorna Crowley" TurnInId="91519" X="2538.317" Y="2492.153" Z="246.3436" />
-			<TurnIn QuestName="To Weather the Storm" QuestId="38405" TurnInName="Commander Lorna Crowley" TurnInId="91519" X="2538.317" Y="2492.153" Z="246.3436" />
+				<TurnIn QuestName="No Wings Required" QuestId="38318" TurnInName="Commander Lorna Crowley" TurnInId="91519" X="2538.317" Y="2492.153" Z="246.3436" />
+				<TurnIn QuestName="To Weather the Storm" QuestId="38405" TurnInName="Commander Lorna Crowley" TurnInId="91519" X="2538.317" Y="2492.153" Z="246.3436" />
 
-			<PickUp QuestName="Impalement Insurance" QuestId="38410" GiverName="Commander Lorna Crowley" GiverId="91519" X="2538.317" Y="2492.153" Z="246.3436" />
-			<While Condition="DoQuest(38410)" >
-				<!-- NOTE: <CheckThis> : This is a very fragile section of code. Need to imrpove or add failsafes. -->
-				<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="6000" X="2544.906" Y="2487.497" Z="254.7319" />
-				<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="2" QuestId="38410" QuestObjectiveIndex="1" X="2549.886" Y="2466.156" Z="254.7651" />
+				<PickUp QuestName="Impalement Insurance" QuestId="38410" GiverName="Commander Lorna Crowley" GiverId="91519" X="2538.317" Y="2492.153" Z="246.3436" />
 
-				<CustomBehavior File="InteractWith" MobId="91983" Range="49" WaitTime="6000" X="2529.949" Y="2530.865" Z="262.96" />
-				<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38410" QuestObjectiveIndex="1" X="2530.71" Y="2534.549" Z="263.0449" />
+				<While Condition="DoQuest(38410)" >
+					<!-- NOTE: <CheckThis> : This is a very fragile section of code. Need to imrpove or add failsafes. -->
+					<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="6000" X="2544.906" Y="2487.497" Z="254.7319" />
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="2" QuestId="38410" QuestObjectiveIndex="1" X="2549.886" Y="2466.156" Z="254.7651" />
 
-				<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="6000" X="2544.906" Y="2487.497" Z="254.7319" />
-				<CustomBehavior File="InteractWith" MobId="92072" Range="49" WaitTime="6000" X="2545.717" Y="2445.174" Z="260.7524" />
+					<CustomBehavior File="InteractWith" MobId="91983" Range="49" WaitTime="6000" X="2529.949" Y="2530.865" Z="262.96" />
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38410" QuestObjectiveIndex="1" X="2530.71" Y="2534.549" Z="263.0449" />
 
-				<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38410" QuestObjectiveIndex="1" X="2543.905" Y="2423.978" Z="262.0621" />
-				<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38410" QuestObjectiveIndex="1" X="2524.704" Y="2385.554" Z="263.4633" />
+					<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="6000" X="2544.906" Y="2487.497" Z="254.7319" />
+					<CustomBehavior File="InteractWith" MobId="92072" Range="49" WaitTime="6000" X="2545.717" Y="2445.174" Z="260.7524" />
 
-				<MoveTo QuestId="38410" QuestObjectiveIndex="1" X="2508.864" Y="2373.998" Z="264.0553" />
-				<CustomBehavior File="InteractWith" MobId="92072" Range="49" WaitTime="6000" X="2491.849" Y="2364.745" Z="270.4663" />
-				<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38410" QuestObjectiveIndex="1" X="2490.207" Y="2361.314" Z="270.5206" />
-				<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38410" QuestObjectiveIndex="1" X="2428.023" Y="2356.345" Z="273.3925" />
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38410" QuestObjectiveIndex="1" X="2543.905" Y="2423.978" Z="262.0621" />
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38410" QuestObjectiveIndex="1" X="2524.704" Y="2385.554" Z="263.4633" />
 
-				<CustomBehavior File="MyCTM" X="2423.832" Y="2379.894" Z="256.4818" />
-			</While>
+					<MoveTo QuestId="38410" QuestObjectiveIndex="1" X="2508.864" Y="2373.998" Z="264.0553" />
+					<CustomBehavior File="InteractWith" MobId="92072" Range="49" WaitTime="6000" X="2491.849" Y="2364.745" Z="270.4663" />
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38410" QuestObjectiveIndex="1" X="2490.207" Y="2361.314" Z="270.5206" />
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38410" QuestObjectiveIndex="1" X="2428.023" Y="2356.345" Z="273.3925" />
+
+					<CustomBehavior File="MyCTM" X="2423.832" Y="2379.894" Z="256.4818" />
+				</While>
+			</If>
+
+			<If Condition="Me.IsHorde" >
+				<PickUp QuestName="Will of the Thorignir" QuestId="38611" GiverName="Havi" GiverId="96254" X="3510.713" Y="2605.906" Z="318.8996" />
+				<TurnIn QuestName="Will of the Thorignir" QuestId="38611" TurnInName="Dread-Rider Cullen" TurnInId="92561" X="2881.424" Y="2432.47" Z="241.9806" />
+
+				<PickUp QuestName="A Grapple a Day" QuestId="38612" GiverName="Dread-Rider Cullen" GiverId="92561" X="2881.424" Y="2432.47" Z="241.9806" />
+				<TurnIn QuestName="A Grapple a Day" QuestId="38612" TurnInName="Dread-Rider Cullen" TurnInId="92566" X="2554.84" Y="2332.175" Z="241.2934" />
+
+				<PickUp QuestName="No Wings Required" QuestId="38613" GiverName="Dread-Rider Cullen" GiverId="92566" X="2554.84" Y="2332.175" Z="241.2934" />
+				<PickUp QuestName="To Weather the Storm" QuestId="38614" GiverName="Dread-Rider Cullen" GiverId="92566" X="2554.84" Y="2332.175" Z="241.2934" />
+
+				<While Condition="DoQuest(38613)" >
+					<!-- NOTE: <LocationLogic> : This below InteractWith gets the player into the area.  Need a way to detect if player isn't in the area, perhaps via BonusObjective trigger. -->
+					<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="10000" QuestId="38613" QuestObjectiveIndex="1" X="2552.577" Y="2372.651" Z="248.2684" />
+					<CustomBehavior File="MyCTM" X="2553.494" Y="2392.489" Z="236.1131" />
+				</While>
+
+				<While Condition="DoQuest(38614)" >
+					<CustomBehavior File="InteractWith" MobId="241462" InteractByLooting="true" QuestId="38614" QuestObjectiveIndex="3" X="2599.272" Y="2382.064" Z="235.4944" />
+					<CustomBehavior File="InteractWith" MobId="91517" MobState="Dead" InteractByLooting="true" QuestId="38614" QuestObjectiveIndex="1" X="2587.474" Y="2482.269" Z="223.5762" />
+					<CustomBehavior File="InteractWith" MobId="241460" InteractByLooting="true" QuestId="38614" QuestObjectiveIndex="2" X="2529.326" Y="2605.128" Z="239.0104" />
+				</While>
+
+				<TurnIn QuestName="No Wings Required" QuestId="38613" TurnInName="Dread-Rider Cullen" TurnInId="92567" X="2551.336" Y="2497.698" Z="247.3913" />
+				<TurnIn QuestName="To Weather the Storm" QuestId="38614" TurnInName="Dread-Rider Cullen" TurnInId="92567" X="2551.336" Y="2497.698" Z="247.3913" />
+
+				<PickUp QuestName="Impalement Insurance" QuestId="38615" GiverName="Dread-Rider Cullen" GiverId="92567" X="2551.336" Y="2497.698" Z="247.3913" />
+
+				<While Condition="DoQuest(38615)" >
+					<!-- NOTE: <CheckThis> : This is a very fragile section of code. Need to imrpove or add failsafes. -->
+					<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="6000" X="2544.906" Y="2487.497" Z="254.7319" />
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="2" QuestId="38615" QuestObjectiveIndex="1" X="2549.886" Y="2466.156" Z="254.7651" />
+
+					<CustomBehavior File="InteractWith" MobId="91983" Range="49" WaitTime="6000" X="2529.949" Y="2530.865" Z="262.96" />
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38615" QuestObjectiveIndex="1" X="2530.71" Y="2534.549" Z="263.0449" />
+
+					<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="6000" X="2544.906" Y="2487.497" Z="254.7319" />
+					<CustomBehavior File="InteractWith" MobId="92072" Range="49" WaitTime="6000" X="2545.717" Y="2445.174" Z="260.7524" />
+
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38615" QuestObjectiveIndex="1" X="2543.905" Y="2423.978" Z="262.0621" />
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38615" QuestObjectiveIndex="1" X="2524.704" Y="2385.554" Z="263.4633" />
+
+					<MoveTo QuestId="38615" QuestObjectiveIndex="1" X="2508.864" Y="2373.998" Z="264.0553" />
+					<CustomBehavior File="InteractWith" MobId="92072" Range="49" WaitTime="6000" X="2491.849" Y="2364.745" Z="270.4663" />
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38615" QuestObjectiveIndex="1" X="2490.207" Y="2361.314" Z="270.5206" />
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38615" QuestObjectiveIndex="1" X="2428.023" Y="2356.345" Z="273.3925" />
+
+					<CustomBehavior File="MyCTM" X="2423.832" Y="2379.894" Z="256.4818" />
+				</While>
+			</If>
+
 
 			<!-- NOTE: <BonusObjective>: <PickUp QuestName="Assault the Drekirjar" QuestId="38374" GiverName="Hati" GiverId="106551" XXXX /> -->
 
-			<While Condition="NeedsQuest(38337) || DoQuest(38337)" >
-				<CustomBehavior File="KillUntilComplete" MobId="91202" TerminateWhen="!NeedsQuest(38337) &amp;&amp; !DoQuest(38337)" >
+			<While Condition="(NeedsQuest(38337) || DoQuest(38337) &amp;&amp; Me.IsAlliance) || (NeedsQuest(38616) || DoQuest(38616) &amp;&amp; Me.IsHorde)" >
+				<CustomBehavior File="KillUntilComplete" MobId="91202" TerminateWhen="(!NeedsQuest(38337) &amp;&amp; !DoQuest(38337) &amp;&amp; Me.IsAlliance) || (!NeedsQuest(38616) &amp;&amp; !DoQuest(38616) &amp;&amp; Me.IsHorde)" >
 					<HuntingGrounds>
 						<Hotspot X="2437.832" Y="2373.323" Z="256.6084" />
 						<Hotspot X="2428.545" Y="2434.163" Z="257.4063" />
@@ -417,29 +679,58 @@
 				</CustomBehavior>
 			</While>
 
-			<TurnIn QuestName="Impalement Insurance" QuestId="38410" TurnInName="Commander Lorna Crowley" TurnInId="91553" X="2454.358" Y="2350.451" Z="256.1143" />
-			<TurnIn QuestName="Built to Scale" QuestId="38337" TurnInName="Commander Lorna Crowley" TurnInId="91553" X="2454.358" Y="2350.451" Z="256.1143" />
+			<If Condition="Me.IsAlliance" >
+				<TurnIn QuestName="Impalement Insurance" QuestId="38410" TurnInName="Commander Lorna Crowley" TurnInId="91553" X="2454.358" Y="2350.451" Z="256.1143" />
+				<TurnIn QuestName="Built to Scale" QuestId="38337" TurnInName="Commander Lorna Crowley" TurnInId="91553" X="2454.358" Y="2350.451" Z="256.1143" />
 
-			<PickUp QuestName="Another Way" QuestId="38342" GiverName="Commander Lorna Crowley" GiverId="91553" X="2454.358" Y="2350.451" Z="256.1143" />
-			<While Condition="DoQuest(38342)" >
-				<CustomBehavior File="KillUntilComplete" MobId="91240" QuestId="38342" QuestObjectiveIndex="1" X="2377.939" Y="2348.658" Z="267.7591" />
-				<MoveTo QuestId="39342" QuestObjectiveIndex="2" X="2352.402" Y="2389.049" Z="316.4349" />
-			</While>
-			<TurnIn QuestName="Another Way" QuestId="38342" TurnInName="Commander Lorna Crowley" TurnInId="91558" X="2349.302" Y="2387.768" Z="316.435" />
+				<PickUp QuestName="Another Way" QuestId="38342" GiverName="Commander Lorna Crowley" GiverId="91553" X="2454.358" Y="2350.451" Z="256.1143" />
+				<While Condition="DoQuest(38342)" >
+					<CustomBehavior File="KillUntilComplete" MobId="91240" QuestId="38342" QuestObjectiveIndex="1" X="2377.939" Y="2348.658" Z="267.7591" />
+					<MoveTo QuestId="39342" QuestObjectiveIndex="2" X="2352.402" Y="2389.049" Z="316.4349" />
+				</While>
+				<TurnIn QuestName="Another Way" QuestId="38342" TurnInName="Commander Lorna Crowley" TurnInId="91558" X="2349.302" Y="2387.768" Z="316.435" />
 
-			<PickUp QuestName="Above the Winter Moonlight" QuestId="38412" GiverName="Commander Lorna Crowley" GiverId="91558" X="2349.302" Y="2387.768" Z="316.435" />
-			<While Condition="DoQuest(38412)" >
-				<MoveTo QuestId="38412" QuestObjectiveIndex="1" X="2345.374" Y="2367.749" Z="316.4349" />
-				<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="6000" QuestId="38412" QuestObjectiveIndex="1" X="2299.911" Y="2343.661" Z="311.9629" />
-				<MoveTo X="2251.925" Y="2363.873" Z="373.657" /> <!-- NOTE: <CheckThis>: Player can easily walk up this mountain, but the mesh has to comply. -->
-				<MoveTo X="2249.971" Y="2348.081" Z="379.8681" /> <!-- NOTE: <CheckThis>: Player can easily walk up this mountain, but the mesh has to comply. -->
+				<PickUp QuestName="Above the Winter Moonlight" QuestId="38412" GiverName="Commander Lorna Crowley" GiverId="91558" X="2349.302" Y="2387.768" Z="316.435" />
+				<While Condition="DoQuest(38412)" >
+					<MoveTo QuestId="38412" QuestObjectiveIndex="1" X="2345.374" Y="2367.749" Z="316.4349" />
+					<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="6000" QuestId="38412" QuestObjectiveIndex="1" X="2299.911" Y="2343.661" Z="311.9629" />
+					<MoveTo X="2251.925" Y="2363.873" Z="373.657" /> <!-- NOTE: <CheckThis>: Player can easily walk up this mountain, but the mesh has to comply. -->
+					<MoveTo X="2249.971" Y="2348.081" Z="379.8681" /> <!-- NOTE: <CheckThis>: Player can easily walk up this mountain, but the mesh has to comply. -->
 
-				<MoveTo X="2222.029" Y="2480.637" Z="429.5709" />
-				<CustomBehavior File="InteractWith" MobId="92072" Range="49" WaitTime="6000" QuestId="38412" QuestObjectiveIndex="1" X="2222.42" Y="2460.505" Z="445.0158" />
-				<CustomBehavior File="InteractWith" MobId="91983" Range="49" WaitTime="6000" QuestId="38412" QuestObjectiveIndex="1" X="2208.927" Y="2497.736" Z="476.3826" />
-				<MoveTo QuestId="38412" QuestObjectiveIndex="1" X="2179.578" Y="2436.323" Z="484.8459" />
-			</While>
-			<TurnIn QuestName="Above the Winter Moonlight" QuestId="38412" TurnInName="Vethir" TurnInId="91249" X="2182.776" Y="2433.033" Z="485.2918" />
+					<MoveTo X="2222.029" Y="2480.637" Z="429.5709" />
+					<CustomBehavior File="InteractWith" MobId="92072" Range="49" WaitTime="6000" QuestId="38412" QuestObjectiveIndex="1" X="2222.42" Y="2460.505" Z="445.0158" />
+					<CustomBehavior File="InteractWith" MobId="91983" Range="49" WaitTime="6000" QuestId="38412" QuestObjectiveIndex="1" X="2208.927" Y="2497.736" Z="476.3826" />
+					<MoveTo QuestId="38412" QuestObjectiveIndex="1" X="2179.578" Y="2436.323" Z="484.8459" />
+				</While>
+				<TurnIn QuestName="Above the Winter Moonlight" QuestId="38412" TurnInName="Vethir" TurnInId="91249" X="2182.776" Y="2433.033" Z="485.2918" />
+			</If>
+
+			<If Condition="Me.IsHorde" >
+				<TurnIn QuestName="Impalement Insurance" QuestId="38615" TurnInName="Dread-Rider Cullen" TurnInId="92573" X="2402.099" Y="2306.368" Z="258.1398" />
+				<TurnIn QuestName="Built to Scale" QuestId="38616" TurnInName="Dread-Rider Cullen" TurnInId="92573" X="2402.099" Y="2306.368" Z="258.1398" />
+
+				<PickUp QuestName="Another Way" QuestId="38617" GiverName="Dread-Rider Cullen" GiverId="92573" X="2402.099" Y="2306.368" Z="258.1398" />
+				<While Condition="DoQuest(38617)" >
+					<CustomBehavior File="KillUntilComplete" MobId="91240" QuestId="38617" QuestObjectiveIndex="1" X="2377.939" Y="2348.658" Z="267.7591" />
+					<MoveTo QuestId="38617" QuestObjectiveIndex="2" X="2346.729" Y="2384.104" Z="316.4348" />
+				</While>
+				<TurnIn QuestName="Another Way" QuestId="38617" TurnInName="Dread-Rider Cullen" TurnInId="92569" X="2344.314" Y="2382.323" Z="316.4346" />
+
+				<PickUp QuestName="Above the Winter Moonlight" QuestId="38618" GiverName="Dread-Rider Cullen" GiverId="92569" X="2344.314" Y="2382.323" Z="316.4346" />
+				<While Condition="DoQuest(38618)" >
+					<MoveTo QuestId="38618" QuestObjectiveIndex="1" X="2345.374" Y="2367.749" Z="316.4349" />
+					<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="6000" QuestId="38618" QuestObjectiveIndex="1" X="2299.911" Y="2343.661" Z="311.9629" />
+					<MoveTo X="2251.925" Y="2363.873" Z="373.657" /> <!-- NOTE: <CheckThis>: Player can easily walk up this mountain, but the mesh has to comply. -->
+					<MoveTo X="2249.971" Y="2348.081" Z="379.8681" /> <!-- NOTE: <CheckThis>: Player can easily walk up this mountain, but the mesh has to comply. -->
+
+					<MoveTo X="2222.029" Y="2480.637" Z="429.5709" />
+					<CustomBehavior File="InteractWith" MobId="92072" Range="49" WaitTime="6000" QuestId="38618" QuestObjectiveIndex="1" X="2222.42" Y="2460.505" Z="445.0158" />
+					<CustomBehavior File="InteractWith" MobId="91983" Range="49" WaitTime="6000" QuestId="38618" QuestObjectiveIndex="1" X="2208.927" Y="2497.736" Z="476.3826" />
+					<MoveTo QuestId="38618" QuestObjectiveIndex="1" X="2179.578" Y="2436.323" Z="484.8459" />
+				</While>
+				<TurnIn QuestName="Above the Winter Moonlight" QuestId="38618" TurnInName="Vethir" TurnInId="91249" X="2182.776" Y="2433.033" Z="485.2918" />
+			</If>
+
 
 			<PickUp QuestName="Heart of a Dragon" QuestId="38414" GiverName="Vethir" GiverId="91249" X="2182.776" Y="2433.033" Z="485.2918" />
 			<PickUp QuestName="Wings of Liberty" QuestId="38413" GiverName="Vethir" GiverId="91249" X="2182.776" Y="2433.033" Z="485.2918" />
@@ -674,7 +965,6 @@
 			<TurnIn QuestName="The Final Judgment" QuestId="38818" TurnInName="Ashildir" TurnInId="97319" X="341.7656" Y="356.9219" Z="30.293" />
 		<!-- END Story: The Trial of Valor -->
 
-
 		<!-- Story: To Helheim and Back -->
 			<PickUp QuestName="An Unworthy Task" QuestId="39837" GiverName="Ashildir" GiverId="97319" X="341.7656" Y="356.9219" Z="30.293" />
 			<While Condition="DoQuest(39837)" >
@@ -869,7 +1159,28 @@
 				<CustomBehavior File="WaitTimer" WaitTime="45000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <ConditionalCheck> : Make sure this vehicle is considered as flying -->
 			</While>
 			<TurnIn QuestName="Stormheim's Salvation" QuestId="40005" TurnInName="Havi" TurnInId="97988" X="2497.892" Y="956.9375" Z="241.4456" />
-			<!-- NOTE: <BonusObjective> : <PickUp QuestName="Drive Back the Tideskorn" QuestId="39998" GiverName="Servant of Skovald" GiverId="95620" X="XXX" Y="YYY" Z="ZZZ" /> -->
+
+			<While Condition="!IsQuestCompleted(39998)" > <!-- Bonus Objective: Drive Back the Tideskorn -->
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(39998)" >
+					<HuntingGrounds>
+						<Hotspot X="2570.22" Y="1028.334" Z="217.1377" />
+						<Hotspot X="2658.749" Y="1049.22" Z="205.7971" />
+						<Hotspot X="2581.735" Y="1122.565" Z="205.9827" />
+						<Hotspot X="2630.932" Y="1160.65" Z="197.7672" />
+						<Hotspot X="2701.257" Y="1089.469" Z="197.7669" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueGameObject Id="244704" />
+						<PursueGameObject Id="97963" />
+						<PursueUnit Id="97825" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="97851" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="95620" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="97851" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="97816" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					</PursuitList>
+				</CustomBehavior>
+			</While>
+
 			<!-- NOTE: <RemoveDoWhen> #1 : Remove use of extra action button. -->
 		<!-- END Story: The Champion of Stormheim -->
 
@@ -919,7 +1230,7 @@
 				<PickUp QuestName="Shielded Secrets" QuestId="39063" GiverName="Commander Lorna Crowley" GiverId="93779" X="2862.65" Y="882.9323" Z="79.52075" />
 				<PickUp QuestName="Stories of Battle" QuestId="39405" GiverName="Ashilvara, Verse 1" GiverType="GameObject" GiverId="251571" X="2672.653" Y="1352.054" Z="43.45657" />
 
-				<While Condition="DoQuest(39063)" >
+				<While Condition="DoQuest(39063)" >  <!-- Same as Horde's variant. -->
 					<!-- NOTE: <GameClientIssue?> : Objects must be interacted with twice for credit.  First interaction does nothing. -->
 					<CustomBehavior File="InteractWith" MobIds="251561, 251557, 251558, 251559, 251560, 242673" NumOfTimes="6" QuestId="39063" QuestObjectiveIndex="1" >
 						<HuntingGrounds>
@@ -932,7 +1243,7 @@
 						</HuntingGrounds>
 					</CustomBehavior>
 				</While>
-				<While Condition="DoQuest(39405)" >
+				<While Condition="DoQuest(39405)" >  <!-- Same as Horde's variant. -->
 					<CustomBehavior File="KillUntilComplete" MobId="94856" QuestId="39405" QuestObjectiveIndex="1" >
 						<HuntingGrounds>
 							<Hotspot X="2713.493" Y="1593.419" Z="12.75224" />
@@ -957,19 +1268,120 @@
 					<CustomBehavior File="InteractWith" MobId="242994" QuestId="39092" QuestObjectiveIndex="1" X="2485.97" Y="1473.634" Z="25.38543" />
 					<CustomBehavior File="InteractWith" MobId="94393" GossipOptions="1" QuestId="39092" QuestObjectiveIndex="5" X="2541.853" Y="1445.712" Z="26.85922" />
 					<!-- NOTE: <CheckTimer> : Could increase time and add terminatewhen to further optimize -->
-					<CustomBehavior File="WaitTimer" WaitTime="25000" />
+					<CustomBehavior File="WaitTimer" WaitTime="32000" />
 				</While>
 				<TurnIn QuestName="Becoming the Ascendant" QuestId="39092" TurnInName="Genn Greymane" TurnInId="95804" X="2542.802" Y="1418.168" Z="32.51095" />
 
 				<PickUp QuestName="Ending the New Beginning" QuestId="39122" GiverName="Genn Greymane" GiverId="95804" X="2542.802" Y="1418.168" Z="32.51095" />
 				<While Condition="DoQuest(39122)" >
-					<MoveTo QuestId="39122" QuestObjectiveIndex="1" X="2825.3" Y="877.51" Z="78.18" />
+					<MoveTo QuestId="39122" QuestObjectiveIndex="1" X="2542.396" Y="1301.095" Z="41.30118" />
 					<!-- NOTE: <CheckCode> : Currently in beta, nothing happens here.  But it's assumed a cutscene starts which needs to be skipped. -->
 					<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 				</While>
 				<TurnIn QuestName="Ending the New Beginning" QuestId="39122" TurnInName="Commander Lorna Crowley" TurnInId="95932" X="2833.457" Y="887.2101" Z="78.51015" />
 			</If>
 		<!-- [A] END Story: Secrets of the Shieldmaidens -->
+
+
+		<!-- [H] Story: Secrets of the Shieldmaidens -->
+			<If Condition="Me.IsHorde" >
+				<PickUp QuestName="The Dark Lady's Bidding" QuestId="38872" GiverName="Dread-Rider Cullen" GiverId="93624" X="3190.107" Y="1553.792" Z="183.0175" /> <!-- NOTE: <CheckMe> : Breadcrumb? -->
+				<While Condition="DoQuest(38872)" >
+					<CustomBehavior File="InteractWith" MobId="93624" GossipOptions="1" WaitTime="25000" QuestId="38872" QuestObjectiveIndex="1" X="3190.107" Y="1553.792" Z="183.0175" />
+				</While>
+				<TurnIn QuestName="The Dark Lady's Bidding" QuestId="38872" TurnInName="Nathanos Blightcaller" TurnInId="93603" X="2370.986" Y="1838.804" Z="30.56491" />
+
+				<PickUp QuestName="Clear the Deck!" QuestId="38873" GiverName="Nathanos Blightcaller" GiverId="93603" X="2370.986" Y="1838.804" Z="30.56491" />
+				<PickUp QuestName="Dreadwake's Dilemma" QuestId="39153" GiverName="Nathanos Blightcaller" GiverId="93603" X="2370.986" Y="1838.804" Z="30.56491" />
+
+				<While Condition="DoQuest(38873, 39153)" >
+					<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(38873) &amp;&amp; IsQuestCompleted(39153)" >
+						<HuntingGrounds>
+							<Hotspot X="2301.066" Y="1784.929" Z="26.00799" />
+							<Hotspot X="2376.917" Y="1745.059" Z="8.921089" />
+							<Hotspot X="2339.01" Y="1685.128" Z="8.580379" />
+						</HuntingGrounds>
+						<PursuitList>
+							<PursueGameObject Id="95212" PursueWhen="!IsQuestCompleted(38873)" />
+							<PursueUnit Id="94825" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !IsQuestCompleted(39153) &amp;&amp; !UNIT.TaggedByOther" />
+							<PursueUnit Id="109635" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !IsQuestCompleted(39153) &amp;&amp; !UNIT.TaggedByOther" />
+						</PursuitList>
+					</CustomBehavior>
+				</While>
+
+				<PickUp QuestName="A Gift for Greymane" QuestId="39385" GiverName="Gilnean Heavy Explosive" GiverType="GameObject" GiverId="243454" X="2396.32" Y="1688.252" Z="1.669256" />
+				<While Condition="DoQuest(39385)" >
+					<CustomBehavior File="InteractWith" MobIds="243455" NumOfTimes="3" QuestId="39385" QuestObjectiveIndex="1" >
+						<HuntingGrounds>
+							<Hotspot X="2402.767" Y="1660.991" Z="-2.110131" />
+							<Hotspot X="2427.448" Y="1653.267" Z="-2.900574" />
+							<Hotspot X="2396.542" Y="1637.764" Z="-5.11749" />
+						</HuntingGrounds>
+					</CustomBehavior>
+					<If Condition="!IsObjectiveComplete(2, 39385)" >
+						<MoveTo X="2357.927" Y="1861.343" Z="24.71746"
+						<CustomBehavior File="UseItem" ItemId="128287" />
+						<CustomBehavior File="WaitTimer" QuestId="39385" WaitTime="10000" />
+					</If>
+				</While>
+
+				<TurnIn QuestName="Clear the Deck!" QuestId="38873" TurnInName="Nathanos Blightcaller" TurnInId="93603" X="2370.986" Y="1838.804" Z="30.5652" />
+				<TurnIn QuestName="Dreadwake's Dilemma" QuestId="39153" TurnInName="Nathanos Blightcaller" TurnInId="93603" X="2370.986" Y="1838.804" Z="30.5652" />
+				<TurnIn QuestName="A Gift for Greymane" QuestId="39385" TurnInName="Nathanos Blightcaller" TurnInId="93603" X="2370.986" Y="1838.804" Z="30.5652" />
+
+				<PickUp QuestName="To Skold-Ashil" QuestId="39154" GiverName="Nathanos Blightcaller" GiverId="93603" X="2370.986" Y="1838.804" Z="30.5652" />
+				<TurnIn QuestName="To Skold-Ashil" QuestId="39154" TurnInName="Lady Sylvanas Windrunner" TurnInId="94227" X="2612.204" Y="1740.139" Z="15.55205" />
+
+				<PickUp QuestName="Shielded Secrets" QuestId="38878" GiverName="Lady Sylvanas Windrunner" GiverId="94227" X="2612.204" Y="1740.139" Z="15.55205" />
+				<PickUp QuestName="Stories of Battle" QuestId="39405" GiverName="Ashilvara, Verse 1" GiverId="251571" X="2693.041" Y="1635.915" Z="14.69267" />
+
+				<While Condition="DoQuest(39063)" > <!-- Same as Alliance's variant. -->
+					<!-- NOTE: <GameClientIssue?> : Objects must be interacted with twice for credit.  First interaction does nothing. -->
+					<CustomBehavior File="InteractWith" MobIds="251561, 251557, 251558, 251559, 251560, 242673" NumOfTimes="6" QuestId="39063" QuestObjectiveIndex="1" >
+						<HuntingGrounds>
+							<Hotspot X="2676.834" Y="1354" Z="42.38579" />
+							<Hotspot X="2662.72" Y="1424.462" Z="27.68061" />
+							<Hotspot X="2724.359" Y="1467.645" Z="23.25597" />
+							<Hotspot X="2780.955" Y="1477.915" Z="23.42056" />
+							<Hotspot X="2854.148" Y="1526.928" Z="8.720257" />
+							<Hotspot X="2714.638" Y="1638.527" Z="14.57451" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</While>
+				<While Condition="DoQuest(39405)" > <!-- Same as Alliance's variant. -->
+					<CustomBehavior File="KillUntilComplete" MobId="94856" QuestId="39405" QuestObjectiveIndex="1" >
+						<HuntingGrounds>
+							<Hotspot X="2713.493" Y="1593.419" Z="12.75224" />
+							<Hotspot X="2786.372" Y="1466.445" Z="23.25648" />
+							<Hotspot X="2688.976" Y="1458.818" Z="24.56635" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</While>
+
+				<TurnIn QuestName="Shielded Secrets" QuestId="38878" TurnInName="Lady Sylvanas Windrunner" TurnInId="95611" X="2650.9" Y="1499" Z="18.93942" />
+				<TurnIn QuestName="Stories of Battle" QuestId="39405" X="2650.9" Y="1499" Z="18.93942" />
+
+				<PickUp QuestName="Becoming the Ascendant" QuestId="39155" GiverName="Lady Sylvanas Windrunner" GiverId="95611" X="2650.9" Y="1499" Z="18.93942" />
+				<While Condition="DoQuest(39155)" >
+					<CustomBehavior File="InteractWith" MobId="242998" QuestId="39155" QuestObjectiveIndex="4" X="2597.937" Y="1474.281" Z="25.42198" />
+					<CustomBehavior File="InteractWith" MobId="242996" QuestId="39155" QuestObjectiveIndex="3" X="2597.619" Y="1525.91" Z="26.23458" />
+					<CustomBehavior File="InteractWith" MobId="242995" QuestId="39155" QuestObjectiveIndex="2" X="2485.953" Y="1525.799" Z="25.8883" />
+					<CustomBehavior File="InteractWith" MobId="242994" QuestId="39155" QuestObjectiveIndex="1" X="2485.97" Y="1473.634" Z="25.38543" />
+					<CustomBehavior File="InteractWith" MobId="94393" GossipOptions="1" QuestId="39155" QuestObjectiveIndex="5" X="2541.853" Y="1445.712" Z="26.85922" />
+					<!-- NOTE: <CheckTimer> : Could increase time and add terminatewhen to further optimize -->
+					<CustomBehavior File="WaitTimer" WaitTime="32000" />
+				</While>
+				<TurnIn QuestName="Becoming the Ascendant" QuestId="39155" TurnInName="Lady Sylvanas Windrunner" TurnInId="94228" X="2543.523" Y="1403.62" Z="32.51057" />
+
+				<PickUp QuestName="A New Life for Undeath" QuestId="38882" GiverName="Lady Sylvanas Windrunner" GiverId="94228" X="2543.523" Y="1403.62" Z="32.51057" />
+				<While Condition="DoQuest(38882)" >
+					<MoveTo QuestId="38882" QuestObjectiveIndex="1" X="2542.396" Y="1301.095" Z="41.30118" />
+					<!-- NOTE: <CheckCode> : Currently in beta, nothing happens here.  But it's assumed a cutscene starts which needs to be skipped. -->
+					<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+				</While>
+				<TurnIn QuestName="A New Life for Undeath" QuestId="38882" TurnInName="Lady Sylvanas Windrunner" TurnInId="95755" X="2365.924" Y="1836.932" Z="30.5652" />
+			</If>
+		<!-- [H] END Story: Secrets of the Shieldmaidens -->
 
 		<!-- Note sure where to wedge this in.
 			<PickUp QuestName="The Brood of Nithogg" QuestId="42431" GiverName="Adult Squallhunter" GiverId="99223" X="XXX" Y="YYY" Z="ZZZ" />

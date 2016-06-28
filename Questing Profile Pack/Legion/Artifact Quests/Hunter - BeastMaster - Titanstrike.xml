@@ -83,6 +83,14 @@
 						}
 						return false;
 					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
 				]]>
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
@@ -167,6 +175,10 @@
 					<TurnIn QuestName="Hunter to Hunter" QuestId="41009" TurnInName="Emmarel Shadewarden" TurnInId="102478" X="-876.658" Y="4379.09" Z="739.1407" />
 				</If>
 			<!-- END Story: Artifact Weapon - Titanstrike -->
+
+
+			<PickUp QuestName="On Eagle's Wings" QuestId="40953" GiverName="Emmarel Shadewarden" GiverId="102478" X="-876.658" Y="4379.09" Z="739.1407" />
+			<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
 
 			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Hunter [Echo].xml" />
 

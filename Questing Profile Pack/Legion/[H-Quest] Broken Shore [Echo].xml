@@ -1,0 +1,164 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../Schemas/EchoSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[H-Quest] Broken Shore [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+
+					async Task SkipCutscene()
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(3000);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(3000);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<If Condition="!IsQuestCompleted(43926)" >
+			<MoveTo X="1596.554" Y="-4371.372" Z="21.21093" />
+			<!-- <PickUp QuestName="The Legion Returns" QuestId="40519" />  Auto Pickup in Orgrimmar -->
+			<PickUp QuestName="The Legion Returns" QuestId="43926" GiverName="Warchief's Command Board" GiverId="206109" X="1600.99" Y="-4369.74" Z="21.0694" />
+		</If>
+		<TurnIn QuestName="The Legion Returns" QuestId="43926" TurnInName="Holgar Stormaxe" TurnInId="4311" X="1322.269" Y="-4395.174" Z="25.7571" />
+
+		<While Condition="DoQuest(44281)" >
+			<CustomBehavior File="InteractWith" MobId="251254" QuestId="44281" QuestObjectiveIndex="3" X="1334.845" Y="-4478.17" Z="26.51113" />
+			<CustomBehavior File="InteractWith" MobId="251195" QuestId="44281" QuestObjectiveIndex="1" X="1308.439" Y="-4586.25" Z="24.68729" />
+			<CustomBehavior File="InteractWith" MobId="255930" QuestId="44281" QuestObjectiveIndex="2" X="1376.438" Y="-4672.278" Z="30.20253" />
+			<CustomBehavior File="InteractWith" MobId="113958" GossipOptions="1" QuestId="44281" QuestObjectiveIndex="4" X="1423.823" Y="-4736.453" Z="29.75032" /> <!-- NOTE: <Technical> May need to use multiple MobIds here for all the duelists. -->
+		</While>
+		<TurnIn QuestName="To Be Prepared" QuestId="44281" TurnInName="Holgar Stormaxe" TurnInId="4311" X="1322.269" Y="-4395.174" Z="25.7571" />
+
+		<PickUp QuestName="The Battle for Broken Shore" QuestId="40518" GiverName="Stone Guard Mukar" GiverId="113547" X="1419.352" Y="-4905.071" Z="11.34223" />
+		<While Condition="DoQuest(40518)" >
+			<CustomBehavior File="InteractWith" MobId="113118" GossipOptions="1" WaitTime="10000" QuestId="40518" QuestObjectiveIndex="1" X="1438.67" Y="-5017.094" Z="12.0279" />
+			<!-- NOTE: <CheckCode> : Need to make sure that the IsScenarioCriteriaComplete works for this.
+			In-game shows this first section as stage 1. -->
+			<CustomBehavior File="RunCode" Code="
+				await SkipCutscene();
+				await Coroutine.Wait(100000, ()=&gt; IsScenarioCriteriaComplete(1));
+			" />
+			<!-- NOTE: <AddAvoid> : May need avoids here.  Lots of stuff hitting the grounds -->
+			<CustomBehavior File="EscortGroup" QuestId="40518" EscortNpcId="90711" StartNpcId="90711" >
+				<SearchPath>
+					<Hotspot X="571.9427" Y="1881.517" Z="0.1541021" />
+				</SearchPath>
+			</CustomBehavior>
+		</While>
+		<TurnIn QuestName="The Battle for Broken Shore" QuestId="40518" TurnInName="Eitrigg" TurnInId="100453" X="1437.345" Y="-4985.149" Z="12.01868" />
+
+
+		<PickUp QuestName="Fate of the Horde" QuestId="40522" GiverName="Eitrigg" GiverId="100453" X="1437.345" Y="-4985.149" Z="12.01868" />
+		<While Condition="DoQuest(40522)" >
+			<!-- NOTE: <Optimization> : Detect if we're on zeppelin before doing Objective1 as Objective1 is just an optional taxi to the next location. -->
+			<CustomBehavior File="InteractWith" MobId="100636" QuestId="40522" QuestObjectiveIndex="1" X="1605.925" Y="-4376.51" Z="21.7347" />
+			<MoveTo X="1661.379" Y="-4346.83" Z="26.3382" />
+			<CustomBehavior File="RunCode" Code="await Coroutine.Wait(100000, ()=&gt; IsQuestCompleted(40522));" />
+			<CustomBehavior File="InteractWith" MobId="100866" GossipOptions="1" QuestId="40522" QuestObjectiveIndex="4" X="1248.641" Y="-4379.359" Z="34.83271" />
+		</While>
+		<TurnIn QuestName="Fate of the Horde" QuestId="40522" TurnInName="Lady Sylvanas Windrunner" TurnInId="100866" X="1248.641" Y="-4379.359" Z="34.83271" />
+
+		<PickUp QuestName="Emissary" QuestId="40760" GiverName="Lady Sylvanas Windrunner" GiverId="100870" X="1247.257" Y="-4376.686" Z="34.83392" />
+		<TurnIn QuestName="Emissary" QuestId="40760" TurnInName="Allari the Souleater" TurnInId="100873" X="1275.693" Y="-4384.899" Z="28.73854" />
+
+		<PickUp QuestName="Demons Among Us" QuestId="40607" GiverName="Allari the Souleater" GiverId="100873" X="1275.693" Y="-4384.899" Z="28.73854" />
+		<While Condition="DoQuest(40607)" >
+			<CustomBehavior File="InteractWith" MobId="100873" GossipOptions="1" QuestId="40607" QuestObjectiveIndex="1" X="1275.693" Y="-4384.899" Z="28.73854" />
+			<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+			<CustomBehavior File="KillUntilComplete" MobIds="101100, 101104" QuestId="40607" QuestObjectiveIndex="2" >
+				<HuntingGrounds>
+					<Hotspot X="1295.562" Y="-4372.065" Z="27.91033" />
+					<Hotspot X="1297.056" Y="-4374.756" Z="27.9967" />
+					<Hotspot X="1279.236" Y="-4430.001" Z="26.87401" />
+					<Hotspot X="1199.561" Y="-4419.203" Z="21.66883" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+		<TurnIn QuestName="Demons Among Us" QuestId="40607" TurnInName="Lady Sylvanas Windrunner" TurnInId="101035" X="1246.866" Y="-4377.863" Z="34.91656" />
+
+		<PickUp QuestName="Keep Your Friends Close" QuestId="40605" GiverName="Lady Sylvanas Windrunner" GiverId="101035" X="1246.866" Y="-4377.863" Z="34.91656" />
+		<TurnIn QuestName="Keep Your Friends Close" QuestId="40605" TurnInName="Elthyn Da'rai" TurnInId="95234" X="1819.613" Y="-4422.656" Z="103.1849" />
+
+	</QuestOrder>
+</HBProfile>

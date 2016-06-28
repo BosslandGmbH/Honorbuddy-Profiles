@@ -1,0 +1,794 @@
+<!-- 
+This is a WIP and may not include everything.
+But should include enough for general questing purposes. 
+    -Echo
+-->
+
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <xs:import namespace="http://www.w3.org/2001/XMLSchema-instance" schemaLocation="xsi.xsd"/>
+    <xs:element name="HBProfile">
+        <xs:complexType mixed="true">
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="AvoidMobs"/>
+                <xs:element ref="Blacklist"/>
+                <xs:element ref="Blackspots"/>
+                <xs:element ref="Mailboxes"/>
+                <xs:element ref="Name"/>
+                <xs:element ref="UseMount"/>
+                <xs:element ref="Vendors"/>
+                <xs:element ref="MailBlue"/>
+                <xs:element ref="MailGreen"/>
+                <xs:element ref="MailGrey"/>
+                <xs:element ref="MailPurple"/>
+                <xs:element ref="MailWhite"/>
+                <xs:element ref="MaxLevel"/>
+                <xs:element ref="MinDurability"/>
+                <xs:element ref="MinFreeBagSlots"/>
+                <xs:element ref="MinLevel"/>
+                <xs:element ref="ProtectedItems"/>
+                <xs:element ref="Quest"/>
+                <xs:element ref="QuestOrder"/>
+                <xs:element ref="InitOrder"/>
+                <xs:element ref="SellBlue"/>
+                <xs:element ref="SellGreen"/>
+                <xs:element ref="SellGrey"/>
+                <xs:element ref="SellPurple"/>
+                <xs:element ref="SellWhite"/>
+                <xs:element ref="TargetElites"/>
+            </xs:choice>
+            <xs:attribute ref="xsi:noNamespaceSchemaLocation"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="MailBlue" type="xs:boolean"/>
+    <xs:element name="MailGreen" type="xs:boolean"/>
+    <xs:element name="MailGrey" type="xs:boolean"/>
+    <xs:element name="MailPurple" type="xs:boolean"/>
+    <xs:element name="MailWhite" type="xs:boolean"/>
+    <xs:element name="MaxLevel" type="xs:integer"/>
+    <xs:element name="MinDurability" type="xs:decimal"/>
+    <xs:element name="MinFreeBagSlots" type="xs:integer"/>
+    <xs:element name="MinLevel" type="xs:integer"/>
+    <xs:element name="ProtectedItems">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="Item"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Item">
+        <xs:complexType>
+            <xs:attribute name="Id" use="required" type="xs:integer"/>
+            <xs:attribute name="Name" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Quest">
+        <xs:complexType>
+            <xs:choice>
+                <xs:element ref="TurnIn"/>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="Objective"/>
+            </xs:choice>
+            <xs:attribute name="Id" use="required" type="xs:integer"/>
+            <xs:attribute name="Name" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="QuestOrder">
+        <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element ref="CustomBehavior"/>
+                <xs:element ref="DisableBehavior"/>
+                <xs:element ref="GrindTo"/>
+                <xs:element ref="GrindUntil"/>
+                <xs:element ref="If"/>
+                <xs:element ref="MoveTo"/>
+                <xs:element ref="Objective"/>
+                <xs:element ref="PickUp"/>
+                <xs:element ref="SetGrindArea"/>
+                <xs:element ref="TargetingDistance"/>
+                <xs:element ref="TurnIn"/>
+                <xs:element ref="UseMount"/>
+                <xs:element ref="While"/>
+                <xs:element ref="Checkpoint"/>
+                <xs:element ref="LootMobs"/>
+            </xs:choice>
+            <xs:attribute name="IgnoreCheckpoints" type="xs:boolean"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="InitOrder">
+        <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element ref="CustomBehavior"/>
+                <xs:element ref="DisableBehavior"/>
+                <xs:element ref="GrindTo"/>
+                <xs:element ref="GrindUntil"/>
+                <xs:element ref="If"/>
+                <xs:element ref="MoveTo"/>
+                <xs:element ref="Objective"/>
+                <xs:element ref="PickUp"/>
+                <xs:element ref="SetGrindArea"/>
+                <xs:element ref="TargetingDistance"/>
+                <xs:element ref="TurnIn"/>
+                <xs:element ref="UseMount"/>
+                <xs:element ref="While"/>
+                <xs:element ref="Checkpoint"/>
+                <xs:element ref="LootMobs"/>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Checkpoint">
+        <xs:complexType>
+            <xs:attribute name="Level" use="required" type="xs:integer"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="LootMobs">
+        <xs:complexType>
+            <xs:attribute name="Value" use="required" type="xs:boolean"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="SellBlue" type="xs:boolean"/>
+    <xs:element name="SellGreen" type="xs:boolean"/>
+    <xs:element name="SellGrey" type="xs:boolean"/>
+    <xs:element name="SellPurple" type="xs:boolean"/>
+    <xs:element name="SellWhite" type="xs:boolean"/>
+    <xs:element name="TargetElites" type="xs:boolean"/>
+    <xs:element name="UseMount">
+        <xs:complexType mixed="true">
+            <xs:attribute name="Value" type="xs:NCName"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Name" type="xs:string"/>
+    <xs:element name="Blacklist">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="Mob"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Vendors">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="Vendor"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="While">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:element ref="CustomBehavior"/>
+                    <xs:element ref="DisableBehavior"/>
+                    <xs:element ref="EnableBehavior"/>
+                    <xs:element ref="If"/>
+                    <xs:element ref="MoveTo"/>
+                    <xs:element ref="Objective"/>
+                    <xs:element ref="PickUp"/>
+                    <xs:element ref="RunTo"/>
+                    <xs:element ref="TargetingDistance"/>
+                    <xs:element ref="TurnIn"/>
+                    <xs:element ref="UseItem"/>
+                    <xs:element ref="UseMount"/>
+                    <xs:element ref="While"/>
+                </xs:choice>
+                <xs:sequence minOccurs="0">
+                    <xs:element ref="SetGrindArea"/>
+                    <xs:element ref="GrindUntil"/>
+                </xs:sequence>
+            </xs:sequence>
+            <xs:attribute name="Condition" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="CustomBehavior">
+        <xs:complexType mixed="true">
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="AvoidMobs"/>
+                <xs:element ref="Blackspots"/>
+                <xs:element ref="CustomBehavior"/>
+                <xs:element ref="DisableBehavior"/>
+                <xs:element ref="EnableBehavior"/>
+                <xs:element ref="Hotspot"/>
+                <xs:element ref="If"/>
+                <xs:element ref="MoveTo"/>
+                <xs:element ref="While"/>
+                <xs:element ref="HuntingGrounds"/>
+                <xs:element ref="PursuitList"/>
+                <xs:element ref="Safespots"/>
+                <xs:element ref="SearchPath"/>
+            </xs:choice>
+            <xs:attribute name="ActivityName"/>
+            <xs:attribute name="AllowBotStop" type="xs:NCName"/>
+            <xs:attribute name="AllowBrokenAddOns" type="xs:boolean"/>
+            <xs:attribute name="AllowBrokenPlugIns" type="xs:boolean"/>
+            <xs:attribute name="AllowCombat" type="xs:boolean"/>
+            <xs:attribute name="AllowExecutionWhileNotAlive" type="xs:NCName"/>
+            <xs:attribute name="AllowUseDuringCombat" type="xs:NCName"/>
+            <xs:attribute name="AllowUseInVehicle" type="xs:NCName"/>
+            <xs:attribute name="AllowUseWhileMounted" type="xs:boolean"/>
+            <xs:attribute name="ArrivalTolerance" type="xs:integer"/>
+            <xs:attribute name="AttackButton" type="xs:integer"/>
+            <xs:attribute name="AttemptCountMax" type="xs:integer"/>
+            <xs:attribute name="AuraIdMissingFromMob" type="xs:integer"/>
+            <xs:attribute name="AuraIdOnMob" type="xs:integer"/>
+            <xs:attribute name="AutoEquip" type="xs:boolean"/>
+            <xs:attribute name="AvoidLocationProducer"/>
+            <xs:attribute name="AvoidName"/>
+            <xs:attribute name="AvoidWhen"/>
+            <xs:attribute name="Buttons"/>
+            <xs:attribute name="BuyItemCount" type="xs:integer"/>
+            <xs:attribute name="ClickToX" type="xs:decimal"/>
+            <xs:attribute name="ClickToY" type="xs:decimal"/>
+            <xs:attribute name="ClickToZ" type="xs:decimal"/>
+            <xs:attribute name="Code"/>
+            <xs:attribute name="CollectItemCount" type="xs:integer"/>
+            <xs:attribute name="CollectItemId" type="xs:integer"/>
+            <xs:attribute name="CollectUntil" type="xs:NCName"/>
+            <xs:attribute name="CollectionDistance" type="xs:integer"/>
+            <xs:attribute name="Command" type="xs:NCName"/>
+            <xs:attribute name="DestName"/>
+            <xs:attribute name="DoMail" type="xs:NCName"/>
+            <xs:attribute name="DoRepair" type="xs:NCName"/>
+            <xs:attribute name="DoSell" type="xs:NCName"/>
+            <xs:attribute name="DropPassengerButton" type="xs:integer"/>
+            <xs:attribute name="EndPath"/>
+            <xs:attribute name="EscortCompleteWhen" type="xs:NCName"/>
+            <xs:attribute name="EscortCompleteX" type="xs:decimal"/>
+            <xs:attribute name="EscortCompleteY" type="xs:decimal"/>
+            <xs:attribute name="EscortCompleteZ" type="xs:decimal"/>
+            <xs:attribute name="EscortCountMax" type="xs:integer"/>
+            <xs:attribute name="EscortMaxFightDistance" type="xs:integer"/>
+            <xs:attribute name="EscortMaxFollowDistance" type="xs:integer"/>
+            <xs:attribute name="EscortNpcId" type="xs:integer"/>
+            <xs:attribute name="EscortNpcId1" type="xs:integer"/>
+            <xs:attribute name="EscortNpcId2" type="xs:integer"/>
+            <xs:attribute name="EscortNpcId3" type="xs:integer"/>
+            <xs:attribute name="EscortNpcId4" type="xs:integer"/>
+            <xs:attribute name="EscortNpcId5" type="xs:integer"/>
+            <xs:attribute name="EventCompleteDeadMobId" type="xs:integer"/>
+            <xs:attribute name="EventCompleteWhen" type="xs:NCName"/>
+            <xs:attribute name="EventX" type="xs:decimal"/>
+            <xs:attribute name="EventY" type="xs:decimal"/>
+            <xs:attribute name="EventZ" type="xs:decimal"/>
+            <xs:attribute name="ExitButton" type="xs:integer"/>
+            <xs:attribute name="ExpiryAction" type="xs:NCName"/>
+            <xs:attribute name="ExpiryTime" type="xs:integer"/>
+            <xs:attribute name="File" use="required"/>
+            <xs:attribute name="GetOffX" type="xs:decimal"/>
+            <xs:attribute name="GetOffY" type="xs:decimal"/>
+            <xs:attribute name="GetOffZ" type="xs:decimal"/>
+            <xs:attribute name="GoalText"/>
+            <xs:attribute name="GossipOptions"/>
+            <xs:attribute name="Gravity" type="xs:decimal"/>
+            <xs:attribute name="HarvestHerbs" type="xs:boolean"/>
+            <xs:attribute name="HarvestMinerals" type="xs:boolean"/>
+            <xs:attribute name="HuntingGroundRadius" type="xs:integer"/>
+            <xs:attribute name="Ids"/>
+            <xs:attribute name="IgnoreCombat" type="xs:boolean"/>
+            <xs:attribute name="IgnoreIndoors" type="xs:boolean"/>
+            <xs:attribute name="IgnoreLOS" type="xs:NCName"/>
+            <xs:attribute name="IgnoreLoS" type="xs:NCName"/>
+            <xs:attribute name="IgnoreLoSToTarget" type="xs:NCName"/>
+            <xs:attribute name="IgnoreMobsInBlackspots" type="xs:NCName"/>
+            <xs:attribute name="ImmediatelySwitchToHighestPriorityTarget" type="xs:NCName"/>
+            <xs:attribute name="InteractBlacklistTimeInSeconds" type="xs:integer"/>
+            <xs:attribute name="InteractByBuyingItemId" type="xs:integer"/>
+            <xs:attribute name="InteractByGossipOptions"/>
+            <xs:attribute name="InteractByLooting" type="xs:NCName"/>
+            <xs:attribute name="InteractByQuestFrameDisposition" type="xs:NCName"/>
+            <xs:attribute name="InteractByUsingItemId" type="xs:integer"/>
+            <xs:attribute name="ItemAppliesAuraId" type="xs:NCName"/>
+            <xs:attribute name="ItemId" type="xs:integer"/>
+            <xs:attribute name="KeepTargetSelected" type="xs:NCName"/>
+            <xs:attribute name="Land" type="xs:boolean"/>
+            <xs:attribute name="LeashRadius" type="xs:integer"/>
+            <xs:attribute name="LogColor" type="xs:NCName"/>
+            <xs:attribute name="LogExecution" type="xs:boolean"/>
+            <xs:attribute name="Lua"/>
+            <xs:attribute name="Macro"/>
+            <xs:attribute name="MaxAngle" type="xs:decimal"/>
+            <xs:attribute name="MaxRange" type="xs:integer"/>
+            <xs:attribute name="MaxRangeToUseItem" type="xs:integer"/>
+            <xs:attribute name="MinAngle" type="xs:decimal"/>
+            <xs:attribute name="MinRange" type="xs:integer"/>
+            <xs:attribute name="MobHpPercentLeft" type="xs:integer"/>
+            <xs:attribute name="MobId" type="xs:integer"/>
+            <xs:attribute name="MobId1" type="xs:integer"/>
+            <xs:attribute name="MobId10" type="xs:integer"/>
+            <xs:attribute name="MobId2" type="xs:integer"/>
+            <xs:attribute name="MobId3" type="xs:integer"/>
+            <xs:attribute name="MobId4" type="xs:integer"/>
+            <xs:attribute name="MobId5" type="xs:integer"/>
+            <xs:attribute name="MobId6" type="xs:integer"/>
+            <xs:attribute name="MobId7" type="xs:integer"/>
+            <xs:attribute name="MobId8" type="xs:integer"/>
+            <xs:attribute name="MobId9" type="xs:integer"/>
+            <xs:attribute name="MobIds"/>
+            <xs:attribute name="MobState" type="xs:NCName"/>
+            <xs:attribute name="MountType" type="xs:NCName"/>
+            <xs:attribute name="MoveAwayFromMobCastingSpellId" type="xs:integer"/>
+            <xs:attribute name="MoveAwayFromMobCastingSpellId2" type="xs:integer"/>
+            <xs:attribute name="MoveBehindMobCastingSpellId" type="xs:integer"/>
+            <xs:attribute name="MoveBehindMobCastingSpellId1" type="xs:integer"/>
+            <xs:attribute name="MoveBehindMobCastingSpellId2" type="xs:integer"/>
+            <xs:attribute name="MoveBehindMobCastingSpellId3" type="xs:integer"/>
+            <xs:attribute name="Movement" type="xs:NCName"/>
+            <xs:attribute name="MovementBy" type="xs:NCName"/>
+            <xs:attribute name="Name"/>
+            <xs:attribute name="Names"/>
+            <xs:attribute name="Nav" type="xs:NCName"/>
+            <xs:attribute name="NinjaSkin" type="xs:boolean"/>
+            <xs:attribute name="NonCompeteDistance" type="xs:integer"/>
+            <xs:attribute name="NpcList"/>
+            <xs:attribute name="NumOfTimes" type="xs:integer"/>
+            <xs:attribute name="NumOfTimesToUseItem" type="xs:integer"/>
+            <xs:attribute name="ObjectId" type="xs:integer"/>
+            <xs:attribute name="ObjectId2" type="xs:integer"/>
+            <xs:attribute name="ObjectType" type="xs:NCName"/>
+            <xs:attribute name="OftenToUse" type="xs:integer"/>
+            <xs:attribute name="Path"/>
+            <xs:attribute name="PickUpPassengerButton" type="xs:integer"/>
+            <xs:attribute name="PreInteractMountStrategy" type="xs:NCName"/>
+            <xs:attribute name="PreferKillingMobId" type="xs:integer"/>
+            <xs:attribute name="Preset" type="xs:NCName"/>
+            <xs:attribute name="PriorityTargetId" type="xs:integer"/>
+            <xs:attribute name="ProactiveCombatStrategy" type="xs:NCName"/>
+            <xs:attribute name="ProfileName"/>
+            <xs:attribute name="QuestId" type="xs:integer"/>
+            <xs:attribute name="QuestName"/>
+            <xs:attribute name="QuestObjectiveIndex" type="xs:integer"/>
+            <xs:attribute name="Radius" type="xs:decimal"/>
+            <xs:attribute name="Range" type="xs:integer"/>
+            <xs:attribute name="RecallPetAtMobPercentHealth" type="xs:integer"/>
+            <xs:attribute name="RememberProfile" type="xs:NCName"/>
+            <xs:attribute name="SearchForNpcsRadius" type="xs:integer"/>
+            <xs:attribute name="SkinMobs" type="xs:boolean"/>
+            <xs:attribute name="SoundCue" type="xs:NCName"/>
+            <xs:attribute name="SoundCueInterval" type="xs:integer"/>
+            <xs:attribute name="SpeedButton" type="xs:integer"/>
+            <xs:attribute name="StandOnX" type="xs:decimal"/>
+            <xs:attribute name="StandOnY" type="xs:decimal"/>
+            <xs:attribute name="StandOnZ" type="xs:decimal"/>
+            <xs:attribute name="StartEscortGossipOptions"/>
+            <xs:attribute name="StartNpcId" type="xs:integer"/>
+            <xs:attribute name="StartPath"/>
+            <xs:attribute name="StopMovingToConductActivity" type="xs:NCName"/>
+            <xs:attribute name="StopOnContinue" type="xs:NCName"/>
+            <xs:attribute name="TargetId1" type="xs:integer"/>
+            <xs:attribute name="TargetId2" type="xs:integer"/>
+            <xs:attribute name="TargetId3" type="xs:integer"/>
+            <xs:attribute name="TargetId4" type="xs:integer"/>
+            <xs:attribute name="TargetId5" type="xs:integer"/>
+            <xs:attribute name="TargetId6" type="xs:integer"/>
+            <xs:attribute name="TargetOnlyIfHealthPercentAbove" type="xs:integer"/>
+            <xs:attribute name="TerminateAtMaxRunTimeSecs" type="xs:integer"/>
+            <xs:attribute name="TerminateWhen"/>
+            <xs:attribute name="Text"/>
+            <xs:attribute name="TransportEndX" type="xs:decimal"/>
+            <xs:attribute name="TransportEndY" type="xs:decimal"/>
+            <xs:attribute name="TransportEndZ" type="xs:decimal"/>
+            <xs:attribute name="TransportId" type="xs:integer"/>
+            <xs:attribute name="TransportStartX" type="xs:decimal"/>
+            <xs:attribute name="TransportStartY" type="xs:decimal"/>
+            <xs:attribute name="TransportStartZ" type="xs:decimal"/>
+            <xs:attribute name="TreeHookName" type="xs:NCName"/>
+            <xs:attribute name="Type" type="xs:NCName"/>
+            <xs:attribute name="UseCTM" type="xs:boolean"/>
+            <xs:attribute name="UseItemStrategy" type="xs:NCName"/>
+            <xs:attribute name="UseType" type="xs:NCName"/>
+            <xs:attribute name="UseWhen"/>
+            <xs:attribute name="UseWhenMobCastingSpellId" type="xs:integer"/>
+            <xs:attribute name="UseWhenMobHasHealthPercent" type="xs:integer"/>
+            <xs:attribute name="VariantTime" type="xs:integer"/>
+            <xs:attribute name="VehicleId" type="xs:integer"/>
+            <xs:attribute name="VehicleMountId" type="xs:integer"/>
+            <xs:attribute name="Velocity" type="xs:integer"/>
+            <xs:attribute name="WaitAtX" type="xs:decimal"/>
+            <xs:attribute name="WaitAtY" type="xs:decimal"/>
+            <xs:attribute name="WaitAtZ" type="xs:decimal"/>
+            <xs:attribute name="WaitForNpcs" type="xs:NCName"/>
+            <xs:attribute name="WaitTime" type="xs:integer"/>
+            <xs:attribute name="WaitTimeAfterItemUse" type="xs:integer"/>
+            <xs:attribute name="X" type="xs:decimal"/>
+            <xs:attribute name="Y" type="xs:decimal"/>
+            <xs:attribute name="Z" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="HuntingGrounds">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="Hotspot"/>
+            </xs:sequence>
+            <xs:attribute name="WaypointVisitStrategy" type="xs:NCName"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="PursuitList">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="PursueGameObject"/>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="PursueUnit"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="PursueGameObject">
+        <xs:complexType>
+            <xs:attribute name="Id" use="required" type="xs:integer"/>
+            <xs:attribute name="Priority" use="optional" type="xs:integer"/>
+            <xs:attribute name="PursueWhen" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="PursueUnit">
+        <xs:complexType>
+            <xs:attribute name="ConvertBy" type="xs:NCName"/>
+            <xs:attribute name="Id" use="required" type="xs:integer"/>
+            <xs:attribute name="Priority" type="xs:integer"/>
+            <xs:attribute name="PursueWhen"/>
+            <xs:attribute name="ConvertWhen"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Safespots">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="Hotspot"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="SearchPath">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="Hotspot"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="SetGrindArea">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="GrindArea"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="GrindArea">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" ref="Name"/>
+                <xs:element minOccurs="0" ref="MobIds"/>
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:element ref="Factions"/>
+                    <xs:element ref="TargetMaxLevel"/>
+                    <xs:element ref="TargetMinLevel"/>
+                </xs:choice>
+                <xs:element minOccurs="0" ref="Blacklist"/>
+                <xs:element ref="Hotspots"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="MobIds" type="xs:string"/>
+    <xs:element name="Factions" type="xs:string"/>
+    <xs:element name="TargetMaxLevel" type="xs:integer"/>
+    <xs:element name="TargetMinLevel" type="xs:integer"/>
+    <xs:element name="GrindTo">
+        <xs:complexType>
+            <xs:attribute name="Condition" use="required"/>
+            <xs:attribute name="GoalText" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="PickUp">
+        <xs:complexType>
+            <xs:attribute name="GiverId" use="required" type="xs:integer"/>
+            <xs:attribute name="GiverName"/>
+            <xs:attribute name="GiverType" type="xs:NCName"/>
+            <xs:attribute name="Nav" type="xs:NCName"/>
+            <xs:attribute name="QuestId" use="required" type="xs:integer"/>
+            <xs:attribute name="QuestName" use="required"/>
+            <xs:attribute name="WaitTime" type="xs:integer"/>
+            <xs:attribute name="X" type="xs:decimal"/>
+            <xs:attribute name="Y" type="xs:decimal"/>
+            <xs:attribute name="Z" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="MoveTo">
+        <xs:complexType>
+            <xs:attribute name="ArrivalTolerance" type="xs:integer"/>
+            <xs:attribute name="DestName"/>
+            <xs:attribute name="MobIds" type="xs:string"/>
+            <xs:attribute name="Movement" type="xs:NCName"/>
+            <xs:attribute name="MovementBy" type="xs:NCName"/>
+            <xs:attribute name="Nav" type="xs:NCName"/>
+            <xs:attribute name="QuestId" type="xs:integer"/>
+            <xs:attribute name="QuestObjectiveIndex" type="xs:integer"/>
+            <xs:attribute name="QuestName"/>
+            <xs:attribute name="X" use="required" type="xs:decimal"/>
+            <xs:attribute name="Y" use="required" type="xs:decimal"/>
+            <xs:attribute name="Z" use="required" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="TurnIn">
+        <xs:complexType>
+            <xs:attribute name="Nav" type="xs:NCName"/>
+            <xs:attribute name="QuestId" type="xs:integer"/>
+            <xs:attribute name="QuestName"/>
+            <xs:attribute name="TurnInId" type="xs:integer"/>
+            <xs:attribute name="TurnInName"/>
+            <xs:attribute name="TurnInType" type="xs:NCName"/>
+            <xs:attribute name="WaitTime" type="xs:integer"/>
+            <xs:attribute name="X" type="xs:decimal"/>
+            <xs:attribute name="Y" type="xs:decimal"/>
+            <xs:attribute name="Z" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="If">
+        <xs:complexType mixed="true">
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="CustomBehavior"/>
+                <xs:element ref="DisableBehavior"/>
+                <xs:element ref="EnableBehavior"/>
+                <xs:element ref="GrindTo"/>
+                <xs:element ref="GrindUntil"/>
+                <xs:element ref="If"/>
+                <xs:element ref="MoveTo"/>
+                <xs:element ref="Objective"/>
+                <xs:element ref="PickUp"/>
+                <xs:element ref="RunTo"/>
+                <xs:element ref="SetGrindArea"/>
+                <xs:element ref="TargetingDistance"/>
+                <xs:element ref="TurnIn"/>
+                <xs:element ref="UseItem"/>
+                <xs:element ref="UseMount"/>
+                <xs:element ref="While"/>
+                <xs:element ref="ClearMailbox"/>
+                <xs:element ref="ClearVendor"/>
+                <xs:element ref="Else"/>
+                <xs:element ref="ElseIf"/>
+                <xs:element ref="Move"/>
+                <xs:element ref="SetAvoidMobs"/>
+                <xs:element ref="SetBlacklist"/>
+                <xs:element ref="SetMailbox"/>
+                <xs:element ref="SetVendor"/>
+            </xs:choice>
+            <xs:attribute name="Condition" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="ClearMailbox">
+        <xs:complexType/>
+    </xs:element>
+    <xs:element name="ClearVendor">
+        <xs:complexType/>
+    </xs:element>
+    <xs:element name="Else">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" ref="PickUp"/>
+                <xs:element minOccurs="0" ref="While"/>
+                <xs:choice>
+                    <xs:element ref="CustomBehavior"/>
+                    <xs:element ref="TurnIn"/>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" ref="If"/>
+                </xs:choice>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="ElseIf">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="CustomBehavior"/>
+            </xs:sequence>
+            <xs:attribute name="Condition" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Move">
+        <xs:complexType>
+            <xs:attribute name="DestName" use="required"/>
+            <xs:attribute name="X" use="required" type="xs:decimal"/>
+            <xs:attribute name="Y" use="required" type="xs:decimal"/>
+            <xs:attribute name="Z" use="required" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="SetAvoidMobs">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="Mob"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="SetBlacklist">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Blacklist"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="SetMailbox">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Mailboxes"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="SetVendor">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Vendors"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Objective">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" ref="CollectFrom"/>
+                <xs:element minOccurs="0" ref="Hotspots"/>
+            </xs:sequence>
+            <xs:attribute name="CollectCount" type="xs:integer"/>
+            <xs:attribute name="CollectFrom" type="xs:integer"/>
+            <xs:attribute name="ItemId" type="xs:integer"/>
+            <xs:attribute name="ItemName"/>
+            <xs:attribute name="KillCount" type="xs:integer"/>
+            <xs:attribute name="MobId" type="xs:integer"/>
+            <xs:attribute name="MobName"/>
+            <xs:attribute name="Nav" type="xs:NCName"/>
+            <xs:attribute name="ObjectId" type="xs:integer"/>
+            <xs:attribute name="ObjectName"/>
+            <xs:attribute name="QuestId" type="xs:integer"/>
+            <xs:attribute name="QuestName"/>
+            <xs:attribute name="Type" use="required" type="xs:NCName"/>
+            <xs:attribute name="UseCount" type="xs:integer"/>
+            <xs:attribute name="X" type="xs:decimal"/>
+            <xs:attribute name="Y" type="xs:decimal"/>
+            <xs:attribute name="Z" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="CollectFrom">
+        <xs:complexType>
+            <xs:choice>
+                <xs:element ref="Vendor"/>
+                <xs:element ref="WoWUnit"/>
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:element ref="Mob"/>
+                    <xs:element ref="GameObject"/>
+                    <xs:element ref="Object"/>
+                </xs:choice>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="WoWUnit">
+        <xs:complexType>
+            <xs:attribute name="Entry" use="required" type="xs:integer"/>
+            <xs:attribute name="Name" use="required" type="xs:NCName"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="GameObject">
+        <xs:complexType>
+            <xs:attribute name="Entry" use="required" type="xs:integer"/>
+            <xs:attribute name="Name" use="required"/>
+            <xs:attribute name="X" type="xs:decimal"/>
+            <xs:attribute name="Y" type="xs:decimal"/>
+            <xs:attribute name="Z" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Object">
+        <xs:complexType>
+            <xs:attribute name="Id" use="required" type="xs:integer"/>
+            <xs:attribute name="Name"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="GrindUntil">
+        <xs:complexType>
+            <xs:attribute name="Condition"/>
+            <xs:attribute name="GoalText"/>
+            <xs:attribute name="Level" type="xs:integer"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="TargetingDistance">
+        <xs:complexType>
+            <xs:attribute name="Value" use="required" type="xs:integer"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="DisableBehavior">
+        <xs:complexType>
+            <xs:attribute name="Name" use="required" type="xs:NCName"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Mailboxes">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="Mailbox"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Mailbox">
+        <xs:complexType>
+            <xs:attribute name="Name" type="xs:string"/>
+            <xs:attribute name="Nav" type="xs:NCName"/>
+            <xs:attribute name="UsableWhen" type="xs:NCName"/>
+            <xs:attribute name="X" use="required" type="xs:decimal"/>
+            <xs:attribute name="Y" use="required" type="xs:decimal"/>
+            <xs:attribute name="Z" use="required" type="xs:decimal"/>
+            <xs:attribute name="UseWhen" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="AvoidMobs">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="Mob"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Blackspots">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="Blackspot"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Blackspot">
+        <xs:complexType>
+            <xs:attribute name="Height" type="xs:decimal"/>
+            <xs:attribute name="Name"/>
+            <xs:attribute name="Radius" use="required" type="xs:decimal"/>
+            <xs:attribute name="X" use="required" type="xs:decimal"/>
+            <xs:attribute name="Y" use="required" type="xs:decimal"/>
+            <xs:attribute name="Z" use="required" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Mob">
+        <xs:complexType>
+            <xs:attribute name="Entry" type="xs:integer"/>
+            <xs:attribute name="Flags"/>
+            <xs:attribute name="Id" type="xs:integer"/>
+            <xs:attribute name="Name"/>
+            <xs:attribute name="Type" type="xs:NCName"/>
+            <xs:attribute name="X" type="xs:decimal"/>
+            <xs:attribute name="Y" type="xs:decimal"/>
+            <xs:attribute name="Z" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Vendor">
+        <xs:complexType>
+            <xs:attribute name="Entry" type="xs:integer"/>
+            <xs:attribute name="Id" type="xs:integer"/>
+            <xs:attribute name="Name" use="required"/>
+            <xs:attribute name="Nav" type="xs:NCName"/>
+            <xs:attribute name="Type" type="xs:NCName"/>
+            <xs:attribute name="UsableWhen"/>
+            <xs:attribute name="X" type="xs:decimal"/>
+            <xs:attribute name="Y" type="xs:decimal"/>
+            <xs:attribute name="Z" type="xs:decimal"/>
+            <xs:attribute name="UseWhen" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="UseItem">
+        <xs:complexType>
+            <xs:attribute name="ItemId" use="required" type="xs:integer"/>
+            <xs:attribute name="ItemName"/>
+            <xs:attribute name="QuestId" use="required" type="xs:integer"/>
+            <xs:attribute name="QuestName"/>
+            <xs:attribute name="X" use="required" type="xs:decimal"/>
+            <xs:attribute name="Y" use="required" type="xs:decimal"/>
+            <xs:attribute name="Z" use="required" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="EnableBehavior">
+        <xs:complexType>
+            <xs:attribute name="Name" use="required" type="xs:NCName"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="RunTo">
+        <xs:complexType>
+            <xs:attribute name="DestName"/>
+            <xs:attribute name="X" use="required" type="xs:decimal"/>
+            <xs:attribute name="Y" use="required" type="xs:decimal"/>
+            <xs:attribute name="Z" use="required" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Hotspot">
+        <xs:complexType>
+            <xs:attribute name="Name"/>
+            <xs:attribute name="X" use="required" type="xs:decimal"/>
+            <xs:attribute name="Y" use="required" type="xs:decimal"/>
+            <xs:attribute name="Z" use="required" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Hotspots">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="Hotspot"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
