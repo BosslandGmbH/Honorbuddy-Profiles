@@ -260,7 +260,7 @@
 					<While Condition="DoQuest(39698)" >
 						<CustomBehavior File="InteractWith" MobId="247491" QuestId="39698" QuestObjectiveIndex="1" X="1458.342" Y="-5209.025" Z="13.16844" />
 						<MoveTo QuestId="39698" QuestObjectiveIndex="2" X="1481.318" Y="-5206.711" Z="5.265435" />
-						<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Lua.GetReturnVal&lt;bool&gt;(&quot;return ExtraActionButton1:IsVisible()&quot;, 0);" /> <!-- NOTE: <TechnicalCheck> : ExtraActionButton1 needs to appear before this timer ends. -->
+						<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Lua.GetReturnVal&lt;bool&gt;(&quot;return ExtraActionButton1:IsVisible()&quot;, 0)" /> <!-- NOTE: <TechnicalCheck> : ExtraActionButton1 needs to appear before this timer ends. -->
 						<CustomBehavior File="Misc\RunLua" QuestId="39698" QuestObjectiveIndex="2" Lua="ExtraActionButton1:Click();" />
 						<MoveTo QuestId="39698" QuestObjectiveIndex="3" X="1500.211" Y="-5211.048" Z="11.59994" />
 						<CustomBehavior File="WaitTimer" QuestId="39698" QuestObjectiveIndex="3" WaitTime="50000" />
@@ -283,7 +283,7 @@
 							<If Condition="Unit(94550, u =&gt; u.Distance &lt; 65) != null" >
 								<!-- NOTE: <AddAvoid> : May need to avoid the mage's attacks.  Mage casts two different AOEs that can be avoided. -->
 								<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="94576" AttackButton="1" OftenToUse="1000" VehicleId="94550" MaxRange="300" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2 || !Me.InVehicle" /> <!-- X="4820.018" Y="2998.036" Z="16.44233" -->
-								<CustomBehavior File="KillUntilComplete" MobId="94737" X="4836.879" Y="3013.312" Z="7.854728" TerminateWhen="!Unit(94737, u =&gt; u.IsAlive) != null || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+								<CustomBehavior File="KillUntilComplete" MobId="94737" X="4836.879" Y="3013.312" Z="7.854728" TerminateWhen="Unit(94737, u =&gt; !u.IsAlive) != null || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
 							</If>
 						</While>
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
@@ -310,7 +310,7 @@
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
 							<MoveTo QuestId="39801" X="4538.623" Y="2677.645" Z="164.41" />
 							<CustomBehavior File="KillUntilComplete" MobId="95451" QuestId="39801" X="4500.429" Y="2685.104" Z="167.2789" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
-							<CustomBehavior File="await SkipCutscene();" />
+							<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 						</While>
 					</While>
 					<TurnIn QuestName="The Splintered Fleet" QuestId="39801" TurnInName="Dread-Rider Cullen" TurnInId="91473" X="4110.878" Y="2940.145" Z="27.33373" />
@@ -324,7 +324,7 @@
 					<PickUp QuestName="Side Effects May Include Mild Undeath" QuestId="38357" GiverName="Apothecary Withers" GiverId="91590" X="4118.591" Y="2938.464" Z="27.33373" />
 
 					<While Condition="DoQuest(38358)" >
-						<CustomBehavior File="InteractWith" MobIds="249829, 240600" NumOfTimes="6" QuestId="38358" QuestObjectiveIndex="X" >
+						<CustomBehavior File="InteractWith" MobIds="249829, 240600" NumOfTimes="6" QuestId="38358" >
 							<HuntingGrounds>
 								<Hotspot X="4214.415" Y="2944.853" Z="-0.4814495" />
 								<Hotspot X="4228.398" Y="2982.138" Z="-0.5409754" />
@@ -425,7 +425,7 @@
 			<If Condition="Me.IsHorde" >
 				<PickUp QuestName="The Ancient Trials" QuestId="38459" GiverName="Huginn" GiverId="97305" X="3976.914" Y="2898.343" Z="241.5873" />
 
-				<While Condition="!IsQuestCompleted(39775)" 
+				<While Condition="!IsQuestCompleted(39775)" >
 					<CustomBehavior File="InteractWith" MobId="107840" QuestId="39775" X="3945.718" Y="2888.738" Z="241.7468" />
 					<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
 				</While>
@@ -435,9 +435,9 @@
 					<While Condition="DoQuest(38308)" >
 						<CustomBehavior File="InteractWith" MobId="91470" QuestId="38308" QuestObjectiveIndex="1" X="3961.721" Y="3099.903" Z="323.8865" />
 					</While>
-					<TurnIn QuestName="Eyes in the Overlook" QuestId="38308" />
+					<TurnIn QuestName="Eyes in the Overlook" QuestId="38308" X="3961.721" Y="3099.903" Z="323.8865" />
 
-					<PickUp QuestName="Masters of Disguise" QuestId="38317" />
+					<PickUp QuestName="Masters of Disguise" QuestId="38317" GiverName="None" GiverId="1234" X="3961.721" Y="3099.903" Z="323.8865" /> <!-- NOTE: <TechncialCheck> : This PickUp has no quest giver at all.  It just toggles after turning in the last quest.  GiverName and GiverId are *required* attributes, so make sure having "None" and 1234 works. -->
 					<While Condition="DoQuest(38317)" >
 						<CustomBehavior File="KillUntilComplete" MobId="91468" QuestId="38317" QuestObjectiveIndex="1" X="3865.123" Y="3004.167" Z="362.4647" />
 						<CustomBehavior File="KillUntilComplete" MobId="91460" QuestId="38317" QuestObjectiveIndex="2" X="3735.319" Y="3044.874" Z="455.0429" />
@@ -1319,7 +1319,7 @@
 						</HuntingGrounds>
 					</CustomBehavior>
 					<If Condition="!IsObjectiveComplete(2, 39385)" >
-						<MoveTo X="2357.927" Y="1861.343" Z="24.71746"
+						<MoveTo X="2357.927" Y="1861.343" Z="24.71746" />
 						<CustomBehavior File="UseItem" ItemId="128287" />
 						<CustomBehavior File="WaitTimer" QuestId="39385" WaitTime="10000" />
 					</If>

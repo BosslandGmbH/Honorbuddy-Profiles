@@ -100,7 +100,7 @@
 			</If>
 
 			<!-- Story: Artifact Weapon - Talonclaw -->
-				<If Condition="Me.Specialization == WoWSpec.Survival &amp;&amp; !HasItem(128808)" >
+				<If Condition="Me.Specialization == WoWSpec.HunterSurvival &amp;&amp; !HasItem(128808)" >
 					<PickUp QuestName="Preparation for the Hunt" QuestId="41542" GiverName="Emmarel Shadewarden" GiverId="102478" X="-876.658" Y="4379.09" Z="739.1406" />
 					<TurnIn QuestName="Preparation for the Hunt" QuestId="41542" TurnInName="Apata Highmountain" TurnInId="104382" X="-858.3577" Y="4287.647" Z="746.2834" />
 
@@ -171,7 +171,7 @@
 							<CustomBehavior File="KillUntilComplete" MobId="99480" X="3872.277" Y="1637.849" Z="-0.328723" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 12" />
 						</If>
 						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 13" >
-							<CustomBehavior File="InteractWith" MobId="248834" InteractByLooting="true" WaitTime="1500"w X="3879.121" Y="1639.92" Z="-0.07389323" />
+							<CustomBehavior File="InteractWith" MobId="248834" InteractByLooting="true" WaitTime="1500" X="3879.121" Y="1639.92" Z="-0.07389323" />
 							<!-- There's two Talonclaws here? 
 							Name="Talonclaw" Entry="100310" X="3879.201" Y="1639.851" Z="0.01306631" -->
 							<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
@@ -180,13 +180,13 @@
 						<If Condition="HasItem(128808)" >
 							<CustomBehavior File="RunCode"><![CDATA[
 								WoWItem dalHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
-								var currentZoneId == StyxWoW.Me.ZoneId;
+								var currentZoneId = StyxWoW.Me.ZoneId;
 								if (dalHearth.Cooldown != 0) {
 									Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[PROFILE]: Awaiting Hearthstone cooldown before attempting hearth!");
 									await Coroutine.Wait(910000, () => dalHearth.Cooldown == 0);
 								}
 								dalHearth.Interact();
-								await Coroutine.Wait(60000, () => MeZoneId != currentZoneId);
+								await Coroutine.Wait(60000, () => Me.ZoneId != currentZoneId);
 								await Coroutine.Sleep(1500);
 								]]>
 							</CustomBehavior>
