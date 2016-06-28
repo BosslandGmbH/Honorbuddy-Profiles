@@ -484,8 +484,20 @@
 		</While>
 
 		<TurnIn QuestName="Admiral Taylor" QuestId="35482" TurnInName="Admiral Taylor" TurnInId="82375" X="-916.9323" Y="2449.837" Z="31.1835" />
-		<PickUp Nav="Fly" QuestName="Honoring a Hero" QuestId="35549" GiverName="Jasper Fel" GiverId="82403" X="-908.8871" Y="2447.545" Z="31.17204" />
-		<TurnIn Nav="Fly" QuestName="Honoring a Hero" QuestId="35549" TurnInName="Lieutenant Willem" TurnInId="81929" X="-1072.765" Y="2267.486" Z="6.815571" />
+		<!-- Prevent WoW bug when Quest Giver Npc not showing up-->
+		<While Condition="!HasQuest(35549) &amp;&amp; !IsQuestCompleted(35549)">
+			<MoveTo X="-907.9941" Y="2450.247" Z="31.17876" />
+			<If Condition="Unit(82403) == null || Unit(82403).QuestGiverStatus != Styx.QuestGiverStatus.Available">
+				<MoveTo X="-815.0954" Y="2441.383" Z="36.67275"  />
+			</If>
+			<CustomBehavior File="WaitTimer" WaitTime="25000" GoalText="Waiting for Quest Giver Npc to appeat {TimeRemaining}" TerminateWhen="Unit(82403) != null" />
+			<PickUp Nav="Fly" QuestName="Honoring a Hero" QuestId="35549" GiverName="Jasper Fel" GiverId="82403" X="-908.8871" Y="2447.545" Z="31.17204" />	
+		</While>
+		
+		<If Condition="HasQuest(35549)">
+			<TurnIn Nav="Fly" QuestName="Honoring a Hero" QuestId="35549" TurnInName="Lieutenant Willem" TurnInId="81929" X="-1072.765" Y="2267.486" Z="6.815571" />
+		</If>
+		
 		<If Condition="!HasQuest(36353) &amp;&amp; !IsQuestCompleted(36353)" > <!-- Admiral Taylor / Follower -->
 			<MoveTo Nav="Fly" DestName="For Old Times' Sake" X="-1066.833" Y="2258.361" Z="7.61039" />
 			<CustomBehavior File="InteractWith" MobId="85080" WaitTime="3000" X="-1066.833" Y="2258.361" Z="7.61039" />
@@ -1576,11 +1588,13 @@
 		<Objective Nav="Fly" Type="KillMob" MobId="83749" KillCount="4">
 			<Hotspots>
 				<Hotspot X="237.3528" Y="1388.9" Z="2.415238" />
+				<Hotspot X="289.9447" Y="1352.063" Z="2.035013" />
 			</Hotspots>
 		</Objective>
 		<Objective Nav="Fly" Type="KillMob" MobId="83706" KillCount="3">
 			<Hotspots>
 				<Hotspot X="237.3528" Y="1388.9" Z="2.415238" />
+				<Hotspot X="289.9447" Y="1352.063" Z="2.035013" />
 			</Hotspots>
 		</Objective>
 		<Objective Nav="Fly" Type="KillMob" MobId="83760" KillCount="1">
