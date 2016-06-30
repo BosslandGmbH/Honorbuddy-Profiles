@@ -19,20 +19,8 @@
 
 	<TargetElites>true</TargetElites>
 
-	<AvoidMobs>
-		<Mob Name="XXX" Entry="123" />
-	</AvoidMobs>
-
-	<Blackspots>
-	</Blackspots>
-
-	<Blacklist>
-	</Blacklist>
-
-	<Mailboxes> 
-	</Mailboxes>
-
 	<Vendors>
+		<Vendor Type="Repair" Name="Outfitter Reynolds" Entry="103693" X="4524.597" Y="5275.92" Z="862.1298" />
 	</Vendors>
 
 	<InitOrder>
@@ -87,7 +75,7 @@
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
 
-			<!-- Loc: Dalaran -->
+		<!-- Introductory Draenor Quests -->
 			<PickUp QuestName="Needs of the Hunters" QuestId="40384" GiverName="Snowfeather" GiverId="100786" X="-832.1716" Y="4393.731" Z="737.6624" /> <!-- May be a bit slow to spawn after first entering Dalaran. -->
 			<TurnIn QuestName="Needs of the Hunters" QuestId="40384" TurnInName="Emmarel Shadewarden" TurnInId="102478" X="-876.658" Y="4379.09" Z="739.1406" />
 
@@ -180,96 +168,169 @@
 			<While Condition="DoQuest(40959)" >
 				<CustomBehavior File="InteractWith" MobId="102669" WaitTime="1500" QuestId="40959" QuestObjectiveIndex="1" X="4536.392" Y="5292.927" Z="866.5453" />
 				<If Condition="NeedsQuest(39718)" > <!-- Azsuna -->
-					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" /> <!-- Azsuna -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
 					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
 				</If>
 			</While>
 			<TurnIn QuestName="The Campaign Begins" QuestId="40959" TurnInName="Tactician Tinderfell" TurnInId="103023" X="4534.788" Y="5289.723" Z="862.1301" />
-			<!-- END Loc: Trueshot Lodge -->
 
-			<!-- Azsuna Transition -->
-				<While Condition="DoQuest(39718)" >
-					<CustomBehavior File="InteractWith" MobId="244510" WaitTime="30000" QuestId="39718" X="4552.774" Y="5244.073" Z="880.768" /> <!-- NOTE: <ConditionalCheck> : TerminateWhen Me In Dalaran -->
-				</While>
-				<If Condition="QuestDone(39718)" >
-					<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />
+			<While Condition="DoQuest(39718)" >
+				<CustomBehavior File="InteractWith" MobId="244510" WaitTime="30000" QuestId="39718" X="4552.774" Y="5244.073" Z="880.768" /> <!-- NOTE: <ConditionalCheck> : TerminateWhen Me In Dalaran -->
+			</While>
+			<If Condition="QuestDone(39718)" >
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />
+			</If>
+		<!-- END Introductory Draenor Quests -->
+
+
+		<!-- Introductory Class Hall Quests -->
+			<PickUp QuestName="Pledge of Loyalty" QuestId="44090" GiverName="Snowfeather" GiverId="113327" X="-811.9297" Y="4275.153" Z="746.2794" />
+			<While Condition="DoQuest(44090)" >
+				<!-- NOTE: <ConditionalCheck> : Could use a If in Dalaran check here for this interact and wait timer. -->
+				<CustomBehavior File="InteractWith" MobId="108868" GossipOptions="1" X="-809.467" Y="4273.58" Z="746.2847" /> <!-- Fly to Lodge -->
+				<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
+			</While>
+
+			<TurnIn QuestName="Pledge of Loyalty" QuestId="44090" TurnInName="Altar Keeper Biehn" TurnInId="102940" X="4498.039" Y="5254.65" Z="863.7156" />
+			<PickUp QuestName="Rise, Champions" QuestId="42519" GiverName="Altar Keeper Biehn" GiverId="102940" X="4498.039" Y="5254.65" Z="863.7156" />
+
+			<While Condition="DoQuest(42519)" >
+				<If Condition="!IsObjectiveComplete(1, 42519)" >
+					<CustomBehavior File="InteractWith" MobId="107317" QuestId="42519" QuestObjectiveIndex="1" X="4642.032" Y="5285.06" Z="840.6201" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							await Coroutine.Sleep(1234);
+							Lua.DoString("GossipTitleButton1:Click();");
+							await Coroutine.Sleep(1275);
+							Lua.DoString("QuestFrameCompleteQuestButton:Click();");
+							await Coroutine.Sleep(875);
+						]]>
+					</CustomBehavior>
 				</If>
-			<!-- END Azsuna Transition -->
+				<If Condition="!IsObjectiveComplete(2, 42519)" >
+					<CustomBehavior File="InteractWith" MobId="107315" QuestId="42519" QuestObjectiveIndex="1" X="4489.491" Y="5220.562" Z="862.4443" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							await Coroutine.Sleep(1275);
+							Lua.DoString("QuestFrameCompleteQuestButton:Click();");
+							await Coroutine.Sleep(875);
+						]]>
+					</CustomBehavior>
+				</If>
+			</While>
+			<TurnIn QuestName="Rise, Champions" QuestId="42519" TurnInName="Tactician Tinderfell" TurnInId="103023" X="4534.788" Y="5289.723" Z="862.1311" />
+
+			<PickUp QuestName="Making Contact" QuestId="42523" GiverName="Tactician Tinderfell" GiverId="103023" X="4534.788" Y="5289.723" Z="862.1311" />
+			<While Condition="DoQuest(42523)" >
+				<CustomBehavior File="InteractWith" MobId="102669" WaitTime="1500" QuestId="42523" QuestObjectiveIndex="1" X="4536.392" Y="5292.927" Z="866.5453" />
+
+				<!-- Do Mission ; Mission is 929,  garrFollowerId is 742,  GetMouseFoucs().info.MissionID -->
+				<CustomBehavior File="RunCode" ><![CDATA[
+						Lua.DoString("OrderHallMissionFrameTab1:Click();");
+						await Coroutine.Sleep(1000);
+						Lua.DoString("OrderHallMissionFrameMissionsListScrollFrameButton1:Click();");
+						string followerGUID = "0x0000000000072064";
+						await Coroutine.Sleep(1000);
+
+						string luaString = $"C_Garrison.AddFollowerToMission(929, {followerGUID});";
+						Lua.DoString(luaString);
+
+						await Coroutine.Sleep(2500);
+						Lua.DoString("OrderHallMissionFrame.CloseButton:Click();");
+					]]>
+				</CustomBehavior>
+				<CustomBehavior File="Message" Text="Waiting for class hall mission to complete..." />
+				<CustomBehavior File="WaitTimer" WaitTime="125000" />
+				<CustomBehavior File="InteractWith" MobId="102669" WaitTime="1500" QuestId="42523" QuestObjectiveIndex="1" X="4536.392" Y="5292.927" Z="866.5453" />
+				<CustomBehavior File="RunCode" ><![CDATA[
+						Lua.DoString("OrderHallMissionFrameMissions.CompleteDialog.BorderFrame.ViewButton:Click();");
+						await Coroutine.Sleep(1000);
+						Lua.DoString("C_Garrison.MissionBonusRoll(929);");
+						await Coroutine.Sleep(1000);
+						Lua.DoString("OrderHallMissionFrame.CloseButton:Click();");
+					]]>
+				</CustomBehavior>
+			</While>
+			<TurnIn QuestName="Making Contact" QuestId="42523" TurnInName="Tactician Tinderfell" TurnInId="103023" X="4534.788" Y="5289.723" Z="862.13" />
+
+			<PickUp QuestName="Recruiting The Troops" QuestId="42524" GiverName="Tactician Tinderfell" GiverId="103023" X="4534.788" Y="5289.723" Z="862.13" />
+			<While Condition="DoQuest(42524)" >
+				<CustomBehavior File="InteractWith" MobId="106444" WaitTime="2000" QuestId="42524" X="4582.829" Y="5289.377" Z="859.9291" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="6000" Lua="GarrisonCapacitiveDisplayFrame.StartWorkOrderButton:Click();" />
+				<CustomBehavior File="InteractWith" MobId="250894" QuestId="42524" X="4582.72" Y="5290.872" Z="859.8632" />
+			</While>
+			<TurnIn QuestName="Recruiting The Troops" QuestId="42524" TurnInName="Tactician Tinderfell" TurnInId="103023" X="4534.788" Y="5289.723" Z="862.13" />
+
+			<!-- Skipping this.
+			<PickUp QuestName="Troops in the Field" QuestId="42525" GiverName="Tactician Tinderfell" GiverId="103023" X="4534.788" Y="5289.723" Z="862.13" />
+			<While Condition="DoQuest(42525)" >
+				<CustomBehavior File="InteractWith" MobId="102669" WaitTime="1500" QuestId="42523" QuestObjectiveIndex="1" X="4536.392" Y="5292.927" Z="866.5453" />
+
+				Do Mission ; Mission is 930,  garrFollowerId is 671,  GetMouseFoucs().info.MissionID
+				<CustomBehavior File="RunCode" ><![CDATA[
+						Lua.DoString("OrderHallMissionFrameTab1:Click();");
+						await Coroutine.Sleep(1000);
+						Lua.DoString("OrderHallMissionFrameMissionsListScrollFrameButton1:Click();");
+						string followerGUID1 = "0x0000000000B3B1C3";
+						string followerGUID2 = "0x0000000000072064";
+						await Coroutine.Sleep(1000);
+
+						Lua.DoString($"C_Garrison.AddFollowerToMission(930, {followerGUID1})");
+						await Coroutine.Sleep(920);
+						Lua.DoString($"C_Garrison.AddFollowerToMission(930, {followerGUID2})");
+
+						await Coroutine.Sleep(750);
+						Lua.DoString("C_Garrison.StartMission(930);");
+						await Coroutine.Sleep(1000);
+						Lua.DoString("OrderHallMissionFrame.CloseButton:Click();");
+					]]>
+				</CustomBehavior>
+			</While> -->
 
 
-		<!-- /// Stage 2 ; Val'sharah -->
 
-			<!-- Loc: Dalaran -->
-				<PickUp QuestName="Pledge of Loyalty" QuestId="44090" GiverName="Snowfeather" GiverId="113327" X="-811.9297" Y="4275.153" Z="746.2794" />
-				<While Condition="DoQuest(44090)" >
-					<!-- NOTE: <ConditionalCheck> : Could use a If in DAlaran check here for this interact and wait timer. -->
-					<CustomBehavior File="InteractWith" MobId="108868" GossipOptions="1" X="-809.467" Y="4273.58" Z="746.2847" /> <!-- Fly to Lodge -->
-					<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
-				</While>
-			<!-- END Loc: Dalaran -->
-
-			<!-- Loc: Trueshot Lodge -->
-				<TurnIn QuestName="Pledge of Loyalty" QuestId="44090" TurnInName="Altar Keeper Biehn" TurnInId="102940" X="4498.039" Y="5254.65" Z="863.7156" />
-				<PickUp QuestName="Rise, Champions" QuestId="42519" GiverName="Altar Keeper Biehn" GiverId="102940" X="4498.039" Y="5254.65" Z="863.7156" />
-
-				<While Condition="DoQuest(42519)" >
-					<If Condition="!IsObjectiveComplete(1, 42519)" >
-						<CustomBehavior File="InteractWith" MobId="107317" QuestId="42519" QuestObjectiveIndex="1" X="4642.032" Y="5285.06" Z="840.6201" />
-						<CustomBehavior File="RunCode"><![CDATA[
-								await Coroutine.Sleep(1234);
-								Lua.DoString("GossipTitleButton1:Click();");
-								await Coroutine.Sleep(1275);
-								Lua.DoString("QuestFrameCompleteQuestButton:Click();");
-								await Coroutine.Sleep(875);
-							]]>
-						</CustomBehavior>
+			<!-- Boolean for IsAchievementCompleted defaults to false. -->
+			<!-- Azsuna -->
+				<If Condition="!IsAchievementCompleted(10763, false)" > 
+					<If Condition="NeedsQuest(39718)" >
+						<CustomBehavior File="InteractWith" MobId="102669" WaitTime="1500" X="4536.392" Y="5292.927" Z="866.5453" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
 					</If>
-					<If Condition="!IsObjectiveComplete(2, 42519)" >
-						<CustomBehavior File="InteractWith" MobId="107315" QuestId="42519" QuestObjectiveIndex="1" X="4489.491" Y="5220.562" Z="862.4443" />
-						<CustomBehavior File="RunCode"><![CDATA[
-								await Coroutine.Sleep(1275);
-								Lua.DoString("QuestFrameCompleteQuestButton:Click();");
-								await Coroutine.Sleep(875);
-							]]>
-						</CustomBehavior>
+				</If>
+			<!-- END Azsuna -->
+
+			<!-- Val'sharah -->
+				<If Condition="!IsAchievementCompleted(10698, false)" >
+					<If Condition="NeedsQuest(39731)" >
+						<CustomBehavior File="InteractWith" MobId="102669" WaitTime="1500" X="4536.392" Y="5292.927" Z="866.5453" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39731);" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
 					</If>
-				</While>
-				<TurnIn QuestName="Rise, Champions" QuestId="42519" TurnInName="Tactician Tinderfell" TurnInId="103023" X="4534.788" Y="5289.723" Z="862.1311" />
+				</If>
+			<!-- END Val'sharah -->
 
-				<!-- NOTE: <NeedAPI> : Need code to support class hall missions
-					<PickUp QuestName="Making Contact" QuestId="42523" GiverName="Tactician Tinderfell" GiverId="103023" X="4534.788" Y="5289.723" Z="862.1311" />
-					<While Condition="DoQuest(42523)" >
-						<CustomBehavior File="InteractWith" MobId="102669" WaitTime="1500" QuestId="42523" QuestObjectiveIndex="1" X="4536.392" Y="5292.927" Z="866.5453" />
-						<CustomBehavior File="RunCode" WaitTime="1500"><![CDATA[
-								// NOTE: <NeedCode> : Needs code to assign follower to OrderHall mission.
-							]]>
-						</CustomBehavior>
-						<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.MissionTab.MissionPage.StartMissionButton:Click();" />
+			<!-- Highmountain -->
+				<If Condition="!IsAchievementCompleted(10059, false)" >
+					<If Condition="NeedsQuest(39733)" >
+						<CustomBehavior File="InteractWith" MobId="102669" WaitTime="1500" X="4536.392" Y="5292.927" Z="866.5453" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39733);" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</If>
+				</If>
+			<!-- END Highmountain -->
 
-						Assign Combat Ally, not necessarily needed.
-						<CustomBehavior File="RunCode"><![CDATA[
-								await Coroutine.SLeep(1275);
-								Lua.DoString("OrderHallMissionFrameMissions.CombatAllyUI.Available.AddFollowerButton:Click();");
-								await Coroutine.Sleep(850);
-								// NOTE: <NeedCode> : Needs code to add follower as a combat ally.
-							]]>
-						</CustomBehavior>
-					</While>
-				-->
+			<!-- Stormheim -->
+				<If Condition="!IsAchievementCompleted(10790, false)" >
+					<If Condition="NeedsQuest(39735)" >
+						<CustomBehavior File="InteractWith" MobId="102669" WaitTime="1500" X="4536.392" Y="5292.927" Z="866.5453" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39735);" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</If>
+				</If>
+			<!-- END Stormheim -->
 
-
-		<!-- /// Stage 3 ; Highmountain -->
-    <!-- <PickUp QuestName="The Lone Mountain" QuestId="39733" GiverName="EMPTY" GiverId="1234" XXXX />
-			Go to Dalaran and Load Highmountain profile.-->
-
-
-		<!-- /// Stage 4 ; Stormheim -->
-	<!-- <PickUp QuestName="Stormheim" QuestId="39735" GiverName="Outfitter Reynolds" GiverId="103693" XXXX /> 
-			Go to Dalaran and Load Stormheim profile -->
-		
-		<!-- Name="Portal to Dalaran" Entry="244510" X="4552.774" Y="5244.073" Z="880.768" -->
-
-			<!-- END Loc:  Trueshot Lodge -->
+			<If Condition="HasQuest(39718) || HasQuest(39731) || HasQuest(39733) || HasQuest(39735)" > <!-- Portal to Dalaran to leave Class Hall to go to new quest zone. -->
+				<CustomBehavior File="InteractWith" MobId="244510" X="4552.774" Y="5244.073" Z="880.768" />
+			</If>
 
 
 	</QuestOrder>

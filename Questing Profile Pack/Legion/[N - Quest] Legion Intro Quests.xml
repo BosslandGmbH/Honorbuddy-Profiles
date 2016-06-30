@@ -19,21 +19,6 @@
 
 	<TargetElites>true</TargetElites>
 
-	<AvoidMobs>
-	</AvoidMobs>
-
-	<Blackspots>
-	</Blackspots>
-
-	<Blacklist>
-	</Blacklist>
-
-	<Mailboxes> 
-	</Mailboxes>
-
-	<Vendors>
-	</Vendors>
-
 	<InitOrder>
 		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
 		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
@@ -96,26 +81,42 @@
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
 
-		<!-- Horde Section -->
-		<If Condition="Me.IsHorde">
-			<If Condition="NeedsQuest(44663)" >
-				<If Condition="Unit(114562) == null" >
-					<MoveTo Nav="Fly" X="1824.579" Y="-4421.238" Z="103.3658" />
+		<!-- Alliance Section -->
+			<If Condition="Me.IsAlliance">
+				<If Condition="NeedsQuest(44663)" >
+					<If Condition="Unit(114562) == null" >
+						<MoveTo Nav="Fly" X="-8866.701" Y="642.0375" Z="96.14512" />
+					</If>
+					<PickUp QuestName="In the Blink of an Eye" QuestId="44663" GiverName="Khadgar's Upgraded Servant" GiverId="114562" X="-8866.701" Y="642.0375" Z="96.14512" />
 				</If>
-				<PickUp QuestName="In the Blink of an Eye" QuestId="44663" GiverName="Khadgar's Upgraded Servant" GiverId="114562" X="1824.579" Y="-4421.238" Z="103.3658" />
-			</If>
 
-			<While Condition="DoQuest(44663)" >
-				<CustomBehavior File="InteractWith" MobId="254292" QuestId="44663" QuestObjectiveIndex="1" X="1758.979" Y="-4293.224" Z="7.621215" />
-				<MoveTo QuestId="44663" QuestObjectiveIndex="2" X="-11110.1" Y="-2020.767" Z="747.4564" />
-			</While>
-			<TurnIn QuestName="In the Blink of an Eye" QuestId="44663" TurnInName="Emissary Auldbridge" TurnInId="111109" X="-834.3594" Y="4399.119" Z="737.5295" />
-		</If>
+				<While Condition="DoQuest(44663)" >
+					<CustomBehavior File="InteractWith" MobId="216350" QuestId="44663" QuestObjectiveIndex="1" X="-8401.058" Y="330.757" Z="147.0138" />
+				</While>
+			</If>
+		<!-- END Alliance Section -->
+
+		<!-- Horde Section -->
+			<If Condition="Me.IsHorde">
+				<If Condition="NeedsQuest(44663)" >
+					<If Condition="Unit(114562) == null" >
+						<MoveTo Nav="Fly" X="1824.579" Y="-4421.238" Z="103.3658" />
+					</If>
+					<PickUp QuestName="In the Blink of an Eye" QuestId="44663" GiverName="Khadgar's Upgraded Servant" GiverId="114562" X="1824.579" Y="-4421.238" Z="103.3658" />
+				</If>
+
+				<While Condition="DoQuest(44663)" >
+					<CustomBehavior File="InteractWith" MobId="254292" QuestId="44663" QuestObjectiveIndex="1" X="1758.979" Y="-4293.224" Z="7.621215" />
+				</While>
+			</If>
 		<!-- END Horde Section -->
+
+		<MoveTo QuestId="44663" QuestObjectiveIndex="2" X="-11112.06" Y="-2024.847" Z="747.4568" />
+		<CustomBehavior File="RunCode" Code="await SkipCutscene();" /
+		<TurnIn QuestName="In the Blink of an Eye" QuestId="44663" TurnInName="Emissary Auldbridge" TurnInId="111109" X="-834.3594" Y="4399.119" Z="737.5295" />
 
 
 		<!-- Load Class Hall stuff. -->
-
 
 	</QuestOrder>
 </HBProfile>
