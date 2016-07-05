@@ -1,0 +1,357 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Druid Class Hall Loader [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<Vendors>
+		<Vendor Type="Repair" Name="Outfitter Reynolds" Entry="103693" X="4524.597" Y="5275.92" Z="862.1298" /> <!-- HUNTER,  REPLACE ME. -->
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->!
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Introductory Class Hall Quests -->
+			<PickUp QuestName="A Summons From Moonglade" QuestId="40643" GiverName="Archdruid Hamuul Runetotem" GiverId="101061" X="-836.509" Y="4392.921" Z="737.6797" /> <!-- May be a bit slow to spawn after first entering Dalaran. -->
+			<While Condition="HasQuest(40643)" > <!-- &amp;&amp; ME IS IN DALARAN -->
+				<CustomBehavior File="RunCode" Code="SpellManager.Cast(18960);" />
+				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Me.MapId != 1014" />
+			</While>
+			<TurnIn QuestName="A Summons From Moonglade" QuestId="40643" TurnInName="Archdruid Hamuul Runetotem" TurnInId="101064" X="8001.76" Y="-2680.266" Z="512.0837" />
+
+			<PickUp QuestName="Call of the Wilds" QuestId="41106" GiverName="Archdruid Hamuul Runetotem" GiverId="101064" X="8001.76" Y="-2680.266" Z="512.0837" />
+			<While Condition="DoQuest(41106)" >
+				<MoveTo X="7668.482" Y="-2389.417" Z="455.7115" />
+				<CustomBehavior File="InteractWith" MobId="103136" GossipOptions="1" QuestId="41106" QuestObjectiveIndex="1" X="7673.541" Y="-2387.766" Z="456.373" />
+				<CustomBehavior File="InteractWith" MobId="247052" QuestId="41106" QuestObjectiveIndex="2" X="7397.772" Y="-2656.589" Z="453.9755" />
+				<CustomBehavior File="InteractWith" MobId="103133" GossipOptions="1" QuestId="41106" QuestObjectiveIndex="3" X="7405.717" Y="-2307.901" Z="498.8112" />
+			</While>
+			<TurnIn QuestName="Call of the Wilds" QuestId="41106" TurnInName="Archdruid Hamuul Runetotem" TurnInId="101064" X="8001.76" Y="-2680.266" Z="512.0837" />
+
+			<PickUp QuestName="The Dreamway" QuestId="40644" GiverName="Archdruid Hamuul Runetotem" GiverId="101064" X="8001.76" Y="-2680.266" Z="512.0837" />
+			<While Condition="DoQuest(40644)" >
+				<MoveTo QuestId="40644" QuestObjectiveIndex="1" X="7566.188" Y="-2899.177" Z="460.0998" />
+				<CustomBehavior File="WaitTimer" QuestId="40644" QuestObjectiveIndex="2" WaitTime="60000" />
+				<While Condition="IsObjectiveComplete(1, 40644)" >
+					<MoveTo X="7565.53" Y="-2925.842" Z="465.2671" />
+					<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+					<CustomBehavior File="WaitTimer" QuestId="40644" QuestObjectiveIndex="3" WaitTime="16000" />
+				</While>
+			</While>
+			<TurnIn QuestName="The Dreamway" QuestId="40644" TurnInName="Malfurion Stormrage" TurnInId="103875" X="7559.609" Y="-2921.609" Z="464.9646" />
+
+			<PickUp QuestName="To The Dreamgrove" QuestId="40645" GiverName="Malfurion Stormrage" GiverId="103875" X="7559.609" Y="-2921.609" Z="464.9646" />
+			<While Condition="DoQuest(40645)" >
+				<If Condition="Me.MapId == 111111"> <!-- NOTE: <Add-CheckMapId> -->  
+					<MoveTo X="7564.955" Y="-2939.629" Z="467.6891" />
+					<CustomBehavior File="MyCTM" X="7563.886" Y="-2960.902" Z="467.976" TerminateWhen="Me.MapId == 111111" /> <!-- NOTE: <Add-CheckMapId> --> 
+				</If>
+				<MoveTo X="1704.347" Y="1548.302" Z="2.620985" />
+				<CustomBehavior File="WaitTimer" QuestId="40645" QuestObjectiveIndex="2" WaitTime="60000" />
+
+				<!-- NOTE: <AddAvoid> : Severity - minor. -->
+				<CustomBehavior File="KillUntilComplete" MobId="103246" QuestId="40645" QuestObjectiveIndex="3" X="1750.29" Y="1327.941" Z="2.448324" />
+				<MoveTo X="1766.435" Y="1508.679" Z="7.188321" />
+				<CustomBehavior File="MyCTM" X="1784.506" Y="1504.145" Z="9.844843" TerminateWhen="Me.MapId == 1077" /> <!-- NOTE: <Add-CheckMapId> -->
+
+				<MoveTo QuestId="40645" X="3976.025" Y="7391.25" Z="23.92067" />
+			</While>
+			<TurnIn QuestName="To The Dreamgrove" QuestId="40645" TurnInName="Rensar Greathoof" TurnInId="101195" X="3974.796" Y="7395.398" Z="23.94482" />
+		<!-- END Introductory Class Hall Quests -->
+
+		<!-- First Artifact Quest -->
+			<PickUp QuestName="Weapons of Legend" QuestId="40646" GiverName="Rensar Greathoof" GiverId="101195" X="3974.796" Y="7395.398" Z="23.94435" />
+			<While Condition="DoQuest(40646)" >
+				<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+					<CustomBehavior File="InteractWith" MobId="101195" GossipOptions="1" QuestId="40646" QuestObjectiveIndex="1" X="3974.796" Y="7395.398" Z="23.94435" />
+				</If>
+
+				<CustomBehavior File="UserDialog" QuestId="40646" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" 
+				Text="Choose an artifact weapon.\n\nIf you do not choose within 5minutes, the bot will pick the one appropriate for your current specialization." />
+				
+				<If Condition="!IsQuestCompleted(40646)" >
+					<If Condition="Me.Specialization == WoWSpec.DruidBalance" >
+						<CustomBehavior File="Misc\RunLua" QuestId="40646" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<If Condition="Me.Specialization == WoWSpec.DruidFeral" >
+						<CustomBehavior File="Misc\RunLua" QuestId="40646" Lua="QuestChoiceFrameOption2.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<If Condition="Me.Specialization == WoWSpec.DruidGuardian" >
+						<CustomBehavior File="Misc\RunLua" QuestId="40646" Lua="QuestChoiceFrameOption3.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<If Condition="Me.Specialization == WoWSpec.DruidRestoration" >
+						<CustomBehavior File="Misc\RunLua" QuestId="40646" Lua="QuestChoiceFrameOption4.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<CustomBehavior File="Misc\RunLua" QuestId="40646" Lua="StaticPopup1Button1:Click();" />
+				</If>
+			</While>
+			<TurnIn QuestName="Weapons of Legend" QuestId="40646" TurnInName="Rensar Greathoof" TurnInId="101195" X="3974.796" Y="7395.398" Z="23.94435" />
+
+			<If Condition="!IsQuestCompleted(42430) &amp;&amp; NeedsQuest(41255) &amp;&amp; Me.Specialization == WoWSpec.DruidFeral" > <!-- 42430 = Fangs of Ashamane Finale -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Druid - Feral - Fangs of Ashamane.xml" />
+			</If>
+
+
+
+		<!-- END First Artifact Quest -->
+
+
+		<!-- Introductory Class Hall Quests -->
+			<PickUp QuestName="Sowing The Seed" QuestId="41255" GiverName="Rensar Greathoof" GiverId="101195" X="3974.796" Y="7395.398" Z="23.94462" />
+			<While Condition="DoQuest(41255)" >
+				<CustomBehavior File="InteractWith" MobId="103762" QuestId="41255" QuestObjectiveIndex="1" X="3959.93" Y="7515.002" Z="53.00967" />
+			</While>
+			<TurnIn QuestName="Sowing The Seed" QuestId="41255" TurnInName="Rensar Greathoof" TurnInId="97923" X="3956.28" Y="7515.05" Z="53.07848" />
+
+			<PickUp QuestName="The Seed of Ages" QuestId="40651" GiverName="Rensar Greathoof" GiverId="97923" X="3956.28" Y="7515.05" Z="53.07848" />
+			<While Condition="DoQuest(40651)" >
+				<CustomBehavior File="InteractWith" MobId="244734" X="3959.931" Y="7515.002" Z="52.96376" />
+				<If Condition="HasItem(128860)" > <!-- Fangs of Ashamane -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1327);" />
+				</If>
+				<If Condition="HasItem(128808)" > <!-- Scythe of Elune -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(XXXX);" />
+				</If>
+				<If Condition="HasItem(128826)" > <!-- Thas'dorah -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(XXXX);" />
+				</If>
+				<If Condition="HasItem(128826)" > <!-- Thas'dorah -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(XXXX);" />
+				</If>
+			</While>
+			<TurnIn QuestName="The Seed of Ages" QuestId="40651" TurnInName="Rensar Greathoof" TurnInId="97923" X="3956.28" Y="7515.05" Z="53.07848" />
+
+			<PickUp QuestName="Ascending The Circle" QuestId="41332" GiverName="Rensar Greathoof" GiverId="97923" X="3956.28" Y="7515.05" Z="53.07848" />
+			<While Condition="DoQuest(41332)" >
+				<MoveTo X="3975.635" Y="7385.781" Z="23.89131" />
+				<CustomBehavior File="WaitTimer" QuestId="41332" QuestObjectiveIndex="1" WaitTime="60000" />
+				<CustomBehavior File="InteractWith" MobId="104241" GossipOptions="1" QuestId="41332" QuestObjectiveIndex="2" X="3975.143" Y="7382.232" Z="23.86781" />
+				<CustomBehavior File="WaitTimer" QuestId="41332" WaitTime="25000" />
+			</While>
+			<TurnIn QuestName="Ascending The Circle" QuestId="41332" TurnInName="Malfurion Stormrage" TurnInId="104241" X="3975.143" Y="7382.232" Z="23.86781" />
+
+			<PickUp QuestName="Word on the Winds" QuestId="40652" GiverName="Malfurion Stormrage" GiverId="104241" X="3975.143" Y="7382.232" Z="23.86781" />
+			<TurnIn QuestName="Word on the Winds" QuestId="40652" TurnInName="Skylord Omnuron" TurnInId="98002" X="3972.861" Y="7324.135" Z="29.10682" />
+
+			<PickUp QuestName="Making Trails" QuestId="40653" GiverName="Skylord Omnuron" GiverId="98002" X="3972.861" Y="7324.135" Z="29.10682" />
+			<While Condition="DoQuest(40653)" >
+				<CustomBehavior File="InteractWith" MobId="98000" QuestId="40653" X="3976.515" Y="7324.84" Z="29.02647" />
+				<If Condition="NeedsQuest(39718)" > <!-- Azsuna -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+			</While>
+			<TurnIn QuestName="Making Trails" QuestId="40653" TurnInName="Skylord Omnuron" TurnInId="98002" X="3976.515" Y="7324.84" Z="29.02647" />
+
+			<While Condition="DoQuest(39718)" >
+				<CustomBehavior File="InteractWith" MobId="244510" WaitTime="30000" QuestId="244510" X="4021.86" Y="7289.344" Z="42.45952" /> <!-- NOTE: <ConditionalCheck> : UseWhen in Class Hall, TerminateWhen Me In Dalaran -->
+			</While>
+			<If Condition="QuestDone(39718)" >
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />
+			</If>
+
+		<!-- END Introductory Class Hall Quests -->
+
+
+		<!-- Tutorial Class Hall Quests - Starts in Dalaran -->
+			<PickUp QuestName="Growing Power" QuestId="42516" GiverName="Archdruid Hamuul Runetotem" GiverId="101061" X="-829.8788" Y="4392.954" Z="737.7523" />
+			<While Condition="HasQuest(42516)" > <!--  &amp;&amp; IN-DALARAN -->
+				<!-- NOTE: <ConditionalCheck> : Could use a If in Dalaran check here for this.  Set conditions accordingly. -->
+				<CustomBehavior File="RunCode" Code="SpellManager.Cast(193753)" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsCasting" />
+				<MoveTo X="1769.227" Y="1507.436" Z="7.572013" />
+				<CustomBehavior File="MyCTM" X="1784.787" Y="1504.025" Z="9.896443" /> <!-- TerminateWhen="ME IS IN DRUID PLACE"  -->
+			</While>
+			<TurnIn QuestName="Growing Power" QuestId="42516" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.93905" />
+
+			<PickUp QuestName="Rise, Champions" QuestId="42583" GiverName="Rensar Greathoof" GiverId="101195" X="3969.634" Y="7393.945" Z="23.93905" />
+			<While Condition="DoQuest(42583)" >
+				<If Condition="!IsObjectiveComplete(2, 42583)" >
+					<CustomBehavior File="InteractWith" MobId="103778" QuestId="42583" QuestObjectiveIndex="2" X="3829.911" Y="7193.92" Z="15.76513" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							await Coroutine.Sleep(1234);
+							Lua.DoString("QuestFrameCompleteQuestButton:Click();");
+							await Coroutine.Sleep(875);
+						]]>
+					</CustomBehavior>
+				</If>
+				<If Condition="!IsObjectiveComplete(1, 42583)" >
+					<CustomBehavior File="InteractWith" MobId="98013" QuestId="42583" QuestObjectiveIndex="1" X="4230.835" Y="7371.042" Z="-5.959337" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							await Coroutine.Sleep(1275);
+							Lua.DoString("QuestFrameCompleteQuestButton:Click();");
+							await Coroutine.Sleep(875);
+						]]>
+					</CustomBehavior>
+				</If>
+			</While>
+			<TurnIn QuestName="Rise, Champions" QuestId="42583" TurnInName="Skylord Omnuron" TurnInId="98002" X="3972.861" Y="7324.135" Z="29.10639" />
+
+			<PickUp QuestName="Sister Lilith" QuestId="42584" GiverName="Skylord Omnuron" GiverId="98002" X="3972.861" Y="7324.135" Z="29.10639" />
+			<While Condition="DoQuest(42584)" >
+				<CustomBehavior File="InteractWith" MobId="98000" WaitTime="1500" QuestId="42584" QuestObjectiveIndex="1" X="3976.515" Y="7324.84" Z="29.02647" />
+				<!-- Do Mission ; Mission is 923,  garrFollowerId is 640,  GetMouseFocus().info.missionID -->
+				<CustomBehavior File="RunCode" ><![CDATA[
+						Lua.DoString("OrderHallMissionFrameTab1:Click();");
+						await Coroutine.Sleep(1000);
+						Lua.DoString("OrderHallMissionFrameMissionsListScrollFrameButton1:Click();");
+						string followerGUID = "0x0000000000DC94D5";
+						await Coroutine.Sleep(1000);
+
+						string luaString = $"C_Garrison.AddFollowerToMission(923, {followerGUID});";
+						Lua.DoString(luaString);
+
+						await Coroutine.Sleep(1000);
+						Lua.DoString("C_Garrison.StartMission(923);");
+
+						await Coroutine.Sleep(2500);
+						Lua.DoString("OrderHallMissionFrame.CloseButton:Click();");
+					]]>
+				</CustomBehavior>
+				<CustomBehavior File="Message" Text="Waiting for class hall mission to complete..." />
+				<CustomBehavior File="WaitTimer" QuestId="42584" WaitTime="125000" />
+				<CustomBehavior File="InteractWith" MobId="98000" WaitTime="1500" QuestId="42584" QuestObjectiveIndex="1" X="3976.515" Y="7324.84" Z="29.02647" />
+				<CustomBehavior File="RunCode" ><![CDATA[
+						Lua.DoString("OrderHallMissionFrameMissions.CompleteDialog.BorderFrame.ViewButton:Click();");
+						await Coroutine.Sleep(1000);
+						Lua.DoString("C_Garrison.MissionBonusRoll(923);");
+						await Coroutine.Sleep(1000);
+						Lua.DoString("OrderHallMissionFrame.CloseButton:Click();");
+					]]>
+				</CustomBehavior>
+			</While>
+			<TurnIn QuestName="Sister Lilith" QuestId="42584" TurnInName="Skylord Omnuron" TurnInId="98002" X="3972.861" Y="7324.135" Z="29.10682" />
+
+			<PickUp QuestName="Recruiting the Troops" QuestId="42585" GiverName="Skylord Omnuron" GiverId="98002" X="3972.861" Y="7324.135" Z="29.10682" />
+			<While Condition="DoQuest(42585)" >
+				<CustomBehavior File="InteractWith" MobId="108393" WaitTime="2000" QuestId="42585" X="4126.205" Y="7467.611" Z="48.74362" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="6000" Lua="GarrisonCapacitiveDisplayFrame.StartWorkOrderButton:Click();" />
+				<CustomBehavior File="InteractWith" MobId="250872" QuestId="42585" X="4129.044" Y="7466.447" Z="48.87521" />
+			</While>
+			<TurnIn QuestName="Recruiting the Troops" QuestId="42585" TurnInName="Skylord Omnuron" TurnInId="98002" X="3972.861" Y="7324.135" Z="29.10549" />
+
+			<!-- Skipping this.
+			<PickUp QuestName="A Glade Defense" QuestId="42586" GiverName="Skylord Omnuron" GiverId="98002" X="3972.861" Y="7324.135" Z="29.10549" />
+			<While Condition="DoQuest(42586)" >
+				<CustomBehavior File="InteractWith" MobId="98000" WaitTime="1500" QuestId="42586" QuestObjectiveIndex="1" X="3976.515" Y="7324.84" Z="29.02647" />
+			</While> -->
+
+			<While Condition="!IsQuestCompleted(41413)" >
+				<CustomBehavior File="InteractWith" MobId="98784" QuestId="41413" X="3962.504" Y="7264.522" Z="28.87087" />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+			</While>
+		<!-- END Tutorial Class Hall Quests -->
+
+
+		<!-- Boolean for IsAchievementCompleted defaults to false. -->
+		<!-- Azsuna -->
+			<If Condition="!IsAchievementCompleted(10763, false)" > 
+				<If Condition="NeedsQuest(39718)" >
+					<CustomBehavior File="InteractWith" MobId="98000" QuestId="40653" X="3976.515" Y="7324.84" Z="29.02647" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+			</If>
+		<!-- END Azsuna -->
+
+		<!-- Val'sharah -->
+			<If Condition="!IsAchievementCompleted(10698, false)" >
+				<If Condition="NeedsQuest(39731)" >
+					<CustomBehavior File="InteractWith" MobId="98000" QuestId="40653" X="3976.515" Y="7324.84" Z="29.02647" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39731);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+			</If>
+		<!-- END Val'sharah -->
+
+		<!-- Highmountain -->
+			<If Condition="!IsAchievementCompleted(10059, false)" >
+				<If Condition="NeedsQuest(39733)" >
+					<CustomBehavior File="InteractWith" MobId="98000" QuestId="40653" X="3976.515" Y="7324.84" Z="29.02647" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39733);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+			</If>
+		<!-- END Highmountain -->
+
+		<!-- Stormheim -->
+			<If Condition="!IsAchievementCompleted(10790, false)" >
+				<If Condition="NeedsQuest(39735)" >
+					<CustomBehavior File="InteractWith" MobId="98000" QuestId="40653" X="3976.515" Y="7324.84" Z="29.02647" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39735);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+			</If>
+		<!-- END Stormheim -->
+
+		<If Condition="HasQuest(39718) || HasQuest(39731) || HasQuest(39733) || HasQuest(39735)" > <!-- Portal to Dalaran to leave Class Hall to go to new quest zone. -->
+			<CustomBehavior File="InteractWith" MobId="244510" X="4552.774" Y="5244.073" Z="880.768" />
+		</If>
+
+
+	</QuestOrder>
+</HBProfile>

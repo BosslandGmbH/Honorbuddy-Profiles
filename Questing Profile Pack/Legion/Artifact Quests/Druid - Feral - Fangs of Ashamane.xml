@@ -1,0 +1,257 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Druid - Feral - Fangs of Ashamane [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+			<!-- Get Continuation Quest -->
+				<If Condition="IsQuestCompleted(41255) &amp;&amp; !HasQuest(43980) &amp;&amp; !HasQuest(44366)" > <!-- Using Sowing the Seed (41255) to determine if we've already got the first artifact. -->
+					<CustomBehavior File="InteractWith" MobId="101195" WaitTime="1250" X="3969.634" Y="7393.945" Z="23.9389" />
+					<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="QuestFrameAcceptButton:Click();" />
+				</If>
+			<!-- END Get Continuation Quest -->
+
+			<!-- Second Artifact -->
+				<If Condition="HasQuest(43980)" >
+					<While Condition="DoQuest(43980)" >
+						<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+							<CustomBehavior File="InteractWith" MobId="101195" GossipOptions="1" QuestId="43980" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
+						</If>
+						<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.  
+						<CustomBehavior File="Misc\RunLua" QuestId="43980" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
+						<CustomBehavior File="UserDialog" QuestId="43980" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
+					</While>
+					<TurnIn QuestName="Another Weapon of Old" QuestId="43980" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.9389" />
+				</If>
+			<!-- END Second Artifact -->
+
+			<!-- Third Artifact -->
+				<If Condition="HasQuest(44431)" >
+					<While Condition="DoQuest(44431)" >
+						<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+							<CustomBehavior File="InteractWith" MobId="107317" GossipOptions="1" QuestId="44431" QuestObjectiveIndex="1" X="4642.032" Y="5285.06" Z="840.6198" />
+						</If>
+						<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.  
+						<CustomBehavior File="Misc\RunLua" QuestId="43980" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
+						<CustomBehavior File="UserDialog" QuestId="44431" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
+					</While>
+					<TurnIn QuestName="More Weapons of Old" QuestId="44431" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.93885" />
+				</If>
+			<!-- END Third Artifact -->
+
+			<!-- Story: Artifact Weapon - Fangs of Ashamane -->
+				<PickUp QuestName="The Shrine of Ashamane" QuestId="42428" GiverName="Rensar Greathoof" GiverId="101195" X="3974.796" Y="7395.398" Z="23.94462" />
+				<While Condition="DoQuest(42428)" >
+					<If Condition="Me.ZoneId == 1077" > <!-- NOTE: <CheckZoneId> : -->
+						<CustomBehavior File="InteractWith" MobId="107457" GossipOptions="1" X="4075.332" Y="7243.441" Z="52.14547" /> <!-- NOTE: <TechnicalCheck> : Taxi button may count as 1. If so, then we need gossip button to be 2. -->
+					</If>
+				</While>
+				<TurnIn QuestName="The Shrine of Ashamane" QuestId="42428" TurnInName="Delandros Shimmermoon" TurnInId="107392" X="3250.186" Y="5727.08" Z="321.1192" />
+
+				<PickUp QuestName="Aid for the Ashen" QuestId="42439" GiverName="Delandros Shimmermoon" GiverId="107392" X="3250.186" Y="5727.08" Z="321.1192" />
+				<PickUp QuestName="Seeds of Renewal" QuestId="42438" GiverName="Delandros Shimmermoon" GiverId="107392" X="3250.186" Y="5727.08" Z="321.1192" />
+
+				<While Condition="DoQuest(42438)" >
+					<CustomBehavior File="InteractWith" MobIds="113000, 113006, 113002" NumOfTimes="3" QuestId="42438" QuestObjectiveIndex="1" >
+						<HuntingGrounds>
+							<Hotspot X="3405.921" Y="5746.777" Z="309.2337" />
+							<Hotspot X="3381.902" Y="5655.804" Z="311.7336" />
+							<Hotspot X="3559.406" Y="5693.792" Z="317.3441" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</While>
+
+				<While Condition="DoQuest(42439)" >
+					<CustomBehavior File="KillUntilComplete" MobId="107535" QuestId="42439" QuestObjectiveIndex="1" >
+						<HuntingGrounds>
+							<Hotspot X="3548.995" Y="5657.979" Z="312.5594" />
+							<Hotspot X="3470.611" Y="5702.281" Z="310.3693" />
+							<Hotspot X="3412.158" Y="5667.433" Z="312.1592" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</While>
+
+				<TurnIn QuestName="Aid for the Ashen" QuestId="42439" TurnInName="Delandros Shimmermoon" TurnInId="107392" X="3398.912" Y="5571.285" Z="311.0803" />
+				<TurnIn QuestName="Seeds of Renewal" QuestId="42438" TurnInName="Delandros Shimmermoon" TurnInId="107392" X="3398.912" Y="5571.285" Z="311.0803" />
+
+				<PickUp QuestName="The Shrine in Peril" QuestId="42440" GiverName="Delandros Shimmermoon" GiverId="107392" X="3398.912" Y="5571.285" Z="311.0803" />
+				<While Condition="DoQuest(42440)" >
+					<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+					<MoveTo QuestId="42440" QuestObjectiveIndex="1" X="3485.615" Y="5540.708" Z="323.1723" />
+					<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+					<!-- NOTE: <AddAvoid> : Priority - Low.  Bot does AoE of fell balls. -->
+					<CustomBehavior File="KillUntilComplete" MobId="107593" QuestId="42440" QuestObjectiveIndex="2" X="3530.869" Y="5538.478" Z="323.4144" />
+				</While>
+				<TurnIn QuestName="The Shrine in Peril" QuestId="42440" TurnInName="Delandros Shimmermoon" TurnInId="107392" X="3553.168" Y="5537.865" Z="324.7963" />
+
+				<PickUp QuestName="The Fangs of Ashamane" QuestId="42430" GiverName="Delandros Shimmermoon" GiverId="107392" X="3553.168" Y="5537.865" Z="324.7963" />
+				<While Condition="DoQuest(42430)" >
+					<CustomBehavior File="InteractWith" MobId="107729" WaitTime="5000" QuestId="42430" QuestObjectiveIndex="1" X="3553.777" Y="5541.796" Z="324.7946" />
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+						<MoveTo X="2013.606" Y="5425.4" Z="47.39029" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+						<CustomBehavior File="InteractWith" MobId="250641" X="2047.347" Y="5372.541" Z="47.30041" />
+						<CustomBehavior File="InteractWith" MobId="250638" X="2068.309" Y="5444.192" Z="47.3004" />
+						<MoveTo X="2119.902" Y="5389.882" Z="52.41041" />
+						<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+					</If>
+
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+						<MoveTo X="2245.052" Y="5355.108" Z="37.02452" />
+						<While Condition="!Me.HasAura(768)" >
+							<!-- Player must be in cat form to interact with this next object. -->
+							<CustomBehavior File="RunCode" Code="SpellManager.Cast(768);" />
+							<CustomBehavior File="WaitTimer" WaitTime="1000" />
+						</While>
+						<CustomBehavior File="InteractWith" WaitTime="6000" MobId="250824" X="2252.76" Y="5352.203" Z="36.24648" />
+						<MoveTo X="2309.035" Y="5417.842" Z="14.83675" />
+						<CustomBehavior File="WaitTimer" WaitTime="6000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+						<!-- NOTE: <AddSupport:
+							 This NPC is hard to beat.  If the bot dies here, the player will be ported back to the beginning of the scenario.
+							If this happens, the sequence of events in  Strage 3 must be repeated for the player to get back to the boss fight location.
+						-->
+						<CustomBehavior File="KillUntilComplete" MobId="108003" X="2335.352" Y="5427.347" Z="13.95717" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+						<MoveTo X="2111.239" Y="5488.263" Z="-19.57687" /> <!-- Could use a termination code instead of just going by QuestId -->
+						<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+						<CustomBehavior File="KillUntilComplete" MobId="108027" X="2079.747" Y="5425.51" Z="-36.70618" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+						<!-- There's two Fangs of Ashamane objects here.
+						Name="Thas'dorah, Legacy of the Windrunners" Entry="101487" X="57.9757" Y="1212.47" Z="-38.09645" -->
+						<CustomBehavior File="InteractWith" MobId="250386" InteractByLooting="true" WaitTime="1500" X="2060.2" Y="5404.943" Z="-34.77471" />
+						<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+						<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8" >
+						<CustomBehavior File="InteractWith" MobId="108115" WaitTime="3000" X="2068.373" Y="5405.366" Z="-35.94217" />
+					</If>
+				</While>
+				<TurnIn QuestName="The Fangs of Ashamane" QuestId="42430" TurnInName="Rensar Greathoof" TurnInId="101195" X="3974.796" Y="7395.398" Z="23.94462" />
+			<!-- END Story: Artifact Weapon - Fangs of Ashamane -->
+
+
+			<If Condition="!IsQuestCompleted(41255)" >
+				<PickUp QuestName="Sowing The Seed" QuestId="41255" GiverName="Rensar Greathoof" GiverId="101195" X="3974.796" Y="7395.398" Z="23.94462" />
+				<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Druid [Echo].xml" />
+			</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	On Eagle's Wings is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	On Eagle's Wings is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

@@ -1,0 +1,266 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Druid - Balance - Scythe of Elune [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+			<!-- Get Continuation Quest -->
+				<If Condition="IsQuestCompleted(41255) &amp;&amp; !HasQuest(43980) &amp;&amp; !HasQuest(44366)" > <!-- Using Sowing the Seed (41255) to determine if we've already got the first artifact. -->
+					<CustomBehavior File="InteractWith" MobId="101195" WaitTime="1250" X="3969.634" Y="7393.945" Z="23.9389" />
+					<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="QuestFrameAcceptButton:Click();" />
+				</If>
+			<!-- END Get Continuation Quest -->
+
+			<!-- Second Artifact -->
+				<If Condition="HasQuest(43980)" >
+					<While Condition="DoQuest(43980)" >
+						<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+							<CustomBehavior File="InteractWith" MobId="101195" GossipOptions="1" QuestId="43980" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
+						</If>
+						<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.  
+						<CustomBehavior File="Misc\RunLua" QuestId="43980" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
+						<CustomBehavior File="UserDialog" QuestId="43980" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
+					</While>
+					<TurnIn QuestName="Another Weapon of Old" QuestId="43980" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.9389" />
+				</If>
+			<!-- END Second Artifact -->
+
+			<!-- Third Artifact -->
+				<If Condition="HasQuest(44431)" >
+					<While Condition="DoQuest(44431)" >
+						<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+							<CustomBehavior File="InteractWith" MobId="107317" GossipOptions="1" QuestId="44431" QuestObjectiveIndex="1" X="4642.032" Y="5285.06" Z="840.6198" />
+						</If>
+						<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.  
+						<CustomBehavior File="Misc\RunLua" QuestId="43980" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
+						<CustomBehavior File="UserDialog" QuestId="44431" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
+					</While>
+					<TurnIn QuestName="More Weapons of Old" QuestId="44431" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.93885" />
+				</If>
+			<!-- END Third Artifact -->
+
+			<!-- Story: Artifact Weapon - Scythe of Elune -->
+				<PickUp QuestName="The Scythe of Elune" QuestId="40783" GiverName="Naralex" GiverId="103778" X="3972.796" Y="7395.127" Z="23.94474" />
+				<While Condition="DoQuest(40783)" >
+					<!-- NOTE: <AddCheck> : We could use a ZoneId check here.  Player leaves class hall to go to Dreamgrove -->
+					<MoveTo QuestId="40783" QuestObjectiveIndex="1" X="4126.203" Y="7309.566" Z="22.08073" />
+					<CustomBehavior File="MyCTM" QuestId="40783" QuestObjectiveIndex="1" X="4153.008" Y="7288.954" Z="23.26673" /> <!-- TerminateWhen="NOT IN CLASS HALL SPOT" -->
+					<!-- NOTE: <AddCheck> : We could use a ZoneId check here.  Player leaves Dreamgrove to go to Duskwood -->
+					<MoveTo QuestId="40783" QuestObjectiveIndex="1" X="1559.297" Y="1551.772" Z="19.10375" />
+					<CustomBehavior File="MyCTM" QuestId="40783" QuestObjectiveIndex="1" X="1548.042" Y="1545.701" Z="21.27557" />
+
+					<MoveTo X="-10335.85" Y="-486.7315" Z="49.85195" />
+					<CustomBehavior File="WaitTimer" QuestId="40783" WaitTime="30000" />
+				</While>
+				<TurnIn QuestName="The Scythe of Elune" QuestId="40783" TurnInName="Valorn Stillbough" TurnInId="101656" X="-10334.14" Y="-487.0561" Z="50.07143" />
+
+				<PickUp QuestName="Its Rightful Place" QuestId="40784" GiverName="Valorn Stillbough" GiverId="101656" X="-10334.14" Y="-487.0561" Z="50.07143" />
+				<TurnIn QuestName="Its Rightful Place" QuestId="40784" TurnInName="Belysra Starbreeze" TurnInId="101651" X="-10332.64" Y="-485.2331" Z="49.72445" />
+
+				<PickUp QuestName="A Foe of the Dark" QuestId="40785" GiverName="Belysra Starbreeze" GiverId="101651" X="-10332.64" Y="-485.2331" Z="49.72445" />
+				<While Condition="DoQuest(40785)" >
+					<MoveTo X="-10353.13" Y="-1256.427" Z="35.3006" />
+					<MoveTo X="-10369.41" Y="-1254.925" Z="35.90852" />
+					<CustomBehavior File="WaitTimer" QuestId="40785" WaitTime="60000" />
+				</While>
+				<TurnIn QuestName="A Foe of the Dark" QuestId="40785" TurnInName="Revil Kost" TurnInId="100323" X="-10370.31" Y="-1257.007" Z="35.9101" />
+
+				<PickUp QuestName="Following the Curse" QuestId="40834" GiverName="Revil Kost" GiverId="100323" X="-10370.31" Y="-1257.007" Z="35.9101" />
+				<While Condition="DoQuest(40834)" >
+					<CustomBehavior File="EscortGroup" EscortCompleteWhen="QuestObjectiveComplete" EscortCountMax="1" QuestId="40834" QuestObjectiveIndex="1"
+						EscortNpcId="100578" EscortMaxFightDistance="15" SearchForNpcsRadius="60" >
+						<SearchPath>
+							<Hotspot X="-10370.31" Y="-1257.007" Z="35.9101" />
+						</SearchPath>
+					</CustomBehavior>
+				</While>
+				<TurnIn QuestName="Following the Curse" QuestId="40834" TurnInName="Revil Kost" TurnInId="100729" X="-10440.19" Y="-2143.814" Z="90.77973" />
+
+				<PickUp QuestName="Disturbing the Past" QuestId="40835" GiverName="Revil Kost" GiverId="100729" X="-10440.19" Y="-2143.814" Z="90.77973" />
+				<While Condition="DoQuest(40835)" >
+					<CustomBehavior File="InteractWith" MobId="245793" QuestId="40835" QuestObjectiveIndex="1" X="-10436.61" Y="-2142.387" Z="90.77908" />
+				</While>
+				<TurnIn QuestName="Disturbing the Past" QuestId="40835" TurnInType="Object" TurnInName="Battered Journal" TurnInId="245793" X="-10429.92" Y="-2141.151" Z="91.85447" />
+
+				<PickUp QuestName="The Deadwind Hunt" QuestId="40837" GiverName="Revil Kost" GiverId="100729" X="-10440.17" Y="-2143.832" Z="90.78035" />
+				<While Condition="DoQuest(40837)" >
+					<MoveTo QuestId="40837" QuestObjectiveIndex="1" X="-10602.85" Y="-2121.226" Z="91.49818" />
+					<MoveTo QuestId="40837" QuestObjectiveIndex="2" X="-10730.05" Y="-1978.82" Z="121.6467" />
+					<MoveTo QuestId="40837" QuestObjectiveIndex="3" X="-10822.89" Y="-2063.752" Z="121.1718" />
+					<MoveTo QuestId="40837" QuestObjectiveIndex="4" X="-10915.45" Y="-1979.894" Z="114.4269" />
+				</While>
+				<TurnIn QuestName="The Deadwind Hunt" QuestId="40837" TurnInName="Revil Kost" TurnInId="100812" X="-11024.64" Y="-2006.069" Z="25.09432" />
+
+				<PickUp QuestName="The Dark Riders" QuestId="40838" GiverName="Revil Kost" GiverId="100812" X="-11024.64" Y="-2006.069" Z="25.09432" />
+				<While Condition="DoQuest(40838)" >
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == null" > <!-- NOTE: <CheckThis> : == null may not work.  This is used to get the player into the scenario zone. -->
+						<MoveTo X="-11017.52" Y="-1993.153" Z="24.90709" />
+						<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != null" />
+						<CustomBehavior File="InteractWith" MobId="247322" X="-11018.1" Y="-1988.818" Z="24.90163" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+						<MoveTo X="-10992.48" Y="-1973.47" Z="-48.74293" />
+						<MoveTo X="-10962.58" Y="-1973.511" Z="-49.81652" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+						<MoveTo X="-10964.68" Y="-1967.501" Z="-49.81814" />
+						<CustomBehavior File="RunCode"><![CDATA[
+								var aridenPoi = Unit(100850);
+								StyxWoW.Me.SetFacing(aridenPoi.Location);
+								await Coroutine.Sleep(750);
+								SpellManager.Cast(78675);
+							]]> 
+						</CustomBehavior>
+						<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+						<CustomBehavior File="KillUntilComplete" MobId="101257" X="-10965.68" Y="-1921.035" Z="-49.87052" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+						<CustomBehavior File="InteractWith" MobId="246436" InteractByLooting="true" WaitTime="1500" X="-10962.82" Y="-1878.141" Z="-46.12582" />
+						<CustomBehavior File="WaitTimer" WaitTime="30000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+						<MoveTo X="-10885.38" Y="-1962.469" Z="-41.20673" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+						<CustomBehavior File="KillUntilComplete" MobId="102200" X="-10866.06" Y="-1962.245" Z="-41.08077" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+						<CustomBehavior File="InteractWith" MobId="246437" InteractByLooting="true" WaitTime="1500" X="-10865.06" Y="-1961.418" Z="-39.69912" />
+						<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+						<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+					</If>
+					<CustomBehavior File="WaitTimer" WaitTime="15000" /> <!-- NOTE: <CheckMe> : Revil talks a little bit before turn in is availible.  Must wait the proper amount of time. -->
+				</While>
+				<TurnIn QuestName="The Dark Riders" QuestId="40838" TurnInName="Revil Kost" TurnInId="101282" X="-10871.4" Y="-1961.52" Z="-41.03615" />
+
+				<PickUp QuestName="The Burden Borne" QuestId="40900" GiverName="Revil Kost" GiverId="101282" X="-10871.4" Y="-1961.52" Z="-41.03615" />
+				<While Condition="HasQuest(40900)" > <!--  &amp;&amp; IN KARAZHAN CATACOMBS -->
+					<!-- NOTE: <ConditionalCheck> : Could use a If in Dalaran check here for this.  Set conditions accordingly. -->
+					<CustomBehavior File="RunCode" Code="SpellManager.Cast(193753);" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsCasting" />
+					<MoveTo X="1769.227" Y="1507.436" Z="7.572013" />
+					<CustomBehavior File="MyCTM" X="1784.787" Y="1504.025" Z="9.896443" /> <!-- TerminateWhen="ME IS IN DRUID PLACE"  -->
+				</While>
+				<TurnIn QuestName="The Burden Borne" QuestId="40900" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.93885" />
+			<!-- END Story: Artifact Weapon - Scythe of Elune -->
+
+
+			<If Condition="!IsQuestCompleted(41255)" >
+				<PickUp QuestName="Sowing The Seed" QuestId="41255" GiverName="Rensar Greathoof" GiverId="101195" X="3974.796" Y="7395.398" Z="23.94462" />
+				<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Druid [Echo].xml" />
+			</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	Sowing the Seed is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	Sowing the Seed is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->
