@@ -71,6 +71,14 @@
 						}
 						return false;
 					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
 				]]>
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
@@ -92,7 +100,7 @@
 			<PickUp QuestName="Weapons of Legend" QuestId="40618" GiverName="Emmarel Shadewarden" GiverId="102478" X="-876.658" Y="4379.09" Z="739.1406" />
 			<While Condition="DoQuest(40618)" >
 				<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
-					<CustomBehavior File="InteractWith" MobId="102478" GossipOptions="1" QuestId="41415" QuestObjectiveIndex="1" X="-876.658" Y="4379.09" Z="739.1406" />
+					<CustomBehavior File="InteractWith" MobId="102478" GossipOptions="1" QuestId="40618" QuestObjectiveIndex="1" X="-876.658" Y="4379.09" Z="739.1406" />
 				</If>
 
 				<CustomBehavior File="UserDialog" QuestId="40618" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" 
@@ -154,11 +162,13 @@
 				<!-- /dump GetMouseFocus():GetPowerID(); C_ArtifactUI.AddPower(powerId); -->
 				<CustomBehavior File="InteractWith" MobId="245037" WaitTime="2000" QuestId="41047" X="4499.827" Y="5250.55" Z="863.7143" />
 				<If Condition="HasItem(128861)" > <!-- Titanstrike -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1336);" />
+				</If>
+				<If Condition="HasItem(128826)" > <!-- Thas'dorah -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1337);" />
 				</If>
 				<If Condition="HasItem(128808)" > <!-- Talonclaw -->
 					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1338);" />
-				</If>
-				<If Condition="HasItem(128826)" > <!-- Thas'dorah -->
 				</If>
 			</While>
 			<TurnIn QuestName="Infused with Power" QuestId="41047" TurnInName="Altar Keeper Biehn" TurnInId="102940" X="4498.039" Y="5254.65" Z="863.7154" />
@@ -178,10 +188,8 @@
 
 			<While Condition="DoQuest(39718)" >
 				<CustomBehavior File="InteractWith" MobId="244510" WaitTime="30000" QuestId="39718" X="4552.774" Y="5244.073" Z="880.768" /> <!-- NOTE: <ConditionalCheck> : UseWhen in Class Hall,  TerminateWhen Me In Dalaran -->
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />		
 			</While>
-			<If Condition="QuestDone(39718)" >
-				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />
-			</If>
 		<!-- END Introductory Class Hall Quests -->
 
 
@@ -333,9 +341,24 @@
 		<!-- END Stormheim -->
 
 		<If Condition="HasQuest(39718) || HasQuest(39731) || HasQuest(39733) || HasQuest(39735)" > <!-- Portal to Dalaran to leave Class Hall to go to new quest zone. -->
-			<CustomBehavior File="InteractWith" MobId="244510" X="4552.774" Y="5244.073" Z="880.768" />
+			<CustomBehavior File="InteractWith" MobId="244510" WaitTime="3000" X="4552.774" Y="5244.073" Z="880.768" />
 		</If>
 
+		<If Condition="HasQuest(39718)" > <!-- Load Azunsa -->
+			<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />
+		</If>
+
+		<If Condition="HasQuest(39731)" > <!-- Load Val'sharah -->
+			<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Val'sharah [Echo].xml" />
+		</If>
+
+		<If Condition="HasQuest(39733)" > <!-- Load Highmountain -->
+			<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Highmountain [Echo].xml" />
+		</If>
+
+		<If Condition="HasQuest(39735)" > <!-- Load Stormheim -->
+			<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Stormehim [Echo].xml" />
+		</If>
 
 	</QuestOrder>
 </HBProfile>

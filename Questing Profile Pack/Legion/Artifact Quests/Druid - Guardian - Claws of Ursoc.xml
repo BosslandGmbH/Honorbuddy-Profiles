@@ -1,0 +1,325 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Druid - Guardian - Claws of  Ursoc [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+			<!-- Get Continuation Quest -->
+				<If Condition="IsQuestCompleted(41255) &amp;&amp; !HasQuest(43980) &amp;&amp; !HasQuest(44431) &amp;&amp; !HasQuest(44443)" > <!-- Using Sowing the Seed (41255) to determine if we've already got the first artifact. -->
+					<CustomBehavior File="InteractWith" MobId="101195" WaitTime="1250" X="3969.634" Y="7393.945" Z="23.9389" />
+					<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="QuestFrameAcceptButton:Click();" />
+				</If>
+			<!-- END Get Continuation Quest -->
+
+			<!-- Second Artifact -->
+				<If Condition="HasQuest(43980)" >
+					<While Condition="DoQuest(43980)" >
+						<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+							<CustomBehavior File="InteractWith" MobId="101195" GossipOptions="1" QuestId="43980" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
+						</If>
+						<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.  
+						<CustomBehavior File="Misc\RunLua" QuestId="43980" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
+						<CustomBehavior File="UserDialog" QuestId="43980" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
+					</While>
+					<TurnIn QuestName="Another Weapon of Old" QuestId="43980" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.9389" />
+				</If>
+			<!-- END Second Artifact -->
+
+			<!-- Third Artifact -->
+				<If Condition="HasQuest(44431)" >
+					<While Condition="DoQuest(44431)" >
+						<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+							<CustomBehavior File="InteractWith" MobId="101195" GossipOptions="1" QuestId="44431" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
+						</If>
+						<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.  
+						<CustomBehavior File="Misc\RunLua" QuestId="44431" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
+						<CustomBehavior File="UserDialog" QuestId="44431" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
+					</While>
+					<TurnIn QuestName="More Weapons of Old" QuestId="44431" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.93885" />
+				</If>
+			<!-- END Third Artifact -->
+
+			<!-- Fourth Artifact -->
+				<If Condition="HasQuest(44443)" >
+					<While Condition="DoQuest(44443)" >
+						<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+							<CustomBehavior File="InteractWith" MobId="101195" WaitTime="2000" GossipOptions="1" QuestId="44443" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
+						</If>
+						<CustomBehavior File="Misc\RunLua" QuestId="44443" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1200" /> <!-- Should always be 1. -->
+					</While>
+					<TurnIn QuestName="Weapons of the Ancients" QuestId="44443" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.93913" />
+				</If>
+			<!-- END Fourth Artifact -->
+
+			<!-- Story: Artifact Weapon - Claws of Ursoc -->
+				<PickUp QuestName="Mistress of the Claw" QuestId="41468" GiverName="Rensar Greathoof" GiverId="101195" X="3969.634" Y="7393.945" Z="23.93913" />
+				<TurnIn QuestName="Mistress of the Claw" QuestId="41468" TurnInName="Lea Stonepaw" TurnInId="101259" X="4277.943" Y="7442.35" Z="-18.21085" />
+
+				<PickUp QuestName="To The Hills" QuestId="41782" GiverName="Lea Stonepaw" GiverId="101259" X="4277.943" Y="7442.35" Z="-18.21085" />
+				<While Condition="DoQuest(41782)" >
+					<CustomBehavior File="InteractWith" MobId="248583" InteractByLooting="true" QuestId="41782" QuestObjectiveIndex="1" X="4125.477" Y="7473.542" Z="49.89162" />
+
+					<If Condition="Me.MapId == 111111" >  <!-- NOTE: <Add-CheckMapId> : Leaving Class Hall, entering Dreamway. -->
+						<MoveTo X="4141.608" Y="7302.58" Z="22.75611" />
+						<CustomBehavior File="MyCTM" X="4150.013" Y="7293.335" Z="22.77204" TerminateWhen="Me.MapId == 22222" /> <!-- Shut off when entered Dreamway -->
+					</If>
+					<If Condition="Me.MapId == 111111" >  <!-- NOTE: <Add-CheckMapId> : Leaving Dreamway, entering Grizzly Hills. -->
+						<MoveTo X="1760.629" Y="1606.302" Z="8.390942" />
+						<CustomBehavior File="MyCTM" X="1771.433" Y="1609.672" Z="8.922731" TerminateWhen="Me.MapId == 22222" /> <!-- Shut off when entered Grizzly Hills -->
+					</If>
+					<MoveTo Nav="Fly" X="4027.25" Y="-3766.109" Z="160.7226" />
+					<CustomBehavior File="MyCTM" X="4186.68" Y="-3743.118" Z="127.2118" /> <!-- Fly into the tree-cave. -->
+					<MoveTo QuestId="41782" X="4226.831" Y="-3801.606" Z="119.2106" />
+				</While>
+				<TurnIn QuestName="To The Hills" QuestId="41782" TurnInName="Lea Stonepaw" TurnInId="104535" X="4227.627" Y="-3802.894" Z="119.1887" />
+
+				<PickUp QuestName="Fallen Offerings" QuestId="41783" GiverName="Lea Stonepaw" GiverId="104535" X="4227.627" Y="-3802.894" Z="119.1887" />
+				<While Condition="DoQuest(41783)" >
+					<CustomBehavior File="InteractWith" MobIds="104851" NumOfTimes="3" QuestId="41783" QuestObjectiveIndex="1" >
+						<HuntingGrounds>
+							<Hotspot X="3897.872" Y="-3855.336" Z="179.037" />
+							<Hotspot X="3896.734" Y="-3944.14" Z="177.8524" />
+							<Hotspot X="3989.619" Y="-3997.444" Z="168.7463" />
+							<Hotspot X="4149.784" Y="-3924.014" Z="168.0633" />
+						</HuntingGrounds>
+					</CustomBehavior>
+					<CustomBehavior File="UseItem" ItemId="136359" NumOfTimes="5" TerminateWhen="!HasItem(136359)" />
+				</While>
+				<!-- NOTE: <TechnicalCheck> : Add 'Fly Into the tree-cave' logic here if needed. -->
+				<TurnIn QuestName="Fallen Offerings" QuestId="41783" TurnInName="Lea Stonepaw" TurnInId="104535" X="4227.627" Y="-3802.894" Z="119.1887" />
+
+				<PickUp QuestName="The First Trial of Ursol" QuestId="41790" GiverName="Ursol" GiverId="104385" X="4201.148" Y="-3761.943" Z="123.4492" />
+				<While Condition="DoQuest(41790)" >
+					<CustomBehavior File="WaitTimer" QuestId="41790" WaitTime="15000" /> <!-- Mob spawns in and attacks. -->
+				</While>
+				<TurnIn QuestName="The First Trial of Ursol" QuestId="41790" TurnInName="Ursol" TurnInId="104385" X="4201.148" Y="-3761.943" Z="123.4492" />
+
+				<PickUp QuestName="The Second Trial of Ursol" QuestId="41791" GiverName="Ursol" GiverId="104385" X="4201.148" Y="-3761.943" Z="123.4492" />
+				<While Condition="DoQuest(41791)" >
+					<CustomBehavior File="WaitTimer" QuestId="41791" WaitTime="15000" /> <!-- Mob spawns in and attacks. -->
+				</While>
+				<TurnIn QuestName="The Second Trial of Ursol" QuestId="41791" TurnInName="Ursol" TurnInId="104385" X="4201.148" Y="-3761.943" Z="123.4492" />
+
+				<PickUp QuestName="The Third Trial of Ursol" QuestId="41792" GiverName="Ursol" GiverId="104385" X="4201.148" Y="-3761.943" Z="123.4492" />
+				<While Condition="DoQuest(41792)" >
+					<CustomBehavior File="InteractWith" MobId="104385" GossipOptions="1" QuestId="41792" QuestObjectiveIndex="1" X="4201.148" Y="-3761.943" Z="123.4492" />
+					<CustomBehavior File="KillUntilComplete" QuestId="41792" X="4227.019" Y="-3801.243" Z="119.2875" >
+						<PursuitList>
+							<PursueUnit Id="105110" Priority="10" />
+							<PursueUnit Id="105110" Priority="1000" PursueWhen="!UNIT.Aggro" />
+
+							<PursueUnit Id="105106" Priority="10" />
+							<PursueUnit Id="105106" Priority="1000" PursueWhen="!UNIT.Aggro" />
+						</PursuitList>
+					</CustomBehavior>
+				</While>
+				<TurnIn QuestName="The Third Trial of Ursol" QuestId="41792" TurnInName="Ursol" TurnInId="104385" X="4201.148" Y="-3761.943" Z="123.4492" />
+
+				<PickUp QuestName="When Dreams Become Nightmares" QuestId="40647" GiverName="Lea Stonepaw" GiverId="104535" X="4227.019" Y="-3801.243" Z="119.2875" />
+				<While Condition="DoQuest(40647)" >
+					<If Condition="Me.MapId != 111111" > <!-- NOTE: <MapIdCheck> : Player needs to enter emerald dream. -->
+						<CustomBehavior File="UseItem" ItemId="40647" /> <!-- Use to enter dream. -->
+						<CustomBehavior File="WaitTimer" WaitTime="15000" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+						<MoveTo X="-12277.31" Y="-13102.25" Z="329.1917" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+						<CustomBehavior File="KillUntilComplete" X="-12194.06" Y="-13091.46" Z="328.1698" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" >
+							<PursuitList>
+								<PursueUnit Id="101386" Priority="10" />
+								<PursueUnit Id="101386" Priority="1000" PursueWhen="!UNIT.Aggro" />
+							</PursuitList>
+						</CustomBehavior>
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+						<CustomBehavior File="KillUntilComplete" X="-12194.06" Y="-13091.46" Z="328.1698" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" >
+							<PursuitList>
+								<PursueUnit Id="101384" Priority="10" />
+								<PursueUnit Id="101384" Priority="1000" PursueWhen="!UNIT.Aggro" />
+
+								<PursueUnit Id="101388" Priority="10" />
+								<PursueUnit Id="101388" Priority="1000" PursueWhen="!UNIT.Aggro" />
+							</PursuitList>
+						</CustomBehavior>
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+						<CustomBehavior File="KillUntilComplete" X="-12194.06" Y="-13091.46" Z="328.1698" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" >
+							<PursuitList>
+								<PursueUnit Id="101388" Priority="10" />
+								<PursueUnit Id="101388" Priority="1000" PursueWhen="!UNIT.Aggro" />
+
+								<PursueUnit Id="101386" Priority="10" />
+								<PursueUnit Id="101386" Priority="1000" PursueWhen="!UNIT.Aggro" />
+							</PursuitList>
+						</CustomBehavior>
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+						<CustomBehavior File="KillUntilComplete" X="-12194.06" Y="-13091.46" Z="328.1698" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" >
+							<PursuitList>
+								<PursueUnit Id="101384" Priority="10" />
+								<PursueUnit Id="101384" Priority="1000" PursueWhen="!UNIT.Aggro" />
+
+								<PursueUnit Id="101389" Priority="10" />
+								<PursueUnit Id="101389" Priority="1000" PursueWhen="!UNIT.Aggro" />
+							</PursuitList>
+						</CustomBehavior>
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+						<CustomBehavior File="KillUntilComplete" X="-12194.06" Y="-13091.46" Z="328.1698" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" >
+							<PursuitList>
+								<PursueUnit Id="101384" Priority="10" />
+								<PursueUnit Id="101384" Priority="1000" PursueWhen="!UNIT.Aggro" />
+
+								<PursueUnit Id="101389" Priority="10" />
+								<PursueUnit Id="101389" Priority="1000" PursueWhen="!UNIT.Aggro" />
+							</PursuitList>
+						</CustomBehavior>
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+						<CustomBehavior File="KillUntilComplete" MobId="101390" X="-12184.57" Y="-13118.16" Z="329.1877" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 7" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8" >
+						<!-- There's two Claws of Ursoc here.
+						Name="Claws of Ursoc" Entry="105357" X="-12171.71" Y="-13118.79" Z="332.7504" -->
+						<CustomBehavior File="InteractWith" MobId="248853" InteractByLooting="true" WaitTime="1500" X="-12171.71" Y="-13118.79" Z="330.7791" />
+						<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+						<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+					</If>
+
+					<If Condition="HasItem(128821)" >
+						<CustomBehavior File="InteractWith" MobId="101742" GossipOptions="1" X="-12191.24" Y="-13115.19" Z="328.3464" />
+					</If>
+				</While>
+				<TurnIn QuestName="When Dreams Become Nightmares" QuestId="40647" TurnInName="Lea Stonepaw" TurnInId="104535" X="4227.019" Y="-3801.243" Z="119.2875" />
+
+				<PickUp QuestName="The Dreamer Returns" QuestId="41918" GiverName="Lea Stonepaw" GiverId="104535" X="4227.019" Y="-3801.243" Z="119.2875" />
+				<While Condition="HasQuest(41918)" > <!--  &amp;&amp; IN NORTHREND -->
+					<!-- NOTE: <ConditionalCheck> : Could use a If in Dalaran check here for this.  Set conditions accordingly. -->
+					<CustomBehavior File="RunCode" Code="SpellManager.Cast(193753);" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsCasting" />
+					<MoveTo X="1769.227" Y="1507.436" Z="7.572013" />
+					<CustomBehavior File="MyCTM" X="1784.787" Y="1504.025" Z="9.896443" /> <!-- TerminateWhen="ME IS IN DRUID PLACE"  -->
+				</While>
+				<TurnIn QuestName="The Dreamer Returns" QuestId="41918" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.93909" />
+			<!-- END Story: Artifact Weapon - Claws of Ursoc -->
+
+
+			<If Condition="!IsQuestCompleted(41255)" >
+				<PickUp QuestName="Sowing The Seed" QuestId="41255" GiverName="Rensar Greathoof" GiverId="101195" X="3974.796" Y="7395.398" Z="23.94462" />
+				<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Druid [Echo].xml" />
+			</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	Sowing the Seed is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	Sowing the Seed is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

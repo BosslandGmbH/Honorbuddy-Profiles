@@ -1,0 +1,224 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Warrior - Arms - Stromkar, the Warbreaker [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+			<!-- Get Continuation Quest -->
+				<If Condition="IsQuestCompleted(39530) &amp;&amp; !HasQuest(123456) &amp;&amp; !HasQuest(123456)" > <!-- Using The Forgening (39530) to determine if we've already got the first artifact. -->
+					<CustomBehavior File="InteractWith" MobId="96469" WaitTime="1250" X="796.1858" Y="7228.977" Z="106.7501" />
+					<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="QuestFrameAcceptButton:Click();" />
+				</If>
+			<!-- END Get Continuation Quest -->
+
+			<!-- Second Artifact -->
+			<!-- END Second Artifact -->
+
+			<!-- Third Artifact -->
+			<!-- END Third Artifact -->
+
+			<!-- Story: Artifact Weapon - Stromkar, the Warbreaker -->
+				<PickUp QuestName="The Sword of Kings" QuestId="41105" GiverName="Odyn" GiverId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
+				<While Condition="DoQuest(41105)" >
+					<If Condition="Me.MapId == 111111" > <!-- NOTE: <CheckMapIds> : Warrior Class Hall to Dalaran -->
+						<CustomBehavior File="InteractWith" MobId="96679" GossipOptions="1" X="1082.998" Y="7229.331" Z="98.11845" />
+						<!-- NOTE: <CheckMe> : As a warrior learns more locations throughout Draenor, the gossip options for the Stormflgiht master will change.
+												We need a way to actually click by name instead of index.
+						-->
+					</If>
+					<If Condition="Me.MapId == 111111" > <!-- NOTE: <CheckMapIds> : Dalaran to Dalaran Crater -->
+						<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <ZoneId> : Dalaran to Dalaran Portal Room -->
+							<MoveTo X="-850.0136" Y="4460.374" Z="735.6611" />
+							<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TermianteWhen="Me.ZoneId == DALARAN PORTAL ROOM -->
+						</If>
+						<MoveTo X="-881.3472" Y="4505.167" Z="580.0989" />
+						<CustomBehavior File="InteractWith" MobId="246008" X="-880.408" Y="4511.733" Z="580.4584" />
+						<CustomBehavior File="WaitTimer" WaitTime="10000" TermianteWhen="Me.ZoneId == 111111" /> <!-- NOTE: Terminate when player is in Dalaran Crater -->
+						<CustomBehavior File="RunCode"><![CDATA[
+								SpellManager.Cast("Heroic Leap");
+								await Coroutine.Sleep(2500);
+								SpellManager.ClickRemoteLocation(new WoWPoint(303.3394, 353.8593, -65.48834));
+
+							]]>
+						</CustomBehavior>
+					</If>
+
+					<If Condition="!IsQuestCompleted(3, 41105)" >
+						<MoveTo X="2030.779" Y="2429.772" Z="133.3699" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+						<!-- Checking 1 and 2 because upon entering the area, 1 seemed to have "went away?" -->
+						<CustomBehavior File="KillUntilComplete" MobId="101875" X="2130.445" Y="2420.438" Z="119.1646" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1 &amp;&amp; Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" />
+					</If>
+
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+						<MoveTo X="2136.209" Y="2397.321" Z="118.6385" />
+						<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+						<!-- NOTE: <Improve> : I don't like using CTM at all.  Need a better way of swimming into this cave.
+												Also, this shouldn't execute after entering the cave. -->
+						<CustomBehavior File="MyCTM" X="2148.117" Y="2335.397" Z="100.6413" />
+						<CustomBehavior File="MyCTM" X="2145.281" Y="2336.206" Z="84.55514" />
+						<CustomBehavior File="MyCTM" X="2128.243" Y="2341.831" Z="67.68755" />
+						<CustomBehavior File="MyCTM" X="2109.654" Y="2353.573" Z="61.65699" />
+						<CustomBehavior File="MyCTM" X="2090.664" Y="2358.6" Z="65.91748" />
+						<CustomBehavior File="MyCTM" X="2052.529" Y="2343.071" Z="65.91656" />
+						<MoveTo X="1995.469" Y="2337.511" Z="75.41196" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+						<CustomBehavior File="Hooks\DoWhen" ActivityName="InterruptTendrils" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.Distance &lt; 7.5 &amp;&amp; Me.CurrentTarget.IsCasting &amp;&amp; SpellManager.CanCast(6552)" >
+							<CustomBehavior File="RunCode" Code="SpellManager.Cast(6552); await Coroutine.Sleep(750);" />
+						</CustomBehavior>
+						<CustomBehavior File="KillUntilComplete" MobId="104583" X="1962.612" Y="2336.319" Z="80.52009" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+						<CustomBehavior File="KillUntilComplete" MobId="103226" X="1962.637" Y="2336.55" Z="80.3631" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+						<CustomBehavior File="KillUntilComplete" MobId="103339" X="1815.318" Y="2291.549" Z="45.37322" TerminateWhen="Unit(10339) == null" />
+						<MoveTo X="1874.504" Y="2268.625" Z="36.40125" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8" >
+						<CustomBehavior File="InteractWith" MobId="103398" X="1882.179" Y="2163.353" Z="35.8414" />
+						<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 8" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 9" >
+						<CustomBehavior File="KillUntilComplete" MobId="104276" X="1877.2" Y="2171.95" Z="35.84133" TerminateWhen="Unit(104276, u =&gt; u.IsDead) != null" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 10" >
+						<CustomBehavior File="InteractWith" MobId="247877" InteractByLooting="true" WaitTime="1500" X="1883.608" Y="2181.688" Z="35.84459" />
+						<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+						<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+						<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+					</If>
+
+					<If Condition="HasItem(128910)" >
+						<MoveTo X="1880.228" Y="2204.396" Z="38.15258" />
+						<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+						<CustomBehavior File="WaitTimer" WaitTime="8500" />
+					</If>
+				</While>
+				<TurnIn QuestName="The Sword of Kings" QuestId="41105" TurnInName="Odyn" TurnInId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
+			<!-- END Story: Artifact Weapon - Stromkar, the Warbreaker -->
+
+
+			<If Condition="!IsQuestCompleted(39530)" >
+				<PickUp QuestName="The Forgening" QuestId="39530" GiverName="Odyn" GiverId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
+				<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Warrior [Echo].xml" />
+			</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	The Forgening is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	The Forgening is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

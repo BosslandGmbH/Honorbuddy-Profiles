@@ -1,0 +1,432 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Druid - Restoration - GHanir, the Mother Tree [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+			<!-- Get Continuation Quest -->
+				<If Condition="IsQuestCompleted(41255) &amp;&amp; !HasQuest(43980) &amp;&amp; !HasQuest(44431) &amp;&amp; !HasQuest(44443)" > <!-- Using Sowing the Seed (41255) to determine if we've already got the first artifact. -->
+					<CustomBehavior File="InteractWith" MobId="101195" WaitTime="1250" X="3969.634" Y="7393.945" Z="23.9389" />
+					<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="QuestFrameAcceptButton:Click();" />
+				</If>
+			<!-- END Get Continuation Quest -->
+
+			<!-- Second Artifact -->
+				<If Condition="HasQuest(43980)" >
+					<While Condition="DoQuest(43980)" >
+						<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+							<CustomBehavior File="InteractWith" MobId="101195" GossipOptions="1" QuestId="43980" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
+						</If>
+						<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.  
+						<CustomBehavior File="Misc\RunLua" QuestId="43980" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
+						<CustomBehavior File="UserDialog" QuestId="43980" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
+					</While>
+					<TurnIn QuestName="Another Weapon of Old" QuestId="43980" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.9389" />
+				</If>
+			<!-- END Second Artifact -->
+
+			<!-- Third Artifact -->
+				<If Condition="HasQuest(44431)" >
+					<While Condition="DoQuest(44431)" >
+						<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+							<CustomBehavior File="InteractWith" MobId="101195" GossipOptions="1" QuestId="44431" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
+						</If>
+						<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.  
+						<CustomBehavior File="Misc\RunLua" QuestId="44431" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
+						<CustomBehavior File="UserDialog" QuestId="44431" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
+					</While>
+					<TurnIn QuestName="More Weapons of Old" QuestId="44431" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.93885" />
+				</If>
+			<!-- END Third Artifact -->
+
+			<!-- Fourth Artifact -->
+				<If Condition="HasQuest(44443)" >
+					<While Condition="DoQuest(44443)" >
+						<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+							<CustomBehavior File="InteractWith" MobId="101195" WaitTime="2000" GossipOptions="1" QuestId="44443" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
+						</If>
+						<CustomBehavior File="Misc\RunLua" QuestId="44443" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1200" /> <!-- Should always be 1. -->
+					</While>
+					<TurnIn QuestName="Weapons of the Ancients" QuestId="44443" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.93913" />
+				</If>
+			<!-- END Fourth Artifact -->
+
+			<!-- Story: Artifact Weapon - G'Hanir, the Mother Tree -->
+				<PickUp QuestName="Meet with Mylune" QuestId="40649" GiverName="Keeper Remulos" GiverId="103832" X="3980.849" Y="7394.606" Z="23.93494" />
+				<TurnIn QuestName="Meet with Mylune" QuestId="40649" TurnInName="Mylune" TurnInId="113525" X="3964.885" Y="7326.858" Z="29.21814" />
+
+				<PickUp QuestName="Necessary Preparations" QuestId="41422" GiverName="Mylune" GiverId="113525" X="3964.885" Y="7326.858" Z="29.21814" />
+				<While Condition="DoQuest(41422)" >
+					<CustomBehavior File="InteractWith" MobId="247901" InteractByLooting="true" QuestId="41422" QuestObjectiveIndex="1" X="4123.917" Y="7475.272" Z="50.17471" />
+					<CustomBehavior File="InteractWith" MobId="97989" GossipOptions="1,1" WaitTime="3500" QuestId="41422" QuestObjectiveIndex="2" X="4102.716" Y="7499.057" Z="51.01068" />
+				</While>
+				<TurnIn QuestName="Necessary Preparations" QuestId="41422" TurnInName="Mylune" TurnInId="113525" X="3964.885" Y="7326.858" Z="29.21727" />
+
+				<PickUp QuestName="Join the Dreamer" QuestId="41449" GiverName="Mylune" GiverId="113525" X="3964.885" Y="7326.858" Z="29.21727" />
+				<TurnIn QuestName="Join the Dreamer" QuestId="41449" TurnInName="Naralex" TurnInId="104349" X="4289" Y="7426.044" Z="-17.43501" />
+
+				<PickUp QuestName="In Deep Slumber" QuestId="41436" GiverName="Naralex" GiverId="104349" X="4289" Y="7426.044" Z="-17.43501" />
+				<While Condition="DoQuest(41436)" >
+					<If Condition="Me.MapId == 111111"> <!-- NOTE: <Add-CheckMapId> : Going into emerald dream, need Map/Zone Id for it. -->
+						<MoveTo X="4300.369" Y="7422.058" Z="-17.13339" /> <!-- Go to bed. -->
+						<CustomBehavior File="UseItem" ItemId="135506" />
+						<CustomBehavior File="WaitTimer" WaitTime="15000" />
+					</If>
+
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="PreventCorruption" AllowUseDuringCombat="true" UseWhen="(!Me.HasAura(774) || !Me.HasAura(33763) || SpellManager.CanCast(18562)) &amp;&amp; Me.MapId == 111111" > <!-- NOTE: <Add-CheckMapId> : Going into emerald dream, need Map/Zone Id for it. -->
+						<!-- All that may be needed here is Lifebloom.  It's able to surpress the corruption very efficiently on its own. -->
+						<If Condition="!Me.HasAura(774)" > <!-- Rejuvenation -->
+							<CustomBehavior File="RunCode" Code="SpellManager.Cast(774); await Coroutine.Wait(2000, ()=&gt; !SpellManager.GlobalCooldown);" />
+						</If>
+						<If Condition="!Me.HasAura(33763)" > <!-- Lifebloom -->
+							<CustomBehavior File="RunCode" Code="SpellManager.Cast(33763); await Coroutine.Wait(2000, ()=&gt; !SpellManager.GlobalCooldown);" />
+						</If>
+						<While Condition="SpellManager.CanCast(18562)" > <!-- Swiftmend, has multiple charges. -->
+							<CustomBehavior File="RunCode" Code="SpellManager.Cast(18562); await Coroutine.Wait(2000, ()=&gt; !SpellManager.GlobalCooldown);" />
+						</While>
+					</CustomBehavior>
+
+					<MoveTo X="4239.719" Y="7390.257" Z="-5.799763" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							var bashanaPoi = Unit(104398);
+							bashanaPoi.Target();
+							SpellManager.Cast(88423);
+						]]>
+					</CustomBehavior>
+					<MoveTo X="4182.214" Y="7359.926" Z="-6.141152" />
+					<CustomBehavior File="WaitTimer" WaitTime="30000" /> <!-- NOTE: <Optimize> : Roots do not go null.  Need to check object state to see if they are removed. -->
+
+					<CustomBehavior File="Hooks\Avoid" AvoidName="CongealedNightmare" Command="Add" ObjectType="Npc" ObjectId="104533" Radius="2" />
+					<MoveTo X="3980.535" Y="7385.4" Z="23.88143" />
+
+					<CustomBehavior File="Hooks\Avoid" AvoidName="CongealedNightmare" Command="Remove" />
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="PreventCorruption" Command="Remove" />
+
+					<CustomBehavior File="InteractWith" MobId="248098" InteractByLooting="true" QuestId="41436" QuestObjectiveIndex="2" X="3975.752" Y="7390.431" Z="25.86293" />
+					<CustomBehavior File="WaitTimer" WaitTime="12000" />
+				</While>
+				<TurnIn QuestName="In Deep Slumber" QuestId="41436" TurnInName="Naralex" TurnInId="104349" X="4294.677" Y="7422.983" Z="-17.58418" />
+
+				<PickUp QuestName="Reconvene" QuestId="41690" GiverName="Naralex" GiverId="104349" X="4294.677" Y="7422.983" Z="-17.58418" />
+				<TurnIn QuestName="Reconvene" QuestId="41690" TurnInName="Lyessa Bloomwatcher" TurnInId="104577" X="3970.218" Y="7389.277" Z="23.9126" />
+
+				<PickUp QuestName="Cleansing the Mother Tree" QuestId="41689" GiverName="Lyessa Bloomwatcher" GiverId="104577" X="3970.218" Y="7389.277" Z="23.9126" />
+				<While Condition="DoQuest(41689)" >
+					<If Condition="Me.MapId == 111111" >  <!-- NOTE: <Add-CheckMapId> : Leaving Class Hall, entering Dreamway. -->
+						<MoveTo X="4141.608" Y="7302.58" Z="22.75611" />
+						<CustomBehavior File="MyCTM" X="4150.013" Y="7293.335" Z="22.77204" TerminateWhen="Me.MapId == 22222" /> <!-- Shut off when entered Dreamway -->
+					</If>
+					<If Condition="Me.MapId == 111111" >  <!-- NOTE: <Add-CheckMapId> : Leaving Dreamway, entering Hyjal. -->
+						<MoveTo X="1638.552" Y="1452.757" Z="11.00389" />
+						<CustomBehavior File="MyCTM" X="1634.344" Y="1440.743" Z="11.02077" TerminateWhen="Me.MapId == 22222" /> <!-- Shut off when entered Hyjal -->
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+						<CustomBehavior File="InteractWith" MobId="104620" GossipOptions="1" X="5469.116" Y="-3455.974" Z="1557.269" />
+						<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+						<If Condition="!IsScenarioCriteriaComplete(2)" >
+							<MoveTo X="5450.778" Y="-3487.522" Z="1556.124" />
+							<CustomBehavior File="RunCode"><![CDATA[
+									var celestinePoi = Unit(104657);
+									StyxWoW.Me.SetFacing(celestinePoi.Location);
+									await Coroutine.Sleep(750);
+									while (celestinePoi != null && celestinePoi.HealthPercent < 100)
+									{
+										SpellManager.Cast(33763);
+										await Coroutine.Wait(2000, ()=> !SpellManager.GlobalCooldown);
+
+										SpellManager.Cast(774);
+										await Coroutine.Wait(2000, ()=> !SpellManager.GlobalCooldown);
+
+										SpellManager.Cast(8936);
+										await Coroutine.Wait(2000, ()=> !StyxWoW.Me.IsCasting);
+									}
+								]]>
+							</CustomBehavior>
+						</If>
+						<If Condition="!IsScenarioCriteriaComplete(1)" >
+							<MoveTo X="5450.64" Y="-3531.731" Z="1556.107" />
+							<CustomBehavior File="RunCode"><![CDATA[
+									var hamuulPoi = Unit(104659);
+									StyxWoW.Me.SetFacing(hamuulPoi.Location);
+									await Coroutine.Sleep(750);
+									while (hamuulPoi != null && hamuulPoi.HealthPercent < 100)
+									{
+										SpellManager.Cast(33763);
+										await Coroutine.Wait(2000, ()=> !SpellManager.GlobalCooldown);
+
+										SpellManager.Cast(774);
+										await Coroutine.Wait(2000, ()=> !SpellManager.GlobalCooldown);
+
+										SpellManager.Cast(8936);
+										await Coroutine.Wait(2000, ()=> !StyxWoW.Me.IsCasting);
+									}
+								]]>
+							</CustomBehavior>
+						</If>
+						<If Condition="!IsScenarioCriteriaComplete(3)" >
+							<MoveTo X="5488.877" Y="-3513.985" Z="1555.88" />
+							<CustomBehavior File="RunCode"><![CDATA[
+									var zentabraPoi = Unit(104658);
+									StyxWoW.Me.SetFacing(zentabraPoi.Location);
+									await Coroutine.Sleep(750);
+									SpellManager.Cast(88423);
+								]]>
+							</CustomBehavior>
+						</If>
+					</If>
+
+					<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+						<!-- Start event -->
+						<CustomBehavior File="InteractWith" MobId="104628" WaitTime="2000" GossipOptions="1" X="5475.65" Y="-3488.561" Z="1555.677" />
+						<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click();" />
+						<MoveTo X="5429.603" Y="-3519.069" Z="1555.979" />
+						<CustomBehavior File="WaitTimer" WaitTime="15000" />
+
+						<DisableBehavior Name="Combat, Loot" />
+						<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+								WoWUnit HealPriority()
+								{
+									return ObjectManager.GetObjectsOfType<WoWUnit>(true, true).Where(x => new[]{104628, 104659, 104658, 104657}.Contains((int)x.Entry) || x.IsMe).OrderBy(x => x.GetPredictedHealthPercent(true)).FirstOrDefault();
+								}
+
+								async Task HealRoutine(WoWUnit healMe)
+								{
+									if (healMe == null) return;
+									if (healMe.GetPredictedHealthPercent(true) == 100 && StyxWoW.Me.CastingSpellId == 5185)
+									{
+										SpellManager.StopCasting();
+										return;
+									}
+									if (healMe.HealthPercent >= 95) return;
+
+									await Coroutine.Wait(3000, () => !StyxWoW.Me.IsCasting && !SpellManager.GlobalCooldown);
+									if (StyxWoW.Me.CurrentTarget != healMe) { healMe.Target(); }
+									StyxWoW.Me.SetFacing(healMe.Location);
+									await Coroutine.Sleep(385);
+
+									while (healMe.Distance >= 39)
+									{
+										Navigator.MoveTo(healMe.Location);
+										await Coroutine.Yield();
+									}
+
+									await CommonCoroutines.StopMoving(); 
+
+									if (StyxWoW.Me.ManaPercent <= 10 && SpellManager.CanCast(173565))
+									{
+										SpellManager.Cast(173565);
+										return;
+									}
+
+									if (healMe.HealthPercent < 15 && SpellManager.CanCast(18562))
+									{
+										while (SpellManager.CanCast(18562))
+										{
+											SpellManager.Cast(18562);
+											await Coroutine.Wait(3000, () => !StyxWoW.Me.IsCasting && !SpellManager.GlobalCooldown);
+										}
+										return;
+									}
+
+									if (Unit(47649) == null && SpellManager.CanCast(145205))
+									{
+										SpellManager.Cast(145205);
+										SpellManager.ClickRemoteLocation(healMe.Location);
+									}
+
+									if (!healMe.HasAura("Rejuvenation") || (healMe.HasAura("Rejuvenation") && healMe.GetAuraByName("Rejuvenation").TimeLeft < TimeSpan.FromSeconds(2)))
+									{
+										SpellManager.Cast("Rejuvenation");
+										return;
+									}
+
+									if (!healMe.HasAura("Lifebloom") || (healMe.HasAura("Lifebloom") && healMe.GetAuraByName("Lifebloom").TimeLeft < TimeSpan.FromSeconds(2)))
+									{
+										SpellManager.Cast("Lifebloom");
+										return;
+									}
+
+									if (!healMe.HasAura("Regrowth") || (healMe.HasAura("Regrowth") && healMe.GetAuraByName("Regrowth").TimeLeft < TimeSpan.FromSeconds(2)))
+									{
+										SpellManager.Cast("Regrowth");
+										return;
+									}
+
+									if (SpellManager.CanCast("Wild Growth"))
+									{
+										SpellManager.Cast("Wild Growth");
+										return;
+									}
+
+									if (SpellManager.CanCast("Healing Touch"))
+									{
+										SpellManager.Cast("Healing Touch");
+										return;
+									}
+								}
+							]]>
+						</CustomBehavior>
+						<CustomBehavior File="RunCode"><![CDATA[
+								var destromathPoi = Unit(104619);
+								var lyessaPoi = Unit(104628);
+
+								while (destromathPoi != null && destromathPoi.IsAlive && lyessaPoi != null && lyessaPoi.IsCasting && StyxWoW.Me.IsAlive)
+								{
+									await HealRoutine(HealPriority());
+									await Coroutine.Yield();
+								}
+
+							]]>
+						</CustomBehavior>
+						<EnableBehavior Name="Combat, Loot" />
+					</While>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+						<CustomBehavior File="InteractWith" IgnoreCombat="true" MobId="104628" X="5474.202" Y="-3500.13" Z="1555.479" />
+						<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+						<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+						<CustomBehavior File="WaitTimer" WaitTime="7000" />
+
+						<CustomBehavior File="InteractWith" MobId="248499" InteractByLooting="true" WaitTime="1500" X="5473.997" Y="-3501.368" Z="1557.297" />
+						<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+						<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+						<MoveTo X="5462.992" Y="-3519.076" Z="1556.247" />
+						<CustomBehavior File="Misc\RunLua" Lua="ScenarioObjectiveBlock.currentLine.SpellButton:Click();" /> <!-- NOTE: <CheckMe> : Make sure this works. -->
+						<CustomBehavior File="WaitTimer" QuestId="41689" WaitTime="40000" />
+					</If>
+				</While>
+
+				<If Condition="HasItem(128306) &amp;&amp; QuestDone(41689)" >
+					<If Condition="Me.MapId == 111111" >  <!-- NOTE: <Add-CheckMapId> : Leaving Hyjal, entering Dreamway. -->
+						<MoveTo X="5460.457" Y="-3442.266" Z="1560.056" />
+						<CustomBehavior File="MyCTM" X="5451.568" Y="-3434.243" Z="1559.89" TerminateWhen="Me.MapId == 22222" /> <!-- Shut off when entered Dreamway -->
+					</If>
+					<If Condition="Me.MapId == 111111" >  <!-- NOTE: <Add-CheckMapId> : Leaving Dreamway, entering Class Hall. -->
+						<MoveTo X="1772.043" Y="1507.481" Z="7.891945" />
+						<CustomBehavior File="MyCTM" X="1783.71" Y="1500.368" Z="10.05346" TerminateWhen="Me.MapId == 22222" /> <!-- Shut off when entered Class Hall -->
+					</If>
+				</If>
+				<TurnIn QuestName="Cleansing the Mother Tree" QuestId="41689" TurnInName="Lyessa Bloomwatcher" TurnInId="104577" X="3970.218" Y="7389.277" Z="23.91248" />	
+			<!-- END Story: Artifact Weapon - G'Hanir, the Mother Tree -->
+
+
+			<If Condition="!IsQuestCompleted(41255)" >
+				<PickUp QuestName="Sowing The Seed" QuestId="41255" GiverName="Rensar Greathoof" GiverId="101195" X="3974.796" Y="7395.398" Z="23.94462" />
+				<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Druid [Echo].xml" />
+			</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	Sowing the Seed is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	Sowing the Seed is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

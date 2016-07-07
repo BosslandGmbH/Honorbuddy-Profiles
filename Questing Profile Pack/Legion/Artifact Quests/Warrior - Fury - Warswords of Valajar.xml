@@ -1,0 +1,200 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Warrior - Fury - Warswords of Valajar [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+			<!-- Get Continuation Quest -->
+				<If Condition="IsQuestCompleted(39530) &amp;&amp; !HasQuest(123456) &amp;&amp; !HasQuest(123456)" > <!-- Using The Forgening (39530) to determine if we've already got the first artifact. -->
+					<CustomBehavior File="InteractWith" MobId="96469" WaitTime="1250" X="796.1858" Y="7228.977" Z="106.7501" />
+					<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="QuestFrameAcceptButton:Click();" />
+				</If>
+			<!-- END Get Continuation Quest -->
+
+			<!-- Second Artifact -->
+			<!-- END Second Artifact -->
+
+			<!-- Third Artifact -->
+			<!-- END Third Artifact -->
+
+			<!-- Story: Artifact Weapon - Warswords of Valajar -->
+				<PickUp QuestName="The Hunter of Heroes" QuestId="40043" GiverName="Odyn" GiverId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
+				<While Condition="DoQuest(40043)" >
+					<!-- NOTE: <CheckMe> : As a warrior learns more locations throughout Draenor, the gossip options for the Stormflgiht master will change.
+											We need a way to actually click by name instead of index.
+											To: Tideskorn Harbor - in this situation is's showing up as option 1 for me.
+					-->
+					<CustomBehavior File="InteractWith" MobId="96679" GossipOptions="1" QuestId="40043" QuestObjectiveIndex="1" X="1082.998" Y="7229.331" Z="98.11864" />
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+						<CustomBehavior File="InteractWith" MobId="245188" X="3402.011" Y="1477.399" Z="58.51424" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+						<CustomBehavior File="WaitTimer" WaitTime="80000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+						<CustomBehavior File="KillUntilComplete" MobId="98892" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" >
+							<HuntingGrounds>
+								<Hotspot X="3300.628" Y="1474.094" Z="50.55968" />
+								<Hotspot X="3341.364" Y="1550.2" Z="17.80395" />
+							</HuntingGrounds>
+						</CustomBehavior>
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+						<CustomBehavior File="InteractWith" MobId="244940" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" >
+							<HuntingGrounds>
+								<Hotspot X="3369.134" Y="1621.062" Z="9.502369" />
+								<Hotspot X="3409.651" Y="1634.637" Z="9.934793" />
+								<Hotspot X="3495.966" Y="1630.387" Z="5.443361" /> 
+								<Hotspot X="3545.416" Y="1544.926" Z="5.286731" />
+							</HuntingGrounds>
+						</CustomBehavior>
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+						<MoveTo X="3487.028" Y="1557.82" Z="5.210608" />
+						<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+						<CustomBehavior File="KillUntilComplete" MobId="98007" X="3481.98" Y="1579.68" Z="4.77056" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+						<MoveTo X="3461.671" Y="1611.542" Z="5.484463" />
+						<CustomBehavior File="MyCTM" X="3462.065" Y="1629.966" Z="-0.2860668" />
+						<CustomBehavior File="KillUntilComplete" MobId="98007" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" >
+							<HuntingGrounds>
+								<Hotspot X="3442.197" Y="1705.762" Z="0.4302064" />
+								<Hotspot X="3515.146" Y="1800.611" Z="0.547264" />
+							</HuntingGrounds>
+						</CustomBehavior>
+					</If>
+
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+						<CustomBehavior File="InteractWith" MobId="248832" InteractByLooting="true" WaitTime="1500" X="3515.244" Y="1800.514" Z="0.5386963" />
+						<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+						<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+						<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+					</If>
+
+					<If Condition="HasItem(128908)" >
+						<MoveTo X="3515.938" Y="1818.708" Z="1.747835" />
+						<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+						<CustomBehavior File="WaitTimer" WaitTime="8500" />
+					</If>
+				</While>
+				<TurnIn QuestName="The Hunter of Heroes" QuestId="40043" TurnInName="Odyn" TurnInId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
+			<!-- END Story: Artifact Weapon - Warswords of Valajar -->
+
+
+			<If Condition="!IsQuestCompleted(39530)" >
+				<PickUp QuestName="The Forgening" QuestId="39530" GiverName="Odyn" GiverId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
+				<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Warrior [Echo].xml" />
+			</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	The Forgening is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	The Forgening is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

@@ -1,0 +1,304 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Warrior Class Hall Loader [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<Vendors>
+		<Vendor Type="Repair" Name="Outfitter Reynolds" Entry="103693" X="4524.597" Y="5275.92" Z="862.1298" />
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Introductory Class Hall Quests -->
+			<If Condition="Me.IsAlliance" >
+				<PickUp QuestName="An Important Mission" QuestId="42814" GiverName="Sergeant Dalton" GiverId="108961" X="-831.7436" Y="4395.094"  />
+				<TurnIn QuestName="An Important Mission" QuestId="42814" TurnInName="Danath Trollbane" TurnInId="96183" X="-830.0781" Y="4259.177" Z="746.2516" />
+
+				<PickUp QuestName="Return to the Broken Shore" QuestId="42815" GiverName="Danath Trollbane" GiverId="96183" X="-830.0781" Y="4259.177" Z="746.2516" />
+				<While Condition="!IsObjectiveComplete(1, 42815)" >
+					<CustomBehavior File="InteractWith" MobId="108973" QuestId="42815" QuestObjectiveIndex="1" X="-825.2813" Y="4260.354" Z="746.2518" />
+					<CustomBehavior File="WaitTimer" WaitTime="46000" TerminateWhen="!Me.IsFlying" />
+				</While>
+			</If>
+
+			<If Condition="Me.IsHorde" >
+				<PickUp QuestName="A Desperate Plea" QuestId="41052" GiverName="Eitrigg" GiverId="93775" X="-830.7446" Y="4390.06" Z="737.8599" />
+				<While Condition="!IsObjectiveComplete(1, 41052)" >
+					<CustomBehavior File="InteractWith" MobId="108973" GossipOptions="1, 1" QuestId="42815" QuestObjectiveIndex="1" X="-836.9879" Y="4255.249" Z="746.2564" />
+					<CustomBehavior File="WaitTimer" QuestId="42815" WaitTime="15000" />
+				</While>
+				<TurnIn QuestName="A Desperate Plea" QuestId="41052" TurnInName="High Overlord Saurfang" TurnInId="93773" X="-836.9879" Y="4255.249" Z="746.2561" />
+
+				<PickUp QuestName="Return to the Broken Shore" QuestId="38904" GiverName="High Overlord Saurfang" GiverId="93773" X="-836.9879" Y="4255.249" Z="746.2561" />
+				<While Condition="!IsObjectiveComplete(1, 38904)" >
+					<CustomBehavior File="InteractWith" MobId="100519" GossipOptions="1" QuestId="38904" QuestObjectiveIndex="1" X="-842.0417" Y="4255.39" Z="746.28" />
+					<CustomBehavior File="WaitTimer" WaitTime="46000" TerminateWhen="!Me.IsFlying" />
+				</While>
+			</If>
+
+			<While Condition="DoQuest(42815, 38904)" > <!-- Alliance, Horde :: Return to the Broken Shore -->
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<MoveTo X="-1923.288" Y="-1218.934" Z="0.8250246" />
+				</If>
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<CustomBehavior File="KillUntilComplete" MobIds="102970, 97175, 97177 92447, 92450, 92445, 92446" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" >
+						<HuntingGrounds>
+							<Hotspot X="-1916.819" Y="-1279.529" Z="4.500632" />
+							<Hotspot X="-1955.141" Y="-1230.084" Z="1.109377" />
+							<Hotspot X="-1970.092" Y="-1195.751" Z="0.8818167" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</If>
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<MoveTo X="-1965.654" Y="-1248.461" Z="2.837139" />
+					<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+				</If>
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<CustomBehavior File="KillUntilComplete" MobIds="98257, 97176" X="-2004.431" Y="-1208.873" Z="5.645144" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+				</If>
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<MoveTo X="-1998.165" Y="-1208.661" Z="4.523524" />
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Me.Combat" />
+					<CustomBehavior File="KillUntilComplete" MobIds="92608" X="-2026.7" Y="-1206.556" Z="8.739233" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+					<CustomBehavior File="WaitTimer" WaitTime="30000" TerminateWhen="!DoQuest(42815, 38904)" />
+				</If>
+			</While>
+
+			<If Condition="Me.IsAlliance" >
+				<TurnIn QuestName="Return to the Broken Shore" QuestId="42814" TurnInName="Danica the Reclaimer" TurnInId="93823" X="1059.613" Y="7224.605" Z="100.3775" />
+			</If>
+
+			<If Condition="Me.IsHorde" >
+				<TurnIn QuestName="Return to the Broken Shore" QuestId="38904" TurnInName="Danica the Reclaimer" TurnInId="93823" X="1059.613" Y="7224.605" Z="100.3775" />
+			</If>
+
+			<PickUp QuestName="Odyn and the Valarjar" QuestId="39654" GiverName="Danica the Reclaimer" GiverId="93823" X="1059.613" Y="7224.605" Z="100.3775" />
+			<While Condition="DoQuest(39654)" >
+				<MoveTo X="871.7157" Y="7228.863" Z="101.5655" />
+				<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+			</While>
+			<TurnIn QuestName="Odyn and the Valarjar" QuestId="39654" TurnInName="Odyn" TurnInId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
+		<!-- END Introductory Class Hall Qeusts -->
+
+		<!-- First Artifact Quest -->
+			<PickUp QuestName="Weapons of Legend" QuestId="40579" GiverName="Odyn" GiverId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
+			<While Condition="DoQuest(40579)" >
+				<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+					<CustomBehavior File="InteractWith" MobId="96469" GossipOptions="1" QuestId="40579" QuestObjectiveIndex="1" X="796.1858" Y="7228.977" Z="106.7501" />
+				</If>
+
+				<CustomBehavior File="UserDialog" QuestId="40579" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" 
+				Text="Choose an artifact weapon.\n\nIf you do not choose within 5minutes, the bot will pick the one appropriate for your current specialization." />
+				
+				<If Condition="!IsQuestCompleted(40579)" >
+					<If Condition="Me.Specialization == WoWSpec.WarriorArms" >
+						<CustomBehavior File="Misc\RunLua" QuestId="40579" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<If Condition="Me.Specialization == WoWSpec.WarriorProtection" >
+						<CustomBehavior File="Misc\RunLua" QuestId="40579" Lua="QuestChoiceFrameOption2.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<If Condition="Me.Specialization == WoWSpec.WarriorFury" >
+						<CustomBehavior File="Misc\RunLua" QuestId="40579" Lua="QuestChoiceFrameOption3.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<CustomBehavior File="Misc\RunLua" QuestId="40579" Lua="StaticPopup1Button1:Click();" />
+				</If>
+			</While>
+			<TurnIn QuestName="Weapons of Legend" QuestId="40579" TurnInName="Odyn" TurnInId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
+
+
+			<If Condition="!IsQuestCompleted(41105) &amp;&amp; NeedsQuest(41255) &amp;&amp; Me.Specialization == WoWSpec.WarriorArms" > <!-- 41105 = Strokmar Finale -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Warrior - Arms - Stromkar, the Warbreaker.xml" />
+			</If>
+			<If Condition="!IsQuestCompleted(39191) &amp;&amp; NeedsQuest(41255) &amp;&amp; Me.Specialization == WoWSpec.WarriorProtection" > <!-- 39191 = Scale of the Earth-Warder Finale -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Warrior - Protection - Scale of the Earth-Warder.xml" />
+			</If>
+			<If Condition="!IsQuestCompleted(40043) &amp;&amp; NeedsQuest(41255) &amp;&amp; Me.Specialization == WoWSpec.WarriorFury" > <!-- 40043 = Warswords of Valajar Finale -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Warrior - Fury - Warswords of Valajar.xml" />
+			</If>
+		<!-- END First Artifact Quest -->
+
+		<!-- Introductory Class Hall Quests -->
+			<PickUp QuestName="The Forgening" QuestId="39530" GiverName="Odyn" GiverId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
+			<TurnIn QuestName="The Forgening" QuestId="39530" TurnInName="Master Smith Helgar" TurnInId="96586" X="1024.649" Y="7354.032" Z="107.5855" />
+
+			<PickUp QuestName="The Forge of Odyn" QuestId="39192" GiverName="Master Smith Helgar" GiverId="96586" X="1024.649" Y="7354.032" Z="107.5855" />
+			<While Condition="DoQuest(39192)" >
+				<!-- /dump GetMouseFocus():GetPowerID(); C_ArtifactUI.AddPower(powerId); -->
+				<CustomBehavior File="InteractWith" MobId="245726" WaitTime="2000" QuestId="39192" X="1030.769" Y="7361.063" Z="107.3078" />
+				<If Condition="HasItem(128910)" > <!-- Stromkar, the Warbreaker -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1356);" />
+				</If>
+				<If Condition="HasItem(128289)" > <!-- Scale of the Earth-Warder -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1358);" />
+				</If>
+				<If Condition="HasItem(128908)" > <!-- Warswords of the Valarjar -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1357);" />
+				</If>
+			</While>
+			<TurnIn QuestName="The Forge of Odyn" QuestId="39192" TurnInName="Master Smith Helgar" TurnInId="96586" X="1024.649" Y="7354.032" Z="107.5855" />
+
+			<PickUp QuestName="The Eye of Odyn" QuestId="39214" GiverName="Danica the Reclaimer" GiverId="100622" X="1036.516" Y="7335.199" Z="110.5326" />
+			<TurnIn QuestName="The Eye of Odyn" QuestId="39214" TurnInName="Skyseer Ghrent" TurnInId="100635" X="1138.405" Y="7219.138" Z="101.817" />
+
+			<PickUp QuestName="Thus Begins the War" QuestId="40585" GiverName="Skyseer Ghrent" GiverId="100635" X="XXX" Y="YYY" Z="ZZZ" />
+			<While Condition="DoQuest(40585)" >
+				<CustomBehavior File="InteractWith" MobId="97389" WaitTime="1500" QuestId="40585" QuestObjectiveIndex="1" X="1142.707" Y="7223.202" Z="101.8188" />
+				<If Condition="NeedsQuest(39718)" > <!-- Azsuna -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+			</While>
+			<TurnIn QuestName="Thus Begins the War" QuestId="40585" TurnInName="Skyseer Ghrent" TurnInId="100635" X="1138.405" Y="7219.138" Z="101.817" />
+
+			<While Condition="DoQuest(39718)" >
+				<!-- NOTE: <CheckMe> : As a warrior learns more locations throughout Draenor, the gossip options for the Stormflgiht master will change.
+										We need a way to actually click by name instead of index.
+				-->
+				<CustomBehavior File="InteractWith" MobId="96679" GossipOptions="1" QuestId="39718" QuestObjectiveIndex="1" X="1082.998" Y="7229.331" Z="98.11864" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" />
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />
+			</While>
+		<!-- END Tutorial Class Hall Quests -->
+
+
+		<!-- Boolean for IsAchievementCompleted defaults to false. -->
+		<!-- Azsuna -->
+			<If Condition="!IsAchievementCompleted(10763, false)" > 
+				<If Condition="NeedsQuest(39718)" >
+					<CustomBehavior File="InteractWith" MobId="97389" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+			</If>
+		<!-- END Azsuna -->
+
+		<!-- Val'sharah -->
+			<If Condition="!IsAchievementCompleted(10698, false)" >
+				<If Condition="NeedsQuest(39731)" >
+					<CustomBehavior File="InteractWith" MobId="97389" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39731);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+			</If>
+		<!-- END Val'sharah -->
+
+		<!-- Highmountain -->
+			<If Condition="!IsAchievementCompleted(10059, false)" >
+				<If Condition="NeedsQuest(39733)" >
+					<CustomBehavior File="InteractWith" MobId="97389" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39733);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+			</If>
+		<!-- END Highmountain -->
+
+		<!-- Stormheim -->
+			<If Condition="!IsAchievementCompleted(10790, false)" >
+				<If Condition="NeedsQuest(39735)" >
+					<CustomBehavior File="InteractWith" MobId="97389" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39735);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+			</If>
+		<!-- END Stormheim -->
+
+		<If Condition="HasQuest(39718) || HasQuest(39731) || HasQuest(39733) || HasQuest(39735)" > <!-- Jump to Dalaran to leave Class Hall to go to new quest zone. -->
+			<!-- NOTE: <CheckMe> : As a warrior learns more locations throughout Draenor, the gossip options for the Stormflgiht master will change.
+									We need a way to actually click by name instead of index.
+			-->
+			<CustomBehavior File="InteractWith" MobId="96679" GossipOptions="1" X="1082.998" Y="7229.331" Z="98.11864" />
+			<CustomBehavior File="WaitTimer" WaitTime="10000" />
+		</If>
+
+		<If Condition="HasQuest(39718)" > <!-- Load Azunsa -->
+			<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />
+		</If>
+
+		<If Condition="HasQuest(39731)" > <!-- Load Val'sharah -->
+			<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Val'sharah [Echo].xml" />
+		</If>
+
+		<If Condition="HasQuest(39733)" > <!-- Load Highmountain -->
+			<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Highmountain [Echo].xml" />
+		</If>
+
+		<If Condition="HasQuest(39735)" > <!-- Load Stormheim -->
+			<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Stormehim [Echo].xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
