@@ -95,128 +95,128 @@
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
 
-			<!-- Get Continuation Quest -->
-				<If Condition="IsQuestCompleted(40953) &amp;&amp; !HasQuest(44043) &amp;&amp; !HasQuest(44366)" > <!-- Using On Eagle's Wings (40953) to determine if we've already got the first artifact. -->
-					<CustomBehavior File="InteractWith" MobId="107317" WaitTime="1250" X="4642.032" Y="5285.06" Z="840.6198" />
-					<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="QuestFrameAcceptButton:Click();" />
-				</If>
-			<!-- END Get Continuation Quest -->
-
-			<!-- Second Artifact -->
-				<If Condition="HasQuest(44043)" >
-					<While Condition="DoQuest(44043)" >
-						<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
-							<CustomBehavior File="InteractWith" MobId="107317" GossipOptions="1" QuestId="44043" QuestObjectiveIndex="1" X="4642.032" Y="5285.06" Z="840.6198" />
-						</If>
-						<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.  
-						<CustomBehavior File="Misc\RunLua" QuestId="44043" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
-						<CustomBehavior File="UserDialog" QuestId="44043" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
-					</While>
-					<TurnIn QuestName="Continuing the Legend" QuestId="44043" TurnInName="Emmarel Shadewarden" TurnInId="107317" X="4642.032" Y="5285.06" Z="840.6198" />
-				</If>
-			<!-- END Second Artifact -->
-
-			<!-- Third Artifact -->
-				<If Condition="HasQuest(44366)" >
-					<While Condition="DoQuest(44366)" > <!-- NOTE: <CheckMe> : Secondary Artifact Quest.  Need to properly conditionalize this. -->
-						<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
-							<CustomBehavior File="InteractWith" MobId="107317" GossipOptions="1" QuestId="44366" QuestObjectiveIndex="1" X="4642.032" Y="5285.06" Z="840.6198" />
-						</If>
-						<CustomBehavior File="Misc\RunLua" QuestId="44366" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1200" /> <!-- Should always be 1. -->
-					</While>
-					<TurnIn QuestName="One Last Adventure" QuestId="44366" TurnInName="Emmarel Shadewarden" TurnInId="107317" X="4642.032" Y="5285.06" Z="840.6198" />
-				</If>
-			<!-- END Third Artifact -->
-
-			<If Condition="IsQuestCompleted(40953)" > <!-- Using On Eagle's Wings (40953) to determine if we've already got the first artifact. -->
-				<PickUp QuestName="Rendezvous with the Courier" QuestId="41540" GiverName="Emmarel Shadewarden" GiverId="107317" X="4642.032" Y="5285.06" Z="840.6198" /> <!-- Class Hall Phase -->
-				<!-- Add portal to Dalaran support? -->
-				<Else>
-					<PickUp QuestName="Rendezvous with the Courier" QuestId="41540" GiverName="Emmarel Shadewarden" GiverId="102478" X="-876.658" Y="4379.09" Z="739.1406" /> <!-- Dalaran Phase -->
-				</Else>
+		<!-- Get Continuation Quest -->
+			<If Condition="IsQuestCompleted(40953) &amp;&amp; !HasQuest(44043) &amp;&amp; !HasQuest(44366)" > <!-- Using On Eagle's Wings (40953) to determine if we've already got the first artifact. -->
+				<CustomBehavior File="InteractWith" MobId="107317" WaitTime="1250" X="4642.032" Y="5285.06" Z="840.6198" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="QuestFrameAcceptButton:Click();" />
 			</If>
+		<!-- END Get Continuation Quest -->
 
-			<!-- Story: Artifact Weapon - Thas'dorah -->
-				<TurnIn QuestName="Rendezvous with the Courier" QuestId="41540" TurnInName="Courier Larkspur" TurnInId="103741" X="-857.684" Y="4285.16" Z="746.2816" />
-
-				<PickUp QuestName="Call of the Marksman" QuestId="40392" GiverName="Courier Larkspur" GiverId="103741" X="-857.684" Y="4285.16" Z="746.2816" />
-				<While Condition="DoQuest(40392)" >
-					<CustomBehavior File="InteractWith" MobId="102177" QuestId="40392" QuestObjectiveIndex="1" X="-859.4427" Y="4282.787" Z="746.2825" />
-					<CustomBehavior File="WaitTimer" QuestId="40392" QuestObjectiveIndex="1" WaitTime="55000" />
+		<!-- Second Artifact -->
+			<If Condition="HasQuest(44043)" >
+				<While Condition="DoQuest(44043)" >
+					<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+						<CustomBehavior File="InteractWith" MobId="107317" GossipOptions="1" QuestId="44043" QuestObjectiveIndex="1" X="4642.032" Y="5285.06" Z="840.6198" />
+					</If>
+					<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.  
+					<CustomBehavior File="Misc\RunLua" QuestId="44043" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
+					<CustomBehavior File="UserDialog" QuestId="44043" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
 				</While>
-				<TurnIn QuestName="Call of the Marksman" QuestId="40392" TurnInName="Vereesa Windrunner" TurnInId="100190" X="-836.5972" Y="3673.48" Z="25.48865" />
-
-				<PickUp QuestName="Clandestine Operation" QuestId="40400" GiverName="Vereesa Windrunner" GiverId="100190" X="-836.5972" Y="3673.48" Z="25.48865" />
-				<While Condition="DoQuest(40400)" >
-					<CustomBehavior File="InteractWith" MobId="100190" GossipOptions="1" QuestId="40400" QuestObjectiveIndex="1" X="-836.5972" Y="3673.48" Z="25.48865" />
-					<CustomBehavior File="WaitTimer" QuestId="40400" QuestObjectiveIndex="1" WaitTime="60000" />
-				</While>
-				<TurnIn QuestName="Clandestine Operation" QuestId="40400" TurnInName="Vereesa Windrunner" TurnInId="100190" X="-836.5972" Y="3673.48" Z="25.4887" />
-
-				<PickUp QuestName="Rescue Mission" QuestId="40419" GiverName="Vereesa Windrunner" GiverId="100190" X="-836.5972" Y="3673.48" Z="25.4887" />
-				<While Condition="DoQuest(40419)" >
-					<CustomBehavior File="InteractWith" MobId="100190" GossipOptions="1" QuestId="40419" QuestObjectiveIndex="1" X="-836.5972" Y="3673.48" Z="25.4887" />
-					<CustomBehavior File="WaitTimer" WaitTime="31000" TerminateWhen="Unit(100190) == null" />
-					<CustomBehavior File="InteractWith" MobId="104835" Range="1" QuestId="40419" QuestObjectiveIndex="2" X="-824.0261" Y="3683.284" Z="26.06647" TerminateWhen="Unit(100397) != null" />
-					<MoveTo QuestId="40419" QuestObjectiveIndex="2" X="248.4058" Y="1952.814" Z="-54.02013" />
-
-					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
-						<MoveTo X="274.9513" Y="1947.489" Z="-44.4945" />
-						<CustomBehavior File="KillUntilComplete" MobId="100394" X="277.7441" Y="1945.453" Z="-42.70121" TerminateWhen="Unit(100394, u =&gt; u.IsDead) != null" />
-					</If>
-
-					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-						<CustomBehavior File="KillUntilComplete" MobId="101514" X="254.9792" Y="1862.797" Z="-11.81998" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
-						<CustomBehavior File="WaitTimer" WaitTime="10000" />
-					</If>
-
-					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
-						<MoveTo X="311.4851" Y="1648.519" Z="-71.25314" />
-						<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
-					</If>
-
-					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
-						<CustomBehavior File="KillUntilComplete" MobId="100749" X="311.3614" Y="1648.643" Z="-71.22365" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
-					</If>
-
-
-					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
-						<!-- NOTE: <AddAvoid> - Important : This boss drops a static AoE at its feet that does massive damage.  Make bot move out of it. -->
-						<CustomBehavior File="KillUntilComplete" MobId="100836" X="203.3906" Y="1484.59" Z="-31.44542" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
-					</If>
-
-					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
-						<MoveTo X="179.2044" Y="1312.663" Z="-58.97907" />
-						<CustomBehavior File="WaitTimer" WaitTime="35000" TerminateWhen="Unit(101269, u =&gt; u.Attackable) != null" />
-						<CustomBehavior File="KillUntilComplete" MobId="101269" X="156.1944" Y="1265.165" Z="-44.68078" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
-					</If>
-
-					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
-						<MoveTo X="65.10677" Y="1213.325" Z="-39.73352" />
-						<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 7" />
-					</If>
-
-					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8" >
-						<!-- There's two Thas'dorah bows here.
-						Name="Thas'dorah, Legacy of the Windrunners" Entry="101487" X="57.9757" Y="1212.47" Z="-38.09645" -->
-						<CustomBehavior File="InteractWith" MobId="248419" InteractByLooting="true" WaitTime="1500" X="57.94792" Y="1212.418" Z="-38.18002" />
-						<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
-						<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
-					</If>
-
-					<If Condition="HasItem(128826)" >
-						<CustomBehavior File="InteractWith" MobId="100397" GossipOptions="1" WaitTime="7000" X="71.30903" Y="1220.042" Z="-39.39252" />
-					</If>
-				</While>
-				<TurnIn QuestName="Rescue Mission" QuestId="40419" TurnInName="Vereesa Windrunner" TurnInId="102570" X="-832.2118" Y="4329.724" Z="744.9162" />
-			<!-- END Story: Artifact Weapon - Thas'dorah -->
-
-
-			<If Condition="!IsQuestCompleted(40953)" >
-				<PickUp QuestName="On Eagle's Wings" QuestId="40953" GiverName="Emmarel Shadewarden" GiverId="102478" X="-876.658" Y="4379.09" Z="739.1407" />
-				<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
-				<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Hunter [Echo].xml" />
+				<TurnIn QuestName="Continuing the Legend" QuestId="44043" TurnInName="Emmarel Shadewarden" TurnInId="107317" X="4642.032" Y="5285.06" Z="840.6198" />
 			</If>
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+			<If Condition="HasQuest(44366)" >
+				<While Condition="DoQuest(44366)" > <!-- NOTE: <CheckMe> : Secondary Artifact Quest.  Need to properly conditionalize this. -->
+					<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+						<CustomBehavior File="InteractWith" MobId="107317" GossipOptions="1" QuestId="44366" QuestObjectiveIndex="1" X="4642.032" Y="5285.06" Z="840.6198" />
+					</If>
+					<CustomBehavior File="Misc\RunLua" QuestId="44366" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1200" /> <!-- Should always be 1. -->
+				</While>
+				<TurnIn QuestName="One Last Adventure" QuestId="44366" TurnInName="Emmarel Shadewarden" TurnInId="107317" X="4642.032" Y="5285.06" Z="840.6198" />
+			</If>
+		<!-- END Third Artifact -->
+
+		<If Condition="IsQuestCompleted(40953)" > <!-- Using On Eagle's Wings (40953) to determine if we've already got the first artifact. -->
+			<PickUp QuestName="Rendezvous with the Courier" QuestId="41540" GiverName="Emmarel Shadewarden" GiverId="107317" X="4642.032" Y="5285.06" Z="840.6198" /> <!-- Class Hall Phase -->
+			<!-- Add portal to Dalaran support? -->
+			<Else>
+				<PickUp QuestName="Rendezvous with the Courier" QuestId="41540" GiverName="Emmarel Shadewarden" GiverId="102478" X="-876.658" Y="4379.09" Z="739.1406" /> <!-- Dalaran Phase -->
+			</Else>
+		</If>
+
+		<!-- Story: Artifact Weapon - Thas'dorah -->
+			<TurnIn QuestName="Rendezvous with the Courier" QuestId="41540" TurnInName="Courier Larkspur" TurnInId="103741" X="-857.684" Y="4285.16" Z="746.2816" />
+
+			<PickUp QuestName="Call of the Marksman" QuestId="40392" GiverName="Courier Larkspur" GiverId="103741" X="-857.684" Y="4285.16" Z="746.2816" />
+			<While Condition="DoQuest(40392)" >
+				<CustomBehavior File="InteractWith" MobId="102177" QuestId="40392" QuestObjectiveIndex="1" X="-859.4427" Y="4282.787" Z="746.2825" />
+				<CustomBehavior File="WaitTimer" QuestId="40392" QuestObjectiveIndex="1" WaitTime="55000" />
+			</While>
+			<TurnIn QuestName="Call of the Marksman" QuestId="40392" TurnInName="Vereesa Windrunner" TurnInId="100190" X="-836.5972" Y="3673.48" Z="25.48865" />
+
+			<PickUp QuestName="Clandestine Operation" QuestId="40400" GiverName="Vereesa Windrunner" GiverId="100190" X="-836.5972" Y="3673.48" Z="25.48865" />
+			<While Condition="DoQuest(40400)" >
+				<CustomBehavior File="InteractWith" MobId="100190" GossipOptions="1" QuestId="40400" QuestObjectiveIndex="1" X="-836.5972" Y="3673.48" Z="25.48865" />
+				<CustomBehavior File="WaitTimer" QuestId="40400" QuestObjectiveIndex="1" WaitTime="60000" />
+			</While>
+			<TurnIn QuestName="Clandestine Operation" QuestId="40400" TurnInName="Vereesa Windrunner" TurnInId="100190" X="-836.5972" Y="3673.48" Z="25.4887" />
+
+			<PickUp QuestName="Rescue Mission" QuestId="40419" GiverName="Vereesa Windrunner" GiverId="100190" X="-836.5972" Y="3673.48" Z="25.4887" />
+			<While Condition="DoQuest(40419)" >
+				<CustomBehavior File="InteractWith" MobId="100190" GossipOptions="1" QuestId="40419" QuestObjectiveIndex="1" X="-836.5972" Y="3673.48" Z="25.4887" />
+				<CustomBehavior File="WaitTimer" WaitTime="31000" TerminateWhen="Unit(100190) == null" />
+				<CustomBehavior File="InteractWith" MobId="104835" Range="1" QuestId="40419" QuestObjectiveIndex="2" X="-824.0261" Y="3683.284" Z="26.06647" TerminateWhen="Unit(100397) != null" />
+				<MoveTo QuestId="40419" QuestObjectiveIndex="2" X="248.4058" Y="1952.814" Z="-54.02013" />
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<MoveTo X="274.9513" Y="1947.489" Z="-44.4945" />
+					<CustomBehavior File="KillUntilComplete" MobId="100394" X="277.7441" Y="1945.453" Z="-42.70121" TerminateWhen="Unit(100394, u =&gt; u.IsDead) != null" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<CustomBehavior File="KillUntilComplete" MobId="101514" X="254.9792" Y="1862.797" Z="-11.81998" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<MoveTo X="311.4851" Y="1648.519" Z="-71.25314" />
+					<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<CustomBehavior File="KillUntilComplete" MobId="100749" X="311.3614" Y="1648.643" Z="-71.22365" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+				</If>
+
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<!-- NOTE: <AddAvoid> - Important : This boss drops a static AoE at its feet that does massive damage.  Make bot move out of it. -->
+					<CustomBehavior File="KillUntilComplete" MobId="100836" X="203.3906" Y="1484.59" Z="-31.44542" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<MoveTo X="179.2044" Y="1312.663" Z="-58.97907" />
+					<CustomBehavior File="WaitTimer" WaitTime="35000" TerminateWhen="Unit(101269, u =&gt; u.Attackable) != null" />
+					<CustomBehavior File="KillUntilComplete" MobId="101269" X="156.1944" Y="1265.165" Z="-44.68078" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+					<MoveTo X="65.10677" Y="1213.325" Z="-39.73352" />
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 7" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8" >
+					<!-- There's two Thas'dorah bows here.
+					Name="Thas'dorah, Legacy of the Windrunners" Entry="101487" X="57.9757" Y="1212.47" Z="-38.09645" -->
+					<CustomBehavior File="InteractWith" MobId="248419" InteractByLooting="true" WaitTime="1500" X="57.94792" Y="1212.418" Z="-38.18002" />
+					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+				</If>
+
+				<If Condition="HasItem(128826)" >
+					<CustomBehavior File="InteractWith" MobId="100397" GossipOptions="1" WaitTime="7000" X="71.30903" Y="1220.042" Z="-39.39252" />
+				</If>
+			</While>
+			<TurnIn QuestName="Rescue Mission" QuestId="40419" TurnInName="Vereesa Windrunner" TurnInId="102570" X="-832.2118" Y="4329.724" Z="744.9162" />
+		<!-- END Story: Artifact Weapon - Thas'dorah -->
+
+
+		<If Condition="!IsQuestCompleted(40953)" >
+			<PickUp QuestName="On Eagle's Wings" QuestId="40953" GiverName="Emmarel Shadewarden" GiverId="102478" X="-876.658" Y="4379.09" Z="739.1407" />
+			<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Hunter [Echo].xml" />
+		</If>
 
 	</QuestOrder>
 </HBProfile>

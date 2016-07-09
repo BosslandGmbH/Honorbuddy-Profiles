@@ -1,0 +1,290 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Monk - Mistweaver - Sheilun, Staff of Mists [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+		<Mob Name="Jailound" Entry="103125" />
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Get Continuation Quest -->
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
+
+		<!-- Heal Routine -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					WoWUnit CleansePriority()
+					{
+						return ObjectManager.GetObjectsOfType<WoWUnit>().Where(x => new[]{101883, 101882, 101885, 101881}.Contains((int)x.Entry)).FirstOrDefault(x => x.HasAura(204779));
+					}
+
+					WoWUnit HealPriority()
+					{
+						return ObjectManager.GetObjectsOfType<WoWUnit>(true, true).Where(x => new[]{101883, 101882, 101885, 101881}.Contains((int)x.Entry) || x.IsMe).OrderBy(x => x.GetPredictedHealthPercent(true)).FirstOrDefault();
+					}
+
+					async Task HealRoutine(WoWUnit healMe)
+					{
+						if (healMe == null) return;
+						if (healMe.HealthPercent >= 95) return;
+
+						await Coroutine.Wait(3000, () => !SpellManager.GlobalCooldown);
+						if (StyxWoW.Me.CurrentTarget != healMe) { healMe.Target(); }
+
+						while (healMe.Distance >= 39)
+						{
+							Navigator.MoveTo(healMe.Location);
+							await Coroutine.Yield();
+						}
+
+						await CommonCoroutines.StopMoving(); 
+
+
+						StyxWoW.Me.SetFacing(healMe.Location);
+						await Coroutine.Sleep(385);
+
+						if (CleansePriority() != null && SpellManager.CanCast(115450))
+						{
+							WoWUnit cleanseMe = CleansePriority();
+							StyxWoW.Me.SetFacing(cleanseMe.Location);
+							await Coroutine.Sleep(385);
+
+							SpellManager.Cast(115450);
+							return;
+						}
+
+						if (healMe.HealthPercent <= 10 && SpellManager.CanCast(116849))
+						{
+							SpellManager.Cast(116849);
+							return;
+						}
+
+						if (!healMe.HasAura("Renewing Mist") && SpellManager.CanCast(115151))
+						{
+							SpellManager.Cast(115151);
+							return;
+						}
+
+						if (!healMe.HasAura("Enveloping Mist"))
+						{
+							SpellManager.Cast(124682);
+							return;
+						}
+
+						SpellManager.Cast(116670);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END Heal Routine -->
+
+		<!-- Story: Artifact Weapon - Sheilun, Staff of Mists -->
+			<PickUp QuestName="The Emperor's Gift" QuestId="41003" GiverName="Iron-Body Ponshu" GiverId="100438" X="924.4167" Y="3606.167" Z="196.3309" />
+			<While Condition="DoQuest(41003)" >
+				<CustomBehavior File="InteractWith" MobId="101880" GossipOptions="1" QuestId="41003" QuestObjectiveIndex="1" X="935.7847" Y="3719.753" Z="189.0626" />
+				<CustomBehavior File="WaitTimer" WaitTime="70000" />
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<MoveTo X="-1065.364" Y="-3145.273" Z="28.10291" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							var taranPoi = Unit(101881);
+							StyxWoW.Me.SetFacing(taranPoi.Location);
+							await Coroutine.Sleep(750);
+							while (taranPoi.HealthPercent < 100)
+							{
+								if (!StyxWoW.Me.HasAura(197206))
+								{
+									SpellManager.Cast(115151);
+									await Coroutine.Wait(2000, ()=> !SpellManager.GlobalCooldown);
+
+									SpellManager.Cast(124682);
+									await Coroutine.Wait(2500, ()=> !StyxWoW.Me.IsCasting);
+								}
+
+								SpellManager.Cast(116670);
+								await Coroutine.Wait(2000, ()=> !StyxWoW.Me.IsCasting);
+
+								await Coroutine.Wait(10000, ()=> taranPoi.HealthPercent == 100 || StyxWoW.Me.HasAura(197206)); 
+							}
+						]]>
+					</CustomBehavior>
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<DisableBehavior Name="Combat" />
+					<While Condition="Object(246351) != null" >
+						<CustomBehavior File="InteractWith" MobId="246351" IgnoreCombat="true" NumOfTimes="4" >
+							<HuntingGrounds>
+								<Hotspot X="-1002.262" Y="-3021.649" Z="12.16141" />
+								<Hotspot X="-1032.573" Y="-3022.531" Z="12.27288" />
+								<Hotspot X="-986.3837" Y="-3049.476" Z="12.33711" />
+								<Hotspot X="-1047.736" Y="-3049.425" Z="12.35301" />
+							</HuntingGrounds>
+						</CustomBehavior>
+					</While>
+					<CustomBehavior File="RunCode"><![CDATA[
+							var destromathPoi = Unit(101886);  
+
+							while (destromathPoi != null && destromathPoi.IsAlive)
+							{
+								await HealRoutine(HealPriority());
+								await Coroutine.Yield();
+							}
+						]]>
+					</CustomBehavior>
+					<EnableBehavior Name="Combat" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<MoveTo X="-1017.929" Y="-2926.409" Z="19.62303" />
+					<CustomBehavior File="WaitTimer" WaitTime="8000" />
+					<CustomBehavior File="InteractWith" MobId="101882" GossipOptions="2" X="-1030.835" Y="-2913.491" Z="19.623" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+					<CustomBehavior File="InteractWith" MobId="101885" GossipOptions="2" X="-1017.729" Y="-2910.943" Z="19.81835" TerminateWhen="IsScenarioCriteriaComplete(2)"/>
+					<CustomBehavior File="InteractWith" MobId="101883" GossipOptions="2" X="-1003.257" Y="-2912.16" Z="19.62295" TerminateWhen="IsScenarioCriteriaComplete(3)"/>
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<DisableBehavior Name="Combat" />
+					<CustomBehavior File="InteractWith" MobId="101881" GossipOptions="1" X="-1017.823" Y="-2932.5" Z="19.62308" />
+					<MoveTo X="-1016.085" Y="-2808.788" Z="38.27132" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							var aspersius = Unit(101887);  
+
+							while (aspersius != null && aspersius.IsAlive)
+							{
+								await HealRoutine(HealPriority());
+								await Coroutine.Yield();
+							}
+						]]>
+					</CustomBehavior>
+					<EnableBehavior Name="Combat" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<!-- Other Object ID: Name="Sheilun" Entry="102505" X="-1017.767" Y="-2772.326" Z="39.17468" -->
+					<CustomBehavior File="InteractWith" MobId="256913" InteractByLooting="true" WaitTime="1500" X="-1017.457" Y="-2772.276" Z="38.57111" />
+					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+				</If>
+
+				<If Condition="HasItem(128937)" >
+					<CustomBehavior File="InteractWith" MobId="101880" GossipOptions="1" X="-1041.168" Y="-2807.545" Z="38.25514" />
+					<CustomBehavior File="WaitTimer" WaitTime="15000" /> <!-- NOTE: <CheckMe> : Make sure this timer is optimal. -->
+				</If>
+			</While>
+			<TurnIn QuestName="The Emperor's Gift" QuestId="41003" TurnInName="Iron-Body Ponshu" TurnInId="100438" X="924.4167" Y="3606.167" Z="196.3307" />
+		<!-- END Story: Artifact Weapon - Sheilun, Staff of Mists -->
+
+
+		<If Condition="!IsQuestCompleted(40636)" >
+			<PickUp QuestName="Prepare To Strike" QuestId="40636" GiverName="Iron-Body Ponshu" GiverId="100438" X="924.4167" Y="3606.167" Z="196.3307" />
+			<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Monk [Echo].xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	Purity Form is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	Purity Form is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

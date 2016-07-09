@@ -1,0 +1,307 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Mage Class Hall Loader [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Introductory Class Hall Quests -->
+			<PickUp QuestName="Felstorm's Plea" QuestId="41035" GiverName="Meryl Felstorm" GiverId="102700" X="-843.1996" Y="4431.201" Z="742.5364" /> <!-- Auto pickup in Dalaran. -->
+			<TurnIn QuestName="Felstorm's Plea" QuestId="41035" TurnInName="Meryl Felstorm" TurnInId="102700" X="-843.1996" Y="4431.201" Z="742.5364" />
+
+			<PickUp QuestName="The Dreadlord's Prize" QuestId="41036" GiverName="Meryl Felstorm" GiverId="102700" X="-843.1996" Y="4431.201" Z="742.5364" />
+			<While Condition="DoQuest(41036)" >
+				<CustomBehavior File="InteractWith" MobId="242174" NumOfTimes="6" QuestId="41036" X="-960.4443" Y="4324.997" Z="740.1581" /> <!-- May not be needed if this door is added to the jumplinks. -->
+				<MoveTo X="-965.15" Y="4319.328" Z="740.0412" />
+				<CustomBehavior File="MyCTM" X="-969.4932" Y="4313.164" Z="739.8709" /> <!--  TerminateWhen="ME IN VIOLET HOLD -->
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" />
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<DisableBehavior NAme="Combat" />
+					<MoveTo X="1295.606" Y="-263.2991" Z="44.36476" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							var kathranatirPoi = Unit(102785);
+							StyxWoW.Me.SetFacing(kathranatirPoi.Location);
+							await Coroutine.Sleep(350);
+							SpellManager.Cast(133);
+							await Coroutine.Sleep(5000);
+						]]>
+					</CustomBehavior>
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<If Condition="!IsScenarioCriteriaComplete(1)" >
+						<MoveTo X="1321.57" Y="-262.668" Z="43.99799" />
+						<CustomBehavior File="RunCode"><![CDATA[
+								if (SpellManager.CanCast(1953)) SpellManager.Cast(1953);
+								else if (SpellManager.CanCast(212653)) SpellManager.Cast(212653);
+								await Coroutine.Sleep(1500);
+							]]>
+						</CustomBehavior>
+					</If>
+					<If Condition="!IsScenarioCriteriaComplete(2)" >
+						<CustomBehavior File="KillUntilComplete" MobId="102787" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" >
+							<HuntingGrounds>
+								<Hotspot X="1344.409" Y="-219.0343" Z="43.33354" />
+								<Hotspot X="1397.776" Y="-234.3117" Z="50.0569" />
+								<Hotspot X="1394.637" Y="-268.7403" Z="52.42683" />
+								<Hotspot X="1355.073" Y="-308.8704" Z="47.66777" /> 
+							</HuntingGrounds>
+						</CustomBehavior>
+					</If>
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<CustomBehavior File="InteractWith" MobId="102786" X="1355.915" Y="-263.0451" Z="38.74279" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+					<CustomBehavior File="WaitTimer" WaitTime="11000" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<CustomBehavior File="KillUntilComplete" MobId="102785" X="1304.359" Y="-261.4171" Z="44.1962" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<CustomBehavior File="InteractWith" MobId="102786" X="1355.915" Y="-263.0451" Z="38.74279" />
+					<CustomBehavior File="WaitTimer" WaitTime="2500" />
+				</If>
+
+				<CustomBehavior File="WaitTimer" QuestId="41036" WaitTime="60000" />
+			</While>
+			<TurnIn QuestName="The Dreadlord's Prize" QuestId="41036" TurnInName="Meryl Felstorm" TurnInId="102700" X="-816.66" Y="4695" Z="939.6642" />
+		<!-- END Introductory Class Hall Quests -->
+
+		<!-- First Artifact Quest -->
+			<PickUp QuestName="A Mage's Weapon" QuestId="41085" GiverName="Meryl Felstorm" GiverId="102700" X="-816.66" Y="4695" Z="939.6641" />
+			<While Condition="DoQuest(41085)" >
+				<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+					<CustomBehavior File="InteractWith" MobId="246952" GossipOptions="1" QuestId="41085" QuestObjectiveIndex="1" X="-783.6354" Y="4689.01" Z="944.4333" />
+				</If>
+
+				<CustomBehavior File="UserDialog" QuestId="41085" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" 
+				Text="Choose an artifact weapon.\n\nIf you do not choose within 5minutes, the bot will pick the one appropriate for your current specialization." />
+				
+				<If Condition="!IsQuestCompleted(41085)" >
+					<If Condition="Me.Specialization == WoWSpec.MageArcane" >
+						<CustomBehavior File="Misc\RunLua" QuestId="41085" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<If Condition="Me.Specialization == WoWSpec.MageFire" >
+						<CustomBehavior File="Misc\RunLua" QuestId="41085" Lua="QuestChoiceFrameOption2.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<If Condition="Me.Specialization == WoWSpec.MageFrost" >
+						<CustomBehavior File="Misc\RunLua" QuestId="41085" Lua="QuestChoiceFrameOption3.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<CustomBehavior File="Misc\RunLua" QuestId="41085" Lua="StaticPopup1Button1:Click();" />
+				</If>
+			</While>
+			<TurnIn QuestName="A Mage's Weapon" QuestId="41085" TurnInName="Meryl Felstorm" TurnInId="102700" X="-816.66" Y="4695" Z="939.6641" />
+
+			<If Condition="!IsQuestCompleted(42011) &amp;&amp; NeedsQuest(41114) &amp;&amp; Me.Specialization == WoWSpec.MageArcane" > <!-- 42011 = The Nexus Vault -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Mage - Arcane - Aluneth, Greatstaff of the Magna.xml" />
+			</If>
+			<If Condition="!IsQuestCompleted(11997) &amp;&amp; NeedsQuest(41114) &amp;&amp; Me.Specialization == WoWSpec.MageFire" > <!-- 11997 = The Frozen Flame -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Mage - Fire - Felo'melorn.xml" />
+			</If>
+			<If Condition="!IsQuestCompleted(42479) &amp;&amp; NeedsQuest(41114) &amp;&amp; Me.Specialization == WoWSpec.MageFrost" > <!-- 42479 = The Mage Hunter -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Mage - Frost - Ebonchill.xml" />
+			</If>
+		<!-- END First Artifact Quest -->
+
+		<!-- Introductory Class Hall Quests -->
+			<PickUp QuestName="Unlocked Potential" QuestId="41125" GiverName="Meryl Felstorm" GiverId="102700" X="-798.9618" Y="4702.451" Z="939.9673" />
+			<While Condition="DoQuest(41125)" >
+				<!-- /dump GetMouseFocus():GetPowerID(); C_ArtifactUI.AddPower(powerId); -->
+				<CustomBehavior File="InteractWith" MobId="245726" WaitTime="2000" QuestId="41125" X="1030.769" Y="7361.063" Z="107.3078" />
+				<If Condition="HasItem(127857)" > <!-- Aluneth -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1339);" />
+				</If>
+				<If Condition="HasItem(128820)" > <!-- Felo'melorn -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1340);" />
+				</If>
+				<If Condition="HasItem(128862)" > <!-- Ebonchill -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1296);" />
+				</If>
+			</While>
+			<TurnIn QuestName="Unlocked Potential" QuestId="41125" TurnInName="Meryl Felstorm" TurnInId="102700" X="-798.9618" Y="4702.451" Z="939.9673" />
+
+			<PickUp QuestName="The Great Akazamzarak" QuestId="41112" GiverName="Meryl Felstorm" GiverId="102700" X="-798.9618" Y="4702.451" Z="939.9673" />
+			<While Condition="DoQuest(41112)" >
+				<CustomBehavior File="InteractWith" MobId="244510" QuestId="41112" QuestObjectiveIndex="1" X="-944.4427" Y="4707.374" Z="928.9707" />
+				<CustomBehavior File="InteractWith" MobId="247018" QuestId="41112" QuestObjectiveIndex="2" X="-931.6771" Y="4474.965" Z="733.7183" />
+			</While>
+			<TurnIn QuestName="The Great Akazamzarak" QuestId="41112" TurnInName="The Great Akazamzarak" TurnInId="103092" X="-931.1936" Y="4474.046" Z="733.7238" />
+
+			<If Condition="NeedsQuest(41113)" >
+				<PickUp QuestName="The Only Way to Travel" QuestId="41113" GiverName="The Great Akazamzarak" GiverId="103092" X="-931.1936" Y="4474.046" Z="733.7238" />
+				<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Object(247024) != null" />
+				<CustomBehavior File="InteractWith" MobId="247024" WaitForNpcs="false" X="-930.451" Y="4472.51" Z="733.736" TerminateWhen="Object(247024) == null" />
+			</If>
+			<If Condition="QuestDone(41113)" >
+				<TurnIn QuestName="The Only Way to Travel" QuestId="41113" TurnInName="Meryl Felstorm" TurnInId="102700" X="-798.9618" Y="4702.451" Z="939.9674" />
+				<CustomBehavior File="WaitTimer" WaitTime="60000" /> <!-- Wait for little RP event after turning in. -->
+			</If>
+
+			<PickUp QuestName="The Tirisgarde Reborn" QuestId="41124" GiverName="Meryl Felstorm" GiverId="102700" X="-800.576" Y="4691.081" Z="939.9931" />
+			<While Condition="DoQuest(41124)" >
+				<CustomBehavior File="WaitTimer" QuestId="41124" WaitTime="40000" />
+			</While>
+			<TurnIn QuestName="The Tirisgarde Reborn" QuestId="41124" TurnInName="The Great Akazamzarak" TurnInId="103092" X="-879.8299" Y="4628.752" Z="918.3584" />
+
+			<PickUp QuestName="A Conjuror's Duty" QuestId="41141" GiverName="The Great Akazamzarak" GiverId="103092" X="-879.8299" Y="4628.752" Z="918.3584" />
+			<While Condition="DoQuest(41141)" >
+				<CustomBehavior File="InteractWith" MobId="98695" WaitTime="1500" QuestId="41141" X="-881.8507" Y="4628.127" Z="918.3583" />
+				<If Condition="NeedsQuest(39718)" > <!-- Azsuna -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+			</While>
+			<TurnIn QuestName="A Conjuror's Duty" QuestId="41141" TurnInName="The Great Akazamzarak" TurnInId="103092" X="-879.8299" Y="4628.752" Z="918.3584" />
+
+			<While Condition="DoQuest(39718)" >
+				<CustomBehavior File="InteractWith" MobId="244510" QuestId="39718" QuestObjectiveIndex="1" X="-944.4427" Y="4707.374" Z="928.9707" /> <!-- NOTE: <ConditionalCheck> : UseWhen in Class Hall, TerminateWhen Me In Dalaran -->
+				<CustomBehavior File="WaitTimer" WaitTime="3000" />
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />		
+			</While>
+		<!-- END Introductory Class Hall Quests -->
+
+
+		<!-- Tutorial Class Hall Quests -->
+		<!-- END Tutorial Class Hall Quests -->
+
+
+		<!-- Boolean for IsAchievementCompleted defaults to false. -->
+		<!-- Azsuna -->
+			<If Condition="!IsAchievementCompleted(10763, false)" > 
+				<If Condition="NeedsQuest(39718)" >
+					<CustomBehavior File="InteractWith" MobId="98000" WaitTime="1500" X="3976.515" Y="7324.84" Z="29.02647" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<MoveTo X="4020.336" Y="7285.195" Z="41.62424" />
+				<CustomBehavior File="InteractWith" MobId="244510" WaitTime="3000" X="4021.86" Y="7289.344" Z="42.45952" />
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />
+			</If>
+		<!-- END Azsuna -->
+
+		<!-- Val'sharah -->
+			<If Condition="!IsAchievementCompleted(10698, false)" >
+				<If Condition="NeedsQuest(39731)" >
+					<CustomBehavior File="InteractWith" MobId="98000" WaitTime="1500" X="3976.515" Y="7324.84" Z="29.02647" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39731);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<MoveTo X="4020.336" Y="7285.195" Z="41.62424" />
+				<CustomBehavior File="InteractWith" MobId="244510" WaitTime="3000" X="4021.86" Y="7289.344" Z="42.45952" />
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Val'sharah [Echo].xml" />
+			</If>
+		<!-- END Val'sharah -->
+
+		<!-- Highmountain -->
+			<If Condition="!IsAchievementCompleted(10059, false)" >
+				<If Condition="NeedsQuest(39733)" >
+					<CustomBehavior File="InteractWith" MobId="98000" WaitTime="1500" X="3976.515" Y="7324.84" Z="29.02647" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39733);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<MoveTo X="4020.336" Y="7285.195" Z="41.62424" />
+				<CustomBehavior File="InteractWith" MobId="244510" WaitTime="3000" X="4021.86" Y="7289.344" Z="42.45952" />
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Highmountain [Echo].xml" />
+			</If>
+		<!-- END Highmountain -->
+
+		<!-- Stormheim -->
+			<If Condition="!IsAchievementCompleted(10790, false)" >
+				<If Condition="NeedsQuest(39735)" >
+					<CustomBehavior File="InteractWith" MobId="98000" WaitTime="1500" X="3976.515" Y="7324.84" Z="29.02647" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39735);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<MoveTo X="4020.336" Y="7285.195" Z="41.62424" />
+				<CustomBehavior File="InteractWith" MobId="244510" WaitTime="3000" X="4021.86" Y="7289.344" Z="42.45952" />
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Stormehim [Echo].xml" />
+			</If>
+		<!-- END Stormheim -->
+
+	</QuestOrder>
+</HBProfile>

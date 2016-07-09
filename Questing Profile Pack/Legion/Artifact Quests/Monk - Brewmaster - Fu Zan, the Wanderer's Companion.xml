@@ -1,0 +1,258 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Monk - Brewmaster - Fu Zan, the Wanderer's Companion [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Get Continuation Quest -->
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
+
+		<!-- Story: Artifact Weapon - Fu Zan, the Wanderer's Companion -->
+			<PickUp QuestName="The Wanderer's Companion" QuestId="42762" GiverName="Iron-Body Ponshu" GiverId="100438" X="924.4167" Y="3606.167" Z="196.3307" />
+			<While Condition="DoQuest(42762)" >
+				<CustomBehavior File="InteractWith" MobId="101880" GossipOptions="1" QuestId="42762" QuestObjectiveIndex="1" X="935.7847" Y="3719.753" Z="189.0626" />
+				<CustomBehavior File="WaitTimer" WaitTime="20000" />
+			</While>
+			<TurnIn QuestName="The Wanderer's Companion" QuestId="42762" TurnInName="The Monkey King" TurnInId="108700" X="2374.316" Y="-1457.705" Z="353.987" />
+
+			<PickUp QuestName="The Riddle of Purity" QuestId="42768" GiverName="The Monkey King" GiverId="108700" X="2374.316" Y="-1457.705" Z="353.987" />
+			<PickUp QuestName="The Riddle of the Barrel" QuestId="42766" GiverName="The Monkey King" GiverId="108700" X="2374.316" Y="-1457.705" Z="353.987" />
+			<PickUp QuestName="The Riddle of the Land" QuestId="42767" GiverName="The Monkey King" GiverId="108700" X="2374.316" Y="-1457.705" Z="353.987" />
+
+			<While Condition="DoQuest(42768)" >
+				<MoveTo Nav="Fly" X="421.7392" Y="230.8438" Z="208.3777" />
+				<CustomBehavior File="KillUntilComplete" MobId="108932" QuestId="42768" QuestObjectiveIndex="1" X="413.8264" Y="206.4653" Z="207.901" TerminateWhen="Unit(108813) != null" />
+				<CustomBehavior File="InteractWith" MobId="108813" InteractByLooting="true" QuestId="42768" QuestObjectiveIndex="1" X="414.4306" Y="194.9392" Z="208.7201" />
+			</While>
+
+			<While Condition="DoQuest(42766)" >
+				<MoveTo Nav="Fly" X="-579.2328" Y="648.1011" Z="143.6618" />
+				<MoveTo Nav="Run" X="-587.8284" Y="667.7009" Z="143.6239" />
+				<CustomBehavior File="KillUntilComplete" MobId="109106" QuestId="42766" QuestObjectiveIndex="1" X="-588.7952" Y="656.2795" Z="158.7953" TerminateWhen="Object(251337) != null" />
+				<CustomBehavior File="InteractWith" MobId="251337" InteractByLooting="true" QuestId="42766" QuestObjectiveIndex="1" X="-590.3977" Y="655.246" Z="158.7921" />
+			</While>
+
+			<While Condition="DoQuest(42767)" >
+				<CustomBehavior File="InteractWith" MobIds="251422, 251424" InteractByLooting="true" NumOfTimes="5" QuestId="42767" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="-554.1126" Y="604.6273" Z="137.8214" />
+						<Hotspot X="-507.6918" Y="669.5632" Z="136.4512" />
+						<Hotspot X="-587.4294" Y="611.7604" Z="137.6723" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<TurnIn QuestName="The Riddle of Purity" QuestId="42768" TurnInName="The Monkey King" TurnInId="109049" X="-595.0218" Y="625.7074" Z="136.6579" />
+			<TurnIn QuestName="The Riddle of the Barrel" QuestId="42766" TurnInName="The Monkey King" TurnInId="109049" X="-595.0218" Y="625.7074" Z="136.6579" />
+			<TurnIn QuestName="The Riddle of the Land" QuestId="42767" TurnInName="The Monkey King" TurnInId="109049" X="-595.0218" Y="625.7074" Z="136.6579" />
+
+			<PickUp QuestName="Journey to the East" QuestId="42957" GiverName="The Monkey King" GiverId="109049" X="-595.0218" Y="625.7074" Z="136.6579" />
+			<TurnIn QuestName="Journey to the East" QuestId="42957" TurnInName="The Monkey King" TurnInId="109187" X="947.1042" Y="-2418.573" Z="168.5978" />
+
+			<PickUp QuestName="The Monkey King's Challenge" QuestId="42868" GiverName="The Monkey King" GiverId="109187" X="947.1042" Y="-2418.573" Z="168.5978" />
+			<While Condition="DoQuest(42868)" >
+				<CustomBehavior File="InteractWith" MobId="251490" WaitTime="3000" QuestId="42868" QuestObjectiveIndex="1" X="924.4496" Y="-2409.514" Z="168.5977" />
+				<While Condition="Lua.GetReturnVal&lt;bool&gt;(&quot;return PlayerPowerBarAlt:IsShown();&quot;, 0)" >
+					<CustomBehavior File="WaitTimer" WaitTime="8000" TerminateWhen="ObjectManager.GetObjectsOfType&lt;WoWGameObject&gt;().FirstOrDefault(x =&gt; new[]{251512, 251508, 251501, 251503}.Contains((int)x.Entry) &amp;&amp; x.CanUse()) != null" />
+					<CustomBehavior File="InteractWith" MobId="251512" QuestId="42868" QuestObjectiveIndex="1" X="931.3143" Y="-2416.205" Z="170.2567" TerminateWhen="Object(251512, u =&gt; !u.ToGameObject().CanUse()) != null" />
+					<CustomBehavior File="InteractWith" MobId="251508" QuestId="42868" QuestObjectiveIndex="1" X="926.8906" Y="-2414.422" Z="168.7792" TerminateWhen="Object(251508, u =&gt; !u.ToGameObject().CanUse()) != null" />
+					<CustomBehavior File="InteractWith" MobId="251501" QuestId="42868" QuestObjectiveIndex="1" X="927.5399" Y="-2405.583" Z="168.5977" TerminateWhen="Object(251501, u =&gt; !u.ToGameObject().CanUse()) != null" />
+					<CustomBehavior File="InteractWith" MobId="251503" QuestId="42868" QuestObjectiveIndex="1" X="932.0278" Y="-2402.153" Z="170.2213" TerminateWhen="Object(251503, u =&gt; !u.ToGameObject().CanUse()) != null" />
+				</While>
+			</While>
+			<TurnIn QuestName="The Monkey King's Challenge" QuestId="42868" TurnInName="The Monkey King" TurnInId="109187" X="935.5245" Y="-2418.598" Z="168.5976" />
+
+			<PickUp QuestName="The Trial at the Temple" QuestId="42765" GiverName="The Monkey King" GiverId="109187" X="935.5245" Y="-2418.598" Z="168.5976" />
+			<While Condition="DoQuest(42765)" >
+				<!-- NOTE: <MapIdCheck> : Need to If-check if we're outside of the temple first.  If we are, go in. -->
+				<MoveTo X="960.0986" Y="-2469.125" Z="180.234" />
+				<CustomBehavior File="MyCTM" X="958.3696" Y="-2476.02" Z="180.5053" /> <!-- TerminateWhen inside temple. -->
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<MoveTo X="952.6828" Y="-2519.703" Z="180.3754" />
+					<CustomBehavior File="WaitTimer" WaitTime="36000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<CustomBehavior File="InteractWith" MobId="251591" X="917.2882" Y="-2496.432" Z="180.5241" TerminateWhen="IsScenarioCriteriaComplete(1) || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+					<CustomBehavior File="KillUntilComplete" MobIds="109395, 109394" TerminateWhen="IsScenarioCriteriaComplete(2) || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" >
+						<HuntingGrounds>
+							<Hotspot X="862.1875" Y="-2448.71" Z="192.5607" />
+							<Hotspot X="826.257" Y="-2482.766" Z="192.5464" />
+							<Hotspot X="867.3857" Y="-2502.851" Z="192.5531" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<!-- NOTE: <AddAvoid> : Large purple circle on the floor.  causes player to miss 50% of the time.  Absolutely need to avoid it. -->
+					<CustomBehavior File="KillUntilComplete" MobId="109397" X="854.5625" Y="-2465.03" Z="174.961" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+					<CustomBehavior File="WaitTimer" WaitTime="40000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<MoveTo X="919.126" Y="-2576.917" Z="179.8214" />
+				</If>
+
+				<!-- What happened to stage 5?  Mixing it with 4.. -->
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<CustomBehavior File="KillUntilComplete" X="944.8669" Y="-2586.681" Z="179.8218" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" >
+						<PursuitList>
+							<PursueUnit Id="109438" Priority="10" />
+							<PursueUnit Id="109438" Priority="1000" PursueWhen="!UNIT.Aggro" />
+
+							<PursueUnit Id="109933" Priority="10" />
+							<PursueUnit Id="109933" Priority="1000" PursueWhen="!UNIT.Aggro" />
+
+							<PursueUnit Id="110471" Priority="10" />
+							<PursueUnit Id="110471" Priority="1000" PursueWhen="!UNIT.Aggro" />
+
+							<PursueUnit Id="109396" Priority="10" />
+							<PursueUnit Id="109396" Priority="1000" PursueWhen="!UNIT.Aggro" />
+
+							<PursueUnit Id="109394" Priority="10" />
+							<PursueUnit Id="109394" Priority="1000" PursueWhen="!UNIT.Aggro" />
+
+							<PursueUnit Id="109438" Priority="10" />
+							<PursueUnit Id="109438" Priority="1000" PursueWhen="!UNIT.Aggro" />
+						</PursuitList>
+					</CustomBehavior>
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+					<CustomBehavior File="KillUntilComplete" MobId="109821" X="892.961" Y="-2710.906" Z="192.2011" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 7" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8" >
+					<!-- Other Object ID: Name="Fu Zan" Entry="109432" X="886.7708" Y="-2726.542" Z="192.1656" -->
+					<CustomBehavior File="InteractWith" MobId="251605" InteractByLooting="true" WaitTime="1500" X="886.7708" Y="-2726.57" Z="192.1635" />
+					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+				</If>
+
+				<If Condition="HasItem(128938)" >
+					<CustomBehavior File="InteractWith" MobId="109440" GossipOptions="1" X="881.7674" Y="-2742.08" Z="192.1526" />
+					<CustomBehavior File="WaitTimer" WaitTime="20000" />
+				</If>
+			</While>
+			<TurnIn QuestName="The Trial at the Temple" QuestId="42765" TurnInName="Iron-Body Ponshu" TurnInId="100438" X="924.4167" Y="3606.167" Z="196.3307" />			
+		<!-- END Story: Artifact Weapon - Fu Zan, the Wanderer's Companion -->
+
+
+		<If Condition="!IsQuestCompleted(40636)" >
+			<PickUp QuestName="Prepare To Strike" QuestId="40636" GiverName="Iron-Body Ponshu" GiverId="100438" X="924.4167" Y="3606.167" Z="196.3307" />
+			<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Monk [Echo].xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	Purity Form is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	Purity Form is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

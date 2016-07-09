@@ -95,109 +95,109 @@
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
 
-			<!-- Get Continuation Quest -->
-				<If Condition="IsQuestCompleted(39530) &amp;&amp; !HasQuest(123456) &amp;&amp; !HasQuest(123456)" > <!-- Using The Forgening (39530) to determine if we've already got the first artifact. -->
-					<CustomBehavior File="InteractWith" MobId="96469" WaitTime="1250" X="796.1858" Y="7228.977" Z="106.7501" />
-					<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="QuestFrameAcceptButton:Click();" />
-				</If>
-			<!-- END Get Continuation Quest -->
-
-			<!-- Second Artifact -->
-			<!-- END Second Artifact -->
-
-			<!-- Third Artifact -->
-			<!-- END Third Artifact -->
-
-			<!-- Story: Artifact Weapon - Scale of the Earth-Warder -->
-				<PickUp QuestName="Legacy of the Icebreaker" QuestId="39191" GiverName="Odyn" GiverId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
-				<While Condition="DoQuest(39191)" >
-					<CustomBehavior File="InteractWith" MobId="96660" GossipOptions="1" WaitTime="17000" QuestId="39191" QuestObjectiveIndex="1" X="1076.953" Y="7222.194" Z="98.00623" />
-					<CustomBehavior File="WaitTimer" WaitTime="5000" />
-
-					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
-						<CustomBehavior File="KillUntilComplete" MobId="96571" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" >
-							<HuntingGrounds>
-								<Hotspot X="4864.173" Y="-30.58189" Z="47.93243" />
-								<Hotspot X="4877.01" Y="38.07085" Z="27.2898" />
-								<Hotspot X="4876.556" Y="88.51719" Z="16.28945" />
-							</HuntingGrounds>
-						</CustomBehavior>
-					</If>
-
-					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-						<CustomBehavior File="KillUntilComplete" MobId="94714" X="4807.082" Y="142.0434" Z="-9.188035" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
-					</If>
-
-					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
-						<MoveTo X="4822.018" Y="251.9522" Z="-25.92793" />
-						<CustomBehavior File="RunCode"><![CDATA[
-								await Coroutine.Wait(46000, ()=> SpellManager.CanCast(6544));
-								SpellManager.Cast(6544);
-								SpellManager.ClickRemoteLocation(new WoWPoint(4845.995, 265.2525, -30.11635));
-							]]>
-						</CustomBehavior>
-						<MoveTo X="4850.834" Y="266.0881" Z="-31.83206" />
-						<CustomBehavior File="KillUntilComplete" MobId="94813" X="4844.432" Y="268.1076" Z="-28.33891" TerminateWhen="Unit(94813, u =&gt; u.Distance &lt; 15 &amp;&amp; u.IsDead) != null" />
-
-						<MoveTo X="4844.662" Y="266.4739" Z="-29.54062" />
-						<DisableBehavior Name="Combat" />
-						<CustomBehavior File="RunCode"><![CDATA[
-								await Coroutine.Wait(46000, ()=> SpellManager.CanCast(6544));
-								SpellManager.Cast(6544);
-								SpellManager.ClickRemoteLocation(new WoWPoint(4814.708, 273.4276, -29.07798));
-								await Coroutine.Sleep(750);
-								WoWMovement.ClickToMove(new WoWPoint(4806.102, 273.3833, -32.23232));
-							]]>
-						</CustomBehavior>
-						<CustomBehavior File="KillUntilComplete" MobId="94813" X="4813.92" Y="273.7292" Z="-28.38824" TerminateWhen="Unit(94813, u =&gt; u.Distance &lt; 15 &amp;&amp; u.IsDead) != null" />
-
-						<MoveTo X="4821.347" Y="328.8257" Z="-30.49662" />
-						<!-- NOTE: <AddSupport> : Throw attack at energy balls to kill them, event continued before I could script it -->
-					</If>
-
-					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
-						<MoveTo X="4755.313" Y="341.9402" Z="-37.19219" />
-						<CustomBehavior File="InteractWith" MobId="96468" GossipOptions="1" X="4753.81" Y="341.837" Z="-37.19083" />
-
-						<!-- NOTE: <AddFunction> : After tanking the waves of mobs, Hruthnir jumps up to Magnar, but player can't get up there unless they leap or charge at the windshapers since they are using a pushback spell.
-													Magnar will eventually knock Hruthnir off the edge back to where the player is at, but it's not optimal to rely on this.
-						-->
-
-						<CustomBehavior File="KillUntilComplete" X="4728.781" Y="346.1316" Z="-37.63469" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" >
-							<PursuitList>
-								<PursueUnit Id="94707" Priority="10" PursueWhen="UNIT.Attackable" />
-								<PursueUnit Id="97123" Priority="10" PursueWhen="UNIT.Attackable" />
-								<PursueUnit Id="96034" Priority="10" PursueWhen="UNIT.Attackable" />
-
-								<PursueUnit Id="94707" Priority="1000" PursueWhen="!UNIT.Aggro &amp;&amp; UNIT.Attackable" />
-								<PursueUnit Id="97123" Priority="1000" PursueWhen="!UNIT.Aggro &amp;&amp; UNIT.Attackable" />
-								<PursueUnit Id="96034" Priority="1000" PursueWhen="!UNIT.Aggro &amp;&amp; UNIT.Attackable" />
-							</PursuitList>
-						</CustomBehavior>
-					</If>
-
-					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
-						<CustomBehavior File="InteractWith" MobId="248831" InteractByLooting="true" WaitTime="1500" X="4700.208" Y="352.0156" Z="-37.4937" />
-						<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
-						<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
-						<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
-					</If>
-
-					<If Condition="HasItem(128289)" >
-						<MoveTo X="4698.809" Y="352.0919" Z="-37.49355" />
-						<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
-						<CustomBehavior File="WaitTimer" WaitTime="8500" />
-					</If>
-				</While>
-				<TurnIn QuestName="Legacy of the Icebreaker" QuestId="39191" TurnInName="Odyn" TurnInId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
-			<!-- END Story: Artifact Weapon - Scale of the Earth-Warder -->
-
-
-			<If Condition="!IsQuestCompleted(39530)" >
-				<PickUp QuestName="The Forgening" QuestId="39530" GiverName="Odyn" GiverId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
-				<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
-				<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Warrior [Echo].xml" />
+		<!-- Get Continuation Quest -->
+			<If Condition="IsQuestCompleted(39530) &amp;&amp; !HasQuest(123456) &amp;&amp; !HasQuest(123456)" > <!-- Using The Forgening (39530) to determine if we've already got the first artifact. -->
+				<CustomBehavior File="InteractWith" MobId="96469" WaitTime="1250" X="796.1858" Y="7228.977" Z="106.7501" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="QuestFrameAcceptButton:Click();" />
 			</If>
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
+
+		<!-- Story: Artifact Weapon - Scale of the Earth-Warder -->
+			<PickUp QuestName="Legacy of the Icebreaker" QuestId="39191" GiverName="Odyn" GiverId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
+			<While Condition="DoQuest(39191)" >
+				<CustomBehavior File="InteractWith" MobId="96660" GossipOptions="1" WaitTime="17000" QuestId="39191" QuestObjectiveIndex="1" X="1076.953" Y="7222.194" Z="98.00623" />
+				<CustomBehavior File="WaitTimer" WaitTime="5000" />
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<CustomBehavior File="KillUntilComplete" MobId="96571" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" >
+						<HuntingGrounds>
+							<Hotspot X="4864.173" Y="-30.58189" Z="47.93243" />
+							<Hotspot X="4877.01" Y="38.07085" Z="27.2898" />
+							<Hotspot X="4876.556" Y="88.51719" Z="16.28945" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<CustomBehavior File="KillUntilComplete" MobId="94714" X="4807.082" Y="142.0434" Z="-9.188035" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<MoveTo X="4822.018" Y="251.9522" Z="-25.92793" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							await Coroutine.Wait(46000, ()=> SpellManager.CanCast(6544));
+							SpellManager.Cast(6544);
+							SpellManager.ClickRemoteLocation(new WoWPoint(4845.995, 265.2525, -30.11635));
+						]]>
+					</CustomBehavior>
+					<MoveTo X="4850.834" Y="266.0881" Z="-31.83206" />
+					<CustomBehavior File="KillUntilComplete" MobId="94813" X="4844.432" Y="268.1076" Z="-28.33891" TerminateWhen="Unit(94813, u =&gt; u.Distance &lt; 15 &amp;&amp; u.IsDead) != null" />
+
+					<MoveTo X="4844.662" Y="266.4739" Z="-29.54062" />
+					<DisableBehavior Name="Combat" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							await Coroutine.Wait(46000, ()=> SpellManager.CanCast(6544));
+							SpellManager.Cast(6544);
+							SpellManager.ClickRemoteLocation(new WoWPoint(4814.708, 273.4276, -29.07798));
+							await Coroutine.Sleep(750);
+							WoWMovement.ClickToMove(new WoWPoint(4806.102, 273.3833, -32.23232));
+						]]>
+					</CustomBehavior>
+					<CustomBehavior File="KillUntilComplete" MobId="94813" X="4813.92" Y="273.7292" Z="-28.38824" TerminateWhen="Unit(94813, u =&gt; u.Distance &lt; 15 &amp;&amp; u.IsDead) != null" />
+
+					<MoveTo X="4821.347" Y="328.8257" Z="-30.49662" />
+					<!-- NOTE: <AddSupport> : Throw attack at energy balls to kill them, event continued before I could script it -->
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<MoveTo X="4755.313" Y="341.9402" Z="-37.19219" />
+					<CustomBehavior File="InteractWith" MobId="96468" GossipOptions="1" X="4753.81" Y="341.837" Z="-37.19083" />
+
+					<!-- NOTE: <AddFunction> : After tanking the waves of mobs, Hruthnir jumps up to Magnar, but player can't get up there unless they leap or charge at the windshapers since they are using a pushback spell.
+												Magnar will eventually knock Hruthnir off the edge back to where the player is at, but it's not optimal to rely on this.
+					-->
+
+					<CustomBehavior File="KillUntilComplete" X="4728.781" Y="346.1316" Z="-37.63469" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" >
+						<PursuitList>
+							<PursueUnit Id="94707" Priority="10" PursueWhen="UNIT.Attackable" />
+							<PursueUnit Id="97123" Priority="10" PursueWhen="UNIT.Attackable" />
+							<PursueUnit Id="96034" Priority="10" PursueWhen="UNIT.Attackable" />
+
+							<PursueUnit Id="94707" Priority="1000" PursueWhen="!UNIT.Aggro &amp;&amp; UNIT.Attackable" />
+							<PursueUnit Id="97123" Priority="1000" PursueWhen="!UNIT.Aggro &amp;&amp; UNIT.Attackable" />
+							<PursueUnit Id="96034" Priority="1000" PursueWhen="!UNIT.Aggro &amp;&amp; UNIT.Attackable" />
+						</PursuitList>
+					</CustomBehavior>
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<CustomBehavior File="InteractWith" MobId="248831" InteractByLooting="true" WaitTime="1500" X="4700.208" Y="352.0156" Z="-37.4937" />
+					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+					<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+				</If>
+
+				<If Condition="HasItem(128289)" >
+					<MoveTo X="4698.809" Y="352.0919" Z="-37.49355" />
+					<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+					<CustomBehavior File="WaitTimer" WaitTime="8500" />
+				</If>
+			</While>
+			<TurnIn QuestName="Legacy of the Icebreaker" QuestId="39191" TurnInName="Odyn" TurnInId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
+		<!-- END Story: Artifact Weapon - Scale of the Earth-Warder -->
+
+
+		<If Condition="!IsQuestCompleted(39530)" >
+			<PickUp QuestName="The Forgening" QuestId="39530" GiverName="Odyn" GiverId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
+			<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Warrior [Echo].xml" />
+		</If>
 
 	</QuestOrder>
 </HBProfile>

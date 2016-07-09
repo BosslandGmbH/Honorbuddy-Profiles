@@ -1,0 +1,220 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Mage - Fire - Felo'melorn [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Get Continuation Quest -->
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
+
+		<!-- Story: Artifact Weapon - Felo'melorn -->
+			<PickUp QuestName="An Unexpected Message" QuestId="40267" GiverName="Meryl Felstorm" GiverId="102700" X="-816.66" Y="4695" Z="939.6641" />
+			<While Condition="DoQuest(40267)" >
+				<CustomBehavior File="UseItem" QuestId="40267" QuestObjectiveIndex="1" ItemId="130131" />
+				<CustomBehavior File="WaitTimer" QuestId="40267" QuestObjectiveIndex="1" WaitTime="42000" />
+
+				<If Condition="Me.MapId == 111111" >  <!-- NOTE: <Add-CheckMapId> : Leaving Class Hall, entering Dalaran. -->
+					<CustomBehavior File="InteractWith" MobId="244510" WaitTime="3000" X="-832.6424" Y="4685.265" Z="939.9924" />
+				</If>
+				<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran, enter Dalaran Portal Room -->
+					<MoveTo X="-847.6401" Y="4463.277" Z="735.8799" />
+					<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TerminateWhen in portal room. -->
+				</If>
+				<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran Portal Room, entering Dalaran Crater -->
+					<MoveTo X="-881.0235" Y="4507.995" Z="580.1562" />
+					<CustomBehavior File="InteractWith" MobId="246008" WaitTime="1000" X="-880.408" Y="4511.733" Z="580.4584" />
+					<CustomBehavior File="RunCode" Code="SpellManager.Cast(45438);" /> <!-- Ice Block to prevent fall damage. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsFalling" />
+				</If>
+
+				<MoveTo X="270.4472" Y="453.7347" Z="56.45567" />
+			</While>
+			<TurnIn QuestName="An Unexpected Message" QuestId="40267" TurnInName="Archmage Modera" TurnInId="99398" X="271.2101" Y="452.5" Z="56.94685" />
+
+			<PickUp QuestName="The Path of Atonement" QuestId="40270" GiverName="Archmage Modera" GiverId="99398" X="271.2101" Y="452.5" Z="56.94685" />
+			<While Condition="DoQuest(40270)" >
+				<CustomBehavior File="WaitTimer" QuestId="40270" WaitTime="120000" /> 
+			</While>
+			<TurnIn QuestName="The Path of Atonement" QuestId="40270" TurnInName="Aethas Sunreaver" TurnInId="99415" X="275.4454" Y="452.9391" Z="56.89916" />
+
+			<PickUp QuestName="The Frozen Flame" QuestId="11997" GiverName="Aethas Sunreaver" GiverId="99415" X="275.4454" Y="452.9391" Z="56.89916" />
+			<While Condition="DoQuest(11997)" >
+				<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Object(99418) != null" />
+				<CustomBehavior File="InteractWith" MobId="99418" QuestId="11997" QuestObjectiveIndex="1" X="273.3785" Y="451.5833" Z="57.29637" />
+			
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<CustomBehavior File="Hooks\Avoid" AvoidName="FrostBlock" Command="Add" ObjectType="Npc" ObjectId="99605" Radius="9.5" />
+					<!-- NOTE: <AddAvoid> : Mobs use "razors edge", need to avoid it.  Low priority. -->
+					<MoveTo X="4151.716" Y="2539.918" Z="364.8733" />
+					<MoveTo X="4192.985" Y="2521.079" Z="364.8751" />
+					<!-- NOTE: <AddFunction> : I believe we can detect which spellId the Conjurer is using to tell which side of the room to go on.  
+												I'm getting 198348 and 198484 on WoWhead.
+					-->
+					<MoveTo X="4246.797" Y="2537.477" Z="364.8358" />
+					<!-- Add spellId detection here as well. -->
+					<!-- NOTE: <AddAvoid> : We can use a avoid here for this mob's Blizzard ground AoE -->
+					<CustomBehavior File="KillUntilComplete" MobId="98760" X="4280.021" Y="2484.34" Z="365.5589" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+					<!-- Turn all avoids and DoWhens off -->
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<CustomBehavior File="KillUntilComplete" MobId="102105" X="4291.065" Y="2483.146" Z="365.0472" TerminateWhen="Unit(102105) == null" />
+					<!-- NOTE: <AddAvoid> : May need avoid here.  Ice falling from ceiling which causes knockback and decent damage. -->
+					<MoveTo X="4341.354" Y="2508.521" Z="358.4436" />
+					<CustomBehavior File="KillUntilComplete" MobId="105377" X="4359.234" Y="2520.515" Z="358.4319" TerminateWhen="Unit(105377) == null" />
+					<!-- NOTE: <AddAvoid> : May need avoid here.  Ice falling from ceiling which causes knockback and decent damage AND Frost Blocks... -->
+					<MoveTo X="4365.862" Y="2624.899" Z="351.1012" />
+					<CustomBehavior File="KillUntilComplete" MobId="105378" X="4360.363" Y="2651.988" Z="351.1008" TerminateWhen="Unit(105378) == null" />
+					<!-- Remove avoids -->
+					<!-- NOTE: <AddAvoid> : Skeletons use Razor's Edge ability, hits hard. -->
+					<CustomBehavior File="KillUntilComplete" MobId="105379" X="4474.29" Y="2767.27" Z="350.9629" TerminateWhen="Unit(105379) == null" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<CustomBehavior File="WaitTimer" WaitTime="90000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<!-- NOTE: <AddAvoid> : Avoid the big guys spin attack - FATAL Priority. -->
+					<CustomBehavior File="KillUntilComplete" MobId="99615" X="4635.413" Y="2769.503" Z="361.171" />
+					<!-- NOTE: <CheckFunction> : KillUntilComplete may need to switch targets to the bone monster when mobId 99615 has aura 194360. -->
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<!-- Other ID: Name="Felo'melorn" Entry="103696" X="4641.807" Y="2769.265" Z="361.1771" -->
+					<CustomBehavior File="InteractWith" MobId="247494" InteractByLooting="true" WaitTime="1500" X="4641.81" Y="2769.26" Z="362.6401" />
+					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+				</If>
+
+				<If Condition="HasItem(128820)" >
+					<CustomBehavior File="InteractWith" MobId="99861" X="4625.474" Y="2769.47" Z="361.1645" />
+				</If>
+			</While>
+			<TurnIn QuestName="The Frozen Flame" QuestId="11997" TurnInName="Archmage Modera" TurnInId="90418" X="-851.6893" Y="4639.288" Z="749.5451" />
+
+			<PickUp QuestName="The Champion's Return" QuestId="41114" GiverName="Meryl Felstorm" /> <!-- Auto Pickup -->
+			<While Condition="DoQuest(41114)" >
+				<CustomBehavior File="RunCode" Code="SpellManager.Cast(193759);" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsCasting" />
+			</While>
+			<TurnIn QuestName="The Champion's Return" QuestId="41114" TurnInName="Meryl Felstorm" TurnInId="102700" X="-798.9618" Y="4702.451" Z="939.9673" />
+		<!-- END Story: Artifact Weapon - Felo'melorn -->
+
+
+		<If Condition="!IsQuestCompleted(40636)" >
+			<PickUp QuestName="Prepare To Strike" QuestId="40636" GiverName="Iron-Body Ponshu" GiverId="100438" X="924.4167" Y="3606.167" Z="196.3307" />
+			<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Monk [Echo].xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	XXXX is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	XXXX is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

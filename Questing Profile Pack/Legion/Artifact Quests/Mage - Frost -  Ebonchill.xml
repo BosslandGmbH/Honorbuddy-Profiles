@@ -1,0 +1,238 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Mage - Frost - Ebonchill [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Get Continuation Quest -->
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
+
+		<!-- Story: Artifact Weapon - Ebonchill -->
+			<PickUp QuestName="Finding Ebonchill" QuestId="42452" GiverName="Meryl Felstorm" GiverId="102700" X="-817.0645" Y="4700.291" Z="939.6641" />
+			<While Condition="DoQuest(42452)" >
+				<CustomBehavior File="InteractWith" MobIds="250545, 250542, 250549" NumOfTimes="3" QuestId="42452" QuestObjectiveIndex="1" X="-809.4572" Y="4694.614" Z="939.6633" />
+				<CustomBehavior File="InteractWith" MobId="102700" GossipOptions="1" QuestId="42452" QuestObjectiveIndex="2" X="-816.66" Y="4695" Z="939.6641" />
+				<CustomBehavior File="WaitTimer" QuestId="42452" WaitTime="50000" />
+			</While>
+			<TurnIn QuestName="Finding Ebonchill" QuestId="42452" TurnInName="Meryl Felstorm" TurnInId="102700" X="-816.66" Y="4695" Z="939.6636" />
+
+			<PickUp QuestName="The Deadwind Site" QuestId="42476" GiverName="Meryl Felstorm" GiverId="102700" X="-816.66" Y="4695" Z="939.6636" />
+			<PickUp QuestName="Daio the Decrepit" QuestId="42477" GiverName="Meryl Felstorm" GiverId="102700" X="-816.66" Y="4695" Z="939.6636" />
+			<PickUp QuestName="Alodi's Gems" QuestId="42455" GiverName="Alodi" GiverId="102846" X="-817.3871" Y="4690.511" Z="939.6633" />
+
+			<While Condition="DoQuest(42455)" >
+				<If Condition="Me.MapId == 111111" >  <!-- NOTE: <Add-CheckMapId> : Leaving Class Hall, entering Dalaran. -->
+					<CustomBehavior File="InteractWith" MobId="244510" WaitTime="3000" X="-832.6424" Y="4685.265" Z="939.9924" />
+				</If>
+
+				<MoveTo QuestId="42455" QuestObjectiveIndex="1" X="-675.4942" Y="4438.937" Z="738.13" />
+				<CustomBehavior File="InteractWith" MobId="107622" GossipOptions="1" QuestId="42455" QuestObjectiveIndex="2" X="-678.44" Y="4443.29" Z="738.13" />
+				<CustomBehavior File="WaitTimer" QuestId="42455" QuestObjectiveIndex="2" WaitTime="25000" />
+				<CustomBehavior File="InteractWith" MobId="250575" QuestId="42455" QuestObjectiveIndex="3" X="-673.4809" Y="4420.087" Z="738.1251" />
+				<CustomBehavior File="InteractWith" MobId="250576" NumOfTimes="3" QuestId="42455" QuestObjectiveIndex="4" X="-674.7415" Y="4439.713" Z="694.2416" /> <!-- Hoping CR hits orbs for us. -->
+				<CustomBehavior File="InteractWith" MobId="251105"  X="-689.3663" Y="4452.199" Z="695.6881" /> <!-- NOTE: <AddTermination> : Can shut off if we're out of the vault already. -->
+			</While>
+
+			<While Condition="DoQuest(42476, 42477)" >
+				<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran, enter Dalaran Portal Room -->
+					<MoveTo X="-847.6401" Y="4463.277" Z="735.8799" />
+					<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TerminateWhen in portal room. -->
+				</If>
+				<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran Portal Room, entering Karazhan -->
+					<MoveTo X="-872.7674" Y="4501.16" Z="580.1588" />
+					<CustomBehavior File="InteractWith" MobId="246009" WaitTime="1000" X="-869.9479" Y="4503.124" Z="580.4584" />
+					<CustomBehavior File="RunCode" Code="SpellManager.Cast(45438);" /> <!-- Ice Block to prevent fall damage. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsFalling" />
+				</If>
+
+				<!-- Quest The Deadwind Site -->
+				<MoveTo Nav="Fly" QuestId="42476" QuestObjectiveIndex="2" X="-10946.69" Y="-1739.818" Z="146.1448" />
+				<CustomBehavior File="InteractWith" MobId="250602" InteractByLooting="true" QuestId="42476" QuestObjectiveIndex="3" X="-10934.02" Y="-1729.155" Z="145.7022" />
+				<CustomBehavior File="InteractWith" MobId="250600" InteractByLooting="true" QuestId="42476" QuestObjectiveIndex="4" X="-10908.79" Y="-1708.983" Z="149.6503" />
+				<CustomBehavior File="WaitTimer" QuestId="42476" QuestObjectiveIndex="5" WaitTime="60000" />
+				<CustomBehavior File="InteractWith" MobId="250611" InteractByLooting="true" QuestId="42476" QuestObjectiveIndex="6" X="-10861.32" Y="-1686.526" Z="148.2902" />
+
+				<!-- Quest Daio the Decrepit -->
+				<MoveTo QuestId="42476" QuestObjectiveIndex="2" X="-11689.76" Y="-2387.85" Z="-0.7187544" />
+				<CustomBehavior File="InteractWith" MobId="107716" GossipOptions="1, 1, 1" QuestId="42476" QuestObjectiveIndex="3" X="-11685.33" Y="-2384.259" Z="-0.1785276" />
+				<CustomBehavior File="WaitTimer" QuestId="42476" QuestObjectiveIndex="5" WaitTime="90000" />
+			</While>
+
+			<If Condition="(IsQuestCompleted(42476) &amp;&amp; IsQuestCompleted(42477) &amp;&amp; IsQuestCompleted(42455)) &amp;&amp; Me.MapId != 1111111" > <!-- NOTE: <MapIdCheck> : Add MapId for class hall -->
+				<CustomBehavior File="RunCode" Code="SpellManager.Cast(193759);" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsCasting" />
+			</If>
+
+			<TurnIn QuestName="Alodi's Gems" QuestId="42455" TurnInName="Alodi" TurnInId="102846" X="-817.3871" Y="4690.511" Z="939.6633" />
+			<TurnIn QuestName="The Deadwind Site" QuestId="42476" TurnInName="Meryl Felstorm" TurnInId="102700" X="-816.66" Y="4695" Z="939.6638" />
+			<TurnIn QuestName="Daio the Decrepit" QuestId="42477" TurnInName="Meryl Felstorm" TurnInId="102700" X="-816.66" Y="4695" Z="939.6638" />
+
+			<PickUp QuestName="The Mage Hunter" QuestId="42479" GiverName="Meryl Felstorm" GiverId="102700" X="-816.66" Y="4695" Z="939.6638" />
+			<While Condition="DoQuest(42479)" >
+				<If Condition="Me.MapId == 111111" >  <!-- NOTE: <Add-CheckMapId> : Leaving Class Hall, entering Dalaran. -->
+					<CustomBehavior File="InteractWith" MobId="244510" WaitTime="3000" X="-832.6424" Y="4685.265" Z="939.9924" />
+				</If>
+				<CustomBehavior File="InteractWith" MobId="96813" GossipOptions="1" WaitTime="3000" QuestId="42479" QuestObjectiveIndex="1" X="-863.934" Y="4298.434" Z="745.3463" />
+				<CustomBehavior File="WaitTimer" WaitTime="180000" TerminateWhen="!Me.IsFlying" />
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<CustomBehavior File="InteractWith" MobId="107939" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" >
+						<HuntingGrounds>
+							<Hotspot X="-317.2778" Y="7847.715" Z="98.30244" />
+							<Hotspot X="-458.2963" Y="7853.967" Z="100.279" />
+							<Hotspot X="-347.2014" Y="8066.108" Z="90.82826" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<MoveTo X="-418.5313" Y="8008.541" Z="66.65244" />
+					<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Object(108855) != null" />
+					<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+						<CustomBehavior File="InteractWith" MobId="108855" X="-418.6701" Y="8009.128" Z="66.8905" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+					</While>
+				</If>
+
+				<!-- What happened to stage 4? -->
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+					<!-- NOTE: <AddDoWhen> : Need to spellsteal Quickening off this guy. -->
+					<!-- NOTE: <AddAvoid> : Need to avoid his fel attack -->
+					<CustomBehavior File="KillUntilComplete" MobId="108168" X="-4404.424" Y="477.4653" Z="434.3867" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+				</If>
+
+				<If Condition="HasItem(128862)" >
+					<CustomBehavior File="InteractWith" MobId="251049" InteractByLooting="true" WaitTime="1500" X="-4384.41" Y="471.0781" Z="436.1095" />
+					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+
+					<CustomBehavior File="MyCTM" X="-4366.955" Y="440.7726" Z="440.7087" /> <!--  TerminateWhen="ME OUT OF AREA -->
+
+					<CustomBehavior File="InteractWith" MobId="247024" X="-404.3316" Y="8008.815" Z="66.67653" />
+				</If>
+			</While>
+			<TurnIn QuestName="The Mage Hunter" QuestId="42479" TurnInName="Meryl Felstorm" TurnInId="102700" X="-798.9618" Y="4702.451" Z="939.9674" />
+		<!-- END Story: Artifact Weapon - Ebonchill -->
+
+
+		<If Condition="!IsQuestCompleted(40636)" >
+			<PickUp QuestName="Prepare To Strike" QuestId="40636" GiverName="Iron-Body Ponshu" GiverId="100438" X="924.4167" Y="3606.167" Z="196.3307" />
+			<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Monk [Echo].xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	XXXX is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	XXXX is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

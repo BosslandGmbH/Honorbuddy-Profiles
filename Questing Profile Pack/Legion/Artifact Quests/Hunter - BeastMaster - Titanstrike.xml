@@ -95,126 +95,126 @@
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
 
-			<!-- Get Continuation Quest -->
-				<If Condition="IsQuestCompleted(40953) &amp;&amp; !HasQuest(44043) &amp;&amp; !HasQuest(44366)" > <!-- Using On Eagle's Wings (40953) to determine if we've already got the first artifact. -->
-					<CustomBehavior File="InteractWith" MobId="107317" WaitTime="1250" X="4642.032" Y="5285.06" Z="840.6198" />
-					<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="QuestFrameAcceptButton:Click();" />
-				</If>
-			<!-- END Get Continuation Quest -->
-
-			<!-- Second Artifact -->
-				<If Condition="HasQuest(44043)" >
-					<While Condition="DoQuest(44043)" >
-						<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
-							<CustomBehavior File="InteractWith" MobId="107317" GossipOptions="1" QuestId="44043" QuestObjectiveIndex="1" X="4642.032" Y="5285.06" Z="840.6198" />
-						</If>
-						<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.  
-						<CustomBehavior File="Misc\RunLua" QuestId="44043" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
-						<CustomBehavior File="UserDialog" QuestId="44043" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
-					</While>
-					<TurnIn QuestName="Continuing the Legend" QuestId="44043" TurnInName="Emmarel Shadewarden" TurnInId="107317" X="4642.032" Y="5285.06" Z="840.6198" />
-				</If>
-			<!-- END Second Artifact -->
-
-			<!-- Third Artifact -->
-				<If Condition="HasQuest(44366)" >
-					<While Condition="DoQuest(44366)" >
-						<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
-							<CustomBehavior File="InteractWith" MobId="107317" GossipOptions="1" QuestId="44366" QuestObjectiveIndex="1" X="4642.032" Y="5285.06" Z="840.6198" />
-						</If>
-						<CustomBehavior File="Misc\RunLua" QuestId="44366" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1200" /> <!-- Should always be 1. -->
-					</While>
-					<TurnIn QuestName="Continuing the Legend" QuestId="44366" TurnInName="Emmarel Shadewarden" TurnInId="107317" X="4642.032" Y="5285.06" Z="840.6198" />
-				</If>
-			<!-- END Third Artifact -->
-
-			<If Condition="IsQuestCompleted(40953)" > <!-- Using On Eagle's Wings to determine if we've already got the first artifact. -->
-				<PickUp QuestName="A Beastly Expedition" QuestId="41541" GiverName="Emmarel Shadewarden" GiverId="107317" X="4642.032" Y="5285.06" Z="840.6198" /> <!-- Class Hall Phase -->
-				<!-- Add portal to Dalaran support? -->
-				<Else>
-					<PickUp QuestName="A Beastly Expedition" QuestId="41541" GiverName="Emmarel Shadewarden" GiverId="102478" X="-876.658" Y="4379.09" Z="739.1406" /> <!-- Dalaran Phase -->
-				</Else>
+		<!-- Get Continuation Quest -->
+			<If Condition="IsQuestCompleted(40953) &amp;&amp; !HasQuest(44043) &amp;&amp; !HasQuest(44366)" > <!-- Using On Eagle's Wings (40953) to determine if we've already got the first artifact. -->
+				<CustomBehavior File="InteractWith" MobId="107317" WaitTime="1250" X="4642.032" Y="5285.06" Z="840.6198" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="QuestFrameAcceptButton:Click();" />
 			</If>
+		<!-- END Get Continuation Quest -->
 
-			<!-- Story: Artifact Weapon - Titanstrike -->
-				<TurnIn QuestName="A Beastly Expedition" QuestId="41541" TurnInName="Grif Wildheart" TurnInId="104381" X="-861.1233" Y="4285.741" Z="746.2857" />
-
-				<PickUp QuestName="Stolen Thunder" QuestId="41574" GiverName="Grif Wildheart" GiverId="104381" X="-861.1233" Y="4285.741" Z="746.2857" />
-				<While Condition="DoQuest(41574)" >
-					<CustomBehavior File="InteractWith" MobId="106235" QuestId="41574" QuestObjectiveIndex="1" X="-867.9774" Y="4287.264" Z="745.4191" />
-					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
-					<!-- User gets off around X="4799.894" Y="82.00793" Z="-3.060262" -->
-					<CustomBehavior File="InteractWith" MobId="104904" GossipOptions="1" QuestId="41574" QuestObjectiveIndex="2" X="4803.345" Y="77.96181" Z="-2.623047" />
-					<CustomBehavior File="RunCode" Code="await Coroutine.Wait(120000, ()=&gt; Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2)" />
-					<!-- NOTE: <AddAvoid> : Bot needs to kill Name="Swirling Storms" Entry="96455" as they are an AoE mob
-											Bot will need to avoid Name="Fierce Winds" Entry="106432" as its moving through the room -->
-					<!-- While avoiding the tornados, bot must get to X="4842.022" Y="337.6002" Z="-28.97828" and kill mobId Name="Spectral Windshaper" Entry="105968"  -->
-					<!-- Escort Name="Grif Wildheart" Entry="104904" X="4858.161" Y="316.7202" Z="-30.90926"  TerminateWhen="Unit(104904) == null" -->
-					<CustomBehavior File="InteractWith" MobId="249741" QuestId="41574" X="5003.885" Y="293.5677" Z="-26.92902" />
+		<!-- Second Artifact -->
+			<If Condition="HasQuest(44043)" >
+				<While Condition="DoQuest(44043)" >
+					<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+						<CustomBehavior File="InteractWith" MobId="107317" GossipOptions="1" QuestId="44043" QuestObjectiveIndex="1" X="4642.032" Y="5285.06" Z="840.6198" />
+					</If>
+					<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.  
+					<CustomBehavior File="Misc\RunLua" QuestId="44043" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
+					<CustomBehavior File="UserDialog" QuestId="44043" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
 				</While>
-				<TurnIn QuestName="Stolen Thunder" QuestId="41574" TurnInName="Mimiron" TurnInId="106558" X="2778.023" Y="2549.335" Z="364.3132" />
-				<!-- END Loc: Stormheim -->
-
-				<!-- Loc: Ulduar -->
-				<PickUp QuestName="The Creator's Workshop" QuestId="42158" GiverName="Mimiron" GiverId="106558" X="2778.023" Y="2549.335" Z="364.3132" />
-				<While Condition="DoQuest(42158)" >
-					<CustomBehavior File="InteractWith" MobId="106558" QuestId="42158" QuestObjectiveIndex="1" X="2778.023" Y="2549.335" Z="364.3132" />
-
-					<CustomBehavior File="WaitTimer" WaitTime="20000" />
-					<!-- NOTE: <AddAvoid> : Bot will need to avoid the AoE that the fusion cores are releasing.  Can jump over the waves. -->
-					<CustomBehavior File="InteractWith" MobId="249765" X="2734.787" Y="2625.814" Z="365.2617" />
-					<CustomBehavior File="InteractWith" MobId="249773" X="2702.748" Y="2609.047" Z="365.3793" />
-
-					<CustomBehavior File="WaitTimer" WaitTime="20000" />
-					<!-- NOTE: <AddAvoid> : Bot will need to avoid the lightning balls that are being cast by the leviathan -->
-					<CustomBehavior File="InteractWith" MobId="249766" X="2738.331" Y="2540.439" Z="365.2359" />
-					<CustomBehavior File="InteractWith" MobId="249769" X="2735.51" Y="2524.254" Z="362.2268" /> 
-					<CustomBehavior File="InteractWith" MobId="249768" X="2720.624" Y="2550.111" Z="362.1405" />
-					<CustomBehavior File="InteractWith" MobId="249767" X="2708.903" Y="2540.141" Z="362.1704" />
-
-					<CustomBehavior File="WaitTimer" WaitTime="20000" />
-					<CustomBehavior File="InteractWith" MobId="249749" X="2790.452" Y="2569.373" Z="368.9039" />
-
-					<CustomBehavior File="WaitTimer" QuestId="42158" WaitTime="20000" />
-				</While>
-				<TurnIn QuestName="The Creator's Workshop" QuestId="42158" TurnInName="Mimiron" TurnInId="106558" X="2762.512" Y="2569.122" Z="364.3132" />
-				<!-- END Loc: Ulduar -->
-
-				<!-- Loc: Stormpeaks -->
-				<PickUp QuestName="Never Hunt Alone" QuestId="42185" GiverName="Mimiron" GiverId="106558" X="2762.512" Y="2569.122" Z="364.3132" />
-				<While Condition="DoQuest(42158)" >
-					<!-- NOTE: <AddCondition : Could use a 'If In Ulduar' on the below interactwith -->
-					<CustomBehavior File="InteractWith" MobId="249755" X="2772.265" Y="2568.281" Z="364.3136" />
-
-					<CustomBehavior File="InteractWith" MobId="106678" QuestId="42158" QuestObjectiveIndex="1" X="9324.997" Y="-1123.72" Z="1245.147" />
-					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
-
-					<!-- Escort Name="Thorim" Entry="106714" X="7392.464" Y="-552.9268" Z="1897.497" TerminateWhen stage 3 ends -->
-
-					<CustomBehavior File="InteractWith" MobId="103154" WaitTime="10000" QuestId="42158" X="7438.28" Y="-534.035" Z="1896.85" />
-					<CustomBehavior File="InteractWith" MobId="249812" InteractByLooting="true" QuestId="42158" X="7446.769" Y="-535.7726" Z="1896.985" />
-					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Unit(106854, u =&gt; u.Distance &lt; 30) != null" />
-
-					<CustomBehavior File="InteractWith" MobId="106854" QuestId="42158" X="7437.393" Y="-557.033" Z="1896.851" />
-					<!-- Player lands at X="-821.7231" Y="4297.774" Z="746.2839" -->
-					<CustomBehavior File="WaitTimer" WaitTime="40000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
-				</While>
-				<TurnIn QuestName="Never Hunt Alone" QuestId="42185" TurnInName="Grif Wildheart" TurnInId="106879" X="-819.5886" Y="4299.66" Z="746.2864" />
-				<!-- END Loc: Stormpeaks -->
-
-				<!-- Loc: Dalaran -->
-				<PickUp QuestName="Hunter to Hunter" QuestId="41009" GiverName="Grif Wildheart" GiverId="106879" X="-819.5886" Y="4299.66" Z="746.2864" />
-				<TurnIn QuestName="Hunter to Hunter" QuestId="41009" TurnInName="Emmarel Shadewarden" TurnInId="102478" X="-876.658" Y="4379.09" Z="739.1407" />
-
-				<!-- NOTE: <CheckMe> : Add phasing support if needed.  I believe Hunter to Hunter is no longer the turned in quest here. -->
-				
-			<!-- END Story: Artifact Weapon - Titanstrike -->
-
-			<If Condition="!IsQuestCompleted(40953)" >
-				<PickUp QuestName="On Eagle's Wings" QuestId="40953" GiverName="Emmarel Shadewarden" GiverId="102478" X="-876.658" Y="4379.09" Z="739.1407" />
-				<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
-				<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Hunter [Echo].xml" />
+				<TurnIn QuestName="Continuing the Legend" QuestId="44043" TurnInName="Emmarel Shadewarden" TurnInId="107317" X="4642.032" Y="5285.06" Z="840.6198" />
 			</If>
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+			<If Condition="HasQuest(44366)" >
+				<While Condition="DoQuest(44366)" >
+					<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+						<CustomBehavior File="InteractWith" MobId="107317" GossipOptions="1" QuestId="44366" QuestObjectiveIndex="1" X="4642.032" Y="5285.06" Z="840.6198" />
+					</If>
+					<CustomBehavior File="Misc\RunLua" QuestId="44366" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1200" /> <!-- Should always be 1. -->
+				</While>
+				<TurnIn QuestName="Continuing the Legend" QuestId="44366" TurnInName="Emmarel Shadewarden" TurnInId="107317" X="4642.032" Y="5285.06" Z="840.6198" />
+			</If>
+		<!-- END Third Artifact -->
+
+		<If Condition="IsQuestCompleted(40953)" > <!-- Using On Eagle's Wings to determine if we've already got the first artifact. -->
+			<PickUp QuestName="A Beastly Expedition" QuestId="41541" GiverName="Emmarel Shadewarden" GiverId="107317" X="4642.032" Y="5285.06" Z="840.6198" /> <!-- Class Hall Phase -->
+			<!-- Add portal to Dalaran support? -->
+			<Else>
+				<PickUp QuestName="A Beastly Expedition" QuestId="41541" GiverName="Emmarel Shadewarden" GiverId="102478" X="-876.658" Y="4379.09" Z="739.1406" /> <!-- Dalaran Phase -->
+			</Else>
+		</If>
+
+		<!-- Story: Artifact Weapon - Titanstrike -->
+			<TurnIn QuestName="A Beastly Expedition" QuestId="41541" TurnInName="Grif Wildheart" TurnInId="104381" X="-861.1233" Y="4285.741" Z="746.2857" />
+
+			<PickUp QuestName="Stolen Thunder" QuestId="41574" GiverName="Grif Wildheart" GiverId="104381" X="-861.1233" Y="4285.741" Z="746.2857" />
+			<While Condition="DoQuest(41574)" >
+				<CustomBehavior File="InteractWith" MobId="106235" QuestId="41574" QuestObjectiveIndex="1" X="-867.9774" Y="4287.264" Z="745.4191" />
+				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
+				<!-- User gets off around X="4799.894" Y="82.00793" Z="-3.060262" -->
+				<CustomBehavior File="InteractWith" MobId="104904" GossipOptions="1" QuestId="41574" QuestObjectiveIndex="2" X="4803.345" Y="77.96181" Z="-2.623047" />
+				<CustomBehavior File="RunCode" Code="await Coroutine.Wait(120000, ()=&gt; Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2)" />
+				<!-- NOTE: <AddAvoid> : Bot needs to kill Name="Swirling Storms" Entry="96455" as they are an AoE mob
+										Bot will need to avoid Name="Fierce Winds" Entry="106432" as its moving through the room -->
+				<!-- While avoiding the tornados, bot must get to X="4842.022" Y="337.6002" Z="-28.97828" and kill mobId Name="Spectral Windshaper" Entry="105968"  -->
+				<!-- Escort Name="Grif Wildheart" Entry="104904" X="4858.161" Y="316.7202" Z="-30.90926"  TerminateWhen="Unit(104904) == null" -->
+				<CustomBehavior File="InteractWith" MobId="249741" QuestId="41574" X="5003.885" Y="293.5677" Z="-26.92902" />
+			</While>
+			<TurnIn QuestName="Stolen Thunder" QuestId="41574" TurnInName="Mimiron" TurnInId="106558" X="2778.023" Y="2549.335" Z="364.3132" />
+			<!-- END Loc: Stormheim -->
+
+			<!-- Loc: Ulduar -->
+			<PickUp QuestName="The Creator's Workshop" QuestId="42158" GiverName="Mimiron" GiverId="106558" X="2778.023" Y="2549.335" Z="364.3132" />
+			<While Condition="DoQuest(42158)" >
+				<CustomBehavior File="InteractWith" MobId="106558" QuestId="42158" QuestObjectiveIndex="1" X="2778.023" Y="2549.335" Z="364.3132" />
+
+				<CustomBehavior File="WaitTimer" WaitTime="20000" />
+				<!-- NOTE: <AddAvoid> : Bot will need to avoid the AoE that the fusion cores are releasing.  Can jump over the waves. -->
+				<CustomBehavior File="InteractWith" MobId="249765" X="2734.787" Y="2625.814" Z="365.2617" />
+				<CustomBehavior File="InteractWith" MobId="249773" X="2702.748" Y="2609.047" Z="365.3793" />
+
+				<CustomBehavior File="WaitTimer" WaitTime="20000" />
+				<!-- NOTE: <AddAvoid> : Bot will need to avoid the lightning balls that are being cast by the leviathan -->
+				<CustomBehavior File="InteractWith" MobId="249766" X="2738.331" Y="2540.439" Z="365.2359" />
+				<CustomBehavior File="InteractWith" MobId="249769" X="2735.51" Y="2524.254" Z="362.2268" /> 
+				<CustomBehavior File="InteractWith" MobId="249768" X="2720.624" Y="2550.111" Z="362.1405" />
+				<CustomBehavior File="InteractWith" MobId="249767" X="2708.903" Y="2540.141" Z="362.1704" />
+
+				<CustomBehavior File="WaitTimer" WaitTime="20000" />
+				<CustomBehavior File="InteractWith" MobId="249749" X="2790.452" Y="2569.373" Z="368.9039" />
+
+				<CustomBehavior File="WaitTimer" QuestId="42158" WaitTime="20000" />
+			</While>
+			<TurnIn QuestName="The Creator's Workshop" QuestId="42158" TurnInName="Mimiron" TurnInId="106558" X="2762.512" Y="2569.122" Z="364.3132" />
+			<!-- END Loc: Ulduar -->
+
+			<!-- Loc: Stormpeaks -->
+			<PickUp QuestName="Never Hunt Alone" QuestId="42185" GiverName="Mimiron" GiverId="106558" X="2762.512" Y="2569.122" Z="364.3132" />
+			<While Condition="DoQuest(42158)" >
+				<!-- NOTE: <AddCondition : Could use a 'If In Ulduar' on the below interactwith -->
+				<CustomBehavior File="InteractWith" MobId="249755" X="2772.265" Y="2568.281" Z="364.3136" />
+
+				<CustomBehavior File="InteractWith" MobId="106678" QuestId="42158" QuestObjectiveIndex="1" X="9324.997" Y="-1123.72" Z="1245.147" />
+				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
+
+				<!-- Escort Name="Thorim" Entry="106714" X="7392.464" Y="-552.9268" Z="1897.497" TerminateWhen stage 3 ends -->
+
+				<CustomBehavior File="InteractWith" MobId="103154" WaitTime="10000" QuestId="42158" X="7438.28" Y="-534.035" Z="1896.85" />
+				<CustomBehavior File="InteractWith" MobId="249812" InteractByLooting="true" QuestId="42158" X="7446.769" Y="-535.7726" Z="1896.985" />
+				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Unit(106854, u =&gt; u.Distance &lt; 30) != null" />
+
+				<CustomBehavior File="InteractWith" MobId="106854" QuestId="42158" X="7437.393" Y="-557.033" Z="1896.851" />
+				<!-- Player lands at X="-821.7231" Y="4297.774" Z="746.2839" -->
+				<CustomBehavior File="WaitTimer" WaitTime="40000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
+			</While>
+			<TurnIn QuestName="Never Hunt Alone" QuestId="42185" TurnInName="Grif Wildheart" TurnInId="106879" X="-819.5886" Y="4299.66" Z="746.2864" />
+			<!-- END Loc: Stormpeaks -->
+
+			<!-- Loc: Dalaran -->
+			<PickUp QuestName="Hunter to Hunter" QuestId="41009" GiverName="Grif Wildheart" GiverId="106879" X="-819.5886" Y="4299.66" Z="746.2864" />
+			<TurnIn QuestName="Hunter to Hunter" QuestId="41009" TurnInName="Emmarel Shadewarden" TurnInId="102478" X="-876.658" Y="4379.09" Z="739.1407" />
+
+			<!-- NOTE: <CheckMe> : Add phasing support if needed.  I believe Hunter to Hunter is no longer the turned in quest here. -->
+			
+		<!-- END Story: Artifact Weapon - Titanstrike -->
+
+		<If Condition="!IsQuestCompleted(40953)" >
+			<PickUp QuestName="On Eagle's Wings" QuestId="40953" GiverName="Emmarel Shadewarden" GiverId="102478" X="-876.658" Y="4379.09" Z="739.1407" />
+			<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Hunter [Echo].xml" />
+		</If>
 
 	</QuestOrder>
 </HBProfile>
