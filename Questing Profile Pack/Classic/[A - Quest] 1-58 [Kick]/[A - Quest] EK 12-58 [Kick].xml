@@ -4460,7 +4460,7 @@
 					X="-8694.16" Y="-2144.71" Z="159.8133" />
 			<PickUp QuestName="And Last But Not Least... Danforth" QuestId="26562" GiverName="Krakauer" GiverId="43303"
 					X="-8694.494" Y="-2148.282" Z="158.3958" />
-			<If Condition="HasQuest(26562)">
+			<If Condition="HasQuest(26562) &amp;&amp; !IsQuestCompleted(26562)">
 				<Objective QuestName="And Last But Not Least... Danforth" QuestId="26562" Type="KillMob" MobId="43369" KillCount="1" />
 				<Objective QuestName="And Last But Not Least... Danforth" QuestId="26562" Type="CollectItem"
 						   ItemId="59033" CollectCount="1" />
@@ -4468,8 +4468,14 @@
 				<CustomBehavior File="InteractWith" MobId="204403" CollectionDistance="50"
 								NonCompeteDistance="0" X="-8820.554" Y="-2192.231" Z="138.4767" />
 			</If>
-			<TurnIn QuestName="And Last But Not Least... Danforth" QuestId="26562" TurnInName="Danforth" TurnInId="43275"
-					X="-8805.089" Y="-2206.237" Z="130.9454" />
+			<If Condition="HasQuest(26562) &amp;&amp; IsQuestCompleted(26562)">
+				<While Condition="Unit(43275, u => u.Z &gt; 140) != null" >
+					<CustomBehavior File="InteractWith" MobId="204403" CollectionDistance="50"
+									NonCompeteDistance="0" X="-8820.554" Y="-2192.231" Z="138.4767" TerminateWhen="Unit(43275, u => u.Z &lt; 140) != null" />
+				</While>
+				<TurnIn QuestName="And Last But Not Least... Danforth" QuestId="26562" TurnInName="Danforth" TurnInId="43275"
+						X="-8805.089" Y="-2206.237" Z="130.9454" />
+			</If>
 			<PickUp QuestName="Return of the Bravo Company" QuestId="26563" GiverName="Danforth" GiverId="43302" X="-8806.528"
 					Y="-2204.096" Z="132.3716" />
 			<!-- <Objective QuestName="Surveying Equipment" QuestId="26569" Type="CollectItem" ItemId="58952" CollectCount="5" /> -->
@@ -5275,7 +5281,7 @@
 				GiverType="Object" X="-10173.29" Y="347.2359" Z="9.872594" />
 		<TurnIn QuestName="Buried Below" QuestId="26722" TurnInName="Lightforged Crest" TurnInId="204825"
 				TurnInType="Object" X="-10173.29" Y="347.2359" Z="9.872594" />
-		<PickUp QuestName="Morbent's Bane" QuestId="26754" GiverName="Lightforged Crest" GiverId="204825"
+		<!--<PickUp QuestName="Morbent's Bane" QuestId="26754" GiverName="Lightforged Crest" GiverId="204825"
 				GiverType="Object" X="-10173.29" Y="347.2359" Z="9.872594" />
 		<While Condition="HasQuest(26754) &amp;&amp; !IsQuestCompleted(26754)">
 			<DisableBehavior Name="Pull" />
@@ -5293,7 +5299,7 @@
 
 			<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for  {TimeRemaining}" />
 			<MoveTo X="-10261.38" Y="369.3358" Z="10.41349" />
-		</While>
+		</While>-->
 		<EnableBehavior Name="Pull" />
 		<MoveTo DestName="The Jitters-Bugs Grind Area" QuestId="26721" X="-10646.86" Y="-97.87614" Z="33.6786" />
 		<Objective QuestName="The Jitters-Bugs" QuestId="26721" Type="CollectItem" ItemId="60207" CollectCount="8" />
@@ -5301,7 +5307,7 @@
 				X="-10767.1" Y="330.665" Z="37.52658" />
 		<PickUp QuestName="Bear In Mind" QuestId="26787" GiverName="Jitters" GiverId="288"
 				X="-10767.1" Y="330.665" Z="37.52658" />
-		<TurnIn QuestName="Morbent's Bane" QuestId="26754" TurnInName="Sven Yorgen" TurnInId="43861" />
+		<!--<TurnIn QuestName="Morbent's Bane" QuestId="26754" TurnInName="Sven Yorgen" TurnInId="43861" />-->
 		<Objective QuestName="Bear In Mind" QuestId="26787" Type="CollectItem" ItemId="60334" CollectCount="8" />
 		<If Condition="HasQuest(26787) &amp;&amp; IsQuestCompleted(26787)">
 			<TurnIn QuestName="Bear In Mind" QuestId="26787" TurnInName="Jitters" TurnInId="288" X="-10767.1" Y="330.665" Z="37.52658" />
