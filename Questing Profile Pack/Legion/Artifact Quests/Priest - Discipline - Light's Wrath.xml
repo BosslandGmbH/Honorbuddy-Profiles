@@ -1,0 +1,312 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Priest - Discipline - Light's Wrath [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Get Continuation Quest -->
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
+
+		<!-- Story: Artifact Weapon - Light's Wrath -->
+			<!--START1: Need to detect if this is the player's first artifact quest since the NPC is in a different location. -->
+			<PickUp QuestName="The Light's Wrath" QuestId="41625" GiverName="Alonsus Faol" GiverId="101314" X="2602.816" Y="-534.5225" Z="89.00004" /> 
+			<!-- :END1 -->
+			<While Condition="DoQuest(41625)" >
+				<If Condition="Me.MapId != 111111" ><!-- NOTE: <CheckMapId> : Need to check if the player isn't in Dalaran -->
+					<CustomBehavior File="RunCode"><![CDATA[
+						Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Using Dalaran Hearthstone");
+						await CommonCoroutines.StopMoving(); 
+						WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+						if (dalaranHearth.Cooldown != 0) {
+							Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
+							await Coroutine.Wait(1200000, () => dalaranHearth.Cooldown == 0);
+						}
+						dalaranHearth.Interact();
+						var currentLoc = StyxWoW.Me.ZoneId;
+						await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
+						await Coroutine.Sleep(1500);
+					]]>
+					</CustomBehavior>
+				</If>
+			</While>
+			<TurnIn QuestName="The Light's Wrath" QuestId="41625" TurnInName="Archmage Kalec" TurnInId="105081" X="-857.1511" Y="4637.633" Z="749.2797" />
+
+			<PickUp QuestName="A New Threat" QuestId="41626" GiverName="Archmage Kalec" GiverId="105081" X="-857.1511" Y="4637.633" Z="749.2797" />
+			<While Condition="DoQuest(41626)" >
+				<If Condition="Me.MapId == 111111" > <!-- NOTE: <CheckMapIds> : Dalaran to Dragonshrine -->
+					<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <ZoneId> : Dalaran to Dalaran Portal Room -->
+						<MoveTo X="-850.0136" Y="4460.374" Z="735.6611" />
+						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TermianteWhen="Me.ZoneId == DALARAN PORTAL ROOM -->
+					</If>
+					<MoveTo X="-889.3405" Y="4503.787" Z="580.0774" />
+					<CustomBehavior File="InteractWith" MobId="246013" X="-892.7344" Y="4506.432" Z="580.4584" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TermianteWhen="Me.ZoneId == 111111" /> <!-- NOTE: Terminate when player is in Dalaran Crater -->
+				</If>
+				<MoveTo QuestId="41626" QuestObjectiveIndex="2" X="3132.267" Y="469.468" Z="21.36447" />
+				<CustomBehavior File="InteractWith" MobIds="104551, 104570, 248375" NumOfTimes="3" QuestId="41626" QuestObjectiveIndex="3" X="3128.747" Y="470.8965" Z="21.08807" />
+			</While>
+			<TurnIn QuestName="A New Threat" QuestId="41626" TurnInName="Ethereal Communication Device" TurnInType="Object" TurnInId="248398" X="2990.309" Y="447.5851" Z="25.10034" />
+			
+			<PickUp QuestName="A Forgotten Enemy" QuestId="41627" GiverName="Ethereal Communication Device" GiverId="248398" X="2990.309" Y="447.5851" Z="25.10034" />
+			<While Condition="DoQuest(41627)" >
+				<CustomBehavior File="InteractWith" MobId="248476" QuestId="41627" QuestObjectiveIndex="1" X="2990.135" Y="449.8299" Z="25.18106" />
+				<CustomBehavior File="WaitTimer" QuestId="41627" WaitTime="30000" />
+			</While>
+			<TurnIn QuestName="A Forgotten Enemy" QuestId="41627" />
+
+			<PickUp QuestName="Eyes of the Dragon" QuestId="41628" GiverName="Image of Kalec" />
+			<While Condition="DoQuest(41628)" >
+				<MoveTo Nav="Fly" QuestId="41628" QuestObjectiveIndex="1" X="3872.739" Y="6914.68" Z="161.2548" />
+				<MoveTo Nav="Fly" QuestId="41628" QuestObjectiveIndex="2" X="3834.942" Y="6690.973" Z="264.8541" />
+				<MoveTo Nav="Fly" QuestId="41628" QuestObjectiveIndex="3" X="3784.929" Y="6946.786" Z="124.1302" />
+			</While>
+			<TurnIn QuestName="Eyes of the Dragon" QuestId="41628" />
+
+			<PickUp QuestName="Harnessing the Holy Fire" QuestId="41629" GiverName="Image of Kalec" />
+			<While Condition="DoQuest(41629)" >
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" QuestId="41629" QuestObjectiveIndex="1"  >
+					<HuntingGrounds>
+						<Hotspot X="3773.632" Y="6999.09" Z="103.5417" />
+						<Hotspot X="3794.961" Y="6919.479" Z="103.9532" />
+						<Hotspot X="3912.934" Y="6894.695" Z="104.2659" />
+						<Hotspot X="3973.733" Y="6983.582" Z="104.0634" />
+						<Hotspot X="3883.298" Y="7071.488" Z="104.9635" />
+						<Hotspot X="3797.327" Y="7049.583" Z="103.6634" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueGameObject Id="104791" /> <!-- NOTE: <CheckMe>: Has internal cast bar, may need to add support for this.. -->
+						<PursueUnit Id="104627" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					</PursuitList>
+				</CustomBehavior>
+			</While>
+			<TurnIn QuestName="Harnessing the Holy Fire" QuestId="41629" />
+
+			<PickUp QuestName="Unleashing Judgment" QuestId="41630" GiverName="Image of Kalec" />
+			<While Condition="DoQuest(41630)" >
+				<CustomBehavior File="InteractWith" MobId="104828" QuestId="41630" QuestObjectiveIndex="2" X="3761.105" Y="7179.227" Z="165.1684" />
+				<CustomBehavior File="InteractWith" MobId="104819" QuestId="41630" QuestObjectiveIndex="3" X="4113.514" Y="6996.014" Z="168.2267" />
+				<CustomBehavior File="InteractWith" MobId="104826" QuestId="41630" QuestObjectiveIndex="1" X="3828.431" Y="6685.926" Z="156.2073" />
+			</While>
+			<TurnIn QuestName="Unleashing Judgment" QuestId="41630" />
+
+
+			<PickUp QuestName="The Nexus Vault" QuestId="41631" GiverName="Image of Kalec" />
+			<While Condition="DoQuest(41631)" >
+				<MoveTo X="3891.174" Y="6985.424" Z="69.48839" />
+				<CustomBehavior	File="MyCTM" X="3904.694" Y="6985.984" Z="69.48815" /> <!-- NOTE: <ChecMapId> : TerminateWhen inside of portal -->
+
+				<!--NOTE: <AddSupport> : Could add a DoWhen that casts Mass Dispel when player is fighting unit  Name="Illusory Wyrmling" Entry="104879"
+										This will insta-kill them all.
+										Also Dispel Magic.
+				-->
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<!-- NOTE: <AddOptimization> : Can Dispell a power ability from these mobs. -->
+					<CustomBehavior File="KillUntilComplete" MobId="106700" X="3848.426" Y="7359.914" Z="266.9356" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							var azuregosPoi = Unit(104832);
+							while (azuregosPoi != null && azuregosPoi.HealthPercent < 100)
+							{
+								StyxWoW.Me.SetFacing(azuregosPoi.Location);
+								SpellManager.Cast(186263);
+								await Coroutine.Wait(3000, () => !StyxWoW.Me.IsCasting);
+							}
+						]]>
+					</CustomBehavior>
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<MoveTo X="4067.426" Y="7453.801" Z="267.3105" />
+					<DisableBehavior Name="Combat" />
+					<CustomBehavior File="WaitTimer" WaitTime="45000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<DisableBehavior Name="Combat" />
+					<MoveTo X="4067.734" Y="7453.729" Z="267.3107" />
+					<CustomBehavior File="WaitTimer" WaitTime="30000" TerminateWhen="Unit(104520) != null" /> 
+					<CustomBehavior File="RunCode"><![CDATA[
+							var flamePoi = Unit(104520);
+
+							while (flamePoi != null && flamePoi.IsAlive)
+							{
+								if (!flamePoi.IsPet)
+								{
+									flamePoi.Target();
+									StyxWoW.Me.SetFacing(flamePoi.Location);
+									await Coroutine.Sleep(500);
+									SpellManager.Cast(605);
+									await Coroutine.Wait(3000, () => flamePoi.IsPet);
+								}
+
+								if (flamePoi.IsPet)
+								{
+									if (StyxWoW.Me.KnowsSpell(205367))
+									{
+										Lua.DoString("PetActionButton6:Click();");
+										await Coroutine.Sleep(1700);
+									}
+									else
+									{
+										Lua.DoString("ActionButton6:Click();");
+										await Coroutine.Sleep(1700);
+									}
+								}
+								await Coroutine.Yield();
+							}
+						]]>
+					</CustomBehavior>
+					<EnableBehavior Name="Combat" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<MoveTo X="4199.186" Y="7416.543" Z="262.6368" />
+					<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<CustomBehavior File="InteractWith" MobId="104546" X="4197.229" Y="7408.315" Z="257.9444" />
+					<CustomBehavior File="WaitTimer" WaitTime="25000" />
+					<CustomBehavior File="KillUntilComplete" MobId="104502" X="4211.827" Y="7105.71" Z="268.244" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<CustomBehavior File="InteractWith" MobId="248553" X="4210.876" Y="7089.679" Z="267.5377" /> <!-- NOTE: <CheckZoneId> : May need to check zone Id here. -->
+					<CustomBehavior File="InteractWith" MobId="104985" X="1117.689" Y="1048.08" Z="311.9431" TerminateWhen="IsScenarioCriteriaComplete(1)" /> <!-- NOTE: <CheckFunctionality> : player must heal themselves while channeling with the staff.  I'm assuming Singular will handle this. -->
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+					<CustomBehavior File="InteractWith" MobId="248572" InteractByLooting="true" WaitTime="1500" X="1117.78" Y="1048.028" Z="314.6627" />
+					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+					<If Condition="HasItem(128868)" >
+						<CustomBehavior File="InteractWith" MobId="248574" X="1152.585" Y="1002.016" Z="309.2886" /> <!-- NOTE: <AddTermination> : Terminate when out of nexus vault -->
+					</If>
+				</If>
+
+				<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Object(244510) != null" />
+				<CustomBehavior File="InteractWith" MobId="244510" WaitTime="3000" X="4210.98" Y="7105.491" Z="268.1987" />
+			</While>
+			<TurnIn QuestName="The Nexus Vault" QuestId="41631" TurnInName="Archmage Kalec" TurnInId="105081" X="-857.1511" Y="4637.633" Z="749.2794" />
+		<!-- END Story: Artifact Weapon - Light's Wrath -->
+
+
+		<If Condition="!IsQuestCompleted(40938)" >
+			<PickUp QuestName="A Gift of Time" QuestId="41632" GiverName="Archmage Kalec" GiverId="105081" X="-857.1511" Y="4637.633" Z="749.2794" />
+			<TurnIn QuestName="A Gift of Time" QuestId="41632" TurnInName="Alonsus Faol" TurnInId="102363" X="-698.2396" Y="4492.471" Z="728.6259" />
+
+			<PickUp QuestName="The Light and the Void" QuestId="40938" GiverName="Prophet Velen" GiverId="101313" X="-695.5399" Y="4492.624" Z="728.5385" />
+			<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Priest [Echo].xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	XXXX is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	XXXX is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->
