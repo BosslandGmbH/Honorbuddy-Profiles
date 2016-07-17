@@ -1,0 +1,318 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Warlock Class Hall Loader [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Introductory Class Hall Quests -->
+			<PickUp QuestName="The Sixth" QuestId="40716" GiverName="Ritssyn Flamescowl" GiverId="103506" X="-840.6628" Y="4391.314" Z="737.7018" />
+			<While Condition="DoQuest(40716)" >
+				<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <CheckZoneId> : Going through warlock portal, teleports to Underbelly to avoid FFAPVP -->
+					<CustomBehavior File="InteractWith" MobId="103505" WaitForNpcs="false" X="-849.6238" Y="4390.526" Z="737.8734" />
+				</If>
+			</While>
+			<TurnIn QuestName="The Sixth" QuestId="40716" TurnInName="Ritssyn Flamescowl" TurnInId="101456" X="-842.4809" Y="4446.772" Z="696.0022" />
+
+			<PickUp QuestName="The New Blood" QuestId="40729" GiverName="Ritssyn Flamescowl" GiverId="101456" X="-842.4809" Y="4446.772" Z="696.0022" />
+			<While Condition="DoQuest(40729)" >
+				<MoveTo X="-858.4168" Y="4455.454" Z="695.9582" />
+				<CustomBehavior File="WaitTimer" WaitTime="35000" />
+				<CustomBehavior File="InteractWith" MobId="101433" Range="20" QuestId="40729" QuestObjectiveIndex="1" X="-868.9045" Y="4438.607" Z="696.6592" />
+				<CustomBehavior File="WaitTimer" WaitTime="105000" />
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<CustomBehavior File="WaitTimer" WaitTime="70000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+					<CustomBehavior File="WaitTimer" WaitTime="15000" />
+					<CustomBehavior File="MyCTM" X="2966.855" Y="1130.815" Z="206.5542" />
+					<CustomBehavior File="KillUntilComplete" MobId="98836" X="2971.992" Y="1127.061" Z="207.5549" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<If Condition="!IsScenarioCriteriaComplete(1)" >
+						<MoveTo X="2990.252" Y="1147.525" Z="210.1053" />
+						<CustomBehavior File="WaitTimer" WaitTime="30000" /> <!-- Let Calydus aggro mobs away. -->
+						<CustomBehavior File="InteractWith" MobId="98775" X="2976.04" Y="1206.328" Z="224.319" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+					</If>
+
+					<If Condition="!IsScenarioCriteriaComplete(2)" >
+						<CustomBehavior File="InteractWith" MobId="98793" X="2900.499" Y="1102.208" Z="223.3698" TerminateWhen="IsScenarioCriteriaComplete(2)" />
+					</If>
+
+					<If Condition="!IsScenarioCriteriaComplete(3)" >
+						<CustomBehavior File="InteractWith" MobId="98783" X="2966.064" Y="1066.908" Z="224.0368" TerminateWhen="IsScenarioCriteriaComplete(3)" />
+						<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" />
+					</If>
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<CustomBehavior File="InteractWith" MobId="245234" WaitForNpcs="false" NumOfTimes="2" X="3033.727" Y="1091.871" Z="222.4498" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+					<MoveTo X="3073.642" Y="1064.448" Z="240.2952" />
+					<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<CustomBehavior File="KillUntilComplete" MobId="99516" X="3095.802" Y="970.7292" Z="257.6465" TerminateWhen="Unit(99516, u =&gt; u.IsDead) != null" />
+					<MoveTo X="3095.609" Y="969.7092" Z="257.7378" />
+					<CustomBehavior File="WaitTimer" WaitTime="20000" />
+					<CustomBehavior File="InteractWith" MobId="245924" InteractByLooting="true" X="3095.983" Y="963.5382" Z="257.3805" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<CustomBehavior File="WaitTimer" WaitTime="35000" />
+					<MoveTo X="3117.624" Y="1036.686" Z="243.763" />
+					<MoveTo X="3133.677" Y="1001.943" Z="247.2111" />
+					<MoveTo X="3160.34" Y="959.3181" Z="247.1508" />
+					<MoveTo X="3130.772" Y="909.872" Z="247.6052" />
+					<CustomBehavior File="KillUntilComplete" MobId="98834" X="3089.86" Y="854.8242" Z="243.3767" TerminateWhen="Unit(98834, u =&gt; u.IsDead) != null" />
+					<MoveTo X="3089.327" Y="838.8879" Z="243.8869" />
+					<CustomBehavior File="MyCTM" X="3086.196" Y="825.6235" Z="243.671" /> <!-- NOTE: <AddTerminateWhen> : Shut off when player goes through portal. -->
+				</If>
+			</While>
+			<TurnIn QuestName="The New Blood" QuestId="40729" TurnInName="Calydus" TurnInId="101097" X="-858.3073" Y="4456.332" Z="695.9575" />
+		<!-- END Introductory Class Hall Quests -->
+
+		<!-- First Artifact Quest -->
+			<PickUp QuestName="The Tome of Blighted Implements" QuestId="40684" GiverName="Calydus" GiverId="101097" X="-858.3073" Y="4456.332" Z="695.9575" />
+			<While Condition="DoQuest(40684)" >
+				<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+					<CustomBehavior File="InteractWith" MobId="101097" GossipOptions="1" QuestId="40684" QuestObjectiveIndex="1" X="-858.3073" Y="4456.332" Z="695.9575" />
+				</If>
+
+				<CustomBehavior File="UserDialog" QuestId="40684" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" 
+				Text="Choose an artifact weapon.\n\nIf you do not choose within 5minutes, the bot will pick the one appropriate for your current specialization." />
+				
+				<If Condition="!IsQuestCompleted(40684)" >
+					<If Condition="Me.Specialization == WoWSpec.WarlockAffliction" >
+						<CustomBehavior File="Misc\RunLua" QuestId="40684" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<If Condition="Me.Specialization == WoWSpec.WarlockDemonology" >
+						<CustomBehavior File="Misc\RunLua" QuestId="40684" Lua="QuestChoiceFrameOption2.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<If Condition="Me.Specialization == WoWSpec.WarlockDestruction" >
+						<CustomBehavior File="Misc\RunLua" QuestId="40684" Lua="QuestChoiceFrameOption3.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<CustomBehavior File="Misc\RunLua" QuestId="40684" Lua="StaticPopup1Button1:Click();" />
+				</If>
+			</While>
+			<TurnIn QuestName="The Tome of Blighted Implements" QuestId="40684" TurnInName="Calydus" TurnInId="101097" X="-858.3073" Y="4456.332" Z="695.9575" />
+
+			<If Condition="!IsQuestCompleted(40623) &amp;&amp; NeedsQuest(40731) &amp;&amp; Me.Specialization == WoWSpec.WarlockAffliction" > <!-- 40623 = Ulthalesh, the Deadwind Harvester finale -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Warlock - Affliction - Ulthalesh, the Deadwind Harvester.xml" />
+			</If>
+			<If Condition="!IsQuestCompleted(42125) &amp;&amp; NeedsQuest(40731) &amp;&amp; Me.Specialization == WoWSpec.WarlockDemonology" > <!-- 42125 = Skull of the Man'ari finale -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Warlock - Demonology - Skull of the Man'ari.xml" />
+			</If>
+			<If Condition="!IsQuestCompleted(43254) &amp;&amp; NeedsQuest(40731) &amp;&amp; Me.Specialization == WoWSpec.WarlockDestruction" > <!-- 43254 = Scepter of Sargeras finale -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Warlock - Destruction - Scepter of Sargeras.xml" />
+			</If>
+		<!-- END First Artifact Quest -->
+
+		<!-- Introductory Class Hall Quests -->
+			<PickUp QuestName="The Heart of the Dreadscar" QuestId="40731" GiverName="Calydus" GiverId="101097" X="-858.3073" Y="4456.332" Z="695.9575" />
+			<While Condition="DoQuest(40731)" >
+				<If Condition="Me.MapId == 111111" > <!-- NOTE: <CheckMapId> : Entering Dreadscar, need to prevent this code from running if already inside. -->
+					<MoveTo X="-867.2147" Y="4444.254" Z="696.6596" />
+					<CustomBehavior File="MyCTM" X="-874.9042" Y="4436.101" Z="696.6596" /> <!-- TerminateWhen inside -->
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<!-- NOTE: <AddAvoid> : Get out of Fel Firestorm -->
+					<CustomBehavior File="KillUntilComplete" MobId="101468" X="3095.152" Y="963.0746" Z="257.4638" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<CustomBehavior File="InteractWith" MobId="101468" X="3095.13" Y="962.903" Z="257.7383" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+					<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2"  />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<CustomBehavior File="InteractWith" MobId="246148" IgnoreLoSToTarget="true" MinRange="6.5" X="3148.451" Y="1146.177" Z="291.8969" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+					<CustomBehavior File="WaitTimer" QuestId="40731" WaitTime="45000" />
+				</If>
+			</While>
+			<TurnIn QuestName="The Heart of the Dreadscar" QuestId="40731" TurnInName="Calydus" TurnInId="101097" X="3121.295" Y="1106.274" Z="286.4948" />
+
+			<PickUp QuestName="Power Overwhelming" QuestId="40821" GiverName="Calydus" GiverId="101097" X="3121.295" Y="1106.274" Z="286.4948" />
+			<While Condition="DoQuest(40821)" >
+				<!-- /dump GetMouseFocus():GetPowerID(); C_ArtifactUI.AddPower(powerId); -->
+				<CustomBehavior File="InteractWith" MobId="245004" WaitTime="2000" QuestId="40821" X="3132.802" Y="1131.156" Z="286.7309" />
+				<If Condition="HasItem(128942)" > <!-- Ulthalesh, the Deadwind Harvester -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1353);" />
+				</If>
+				<If Condition="HasItem(128943)" > <!-- Skull of the Man'ari -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1354);" />
+				</If>
+				<If Condition="HasItem(128941)" > <!-- Secpter of Sargeras -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1355);" />
+				</If>
+			</While>
+			<TurnIn QuestName="Power Overwhelming" QuestId="40821" TurnInName="Calydus" TurnInId="101097" X="3121.295" Y="1106.274" Z="286.4948" />
+
+			<PickUp QuestName="Rebuilding the Council" QuestId="40823" GiverName="Calydus" GiverId="101097" X="3121.295" Y="1106.274" Z="286.4948" />
+			<While Condition="DoQuest(40823)" >
+				<CustomBehavior File="InteractWith" MobId="101921" QuestId="40823" QuestObjectiveIndex="1" X="2992.059" Y="1148.891" Z="209.6857" />
+				<CustomBehavior File="WaitTimer" WaitTime="20000" />
+			</While>
+			<TurnIn QuestName="Rebuilding the Council" QuestId="40823" TurnInName="Ritssyn Flamescowl" TurnInId="101921" X="2984.213" Y="1157.557" Z="211.9093" />
+
+			<PickUp QuestName="The Path of the Dreadscar" QuestId="40824" GiverName="Ritssyn Flamescowl" GiverId="101921" X="2984.213" Y="1157.557" Z="211.9093" />
+			<While Condition="DoQuest(40824)" >
+				<CustomBehavior File="InteractWith" MobId="101979" WaitTime="1500" QuestId="40824" QuestObjectiveIndex="1" X="3038.363" Y="887.6805" Z="247.2501" />
+				<If Condition="NeedsQuest(39718)" > <!-- Azsuna -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+			</While>
+			<TurnIn QuestName="The Path of the Dreadscar" QuestId="40824" TurnInName="Ritssyn Flamescowl" TurnInId="101921" X="3037.014" Y="893.5" Z="247.5415" />
+
+			<While Condition="DoQuest(39718)" >
+				<MoveTo X="3088.475" Y="838.9525" Z="243.8864" />
+				<CustomBehavior File="MyCTM" X="3084.979" Y="819.9088" Z="243.6615" /> <!-- NOTE: <ConditionalCheck> : Leaving in Class Hall,  TerminateWhen Me In Dalaran -->
+				<CustomBehavior File="WaitTimer" WaitTime="3000" />
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />		
+			</While>
+
+		<!-- END Introductory Class Hall Quests -->
+
+
+		<!-- Tutorial Class Hall Quests - Starts in Dalaran -->
+		<!-- END Tutorial Class Hall Quests -->
+
+
+		<!-- Boolean for IsAchievementCompleted defaults to false. -->
+		<!-- Azsuna -->
+			<If Condition="!IsAchievementCompleted(10763, false)" > 
+				<If Condition="NeedsQuest(39718)" >
+					<CustomBehavior File="InteractWith" MobId="102589" WaitTime="1500" X="1335.118" Y="1344.29" Z="177.1373" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<MoveTo X="3088.475" Y="838.9525" Z="243.8864" />
+				<CustomBehavior File="MyCTM" X="3084.979" Y="819.9088" Z="243.6615" /> <!-- NOTE: <ConditionalCheck> : Leaving in Class Hall,  TerminateWhen Me In Dalaran -->
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />
+			</If>
+		<!-- END Azsuna -->
+
+		<!-- Val'sharah -->
+			<If Condition="!IsAchievementCompleted(10698, false)" >
+				<If Condition="NeedsQuest(39731)" >
+					<CustomBehavior File="InteractWith" MobId="102589" WaitTime="1500" X="1335.118" Y="1344.29" Z="177.1373" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39731);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<MoveTo X="3088.475" Y="838.9525" Z="243.8864" />
+				<CustomBehavior File="MyCTM" X="3084.979" Y="819.9088" Z="243.6615" /> <!-- NOTE: <ConditionalCheck> : Leaving in Class Hall,  TerminateWhen Me In Dalaran -->
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Val'sharah [Echo].xml" />
+			</If>
+		<!-- END Val'sharah -->
+
+		<!-- Highmountain -->
+			<If Condition="!IsAchievementCompleted(10059, false)" >
+				<If Condition="NeedsQuest(39733)" >
+					<CustomBehavior File="InteractWith" MobId="102589" WaitTime="1500" X="1335.118" Y="1344.29" Z="177.1373" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39733);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<MoveTo X="3088.475" Y="838.9525" Z="243.8864" />
+				<CustomBehavior File="MyCTM" X="3084.979" Y="819.9088" Z="243.6615" /> <!-- NOTE: <ConditionalCheck> : Leaving in Class Hall,  TerminateWhen Me In Dalaran -->
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Highmountain [Echo].xml" />
+			</If>
+		<!-- END Highmountain -->
+
+		<!-- Stormheim -->
+			<If Condition="!IsAchievementCompleted(10790, false)" >
+				<If Condition="NeedsQuest(39735)" >
+					<CustomBehavior File="InteractWith" MobId="102589" WaitTime="1500" X="1335.118" Y="1344.29" Z="177.1373" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39735);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<MoveTo X="3088.475" Y="838.9525" Z="243.8864" />
+				<CustomBehavior File="MyCTM" X="3084.979" Y="819.9088" Z="243.6615" /> <!-- NOTE: <ConditionalCheck> : Leaving in Class Hall,  TerminateWhen Me In Dalaran -->
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Stormehim [Echo].xml" />
+			</If>
+		<!-- END Stormheim -->
+
+	</QuestOrder>
+</HBProfile>

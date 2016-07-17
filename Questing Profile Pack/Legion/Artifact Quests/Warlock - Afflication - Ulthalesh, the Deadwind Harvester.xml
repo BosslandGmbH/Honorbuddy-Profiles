@@ -1,0 +1,271 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Warlock - Affliction - Ulthalesh, the Deadwind Harvester [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Get Continuation Quest -->
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
+
+		<!-- Story: Artifact Weapon - Ulthalesh, the Deadwind Harvester -->
+			<!--START1: Need to detect if this is the player's first artifact quest since the NPC is in a different location. -->
+			<PickUp QuestName="Ulthalesh, the Deadwind Harvester" QuestId="40495" GiverName="Calydus" GiverId="101097" X="-858.3073" Y="4456.332" Z="695.9575" />
+			<!-- :END1 -->
+			<While Condition="DoQuest(40495)" >
+				<If Condition="Me.MapId == 111111" > <!-- NOTE: <CheckMapIds> : Dalaran to Karazhan -->
+					<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <ZoneId> : Dalaran to Dalaran Portal Room -->
+						<MoveTo X="-850.0136" Y="4460.374" Z="735.6611" />
+						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TermianteWhen="Me.ZoneId == DALARAN PORTAL ROOM -->
+					</If>
+					<MoveTo X="-872.5156" Y="4501.743" Z="580.1682" />
+					<CustomBehavior File="InteractWith" MobId="246009" X="-869.9479" Y="4503.124" Z="580.4584" />
+					<CustomBehavior File="WaitTimer" WaitTime="5000" TermianteWhen="Me.ZoneId == 111111" /> <!-- NOTE: Terminate when player is in Dalaran Crater -->
+				</If>
+
+				<MoveTo Nav="Fly" QuestId="40495" QuestObjectiveIndex="2" X="-10366.75" Y="-1256.367" Z="35.90921" />
+				<!-- NOTE: <Technical> : Below is a gossip option.  This gossip option effects which questIds the player will get from here on out.  
+										The reason being is it's mostly a role-playing thing Blizzard added in.
+										If the player is nice to the NPC, the NPC is nice to the player throughout the quests.
+										If the player attacks the NPC, the NPC is mean toward the player throughout the quests.
+				-->
+				<CustomBehavior File="InteractWith" MobId="100323" GossipOptions="1,1,1" QuestId="40495" QuestObjectiveIndex="3" X="-10370.31" Y="-1257.004" Z="35.90919" />
+			</While>
+			<TurnIn QuestName="Ulthalesh, the Deadwind Harvester" QuestId="40495" TurnInName="Revil Kost" TurnInId="100323" X="-10370.31" Y="-1257.004" Z="35.90744" />
+
+			<PickUp QuestName="Following the Curse" QuestId="40588" GiverName="Revil Kost" GiverId="100578" X="-10370.31" Y="-1257.004" Z="35.90744" />
+			<While Condition="DoQuest(40588)" >
+				<CustomBehavior File="EscortGroup" EscortCompleteWhen="QuestObjectiveComplete" EscortCountMax="1" QuestId="40588" QuestObjectiveIndex="1"
+					EscortNpcId="100578" EscortMaxFightDistance="15" SearchForNpcsRadius="60" >
+					<SearchPath>
+						<Hotspot X="-10370.31" Y="-1257.007" Z="35.9101" />
+					</SearchPath>
+				</CustomBehavior>
+			</While>
+			<TurnIn QuestName="Following the Curse" QuestId="40588" TurnInName="Revil Kost" TurnInId="100729" X="-10440.19" Y="-2143.814" Z="90.77973" />
+
+			<PickUp QuestName="Disturbing the Past" QuestId="40604" GiverName="Revil Kost" GiverId="100729" X="-10440.19" Y="-2143.814" Z="90.77973" />
+			<While Condition="DoQuest(40604)" >
+				<CustomBehavior File="InteractWith" MobId="245793" QuestId="40604" QuestObjectiveIndex="1" X="-10436.61" Y="-2142.387" Z="90.77908" />
+			</While>
+			<TurnIn QuestName="Disturbing the Past" QuestId="40604" TurnInType="Object" TurnInName="Battered Journal" TurnInId="245793" X="-10429.92" Y="-2141.151" Z="91.85447" />
+
+			<PickUp QuestName="To Point the Way" QuestId="40606" GiverName="Battered Journal" GiverType="Object" GiverId="245793" X="-10429.92" Y="-2141.151" Z="91.85447" />
+			<While Condition="DoQuest(40606)" >
+				<CustomBehavior File="InteractWith" MobId="245794" InteractByLooting="true" QuestId="40606" QuestObjectiveIndex="1" X="-10433.74" Y="-2136.538" Z="91.61791" />
+			</While>
+			<TurnIn QuestName="To Point the Way" QuestId="40606" TurnInName="Revil Kost" TurnInId="100729" X="-10440.19" Y="-2143.814" Z="90.77973" />
+
+			<PickUp QuestName="The Fate of Deadwind" QuestId="40611" GiverName="Revil Kost" GiverId="100729" X="-10440.19" Y="-2143.814" Z="90.77973" />
+			<While Condition="DoQuest(40611)" >
+				<If Condition="!IsObjectiveComplete(1, 40611)" >
+					<MoveTo Nav="Fly" QuestId="40837" QuestObjectiveIndex="1" X="-10457.95" Y="-1714.108" Z="83.38843" />
+					<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+					<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="IsObjectiveComplete(1, 40611)" />
+				</If>
+				<If Condition="!IsObjectiveComplete(3, 40611)" >
+					<MoveTo Nav="Fly" QuestId="40837" QuestObjectiveIndex="3" X="-10906.27" Y="-2006.087" Z="112.5387" />
+					<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+					<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="IsObjectiveComplete(3, 40611)" />
+				</If>
+				<If Condition="!IsObjectiveComplete(2, 40611)" >
+					<MoveTo Nav="Fly" QuestId="40837" QuestObjectiveIndex="2" X="-11153.77" Y="-1845.082" Z="71.61025" />
+					<MoveTo Nav="Run" QuestId="40837" QuestObjectiveIndex="2" X="-11176.98" Y="-1854.881" Z="73.862" />
+					<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+					<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="IsObjectiveComplete(2, 40611)" />
+				</If>
+			</While>
+			<TurnIn QuestName="The Fate of Deadwind" QuestId="40611" TurnInName="Revil Kost" TurnInId="100812" X="-11112.19" Y="-2070.07" Z="45.40069" />
+
+			<PickUp QuestName="The Dark Riders" QuestId="40623" GiverName="Revil Kost" GiverId="100812" X="-11112.19" Y="-2070.07" Z="45.40069" />
+			<!-- Alternative "mean" quest  
+			<PickUp QuestName="The Dark Riders" QuestId="41155" GiverName="Revil Kost" GiverId="100812" X="-11112.19" Y="-2070.07" Z="45.40069" /> -->
+			<While Condition="DoQuest(40623)" >
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == null" > <!-- NOTE: <CheckThis> : == null may not work.  This is used to get the player into the scenario zone. -->
+					<MoveTo X="-11017.52" Y="-1993.153" Z="24.90709" />
+					<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != null" />
+					<CustomBehavior File="InteractWith" MobId="247322" X="-11018.1" Y="-1988.818" Z="24.90163" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<MoveTo X="-10992.48" Y="-1973.47" Z="-48.74293" />
+					<MoveTo X="-10962.58" Y="-1973.511" Z="-49.81652" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<MoveTo X="-10964.68" Y="-1967.501" Z="-49.81814" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							await Coroutine.Sleep(750);
+							SpellManager.Cast(111771);
+							SpellManager.ClickRemoteLocation(new WoWPoint(-10965.31, -1940.077, -49.8032));
+							await Coroutine.Sleep(3500);
+						]]> 
+					</CustomBehavior>
+					<CustomBehavior File="InteractWith" MobId="59271" X="-10965.45" Y="-1969.487" Z="-49.81665" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+					<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<CustomBehavior File="KillUntilComplete" MobId="101257" X="-10965.68" Y="-1921.035" Z="-49.87052" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<CustomBehavior File="InteractWith" MobId="245994" WaitTime="1500" X="-10962.74" Y="-1878.208" Z="-46.15247" />
+					<CustomBehavior File="WaitTimer" WaitTime="30000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<MoveTo X="-10885.38" Y="-1962.469" Z="-41.20673" />
+					<CustomBehavior File="WaitTimer" WaitTime="15000" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<!-- NOTE: <AddAvoid> : Might need to avoid when he throws the staff.  It doesn't move or anything so it should be low priority. -->
+					<CustomBehavior File="KillUntilComplete" MobId="100344" X="-10866.06" Y="-1962.245" Z="-41.08077" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+					<CustomBehavior File="InteractWith" MobId="246021" InteractByLooting="true" WaitTime="1500" X="-10865.06" Y="-1961.418" Z="-39.34591" />
+					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+				</If>
+			</While>
+			<TurnIn QuestName="The Dark Riders" QuestId="40623" TurnInName="Revil Kost" TurnInId="101282" X="-10871.4" Y="-1961.52" Z="-41.03577" />
+			<!-- Alternative "mean" quest.
+			<TurnIn QuestName="The Dark Riders" QuestId="41155" TurnInName="Revil Kost" TurnInId="101282" X="-10871.4" Y="-1961.52" Z="-41.03577" /> -->
+		<!-- END Story: Artifact Weapon - Ulthalesh, the Deadwind Harvester -->
+
+
+		<If Condition="!IsQuestCompleted(40731)" >
+			<PickUp QuestName="The Power Possessed" QuestId="40712" GiverName="Revil Kost" GiverId="101282" X="-10871.4" Y="-1961.52" Z="-41.03577" />
+			<!-- Alternative "mean" quest. 
+			<PickUp QuestName="The Power Possessed" QuestId="41156" GiverName="Revil Kost" GiverId="101282" X="-10871.4" Y="-1961.52" Z="-41.03577" /> -->
+			<If Condition="HasQuest(41156)" > <!-- NOTE: <CheckMapId> :  need to &amp;&amp; the map Id.  Should only run is player is in Karazhan Catacombs. --> 
+				<CustomBehavior File="RunCode"><![CDATA[
+					Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Using Dalaran Hearthstone");
+					await CommonCoroutines.StopMoving(); 
+					WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+					if (dalaranHearth.Cooldown != 0) {
+						Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
+						await Coroutine.Wait(1200000, () => dalaranHearth.Cooldown == 0);
+					}
+					dalaranHearth.Interact();
+					var currentLoc = StyxWoW.Me.ZoneId;
+					await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
+					await Coroutine.Sleep(1500);
+				]]>
+				</CustomBehavior>
+			</If>
+			<TurnIn QuestName="The Power Possessed" QuestId="41156" TurnInName="Calydus" TurnInId="101097" X="-858.3073" Y="4456.332" Z="695.9577" />
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Warlock [Echo].xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	The Heart of the Dreadscar (40731) is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	The Heart of the Dreadscar (40731) is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

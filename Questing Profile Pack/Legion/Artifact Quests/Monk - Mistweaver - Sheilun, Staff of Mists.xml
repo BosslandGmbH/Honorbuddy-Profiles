@@ -133,19 +133,19 @@
 
 						await CommonCoroutines.StopMoving(); 
 
-
-						StyxWoW.Me.SetFacing(healMe.Location);
-						await Coroutine.Sleep(385);
-
 						if (CleansePriority() != null && SpellManager.CanCast(115450))
 						{
 							WoWUnit cleanseMe = CleansePriority();
+							if (StyxWoW.Me.CurrentTarget != cleanseMe) { cleanseMe.Target(); }
 							StyxWoW.Me.SetFacing(cleanseMe.Location);
 							await Coroutine.Sleep(385);
 
 							SpellManager.Cast(115450);
 							return;
 						}
+
+						StyxWoW.Me.SetFacing(healMe.Location);
+						await Coroutine.Sleep(385);
 
 						if (healMe.HealthPercent <= 10 && SpellManager.CanCast(116849))
 						{

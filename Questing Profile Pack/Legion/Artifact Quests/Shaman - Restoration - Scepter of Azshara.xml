@@ -1,0 +1,355 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Shaman - Restoration - Scepter of Azshara [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Heal Routine -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					WoWUnit PurifyPriority()
+					{
+						return ObjectManager.GetObjectsOfType<WoWUnit>(true, true).Where(x => new[]{105298, 102828, 104853}.Contains((int)x.Entry) || x.IsMe).OrderBy(x => x.GetPredictedHealthPercent(true)).FirstOrDefault(x => x.HasAura("Heart of Frost"));
+					}
+
+					WoWUnit HealPriority()
+					{
+						return ObjectManager.GetObjectsOfType<WoWUnit>(true, true).Where(x => new[]{105298, 102828, 104853}.Contains((int)x.Entry) || x.IsMe).OrderBy(x => x.GetPredictedHealthPercent(true)).FirstOrDefault();
+					}
+
+					async Task HealRoutine(WoWUnit healMe)
+					{
+						if (healMe == null) return;
+						if (healMe.GetPredictedHealthPercent(true) == 100 && StyxWoW.Me.CastingSpellId == 77472)
+						{
+							// NOTE: <AddSupport> : When Kra'liss begins to cast Deafening Roar  (Kra'liss unleashes a massiver roar that interrupts spell casting and inflicts Physical damage to all nearby enemies)
+							//Stop Healing Wave
+							SpellManager.StopCasting();
+							return;
+						}
+
+						await Coroutine.Wait(3000, () => !StyxWoW.Me.IsCasting && !SpellManager.GlobalCooldown);
+
+						if (PurifyPriority() != null && SpellManager.CanCast(77130))
+						{
+							WoWUnit cleanseMe = PurifyPriority();
+							if (StyxWoW.Me.CurrentTarget != cleanseMe) { cleanseMe.Target(); }
+							StyxWoW.Me.SetFacing(cleanseMe.Location);
+							await Coroutine.Sleep(385);
+
+							SpellManager.Cast(77130);
+							return;
+						}
+
+						if (StyxWoW.Me.CurrentTarget != healMe) { healMe.Target(); }
+						StyxWoW.Me.SetFacing(healMe.Location);
+						await Coroutine.Sleep(385);
+
+
+						while (healMe.Distance >= 39)
+						{
+							Navigator.MoveTo(healMe.Location);
+							await Coroutine.Yield();
+						}
+
+						if ((!healMe.HasAura("Rip Tide") || healMe.GetAuraByName("Rip Tide").TimeLeft < TimeSpan.FromSeconds(2)) && healMe.HealthPercent >= 25 && SpellManager.CanCast("Rip Tide"))
+						{
+							Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Rip Tide on {healMe.Name}  @ {(int)healMe.HealthPercent}% HP");
+							SpellManager.Cast("Rejuvenation");
+							return;
+						}
+
+						if (SpellManager.CanCast("Unleash Life")) 
+						{	// Talent ability.
+							Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Unleash Life on {healMe.Name}  @ {(int)healMe.HealthPercent}% HP");
+							SpellManager.Cast("Unleash Life");
+							return;
+						}
+
+						if ((healMe.HealthPercent > 45 && SpellManager.CanCast("Healing Wave")) || (healMe.HealthPercent > 25 && StyxWoW.Me.HasAura("Tidal Waves")))
+						{
+							Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Healing Wave on {healMe.Name}  @ {(int)healMe.HealthPercent}% HP");
+							SpellManager.Cast("Healing Wave");
+							return;
+						}
+
+						if (SpellManager.CanCast("Healing Rain"))
+						{
+							SpellManager.Cast("Healing Rain");
+							SpellManager.ClickRemoteLocation(healMe.Location);
+							return;
+						}
+
+						if (healMe.HealthPercent <= 45 && SpellManager.CanCast("Healing Surge"))
+						{
+							Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Healing Surge on {healMe.Name}  @ {(int)healMe.HealthPercent}% HP");
+							SpellManager.Cast("Healing Surge");
+							return;
+						}
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END Heal Routine -->
+
+		<!-- Get Continuation Quest -->
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
+
+		<!-- Story: Artifact Weapon - Scepter of Azshara -->
+			<PickUp QuestName="To the Deeps" QuestId="43644" GiverName="Erunak Stonespeaker" GiverId="96530" X="833.8368" Y="1047.934" Z="48.43444" />
+			<While Condition="DoQuest(43644)" >
+				<CustomBehavior File="InteractWith" MobId="111309" QuestId="43644" QuestObjectiveIndex="1" X="835.625" Y="1053.377" Z="50.64884" />
+				<CustomBehavior File="WaitTimer" QuestId="43644" WaitTime="250000" />
+			</While>
+			<TurnIn QuestName="To the Deeps" QuestId="43644" TurnInName="Erunak Stonespeaker" TurnInId="96530" X="-6800.905" Y="4566.531" Z="-605.7632" />
+
+			<PickUp QuestName="Wavespeaker's Trail" QuestId="43645" GiverName="Erunak Stonespeaker" GiverId="96530" X="-6800.905" Y="4566.531" Z="-605.7632" />
+			<While Condition="DoQuest(43645)" >
+				<CustomBehavior File="InteractWith" MobId="252304" QuestId="43645" QuestObjectiveIndex="2" X="-6583.663" Y="4782.382" Z="-594.514" />
+				<CustomBehavior File="InteractWith" MobId="111104" QuestId="43645" QuestObjectiveIndex="3" X="-6932.208" Y="5076.835" Z="-610.0037" />
+				<CustomBehavior File="InteractWith" MobId="111102" QuestId="43645" QuestObjectiveIndex="1" X="-7180.413" Y="4717.078" Z="-595.9041" />
+			</While>
+			<TurnIn QuestName="Wavespeaker's Trail" QuestId="43645" TurnInName="Erunak Stonespeaker" TurnInId="96530" X="-6800.905" Y="4566.531" Z="-605.7632" />
+
+
+			<PickUp QuestName="Azshara's Power" QuestId="40341" GiverName="Erunak Stonespeaker" GiverId="96530" X="-6800.905" Y="4566.531" Z="-605.7632" />
+			<While Condition="DoQuest(40341)" >
+				<MoveTo QuestId="40341" QuestObjectiveIndex="1" X="-5686.999" Y="5363.817" Z="-1118.149" /> <!-- Abyssal Breach -->
+				<CustomBehavior File="MyCTM" QuestId="40341" QuestObjectiveIndex="1" X="0.2291485" Y="-3.129899" Z="8.991887" TerminateWhen="Me.IsFalling" />
+				<CustomBehavior File="WaitTimer" QuestId="40341" QuestObjectiveIndex="1" WaitTime="15000" TerminateWhen="Me.IsSwimming" />
+				<!-- NOTE: <AddFunction> : Need to CTM into the instance portal. The load trigger is large - so I got hit by it before I could capture the coordinates. -->
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<If Condition="!IsScenarioCriteriaComplete(1)" >
+						<DisableBehavior Name="Combat" />
+						<MoveTo X="-593.0642" Y="808.5642" Z="244.8095" />
+						<CustomBehavior File="RunCode"><![CDATA[
+								var grashPoi = Unit(105298);
+
+								while (grashPoi != null && grashPoi.HealthPercent < 100)
+								{
+									await HealRoutine(grashPoi);
+									await Coroutine.Yield();
+								}
+
+							]]>
+						</CustomBehavior>
+					</If>
+					<If Condition="!IsScenarioCriteriaComplete(2)" >
+						<EnableBehavior Name="Combat" />
+						<CustomBehavior File="KillUntilComplete" MobId="102792" X="-576.6647" Y="806.6" Z="244.8095" TerminateWhen="IsScenarioCriteriaComplete(2)" />
+						<!-- Healing Grash back to full before we speak to him. -->
+						<CustomBehavior File="RunCode"><![CDATA[
+								var grashPoi = Unit(105298);
+
+								while (grashPoi != null && grashPoi.HealthPercent < 100)
+								{
+									await HealRoutine(grashPoi);
+									await Coroutine.Yield();
+								}
+
+							]]>
+						</CustomBehavior>
+					</If>
+					<CustomBehavior File="WaitTimer" WaitTime="8000" /> <!-- Wait a little bit until Grash is interactable. -->
+					<CustomBehavior File="InteractWith" MobId="105298" GossipOptions="4,1" X="-561.2934" Y="807.2466" Z="245.1142" TerminateWhen="IsScenarioCriteriaComplete(3)" />
+					<MoveTo X="-524.0342" Y="806.226" Z="256.9002" />
+					<CustomBehavior File="WaitTimer" WaitTime="30000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<If Condition="!IsScenarioCriteriaComplete(1)" >
+						<DisableBehavior Name="Combat" />
+						<MoveTo X="-438.0906" Y="802.5275" Z="248.5818" />
+						<CustomBehavior File="RunCode"><![CDATA[
+								while (HealPriority() != null && !IsScenarioCriteriaComplete(1))
+								{
+									await HealRoutine(HealPriority());
+									await Coroutine.Yield();
+								}
+							]]>
+						</CustomBehavior>
+					</If>
+					<If Condition="!IsScenarioCriteriaComplete(2)" >
+						<CustomBehavior File="InteractWith" MobId="104853" X="-358.875" Y="807.5417" Z="258.4809" TerminateWhen="IsScenarioCriteriaComplete(2)" />
+						<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+					</If>
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<DisableBehavior Name="Combat" />
+					<If Condition="!IsScenarioCriteriaComplete(1)" >
+						<CustomBehavior File="InteractWith" MobId="105298" GossipOptions="1" X="-379.2809" Y="809.8109" Z="248.2059" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+						<MoveTo X="-304.9862" Y="809.462" Z="260.6023" />
+					</If>
+
+					<CustomBehavior File="RunCode"><![CDATA[
+							while (Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3 && !IsScenarioCriteriaComplete(2))
+							{
+								await HealRoutine(HealPriority());
+								await Coroutine.Yield();
+							}
+						]]>
+					</CustomBehavior>
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<CustomBehavior File="InteractWith" MobId="113903" X="-215.6302" Y="808.6042" Z="263.8079" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+					<CustomBehavior File="WaitTimer" WaitTime="30000" />
+					<While Condition="!IsScenarioCriteriaComplete(2)" >
+						<CustomBehavior File="RunCode" Code="if (!Me.HasAura(2645)) SpellManager.Cast(2645);" />
+						<MoveTo X="-21.13715" Y="802.283" Z="807.3605" />
+					</While>
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<DisableBehavior Name="Combat" />
+					<CustomBehavior File="InteractWith" MobId="105298" GossipOptions="1" X="-44.9583" Y="801.682" Z="797.1661" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+
+					<If Condition="!IsScenarioCriteriaComplete(2)" >
+						<MoveTo X="34.08841" Y="802.3474" Z="806.3171" />
+						<CustomBehavior File="RunCode"><![CDATA[
+								var zithreenPoi = Unit(104856);
+								while (Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5 && !IsScenarioCriteriaComplete(2))
+								{
+									if (zithreenPoi.ChanneledCastingSpellId == 209983 && SpellManager.CanCast("Wind Shear"))
+									{
+										SpellManager.StopCasting();
+										await Coroutine.Wait(3000, () => !StyxWoW.Me.IsCasting && !SpellManager.GlobalCooldown);
+										zithreenPoi.Target();
+										StyxWoW.Me.SetFacing(zithreenPoi.Location);
+										await Coroutine.Sleep(200);
+										SpellManager.Cast("Wind Shear");
+									}
+									await HealRoutine(HealPriority());
+									await Coroutine.Yield();
+								}
+							]]>
+						</CustomBehavior>
+					</If>
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<CustomBehavior File="InteractWith" MobId="249342" InteractByLooting="true" WaitTime="1500" X="50.57813" Y="802.3924" Z="805.731" />
+					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+				</If>
+
+				<CustomBehavior File="InteractWith" MobId="105819" QuestId="40341" QuestObjectiveIndex="4" X="50.57813" Y="802.3924" Z="805.7307" />
+			</While>
+			<TurnIn QuestName="Azshara's Power" QuestId="40341" TurnInName="Stormcaller Mylra" TurnInId="96539" X="829.4097" Y="1050.967" Z="48.45243" />
+		<!-- END Story: Artifact Weapon - Scepter of Azshara -->
+
+
+		<If Condition="!IsQuestCompleted(40225)" >
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Shaman [Echo].xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	A Ring Reforged (40225) is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	A Ring Reforged (40225) is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

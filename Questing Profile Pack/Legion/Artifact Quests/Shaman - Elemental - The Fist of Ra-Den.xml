@@ -1,0 +1,247 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Shaman - Elemental - The Fist of Ra-Den [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Get Continuation Quest -->
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
+
+		<!-- Story: Artifact Weapon - The Fist of Ra-Den -->
+			<PickUp QuestName="The Coming Storm" QuestId="43334" GiverName="Rehgar Earthfury" GiverId="96541" X="846.0817" Y="1050.318" Z="48.49166" />
+			<While Condition="Me.MapId == 111111" > <!-- NOTE: <CheckMapId> : While inside Shaman class hall. -->
+				<CustomBehavior File="InteractWith" MobId="103863" WaitTime="15000" X="841.2136" Y="1048.998" Z="48.41624" /> 
+				<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="!Me.IsFlying" />
+			</While>
+			<TurnIn QuestName="The Coming Storm" QuestId="43334" TurnInName="Xuen" TurnInId="60968" X="3272.398" Y="652.9236" Z="538.5089" />
+
+			<PickUp QuestName="The Codex of Ra" QuestId="43338" GiverName="Xuen" GiverId="60968" X="3272.398" Y="652.9236" Z="538.5089" />
+			<While Condition="DoQuest(43338)" >
+				<If Condition="!IsObjectiveComplete(1, 43338)" ><!-- <NOTE> : <CheckZoneId> : Going into Guo-Lai halls.  More careful movement is needed to enter as to not to anger Flightor.  -->
+					<MoveTo Nav="Fly" X="1477.791" Y="1906.946" Z="304.0117" />
+					<MoveTo Nav="Run" X="1537.471" Y="1941.064" Z="287.7237" />
+					<MoveTo Nav="Run" X="1616.658" Y="1949.044" Z="260.4965" />
+				</If>
+
+				<!-- NOTE: <ConfirmWorkingAvoids> : The Shao-Tien Spirit warriors have two ground effects they cast. 224521, 126913 -->
+				<CustomBehavior File="Hooks\Avoid" AvoidName="ThundersCall" Command="Add" ObjectId="64915" Radius="6" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="MoltenFists" Command="Add" ObjectType="AreaTrigger" ObjectId="224521" Radius="6" />
+				<!-- NOTE: <ConfirmWorkingAvoids> : Traps on the ground.  Check reaction flags/etc.  I think lightning tiles are always safe. -->
+
+
+				<If Condition="!IsObjectiveComplete(4, 43338)" >
+					<CustomBehavior File="InteractWith" MobId="211664" QuestId="43338" X="1798.449" Y="1878.323" Z="260.8267" /> <!-- Can remove if navigator handles opening it -->
+					<!-- NOTE: <AddAvoid> Mob interacted with below shoots a cone attack, and does a charge-up AoE around itself.  Low priority, both attacks don't seem to do much damage. -->
+					<CustomBehavior File="InteractWith" MobId="110675" MobState="Dead" InteractByLooting="true" QuestId="43338" QuestObjectiveIndex="4" X="1727.575" Y="1906.255" Z="223.2648" />
+					<CustomBehavior File="InteractWith" MobId="211664" QuestId="43338" X="1798.449" Y="1878.323" Z="260.8267" /> <!-- Can remove if navigator handles opening it -->
+				</If>
+
+				<If Condition="!IsObjectiveComplete(3, 43338)" >
+					<!-- NOTE: <AddDoWhen> : -->
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="Cleanse_CurseOfStone" AllowUseDuringCombat="true" UseWhen="Me.HasAura(224563)" >
+						<CustomBehavior File="RunCode"><![CDATA[
+									SpellManager.StopCasting();
+									await Coroutine.Wait(3000, ()=> !StyxWoW.Me.IsCasting && !SpellManager.GlobalCooldown);
+									SpellManager.Cast("Cleanse Spirit");
+							]]>
+						</CustomBehavior>
+						<CustomBehavior File="WaitTimer" WaitTime="750" />
+					</CustomBehavior>
+					<!-- Devastating Slam: 224664
+						Upheaving Stomp: 224646
+					-->
+					<CustomBehavior File="Hooks\Avoid" AvoidName="DevastatingSlam" Command="Add" ObjectId="110660" Radius="6" AvoidWhen="UNIT.CastingSpellId == 224664" AvoidLocationProducer="UNIT.Location.RayCast(UNIT.Rotation, 8)" />
+					<CustomBehavior File="InteractWith" MobId="110660" WaitTime="5000" QuestId="43338" QuestObjectiveIndex="3" X="1774.629" Y="1965.28" Z="240.3492" />
+					<CustomBehavior File="InteractWith" MobId="110660" MobState="Dead" InteractByLooting="true" QuestId="43338" QuestObjectiveIndex="3" X="1774.629" Y="1965.28" Z="240.3492" />
+
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="DevastatingSlam" Command="Remove" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="DevastatingSlam" Command="Remove" />
+				</If>
+
+				<If Condition="!IsObjectiveComplete(2, 43338)" >
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="Purge_FlameWreathedWeapon" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.Entry == 110582 &amp;&amp; Me.CurrentTarget.HasAura(224567)" >
+						<CustomBehavior File="RunCode"><![CDATA[
+									SpellManager.StopCasting();
+									await Coroutine.Wait(3000, ()=> !StyxWoW.Me.IsCasting && !SpellManager.GlobalCooldown);
+									SpellManager.Cast("Purge");
+							]]>
+						</CustomBehavior>
+						<CustomBehavior File="WaitTimer" WaitTime="750" />
+					</CustomBehavior>
+					<CustomBehavior File="InteractWith" MobId="110582" MobState="Dead" InteractByLooting="true" QuestId="43338" QuestObjectiveIndex="2" X="1691.686" Y="1779.927" Z="253.5886" />
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="Purge_FlameWreathedWeapon" Command="Remove" />
+				</If>
+
+				<CustomBehavior File="Hooks\Avoid" AvoidName="ThundersCall" Command="Remove" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="MoltenFists" Command="Remove" />
+			</While>
+			<TurnIn QuestName="The Codex of Ra" QuestId="43338" TurnInName="Rehgar Earthfury" TurnInId="96541" X="1551.125" Y="1975.719" Z="275.7936" />
+
+			<PickUp QuestName="The Voice of Thunder" QuestId="39771" GiverName="Rehgar Earthfury" GiverId="96541" X="1551.125" Y="1975.719" Z="275.7936" />
+			<While Condition="DoQuest(39771)" >
+				<MoveTo X="3245.734" Y="555.1611" Z="545.6694" />
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<CustomBehavior File="InteractWith" MobId="60968" GossipOptions="1" X="3240.046" Y="544.4896" Z="545.6694" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<CustomBehavior File="Hooks\Avoid" AvoidName="GoliathsBane_1" Command="Add" ObjectId="100363" Radius="6" AvoidWhen="UNIT.CastingSpellId == 202173" AvoidLocationProducer="UNIT.Location.RayCast(UNIT.Rotation, 8)" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="GoliathsBane_2" Command="Add" ObjectId="100363" Radius="6" AvoidWhen="UNIT.CastingSpellId == 202323" AvoidLocationProducer="UNIT.Location.RayCast(UNIT.Rotation, 8)" />
+					<MoveTo X="3402.592" Y="483.7468" Z="578.4421" />
+					<CustomBehavior File="InteractWith" MobId="60968" GossipOptions="1" X="3418.8" Y="501.0712" Z="579.0839" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<MoveTo X="3480.905" Y="656.0428" Z="608.6679" />
+					<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="Unit(60968, u =&gt; u.CanInteract) != null" />
+					<CustomBehavior File="InteractWith" MobId="60968" GossipOptions="1" X="3483.618" Y="662.7257" Z="608.6682" />
+
+					<!-- <NOTE> : <AddAvoid> Could avoid Chen's barrel throw, low priority. -->
+					<CustomBehavior File="KillUntilComplete" X="3481.968" Y="652.8311" Z="608.6681" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" >
+						<PursuitList>
+							<PursueUnit Priority="1000" Id="100322" /> <!-- Li li's serpent. -->
+							<PursueUnit Priority="500" Id="100308" PursueWhen="UNIT.IsHostile" /> <!-- Li Li -->
+							<PursueUnit Priority="1" Id="100307" PursueWhen="UNIT.IsHostile" /> <!-- Chen -->
+						</PursuitList>
+					</CustomBehavior>
+
+					<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<CustomBehavior File="InteractWith" MobId="256789" InteractByLooting="true" WaitTime="1500" X="3796.216" Y="534.4653" Z="638.9909" />
+					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<CustomBehavior File="KillUntilComplete" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" >
+						<PursuitList>
+							<PursueUnit Priority="1000" Id="101578" /> <!-- Low Inquisitor -->
+							<PursueUnit Priority="500" Id="100546" /> <!-- Lord Kra'vos -->
+						</PursuitList>
+					</CustomBehavior>
+				</If>
+
+				<CustomBehavior File="InteractWith" MobId="244794" QuestId="39771" QuestObjectiveIndex="2" X="3796.022" Y="534.4288" Z="638.9909" />
+			</While>
+			<TurnIn QuestName="The Voice of Thunder" QuestId="39771" TurnInName="Rehgar Earthfury" TurnInId="96541" X="844.5886" Y="1056.885" Z="48.6738" />
+
+		<!-- END Story: Artifact Weapon - The Fist of Ra-Den -->
+
+		<If Condition="!IsQuestCompleted(40225)" >
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Shaman [Echo].xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	A Ring Reforged (40225) is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	A Ring Reforged (40225) is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->
