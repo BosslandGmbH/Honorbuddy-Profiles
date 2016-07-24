@@ -1,0 +1,246 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Demon Hunter - Vengeance - Aldrachi Warblades [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Get Continuation Quest -->
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
+
+		<!-- Story: Artifact Weapon - Aldrachi Warblades -->
+		<If Condition="IsQuestCompleted(39688)" >  <!-- Kayn -->
+			<!-- NOTE: <TechnicalCheck> : These NPC locations will vary depending on if this is the player's first artifact weapon or not.
+											This current XYZ/Id is for the first artifact weapon.  Add support for other artifact quests later. -->
+			<PickUp QuestName="Asking a Favor" QuestId="40247" GiverName="Kayn Sunfury" GiverId="99247" X="-852.2726" Y="4256.074" Z="746.2851" />
+			<TurnIn QuestName="Asking a Favor" QuestId="40247" TurnInName="Archmage Khadgar" TurnInId="90417" X="-848.4618" Y="4638.848" Z="749.5472" />
+		</If>
+
+
+		<If Condition="IsQuestCompleted(40255)" >  <!-- Altruis -->
+			<!-- NOTE: <TechnicalCheck> : These NPC locations will vary depending on if this is the player's first artifact weapon or not.
+											This current XYZ/Id is for the first artifact weapon.  Add support for other artifact quests later. -->
+			<PickUp QuestName="Asking a Favor" QuestId="41803" GiverName="Altruis the Sufferer" GiverId="99254" X="-852.2726" Y="4256.074" Z="746.2851" />
+			<TurnIn QuestName="Asking a Favor" QuestId="41803" TurnInName="Archmage Khadgar" TurnInId="90417" X="-848.4618" Y="4638.848" Z="749.5472" />
+		</If>
+
+		<PickUp QuestName="Ask and You Shall Receive" QuestId="41804" GiverName="Stenchscab" GiverId="106848" X="-848.4618" Y="4638.848" Z="749.5472" />
+		<While Condition="DoQuest(41804)" >
+			<CustomBehavior File="WaitTimer" QuestId="41804" QuestObjectiveIndex="1" WaitTime="60000" />
+			<CustomBehavior File="InteractWith" MobId="248521" InteractByLooting="true" QuestId="41804" QuestObjectiveIndex="2" X="-829.4028" Y="4653.744" Z="768.9847" />
+		</While>
+		<TurnIn QuestName="Ask and You Shall Receive" QuestId="41804" TurnInName="Archmage Khadgar" TurnInId="90417" X="-848.4639" Y="4638.844" Z="749.5472" />
+
+		<PickUp QuestName="Return to Jace" QuestId="41806" GiverName="Archmage Khadgar" GiverId="90417" X="-848.4639" Y="4638.844" Z="749.5472" />
+		<TurnIn QuestName="Return to Jace" QuestId="41806" TurnInName="Jace Darkweaver" TurnInId="99262" X="-864.8663" Y="4260.524" Z="745.1188" />
+
+		<PickUp QuestName="Establishing a Connection" QuestId="41807" GiverName="Jace Darkweaver" GiverId="99262" X="-864.8663" Y="4260.524" Z="745.1188" />
+		<While Condition="DoQuest(41807)" >
+			<CustomBehavior File="InteractWith" MobId="248531" QuestId="41807" QuestObjectiveIndex="1" X="-868.2986" Y="4261.415" Z="745.0586" />
+			<CustomBehavior File="WaitTimer" QuestId="41807" WaitTime="60000" />
+		</While>
+		<TurnIn QuestName="Establishing a Connection" QuestId="41807" TurnInName="Jace Darkweaver" TurnInId="99262" X="-864.8663" Y="4260.524" Z="745.1188" />
+
+
+		<If Condition="IsQuestCompleted(39688)" >  <!-- Kayn -->
+			<PickUp QuestName="Vengeance Will Be Ours" QuestId="40249" GiverName="Kayn Sunfury" GiverId="99247" X="-852.2726" Y="4256.074" Z="746.2852" />
+			<If Condition="DoQuest(39688)" >
+				<If Condition="Me.MapId == 1234" >  <!-- NOTE: <CheckMapId> If in Dalaran -->
+					<CustomBehavior File="InteractWith" MobId="99250" QuestId="39688" QuestObjectiveIndex="1" X="-844.6129" Y="4253.909" Z="746.2827" />
+					<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="!Me.IsFlying" />
+				</If>
+			</If>
+		</If>
+
+
+		<If Condition="IsQuestCompleted(40255)" >  <!-- Altruis -->
+			<PickUp QuestName="Vengeance Will Be Ours" QuestId="41863" GiverName="Altruis the Sufferer" GiverId="99254" X="-852.2726" Y="4256.074" Z="746.2852" />
+			<If Condition="DoQuest(41863)" >
+				<If Condition="Me.MapId == 1234" >  <!-- NOTE: <CheckMapId> If in Dalaran -->
+					<CustomBehavior File="InteractWith" MobId="99250" QuestId="41863" QuestObjectiveIndex="1" X="-844.6129" Y="4253.909" Z="746.2827" />
+					<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="!Me.IsFlying" />
+				</If>
+			</If>
+		</If>
+
+		<While Condition="DoQuest(39688, 41863)" >
+
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+				<CustomBehavior File="InteractWith" MobId="98882" X="-2507.5" Y="115.4566" Z="9.387377" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+			</If>
+
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+				<MoveTo X="-2602.782" Y="78.46842" Z="34.11992" />
+				<CustomBehavior File="InteractWith" MobId="248517" WaitForNpcs="false" IgnoreCombat="true" X="-2617.91" Y="79.28299" Z="38.78796" />
+
+				<MoveTo X="-2635.686" Y="38.81975" Z="44.22474" />
+				<CustomBehavior File="InteractWith" MobId="248573" WaitForNpcs="false" IgnoreCombat="true" X="-2649.646" Y="20.09896" Z="48.62485" />
+			</If>
+
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+				<MoveTo X="-2673.515" Y="-12.79718" Z="52.3744" />
+				<CustomBehavior File="MyCTM" X="-2691.874" Y="-27.86557" Z="50.05435" />
+
+				<CustomBehavior File="KillUntilComplete" MobIds="105095, 105094" X="-2751.17" Y="-69.86459" Z="46.63633" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+			</If>
+
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepMoving" AllowUseDuringCombat="true" UseAtInterval="2000" >
+					<If Condition="Chance(50)" >
+						<CustomBehavior File="RunCode" Code="WoWMovement.Move(WoWMovement.MovementDirection.StrafeLeft, TimeSpan.FromSeconds(1));" />
+						<Else>
+							<CustomBehavior File="RunCode" Code="WoWMovement.Move(WoWMovement.MovementDirection.StrafeLeft, TimeSpan.FromSeconds(1));" />
+						</Else>
+					</If>
+				</CustomBehavior>
+				<CustomBehavior File="KillUntilComplete" MobId="99046" X="-2784.061" Y="-95.17535" Z="47.39761" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepMoving" Command="Remove" />
+			</If>
+
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+				<MoveTo X="-2740.7" Y="-133.0053" Z="48.47334" />
+				<CustomBehavior File="RunCode" Code="SpellManager.Cast(188501);" />
+				<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+			</If>
+
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+				<CustomBehavior File="InteractWith" MobId="245119" WaitForNpcs="false" X="-2740.696" Y="-147.6476" Z="52.05812" />
+				<CustomBehavior File="KillUntilComplete" MobId="99184" X="-2748.21" Y="-327.561" Z="38.2853" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+			</If>
+
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+				<CustomBehavior File="InteractWith" MobId="248785" InteractByLooting="true" WaitTime="1500" X="-2748.406" Y="-328.1875" Z="38.34308" />
+				<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+				<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+			</If>
+
+			<CustomBehavior File="InteractWith" MobId="99227" QuestId="39688" QuestObjectiveIndex="3" X="-2742.73" Y="-301.316" Z="30.97247" />
+			<CustomBehavior File="InteractWith" MobId="99227" QuestId="41863" QuestObjectiveIndex="3" X="-2742.73" Y="-301.316" Z="30.97247" />
+
+			<CustomBehavior File="WaitTimer" WaitTime="18000" />
+		</While>
+
+		<If Condition="HasQuest(40249)" >
+			<TurnIn QuestName="Vengeance Will Be Ours" QuestId="40249" TurnInName="Kor'vas Bloodthorn" TurnInId="102799" X="-835.9692" Y="4265.4" Z="746.2537" />
+		</If>
+		<If Condition="HasQuest(41863)" >
+			<TurnIn QuestName="Vengeance Will Be Ours" QuestId="41863" TurnInName="Kor'vas Bloodthorn" TurnInId="102799" X="-835.9692" Y="4265.4" Z="746.2537" />
+		</If>
+
+
+		<!-- END Story: Artifact Weapon - Aldrachi Warblades -->
+
+
+		<If Condition="!IsQuestCompleted(42869)" >
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Demon Hunter [Echo].xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	Eternal Vigil (42869) is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	Eternal Vigil (42869) is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

@@ -1,0 +1,233 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Death Knight - Blood - Maw of the Damned [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Get Continuation Quest -->
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
+
+		<!-- Story: Artifact Weapon - Maw of the Damned -->
+			<!-- NOTE: <TechnicalCheck> : These NPC locations will vary depending on if this is the player's first artifact weapon or not.
+											This current XYZ/Id is for the first artifact weapon.  Add support for other artifact quests later. -->
+			<PickUp QuestName="The Dead and the Damned" QuestId="40740" GiverName="Duke Lankral" GiverId="101441" X="-840.5833" Y="4271.512" Z="746.262" />
+			<!-- END: <Technical Check -->
+			<While Condition="DoQuest(40740)" >
+				<!-- NOTE: <AddCheck> : Can detect if the player is outside of the scenario area here, and prevent this code from running if true. -->
+				<CustomBehavior File="InteractWith" MobId="102403" GossipOptions="1" QuestId="40740" QuestObjectiveIndex="1" X="-846.1805" Y="4269.471" Z="746.2685" />
+				<CustomBehavior File="WaitTimer" WaitTime="40000" TerminateWhen="!Me.IsFlying" />
+				<MoveTo X="-831.0263" Y="3676.253" Z="26.44035" />
+				<CustomBehavior File="MyCTM" X="-820.9525" Y="3686.912" Z="27.03755" /> <!-- TerminateWhen MapId == Niskara -->
+				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != null" />
+				<!-- END NOTE <AddCheck -->
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<!-- NOTE: <AddHook> : Check SpellId.  WowHead is showing two of the same Drain Life spells.  The other Id is: 182217 -->
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="MindFreezeDrainLife" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.ChanneledCastingSpellId == 221309 &amp;&amp; SpellManager.CanCast(47528)" >
+						<CustomBehavior File="RunCode" Code="
+								SpellManager.Cast(47528);
+								await Coroutine.Sleep(500);
+						" />
+					</CustomBehavior>
+					<CustomBehavior File="KillUntilComplete" MobId="102362" X="296.9983" Y="1924.648" Z="-30.88714" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="MindFreezeDrainLife" Command="Remove" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<CustomBehavior File="KillUntilComplete" MobId="102244" X="266.4976" Y="1854.174" Z="-12.31843" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<CustomBehavior File="KillUntilComplete" MobIds="102549, 102244" X="284.6605" Y="1856.993" Z="-11.648" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<!-- NOTE: <CheckSupport> : Bot needs to kill Fel Guards along the path.  Would use this KUC, but it needs to terminate properly. Check this during testing.
+					<CustomBehavior File="KillUntilComplete" MobId="102244" TerminateWhen="XXXXX" >
+						<HuntingGrounds>
+							<Hotspot X="263.1198" Y="1804.116" Z="-21.91172" />
+							<Hotspot X="287.4055" Y="1761.415" Z="-34.19277" />
+							<Hotspot X="292.5597" Y="1714.693" Z="-48.50489" />
+						</HuntingGrounds>
+					</CustomBehavior> -->
+					<MoveTo X="286.9451" Y="1673.812" Z="-66.41489" />
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<CustomBehavior File="KillUntilComplete" MobId="102304" X="375.0486" Y="1582.425" Z="-83.69869" TerminateWhen="Object(102955) != null" />
+					<CustomBehavior File="InteractWith" MobId="102955" X="376.9028" Y="1587.251" Z="-82.68958" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<CustomBehavior File="InteractWith" MobId="102560" X="286.526" Y="1674.392" Z="-64.94347" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+					<MoveTo X="198.5424" Y="1518.839" Z="-31.47602" />
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 7" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8" >
+					<MoveTo X="209.8117" Y="1493.676" Z="-30.20483" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							var repulsionTumorPoi = Unit(104575, u => u.Location.Distance(new WoWPoint(203.5139, 1468.184, -29.90998)) <= 5);
+
+							if (repulsionTumorPoi != null)
+							{
+								StyxWoW.Me.SetFacing(repulsionTumorPoi.Location);
+								await Coroutine.Sleep(350);
+								SpellManager.Cast(49576);
+								await Coroutine.Sleep(1500);
+								SpellManager.Cast("Heart Strike");
+								await Coroutine.Sleep(1000);
+							}
+						]]>
+					</CustomBehavior>
+
+					<MoveTo X="199.8624" Y="1430.896" Z="-35.92316" />
+					<CustomBehavior File="RunCode" Code="SpellManager.Cast(48707);" />
+					<MoveTo X="176.1561" Y="1345.799" Z="-56.90922" />
+					<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 9" >
+					<!-- NOTE: <AddAvoid> : Super easy fight.  But fel slimes attack leaving a puddle when they die.  It doesn't seem to be much threat at all, but we can avoid it easy.  Low priority. -->
+					<CustomBehavior File="KillUntilComplete" MobId="101778" X="182.4045" Y="1296.993" Z="-59.08212" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 9" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 10" >
+					<CustomBehavior File="InteractWith" MobId="247566" InteractByLooting="true" WaitTime="1500" X="179.9306" Y="1309.724" Z="-57.21556" />
+					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 11" >
+					<CustomBehavior File="InteractWith" MobId="102959" X="173.9392" Y="1325.568" Z="-59.08218" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 11" />
+				</If>
+
+				<!-- This area is still scripted stuff.  But it's not apart of the quest in any way.  Need to detect this and prevent it from running if it doesn't need to. -->
+				<MoveTo X="430.6553" Y="-2123.757" Z="864.7502" /> <!-- Go up to Lich King -->
+				<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Object(242469) != null" /> <!-- Wait for him to open the portal. -->
+				<CustomBehavior File="InteractWith" MobId="242469" X="429.026" Y="-2118.351" Z="864.8716" /> <!-- Enter portal. -->
+			</While>
+			<TurnIn QuestName="The Dead and the Damned" QuestId="40740" TurnInName="Highlord Darion Mograine" TurnInId="93437" X="-1507.17" Y="1048.095" Z="260.4034" />
+			<!-- There's a minute long speech given here, but it seems that the player can ignore it. -->
+		<!-- END Story: Artifact Weapon - Maw of the Damned -->
+
+
+		<If Condition="!IsQuestCompleted(39757)" >
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Death Knight [Echo].xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	Keeping Your Edge (39757) is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	Keeping Your Edge (39757) is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

@@ -1,0 +1,229 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Death Knight Class Hall Loader [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Introductory Class Hall Quests -->
+			<PickUp QuestName="The Call To War" QuestId="40714" GiverName="The Lich King" /> <!-- Auto PickUp -->
+			<TurnIn QuestName="The Call To War" QuestId="40714" TurnInName="Duke Lankral" TurnInId="101441" X="-840.5833" Y="4271.512" Z="746.262" />
+		<!-- END Introductory Class Hall Quests -->
+
+		<!-- First Artifact Quest -->
+			<PickUp QuestName="A Pact of Necessity" QuestId="40715" GiverName="Duke Lankral" GiverId="101441" X="-840.5833" Y="4271.512" Z="746.262" />
+			<While Condition="DoQuest(40715)" >
+				<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+					<CustomBehavior File="InteractWith" MobId="101441" GossipOptions="1" QuestId="40715" QuestObjectiveIndex="1" X="-840.5833" Y="4271.512" Z="746.262" />
+				</If>
+				<CustomBehavior File="UserDialog" QuestId="40715" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" 
+				Text="Choose an artifact weapon.\n\nIf you do not choose within 5minutes, the bot will pick the one appropriate for your current specialization." />
+				
+				<If Condition="!IsQuestCompleted(40715)" >
+					<If Condition="Me.Specialization == WoWSpec.DeathKnightBlood" >
+						<CustomBehavior File="Misc\RunLua" QuestId="40715" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<If Condition="Me.Specialization == WoWSpec.DeathKnightFrost" >
+						<CustomBehavior File="Misc\RunLua" QuestId="40715" Lua="QuestChoiceFrameOption2.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<If Condition="Me.Specialization == WoWSpec.DeathKnightUnholy" >
+						<CustomBehavior File="Misc\RunLua" QuestId="40715" Lua="QuestChoiceFrameOption3.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<CustomBehavior File="Misc\RunLua" QuestId="40715" Lua="StaticPopup1Button1:Click();" />
+				</If>
+			</While>
+			<TurnIn QuestName="A Pact of Necessity" QuestId="40715" TurnInName="Duke Lankral" TurnInId="101441" X="-840.5833" Y="4271.512" Z="746.262" />
+
+
+			<If Condition="!IsQuestCompleted(40740) &amp;&amp; NeedsQuest(39757) &amp;&amp; Me.Specialization == WoWSpec.DeathKnightBlood" > <!-- 40740 = Maw of the Damned Finale -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Death Knight - Blood - Maw of the Damned.xml" />
+			</If>
+			<If Condition="!IsQuestCompleted(38990) &amp;&amp; NeedsQuest(39757) &amp;&amp; Me.Specialization == WoWSpec.DeathKnightFrost" > <!-- 38990 = Blades of the Fallen Prince Finale -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Death Knight - Frost - Blades of the Fallen Prince.xml" />
+			</If>
+			<If Condition="!IsQuestCompleted(40935) &amp;&amp; NeedsQuest(39757) &amp;&amp; Me.Specialization == WoWSpec.DeathKnightUnholy" > <!-- 40935 = Apocalypse Finale -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Death Knight - Unholy - Apocalypse.xml" />
+			</If>
+		<!-- END First Artifact Quest -->
+
+		<!-- Introductory Class Hall Quests -->
+			<PickUp QuestName="Keeping Your Edge" QuestId="39757" GiverName="Illanna Dreadmoore" GiverId="97111" X="-1516.581" Y="1043.904" Z="260.4165" />
+			<While Condition="DoQuest(39757)" >
+				<MoveTo X="-1467.717" Y="1117.88" Z="270.0776" />  <!-- NOTE: <RemoveLater> : This can be removed if a jumplink is added.  However, using the teleportation pad is required by this quest to complete it -->
+				<CustomBehavior File="MyCTM" X="-1465.329" Y="1122.681" Z="270.6469" TerminateWhen="Me.Z &gt; 300" /> 
+			</While>
+			<TurnIn QuestName="Keeping Your Edge" QuestId="39757" TurnInName="Grand Master Siegesmith Corvus" TurnInId="97072" X="-1538.394" Y="1005.957" Z="313.6508" />
+
+			<PickUp QuestName="Advanced Runecarving" QuestId="39761" GiverName="Grand Master Siegesmith Corvus" GiverId="97072" X="-1538.394" Y="1005.957" Z="313.6508" />
+			<While Condition="DoQuest(39761)" >
+				<!-- /dump GetMouseFocus():GetPowerID(); C_ArtifactUI.AddPower(powerId); -->
+				<CustomBehavior File="InteractWith" MobId="245433" WaitTime="2000" QuestId="39761" X="-1538.837" Y="999.9219" Z="313.6087" />
+				<!-- NOTE: <CheckMe>: There is two soul forges here. Other is: Name="Soul Forge" Entry="245478" X="-1538.67" Y="1000.113" Z="316.3545"  -->
+				<If Condition="HasItem(128402)" > <!-- Stromkar, the Warbreaker -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1331);" />
+				</If>
+				<If Condition="HasItem(128292)" > <!-- Blades of the Fallen Prince -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1332);" />
+				</If>
+				<If Condition="HasItem(128403)" > <!-- Apocalypse -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1333);" />
+				</If>
+				<CustomBehavior File="Misc\RunLua" Lua="ArtifactFrame.CloseButton:Click();" />
+			</While>
+			<TurnIn QuestName="Advanced Runecarving" QuestId="39761" TurnInName="Grand Master Siegesmith Corvus" TurnInId="97072" X="-1538.394" Y="1005.957" Z="313.6508" />
+
+			<PickUp QuestName="Plans and Preparations" QuestId="39832" GiverName="Grand Master Siegesmith Corvus" GiverId="97072" X="-1538.394" Y="1005.957" Z="313.6508" />
+			<If Condition="HasQuest(39832) &amp;&amp; Me.Z &gt; 300" > <!-- NOTE: <RemoveLater> : This can be removed if a jumplink is added -->
+				<MoveTo X="-1463.367" Y="1125.234" Z="313.8043" />
+				<CustomBehavior File="MyCTM" X="-1460.883" Y="1129.754" Z="314.5324" TerminateWhen="Me.Z &lt;= 300" />
+			</If>
+			<TurnIn QuestName="Plans and Preparations" QuestId="39832" TurnInName="Siouxsie the Banshee" TurnInId="93568" X="-1509.017" Y="1054.082" Z="260.3957" />
+
+			<PickUp QuestName="Our Next Move" QuestId="39799" GiverName="Siouxsie the Banshee" GiverId="93568" X="-1509.017" Y="1054.082" Z="260.3957" />
+			<While Condition="DoQuest(39799)" >
+				<CustomBehavior File="InteractWith" MobId="97379" WaitTime="1500" QuestId="39799" QuestObjectiveIndex="1" X="-1508.109" Y="1051.439" Z="260.3989" />
+				<If Condition="NeedsQuest(39718)" > <!-- Azsuna -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+			</While>
+			<TurnIn QuestName="Our Next Move" QuestId="39799" TurnInName="Siouxsie the Banshee" TurnInId="93568" X="-1509.017" Y="1054.082" Z="260.3957" />
+
+			<While Condition="DoQuest(39718)" >
+				<CustomBehavior File="InteractWith" MobId="244556" WaitTime="3000" QuestId="39718" X="-1454.17" Y="1170.668" Z="275.2434" />
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />
+			</While>
+		<!-- END Introductory Class Hall Quests -->
+
+		<!-- Tutorial Class Hall Quests - Starts in Dalaran -->
+		<!-- END Tutorial Class Hall Quests -->
+
+
+		<!-- Boolean for IsAchievementCompleted defaults to false. -->
+		<!-- Azsuna -->
+			<If Condition="!IsAchievementCompleted(10763, false)" > 
+				<If Condition="NeedsQuest(39718)" >
+					<CustomBehavior File="InteractWith" MobId="97379" WaitTime="1500" X="-1508.109" Y="1051.439" Z="260.3989" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<CustomBehavior File="InteractWith" MobId="244556" WaitTime="3000" X="-1454.17" Y="1170.668" Z="275.2434" />
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />
+			</If>
+		<!-- END Azsuna -->
+
+		<!-- Val'sharah -->
+			<If Condition="!IsAchievementCompleted(10698, false)" >
+				<If Condition="NeedsQuest(39731)" >
+					<CustomBehavior File="InteractWith" MobId="97379" WaitTime="1500" X="-1508.109" Y="1051.439" Z="260.3989" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39731);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<CustomBehavior File="InteractWith" MobId="244556" WaitTime="3000" X="-1454.17" Y="1170.668" Z="275.2434" />
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Val'sharah [Echo].xml" />
+			</If>
+		<!-- END Val'sharah -->
+
+		<!-- Highmountain -->
+			<If Condition="!IsAchievementCompleted(10059, false)" >
+				<If Condition="NeedsQuest(39733)" >
+					<CustomBehavior File="InteractWith" MobId="97379" WaitTime="1500" X="-1508.109" Y="1051.439" Z="260.3989" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39733);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<CustomBehavior File="InteractWith" MobId="244556" WaitTime="3000" X="-1454.17" Y="1170.668" Z="275.2434" />
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Highmountain [Echo].xml" />
+			</If>
+		<!-- END Highmountain -->
+
+		<!-- Stormheim -->
+			<If Condition="!IsAchievementCompleted(10790, false)" >
+				<If Condition="NeedsQuest(39735)" >
+					<CustomBehavior File="InteractWith" MobId="97379" WaitTime="1500" X="-1508.109" Y="1051.439" Z="260.3989" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39735);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<CustomBehavior File="InteractWith" MobId="244556" WaitTime="3000" X="-1454.17" Y="1170.668" Z="275.2434" />
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Stormehim [Echo].xml" />
+			</If>
+		<!-- END Stormheim -->
+
+	</QuestOrder>
+</HBProfile>

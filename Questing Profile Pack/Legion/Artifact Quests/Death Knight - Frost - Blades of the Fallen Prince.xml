@@ -1,0 +1,261 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Death Knight - Frost - Blades of the Fallen Prince [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Get Continuation Quest -->
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
+
+		<!-- Story: Artifact Weapon - Blades of the Fallen Prince -->
+			<PickUp QuestName="The Call of Icecrown" QuestId="38990" GiverName="Duke Lankral" GiverId="101441" X="-840.5833" Y="4271.512" Z="746.2618" />
+			<While Condition="DoQuest(38990)" >
+				<CustomBehavior File="InteractWith" MobId="95854" WaitTime="3000" QuestId="38990" QuestObjectiveIndex="1" X="-838.2668" Y="4270.183" Z="746.5203" />
+				<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<MoveTo X="-554.9478" Y="2211.186" Z="539.3419" />
+					<CustomBehavior File="MyCTM" X="-548.6351" Y="2211.2" Z="539.3441" />
+					<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<MoveTo X="-482.5884" Y="2211.229" Z="541.1676" />
+					<CustomBehavior File="MyCTM" X="4138.18" Y="2769.23" Z="350.963" /> <!-- NOTE: <AddTerminate> : Need to terminate then when the player has entered Icecrown -->
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<If Condition="Me.X &lt;= 4200" >
+						<MoveTo X="4181.413" Y="2816.862" Z="353.2509" />
+						<CustomBehavior File="RunCode"><![CDATA[
+								var magePoi = Unit(94913);
+
+								if (magePoi != null)
+								{
+									StyxWoW.Me.SetFacing(magePoi.Location);
+									await Coroutine.Sleep(350);
+
+									SpellManager.Cast(49576);
+								}
+							]]>
+						</CustomBehavior>
+					</If>
+
+					<If Condition="Me.X &lt; 4234 &amp;&amp; Me.X &gt; 4200" >
+						<CustomBehavior File="Hooks\DoWhen" ActivityName="ShutOffCombat" AllowUseDuringCombat="true" UseWhen="ObjectManager.GetObjectsOfType&lt;WoWUnit&gt;().Where(x =&gt; x.Entry == 97320).All(x =&gt; x.HasAura(&quot;Hardened&quot;)) &amp;&amp; Bots.Grind.LevelBot.BehaviorFlags.HasFlag(Bots.Grind.BehaviorFlags.Combat)" >
+							<CustomBehavior File="RunCode" Code="Bots.Grind.LevelBot.BehaviorFlags &amp;= ~Bots.Grind.BehaviorFlags.Combat;" />
+						</CustomBehavior>
+						<MoveTo X="4214.419" Y="2768.343" Z="350.9633" />
+						<CustomBehavior File="WaitTimer" WaitTime="3000" />
+
+						<CustomBehavior File="RunCode"><![CDATA[
+								var pressureplatePoi = Unit(97595);
+								var gatekeeperPoi = Unit(97320, u => u.Location.Distance(pressureplatePoi.Location) > 1);
+
+								await Coroutine.Wait(30000, () => SpellManager.CanCast(49576));
+								WoWMovement.ClickToMove(new WoWPoint(4226.167, 2779.087, 350.9633));
+								await Coroutine.Sleep(5500);
+								StyxWoW.Me.SetFacing(gatekeeperPoi.Location);
+								await Coroutine.Sleep(350);
+								SpellManager.Cast(49576);
+							]]> <!-- NOTE: <CheckLater> It may be worth using Control Undead here instead. -->
+						</CustomBehavior>
+
+						<CustomBehavior File="MyCTM" X="4223.442" Y="2761.037" Z="350.9633" />
+						<CustomBehavior File="Hooks\DoWhen" ActivityName="ShutOffCombat" Command="Remove" />
+						<CustomBehavior File="WaitTimer" WaitTime="1500" />
+						<CustomBehavior File="RunCode" Code="Bots.Grind.LevelBot.BehaviorFlags |= Bots.Grind.BehaviorFlags.Combat;" />
+						<MoveTo X="4246.131" Y="2769.065" Z="350.9633" />
+					</If>
+
+					<If Condition="Me.X &gt; 4234" >
+						<If Condition="Unit(93948, u =&gt; u.IsAlive) != null" >
+							<CustomBehavior File="Hooks\Avoid" AvoidName="BaelgunWhirlwind" Command="Add" ObjectId="93948" Radius="10" AvoidWhen="UNIT.ChanneledCastingSpellId == 192647" />
+							<CustomBehavior File="KillUntilComplete" MobId="93948" X="4257.26" Y="2769.935" Z="349.3817" TerminateWhen="Unit(93948, u =&gt; u.IsDead) != null" />
+							<CustomBehavior File="Hooks\Avoid" AvoidName="BaelgunWhirlwind" Command="Remove" />
+						</If>
+						<CustomBehavior File="InteractWith" MobId="251882"  WaitForNpcs="false" InteractByLooting="true" WaitTime="1500" X="4262.204" Y="2765.536" Z="351.1211" />
+
+						<If Condition="Unit(93949, u =&gt; u.IsAlive) != null" >
+							<CustomBehavior File="Hooks\DoWhen" ActivityName="InterruptHeal" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.CanInterruptCurrentSpellCast" >
+								<CustomBehavior File="RunCode" Code="
+										await Coroutine.Wait(15000, () =&gt; SpellManager.CanCast(47528));
+										SpellManager.Cast(47528);
+										await Coroutine.Sleep(350);
+								" />
+							</CustomBehavior>
+							<CustomBehavior File="KillUntilComplete" MobId="93949" X="4353.202" Y="2670.301" Z="349.2956" TerminateWhen="Unit(93949, u =&gt; u.IsDead) != null" />
+							<CustomBehavior File="Hooks\DoWhen" ActivityName="InterruptHeal" Command="Remove" />
+						</If>
+						<CustomBehavior File="InteractWith" MobId="251884" WaitForNpcs="false" InteractByLooting="true" WaitTime="1500" X="4356.559" Y="2676.826" Z="350.2382" />
+
+						<If Condition="Unit(93950, u =&gt; u.IsAlive) != null" >
+							<MoveTo X="4455.575" Y="2734.752" Z="346.7824" />
+							<DisableBehavior Name="Combat" /> <!-- Pull him away from extra mobs -->
+							<MoveTo X="4459.694" Y="2752.575" Z="349.0206" />
+							<EnableBehavior Name="Combat" />
+
+							<CustomBehavior File="KillUntilComplete" MobId="93950" X="4455.179" Y="2762.228" Z="349.3069" TerminateWhen="Unit(93950, u =&gt; u.IsDead) != null" />
+						</If>
+						<CustomBehavior File="InteractWith" MobId="251885" WaitForNpcs="false" InteractByLooting="true" WaitTime="1500" X="4452.075" Y="2775.922" Z="351.3703" />
+
+						<If Condition="Unit(93951, u =&gt; u.IsAlive) != null" >
+							<CustomBehavior File="Hooks\DoWhen" ActivityName="InterruptHammer" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.CanInterruptCurrentSpellCast" >
+								<CustomBehavior File="RunCode" Code="
+										await Coroutine.Wait(15000, () =&gt; SpellManager.CanCast(47528));
+										SpellManager.Cast(47528);
+										await Coroutine.Sleep(350);
+								" />
+							</CustomBehavior>
+							<CustomBehavior File="KillUntilComplete" MobId="93951" X="4385.518" Y="2769.319" Z="357.6572" TerminateWhen="Unit(93951, u =&gt; u.IsDead) != null" />
+						</If>
+						<CustomBehavior File="InteractWith" MobId="251886" WaitForNpcs="false" InteractByLooting="true" WaitTime="1500"  X="4385.655" Y="2775.027" Z="359.8834" />
+					</If>
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<MoveTo X="4366.929" Y="2769.512" Z="355.9345" />
+					<CustomBehavior File="MyCTM"  X="4357.631" Y="2770.241" Z="356.053" TerminateWhen="Me.Z &gt;= 500" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<CustomBehavior File="InteractWith" MobId="242502" X="504.4896" Y="-2124.408" Z="841.2767" />
+					<CustomBehavior File="WaitTimer" WaitTime="35000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<CustomBehavior File="InteractWith" MobId="100577" X="504.4896" Y="-2124.41" Z="841.3603" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+					<CustomBehavior File="WaitTimer" WaitTime="5000" />
+
+					<CustomBehavior File="KillUntilComplete" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" >
+						<PursuitList>
+							<PursueUnit Id="94177" Priority="100" PursueWhen="!UNIT.HasAura(200816)" /> <!-- There's two Arthas here. The other ID is: 93963 -->
+							<PursueUnit Id="95321" Priority="500" />
+							<PursueUnit Id="95324" Priority="500" />
+							<PursueUnit Id="95323" Priority="600" /> <!-- Big buy, seems to heal for the most. -->
+						</PursuitList>
+					</CustomBehavior>
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Object(247386) != null" />
+					<CustomBehavior File="InteractWith" MobId="247386" InteractByLooting="true" WaitTime="1500" X="504.0677" Y="-2124.243" Z="840.9485" />
+					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8" >
+					<MoveTo X="430.5035" Y="-2123.148" Z="864.817" />
+					<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 8" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 9" >
+					<CustomBehavior File="InteractWith" MobId="242469" X="429.026" Y="-2118.351" Z="864.8716" />
+				</If>
+			</While>
+			<TurnIn QuestName="The Call of Icecrown" QuestId="38990" TurnInName="Highlord Darion Mograine" TurnInId="93437" X="-1507.17" Y="1048.095" Z="260.4036" />
+		<!-- END Story: Artifact Weapon - Blades of the Fallen Prince -->
+
+		<If Condition="!IsQuestCompleted(39757)" >
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Death Knight [Echo].xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	Keeping Your Edge (39757) is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	Keeping Your Edge (39757) is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

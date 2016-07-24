@@ -1,0 +1,238 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Paladin - Protection - Truthguard [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Get Continuation Quest -->
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
+
+		<!-- Story: Artifact Weapon - Truthguard -->
+			<!-- NOTE: <TechnicalCheck> : These NPC locations will vary depending on if this is the player's first artifact weapon or not.
+											This current XYZ/Id is for the first artifact weapon.  Add support for other artifact quests later. -->
+			<PickUp QuestName="Seeker of Truth" QuestId="42000" GiverName="Lord Maxwell Tyrosus" GiverId="90369" X="-847.9688" Y="4256.457" Z="746.2817" />
+			<While Condition="DoQuest(42000)" >
+				<CustomBehavior File="InteractWith" MobId="105689" GossipOptions="1" QuestId="42000" QuestObjectiveIndex="1" X="-853.1614" Y="4264.548" Z="746.2793" />
+				<CustomBehavior File="WaitTimer" QuestId="42000" WaitTime="40000" />
+			</While>
+			<TurnIn QuestName="Seeker of Truth" QuestId="42000" TurnInName="Orik Trueheart" TurnInId="105689" X="-847.9688" Y="4256.457" Z="746.2817" />
+
+			<PickUp QuestName="To Northrend" QuestId="42002" GiverName="Orik Trueheart" GiverId="105689" X="-847.9688" Y="4256.457" Z="746.2817" />
+			<!-- END: <Technical Check -->
+			<While Condition="DoQuest(42002)" >
+				<If Condition="Me.MapId != 571" > <!-- Go to Northrend -->
+					<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran, enter Dalaran Portal Room -->
+						<MoveTo X="-847.6401" Y="4463.277" Z="735.8799" />
+						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TerminateWhen in portal room. -->
+					</If>
+					<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran Portal Room, entering Northrend -->
+						<MoveTo X="-889.9857" Y="4504.066" Z="580.149" />
+						<CustomBehavior File="InteractWith" MobId="246013" WaitTime="1000" X="-892.7344" Y="4506.432" Z="580.4584" />
+					</If>
+				</If>
+				<MoveTo Nav="Fly" X="-51.68742" Y="-4839.387" Z="291.8954" />
+			</While>
+			<TurnIn QuestName="To Northrend" QuestId="42002" TurnInName="Orik Trueheart" TurnInId="105724" X="-55.00695" Y="-4837.172" Z="292.2279" />
+
+			<PickUp QuestName="The End of the Saga" QuestId="42005" GiverName="Orik Trueheart" GiverId="105724" X="-55.00695" Y="-4837.172" Z="292.2279" />
+			<While Condition="DoQuest(42005)" >
+				<CustomBehavior File="InteractWith" MobId="105727" GossipOptions="1,1" QuestId="42005" QuestObjectiveIndex="1" X="-57.26563" Y="-4837.151" Z="292.2101" />
+				<CustomBehavior File="InteractWith" MobId="251288" QuestId="42005" QuestObjectiveIndex="2" X="-194.5191" Y="-5163.198" Z="315.2801" />
+				<CustomBehavior File="WaitTimer" QuestId="42005" WaitTime="90000" />
+			</While>
+			<If Condition="QuestDone(42005) &amp;&amp; Me.MapId == 571" >
+				<CustomBehavior File="RunCode"><![CDATA[
+					Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Using Dalaran Hearthstone");
+					await CommonCoroutines.StopMoving(); 
+					WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+					if (dalaranHearth.Cooldown != 0) {
+						Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
+						await Coroutine.Wait(1200000, () => dalaranHearth.Cooldown == 0);
+					}
+					dalaranHearth.Interact();
+					var currentLoc = StyxWoW.Me.ZoneId;
+					await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
+					await Coroutine.Sleep(1500);
+				]]>
+				</CustomBehavior>
+			</If>
+			<TurnIn QuestName="The End of the Saga" QuestId="42005" TurnInName="Orik Trueheart" TurnInId="105813" X="-860.7222" Y="4275.822" Z="746.2837" />
+
+			<PickUp QuestName="Shrine of the Truthguard" QuestId="42017" GiverName="Orik Trueheart" GiverId="105813" X="-860.7222" Y="4275.822" Z="746.2837" />
+			<While Condition="DoQuest(42017)" >
+				<CustomBehavior File="InteractWith" MobId="105883" QuestId="42017" QuestObjectiveIndex="1" X="-860.033" Y="4279.272" Z="746.2827" />
+				<CustomBehavior File="WaitTimer" QuestId="42017" WaitTime="30000" TerminateWhen="!Me.IsFlying" />
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="UseArrow" AllowUseDuringCombat="true" UseWhen="Object(106230) != null" >
+						<CustomBehavior File="InteractWith" MobId="106230" WaitTime="2500" />
+						<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="ExtraActionButton1:Click();" />
+					</CustomBehavior>
+					<CustomBehavior File="KillUntilComplete" MobIds="106246, 106245" X="4803.691" Y="134.5391" Z="-8.520174" TerminateWhen="Unit(106245, u =&gt; u.IsDead) != null" />
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="UseArrow" Command="Remove" />
+
+					<CustomBehavior File="KillUntilComplete" MobId="106347" X="4817.392" Y="215.5844" Z="-21.70571" TerminateWhen="Unit(106347, u =&gt; u.IsDead) != null" />
+
+					<MoveTo X="4826.14" Y="255.641" Z="-27.46888" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="FierceWinds" Command="Add" ObjectId="106432" Radius="5" />
+					<CustomBehavior File="KillUntilComplete" MobId="105968" X="4841.721" Y="335.9896" Z="-28.97781" TerminateWhen="Unit(105968, u =&gt; u.IsDead) != null" />
+
+					<CustomBehavior File="WaitTimer" WaitTime="45000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<CustomBehavior File="InteractWith" MobId="249458" X="4843.399" Y="344.5972" Z="-27.97954" />
+					<CustomBehavior File="RunCode" Code="SpellManager.Cast(642);" />
+					<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<MoveTo X="4852.736" Y="394.973" Z="-45.02534" />
+					<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+					<MoveTo X="4872.219" Y="491.4985" Z="-48.90239" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<CustomBehavior File="InteractWith" MobId="105695" GossipOptions="1" X="4878.13" Y="522.014" Z="-48.90016" />
+					<CustomBehavior File="KillUntilComplete" X="4871.784" Y="496.9735" Z="-48.90228" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" >
+						<PursuitList>
+							<PursueUnit Id="105695" PursueWhen="UNIT.IsHostile &amp;&amp; !UNIT.HasAura(211011)" />
+							<PursueUnit Id="106172" PursueWhen="UNIT.IsHostile &amp;&amp; !UNIT.HasAura(211011)" />
+						</PursuitList>
+					</CustomBehavior>
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<CustomBehavior File="InteractWith" MobId="249420" InteractByLooting="true" WaitTime="1500" X="4875.08" Y="507.4583" Z="-48.53672" />
+					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+				</If>
+
+				<If Condition="HasItem(128866) &amp;&amp; !IsObjectiveComplete(3, 42017)" >
+					<MoveTo X="4767.409" Y="83.09634" Z="-3.63936" />
+					<CustomBehavior File="InteractWith" MobId="106203" QuestId="42017" QuestObjectiveIndex="3" X="4758.653" Y="74.64236" Z="-2.898601" />
+					<CustomBehavior File="WaitTimer" WaitTime="17000" />
+				</If>
+			</While>
+			<TurnIn QuestName="Shrine of the Truthguard" QuestId="42017" TurnInName="Lord Maxwell Tyrosus" TurnInId="106209" X="-830.9653" Y="4282.726" Z="746.2618" />
+		<!-- END Story: Artifact Weapon - Truthguard -->
+
+
+		<If Condition="!IsQuestCompleted(38566)" >
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Paladin [Echo].xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	A United Force (38566) is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	A United Force (38566) is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

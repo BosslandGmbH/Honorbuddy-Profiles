@@ -1,0 +1,257 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Paladin Class Hall Loader [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Introductory Class Hall Quests -->
+
+		<!-- END Introductory Class Hall Quests -->
+
+		<!-- First Artifact Quest -->
+			<PickUp QuestName="An Urgent Gathering" QuestId="38710" GiverName="Lord Maxwell Tyrosus" GiverId="92909" X="-830.8857" Y="4395.943" Z="737.5975" />
+			<While Condition="DoQuest(38710)" >
+				<CustomBehavior File="InteractWith" MobId="108692" GossipOptions="1" QuestId="38710" QuestObjectiveIndex="1" X="-814.4792" Y="4391.952" Z="739.275" />
+				<CustomBehavior File="InteractWith" MobId="108693" GossipOptions="1" QuestId="38710" QuestObjectiveIndex="2" X="-788.217" Y="4531.249" Z="730.7829" />
+			</While>
+			<TurnIn QuestName="An Urgent Gathering" QuestId="38710" TurnInName="Lord Maxwell Tyrosus" TurnInId="90369" X="-788.217" Y="4531.249" Z="730.7829" />
+
+			<PickUp QuestName="Weapons of Legend" QuestId="40408" GiverName="Lord Maxwell Tyrosus" GiverId="90369" X="-788.217" Y="4531.249" Z="730.7829" />
+			<While Condition="DoQuest(40408)" >
+				<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+					<CustomBehavior File="InteractWith" MobId="90369" GossipOptions="1" QuestId="40408" QuestObjectiveIndex="1" X="-847.9688" Y="4256.457" Z="746.2817" />
+				</If>
+
+				<CustomBehavior File="UserDialog" QuestId="40408" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" 
+				Text="Choose an artifact weapon.\n\nIf you do not choose within 5minutes, the bot will pick the one appropriate for your current specialization." />
+				
+				<If Condition="!IsQuestCompleted(40408)" >
+					<If Condition="Me.Specialization == WoWSpec.PaladinHoly" >
+						<CustomBehavior File="Misc\RunLua" QuestId="40408" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<If Condition="Me.Specialization == WoWSpec.PaladinProtection" >
+						<CustomBehavior File="Misc\RunLua" QuestId="40408" Lua="QuestChoiceFrameOption2.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<If Condition="Me.Specialization == WoWSpec.PaladinRetribution" >
+						<CustomBehavior File="Misc\RunLua" QuestId="40408" Lua="QuestChoiceFrameOption3.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<CustomBehavior File="Misc\RunLua" QuestId="40408" Lua="StaticPopup1Button1:Click();" />
+				</If>
+			</While>
+			<TurnIn QuestName="Weapons of Legend" QuestId="40408" TurnInName="Lord Maxwell Tyrosus" TurnInId="90369" X="-847.9688" Y="4256.457" Z="746.2817" />
+
+			<If Condition="!IsQuestCompleted(42120) &amp;&amp; NeedsQuest(38566) &amp;&amp; Me.Specialization == WoWSpec.PaladinHoly" > <!-- 42120 = The Silver Hand -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Paladin - Holy - The Silver Hand.xml" />
+			</If>
+			<If Condition="!IsQuestCompleted(42017) &amp;&amp; NeedsQuest(38566) &amp;&amp; Me.Specialization == WoWSpec.PaladinProtection" > <!-- 42017 = Truthguard -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Paladin - Protection - Truthguard.xml" />
+			</If>
+			<If Condition="!IsQuestCompleted(42811) &amp;&amp; NeedsQuest(38566) &amp;&amp; Me.Specialization == WoWSpec.PaladinRetribution" > <!-- 42811 = Ashbringer -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Paladin - Retribution - Ashbringer.xml" />
+			</If>
+		<!-- END First Artifact Quest -->
+
+		<!-- Introductory Class Hall Quests -->
+			<If Condition="!IsQuestCompleted(42811)" > <!-- This is to prevent the code from running if the player did the Retribution Artifact variant first. -->
+				<PickUp QuestName="We Meet at Light's Hope" QuestId="38576" GiverName="Lord Maxwell Tyrosus" GiverId="106209" X="-830.9653" Y="4282.726" Z="746.262" />
+				<While Condition="DoQuest(38576)" >
+					<If Condition="Me.MapId != 0" >
+						<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran, enter Dalaran Portal Room -->
+							<MoveTo X="-847.6401" Y="4463.277" Z="735.8799" />
+							<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TerminateWhen in portal room. -->
+						</If>
+						<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran Portal Room, entering Dalaran Crater -->
+							<MoveTo X="-881.0235" Y="4507.995" Z="580.1562" />
+							<CustomBehavior File="InteractWith" MobId="246008" WaitTime="1000" X="-880.408" Y="4511.733" Z="580.4584" />
+							<CustomBehavior File="RunCode" Code="SpellManager.Cast(1022);" /> <!-- Blessing of Protection to prevent fall damage. -->
+							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsFalling" />
+						</If>
+					</If>
+					<MoveTo Nav="Fly" X="2281.082" Y="-5318.777" Z="88.67964" />
+					<MoveTo Nav="Run" X="2296.522" Y="-5335.688" Z="90.75224" />
+					<CustomBehavior File="InteractWith" MobId="245526" QuestId="38576" QuestObjectiveIndex="3" X="2300.601" Y="-5339.003" Z="90.37598" />
+					<MoveTo X="2296.906" Y="-5335.53" Z="90.75294" />
+					<CustomBehavior File="MyCTM" X="2321.091" Y="-5358.607" Z="71.31615" />
+				</While>
+				<TurnIn QuestName="We Meet at Light's Hope" QuestId="38576" TurnInName="Lord Maxwell Tyrosus" TurnInId="100031" X="2455.257" Y="-5433.205" Z="49.03433" />
+			</If>
+
+			<PickUp QuestName="A United Force" QuestId="38566" GiverName="Lord Maxwell Tyrosus" GiverId="100031" X="2455.257" Y="-5433.205" Z="49.03433" />
+			<While Condition="DoQuest(38566)" >
+				<MoveTo X="2500.989" Y="-5485.642" Z="51.65574" />
+				<CustomBehavior File="WaitTimer" QuestId="38566" QuestObjectiveIndex="1" WaitTime="50000" />
+				<CustomBehavior File="InteractWith" MobId="92403" QuestId="38566" QuestObjectiveIndex="2" X="2504.778" Y="-5484.542" Z="51.65549" />
+				<MoveTo X="2489.341" Y="-5475.013" Z="48.91784" />
+				<CustomBehavior File="WaitTimer" QuestId="38566" WaitTime="65000" />
+			</While>
+			<TurnIn QuestName="A United Force" QuestId="38566" TurnInName="Lord Maxwell Tyrosus" TurnInId="91866" X="2506.992" Y="-5480.348" Z="51.65767" />
+
+			<PickUp QuestName="Forging New Strength" QuestId="39722" GiverName="Lord Maxwell Tyrosus" GiverId="91866" X="2506.992" Y="-5480.348" Z="51.65767" />
+			<While Condition="DoQuest(39722)" >
+				<!-- /dump GetMouseFocus():GetPowerID(); C_ArtifactUI.AddPower(powerId); -->
+				<CustomBehavior File="InteractWith" MobId="241144" WaitTime="2000" QuestId="41125" X="2494.236" Y="-5474.514" Z="48.91702" />
+				<If Condition="HasItem(128823)" > <!-- The Silver Hand -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1342);" />
+				</If>
+				<If Condition="HasItem(128866)" > <!-- Truthguard -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1343);" />
+				</If>
+				<If Condition="HasItem(120978)" > <!-- Ashbringer -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1275);" />
+				</If>
+			</While>
+			<TurnIn QuestName="Forging New Strength" QuestId="39722" TurnInName="Lord Maxwell Tyrosus" TurnInId="91866" X="2494.236" Y="-5474.514" Z="48.91702" />
+
+			<PickUp QuestName="Logistical Matters" QuestId="38933" GiverName="Lord Maxwell Tyrosus" GiverId="91866" X="2494.236" Y="-5474.514" Z="48.91702" />
+			<TurnIn QuestName="Logistical Matters" QuestId="38933" TurnInName="Lord Grayson Shadowbreaker" TurnInId="90250" X="2494.236" Y="-5474.514" Z="48.91702" />
+
+			<PickUp QuestName="A Sound Plan" QuestId="39756" GiverName="Lord Grayson Shadowbreaker" GiverId="90250" X="2494.236" Y="-5474.514" Z="48.91702" />
+			<While Condition="DoQuest(39756)" >
+				<CustomBehavior File="InteractWith" MobId="93787" WaitTime="1500" QuestId="39756" X="2332.899" Y="-5390.446" Z="56.53489" />
+				<If Condition="NeedsQuest(39718)" > <!-- Azsuna -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+			</While>
+			<TurnIn QuestName="A Sound Plan" QuestId="39756" TurnInName="Lord Grayson Shadowbreaker" TurnInId="90250" X="2334.698" Y="-5385.092" Z="54.72956" />
+
+			<While Condition="DoQuest(39718)" >
+				<CustomBehavior File="InteractWith" MobId="251673" QuestId="39718" QuestObjectiveIndex="1" X="2376.156" Y="-5320.269" Z="54.72763" /> <!-- NOTE: <ConditionalCheck> : UseWhen in Class Hall, TerminateWhen Me In Dalaran -->
+				<CustomBehavior File="WaitTimer" WaitTime="3000" />
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />
+			</While>
+		<!-- END Introductory Class Hall Quests -->
+
+		<!-- Tutorial Class Hall Quests - Starts in Dalaran -->
+		<!-- END Tutorial Class Hall Quests -->
+
+
+		<!-- Boolean for IsAchievementCompleted defaults to false. -->
+		<!-- Azsuna -->
+			<If Condition="!IsAchievementCompleted(10763, false)" > 
+				<If Condition="NeedsQuest(39718)" >
+					<CustomBehavior File="InteractWith" MobId="251673" WaitTime="1500" X="2376.156" Y="-5320.269" Z="54.72763" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<CustomBehavior File="InteractWith" MobId="251673" X="2376.156" Y="-5320.269" Z="54.72763" /> <!-- NOTE: <ConditionalCheck> : UseWhen in Class Hall, TerminateWhen Me In Dalaran -->
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />
+			</If>
+		<!-- END Azsuna -->
+
+		<!-- Val'sharah -->
+			<If Condition="!IsAchievementCompleted(10698, false)" >
+				<If Condition="NeedsQuest(39731)" >
+					<CustomBehavior File="InteractWith" MobId="251673" WaitTime="1500" X="2376.156" Y="-5320.269" Z="54.72763" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39731);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<CustomBehavior File="InteractWith" MobId="251673" X="2376.156" Y="-5320.269" Z="54.72763" /> <!-- NOTE: <ConditionalCheck> : UseWhen in Class Hall, TerminateWhen Me In Dalaran -->
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Val'sharah [Echo].xml" />
+			</If>
+		<!-- END Val'sharah -->
+
+		<!-- Highmountain -->
+			<If Condition="!IsAchievementCompleted(10059, false)" >
+				<If Condition="NeedsQuest(39733)" >
+					<CustomBehavior File="InteractWith" MobId="251673" WaitTime="1500" X="2376.156" Y="-5320.269" Z="54.72763" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39733);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<CustomBehavior File="InteractWith" MobId="251673" X="2376.156" Y="-5320.269" Z="54.72763" /> <!-- NOTE: <ConditionalCheck> : UseWhen in Class Hall, TerminateWhen Me In Dalaran -->
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Highmountain [Echo].xml" />
+			</If>
+		<!-- END Highmountain -->
+
+		<!-- Stormheim -->
+			<If Condition="!IsAchievementCompleted(10790, false)" >
+				<If Condition="NeedsQuest(39735)" >
+					<CustomBehavior File="InteractWith" MobId="251673" WaitTime="1500" X="2376.156" Y="-5320.269" Z="54.72763" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39735);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<CustomBehavior File="InteractWith" MobId="251673" X="2376.156" Y="-5320.269" Z="54.72763" /> <!-- NOTE: <ConditionalCheck> : UseWhen in Class Hall, TerminateWhen Me In Dalaran -->
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Stormehim [Echo].xml" />
+			</If>
+		<!-- END Stormheim -->
+
+	</QuestOrder>
+</HBProfile>

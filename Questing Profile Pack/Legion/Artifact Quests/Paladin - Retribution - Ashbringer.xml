@@ -1,0 +1,252 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Paladin - Retribution - Ashbringer [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Get Continuation Quest -->
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
+
+		<!-- Story: Artifact Weapon - Ashbringer -->
+			<!-- NOTE: <TechnicalCheck> : These NPC locations will vary depending on if this is the player's first artifact weapon or not.
+											This current XYZ/Id is for the first artifact weapon.  Add support for other artifact quests later. -->
+			<PickUp QuestName="Seeking Guidance" QuestId="42770" GiverName="Lord Maxwell Tyrosus" GiverId="90369" X="-847.9688" Y="4256.457" Z="746.2817" />
+			<!-- END: <Technical Check -->
+			<While Condition="DoQuest(42770)" >
+				<If Condition="Me.MapId != 0" >
+					<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran, enter Dalaran Portal Room -->
+						<MoveTo X="-847.6401" Y="4463.277" Z="735.8799" />
+						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TerminateWhen in portal room. -->
+					</If>
+					<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran Portal Room, entering Dalaran Crater -->
+						<MoveTo X="-881.0235" Y="4507.995" Z="580.1562" />
+						<CustomBehavior File="InteractWith" MobId="246008" WaitTime="1000" X="-880.408" Y="4511.733" Z="580.4584" />
+						<CustomBehavior File="RunCode" Code="SpellManager.Cast(1022);" /> <!-- Blessing of Protection to prevent fall damage. -->
+						<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsFalling" />
+					</If>
+				</If>
+				<MoveTo X="1098.106" Y="-1800.179" Z="62.13031" />
+			</While>
+			<TurnIn QuestName="Seeking Guidance" QuestId="42770" TurnInName="Lord Maxwell Tyrosus" TurnInId="108776" X="1100.592" Y="-1800.389" Z="62.01579" />
+
+			<PickUp QuestName="Sacred Ground" QuestId="42772" GiverName="High Priest Thel'danis" GiverId="108777" X="1101.53" Y="-1795.161" Z="61.77352" />
+			<PickUp QuestName="Keeping the Peace" QuestId="42771" GiverName="Mehlar Dawnblade" GiverId="108778" X="1101.997" Y="-1791.12" Z="61.89447" />
+
+			<While Condition="DoQuest(42772)" >
+				<CustomBehavior File="InteractWith" MobId="251341" WaitForNpcs="false" QuestId="42772" QuestObjectiveIndex="1" X="1064.783" Y="-1747.601" Z="61.63756" />
+				<CustomBehavior File="InteractWith" MobId="251342" WaitForNpcs="false" QuestId="42772" QuestObjectiveIndex="1" X="1142.837" Y="-1725.241" Z="64.42095" />
+				<CustomBehavior File="InteractWith" MobId="251336" WaitForNpcs="false" QuestId="42772" QuestObjectiveIndex="1" X="1183.33" Y="-1777.835" Z="61.93257" />
+			</While>
+
+			<While Condition="DoQuest(42771)" >
+				<CustomBehavior File="KillUntilComplete" MobIds="108824, 108815" QuestId="42771" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="1203.974" Y="-1749.853" Z="62.26963" />
+						<Hotspot X="1166.274" Y="-1719.526" Z="60.92463" />
+						<Hotspot X="1095.463" Y="-1668.225" Z="61.76325" />
+						<Hotspot X="1042.292" Y="-1718.173" Z="62.87202" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
+			<TurnIn QuestName="Sacred Ground" QuestId="42772" TurnInName="High Priest Thel'danis" TurnInId="108777" X="1101.53" Y="-1795.161" Z="61.77359" />
+			<TurnIn QuestName="Keeping the Peace" QuestId="42771" TurnInName="Mehlar Dawnblade" TurnInId="108778" X="1101.997" Y="-1791.12" Z="61.89468" />
+
+			<PickUp QuestName="The Light Reveals" QuestId="42773" GiverName="Lord Maxwell Tyrosus" GiverId="108894" X="1019.042" Y="-1802.556" Z="77.24113" />
+			<While Condition="DoQuest(42773)" >
+				<MoveTo X="980.5043" Y="-1821.989" Z="80.48727" />
+				<CustomBehavior File="WaitTimer" QuestId="42773" QuestObjectiveIndex="1" WaitTime="25000" />
+				<CustomBehavior File="InteractWith" MobId="251346" QuestId="42773" QuestObjectiveIndex="2" X="979.3524" Y="-1822.806" Z="80.4986" />
+				<CustomBehavior File="WaitTimer" QuestId="42773" QuestObjectiveIndex="2" WaitTime="90000" />
+			</While>
+			<TurnIn QuestName="The Light Reveals" QuestId="42773" TurnInName="Lord Maxwell Tyrosus" TurnInId="108776" X="981.9078" Y="-1823.849" Z="80.48733" />
+
+			<PickUp QuestName="Hope Prevails" QuestId="42774" GiverName="Lord Maxwell Tyrosus" GiverId="108776" X="981.9078" Y="-1823.849" Z="80.48733" />
+			<TurnIn Nav="Fly" QuestName="Hope Prevails" QuestId="42774" TurnInName="Lord Maxwell Tyrosus" TurnInId="90369" X="2273.372" Y="-5282.353" Z="81.99033" />
+
+			<PickUp QuestName="The Search for the Highlord" QuestId="38376" GiverName="Lord Maxwell Tyrosus" GiverId="90369" X="2273.372" Y="-5282.353" Z="81.99033" />
+			<While Condition="DoQuest(38376)" >
+				<CustomBehavior File="InteractWith" MobId="90384" X="2278.236" Y="-5277.413" Z="82.07002" />
+				<CustomBehavior File="WaitTimer" WaitTime="23000" TerminateWhen="!Me.IsFlying" />
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<CustomBehavior File="WaitTimer" WaitTime="15000" /> <!-- Wait for Maxwell's dialog -->
+					<CustomBehavior File="Misc\RunLua" WaitTime="2000" Lua="ScenarioObjectiveBlock.currentLine.SpellButton:Click();" /> <!-- NOTE: <CheckThis> : Not sure if this works. SpellId 190359-->
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<CustomBehavior File="KillUntilComplete" MobIds="97567, 97566, 95984, 96005" X="-2493.3" Y="98.77257" Z="7.942018" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<!-- NOTE: <AddAvoid> : Can add avoids for the fire funnels on the ground.  They don't seem to be a threat at all though - very low priority. -->
+					<MoveTo X="-2669.04" Y="-12.99833" Z="52.49359" />
+					<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Me.Combat" />
+					<CustomBehavior File="MyCTM" X="-2692.915" Y="-29.28548" Z="50.0119" />
+					<MoveTo X="-2669.04" Y="-12.99833" Z="52.49359" />
+					<!-- NOTE: <AddHook> : Check SpellId.  WowHead is showing two of the same Drain Life spells.  The other Id is: 182217 -->
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="RebukeDrainLife" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.ChanneledCastingSpellId == 221309 &amp;&amp; (SpellManager.CanCast(96231) || SpellManager.CanCast(853))" >
+						<CustomBehavior File="RunCode" Code="
+								if (SpellManager.CanCast(96231)) SpellManager.Cast(96231);
+								else SpellManager.Cast(853);
+								await Coroutine.Sleep(500);
+						" />
+					</CustomBehavior>
+					<CustomBehavior File="KillUntilComplete" MobId="91672" X="-2758.635" Y="-71.2309" Z="46.63611" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="RebukeDrainLife" Command="Remove" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<MoveTo X="-2750.021" Y="-325.1697" Z="38.16585" />
+					<CustomBehavior File="InteractWith" MobId="247318" InteractByLooting="true" WaitTime="1500" X="-2746.764" Y="-327.8924" Z="39.76086" />
+					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+					<CustomBehavior File="WaitTimer" WaitTime="45000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<CustomBehavior File="WaitTimer" WaitTime="7000" />
+					<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+					<CustomBehavior File="WaitTimer" WaitTime="12000" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<CustomBehavior File="KillUntilComplete" MobId="90981" X="-2744.811" Y="-329.8924" Z="38.46474" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+					<MoveTo X="-2747.607" Y="-79.14422" Z="46.63483" />
+					<CustomBehavior File="WaitTimer" QuestId="38376" WaitTime="30000" />
+				</If>
+			</While>
+			<TurnIn QuestName="The Search for the Highlord" QuestId="38376" TurnInName="Lord Maxwell Tyrosus" TurnInId="91144" X="-2753.23" Y="-86.0365" Z="46.63651" />
+
+			<!-- NOTE: <CheckThis> : This is the same quest as introducted in the Paladin class hall.  This quest chunk may not exist if the player is seeking this artifact as their second or third. -->
+			<PickUp QuestName="We Meet at Light's Hope" QuestId="42811" GiverName="Lord Maxwell Tyrosus" GiverId="91144" X="-2753.23" Y="-86.0365" Z="46.63651" />
+			<While Condition="DoQuest(42811)" >
+				<If Condition="Me.MapId != 0" >
+					<CustomBehavior File="InteractWith" MobId="91145" QuestId="42811" QuestObjectiveIndex="1" X="-2728.144" Y="-59.01439" Z="46.06541" />
+					<CustomBehavior File="WaitTimer" WaitTime="17000" TerminateWhen="!Me.IsFlying" />
+				</If>
+				<CustomBehavior File="InteractWith" MobId="245526" QuestId="38576" QuestObjectiveIndex="3" X="2300.601" Y="-5339.003" Z="90.37598" />
+				<MoveTo X="2296.906" Y="-5335.53" Z="90.75294" />
+				<CustomBehavior File="MyCTM" X="2321.091" Y="-5358.607" Z="71.31615" />
+			</While>
+			<TurnIn QuestName="We Meet at Light's Hope" QuestId="42811" TurnInName="Lord Maxwell Tyrosus" TurnInId="100031" X="2455.257" Y="-5433.205" Z="49.03492" />
+		<!-- END Story: Artifact Weapon - Ashbringer -->
+
+
+		<If Condition="!IsQuestCompleted(38566)" >
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Paladin [Echo].xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	A United Force (38566) is used to determine if we've got the first artifact or not because NPC positions change after this quest.	
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	A United Force (38566) is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

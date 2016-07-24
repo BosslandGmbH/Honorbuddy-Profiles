@@ -1,0 +1,250 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Rogue - Subtlety - Fangs of the Devourer [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Get Continuation Quest -->
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
+
+		<!-- Story: Artifact Weapon - Fangs of the Devourer -->
+			<PickUp QuestName="The Shadows Reveal" QuestId="41919" GiverName="Valeera Sanguinar" GiverId="98102" X="-951.6077" Y="4550.643" Z="698.5582" />
+			<While Condition="DoQuest(41919)" >
+				<CustomBehavior File="InteractWith" MobId="249382" X="-916.7535" Y="4534.221" Z="706.9974" /> <!-- Open bookcase to leave hidden room -->
+
+				<CustomBehavior File="InteractWith" MobId="105332" GossipOptions="1" QuestId="41919" QuestObjectiveIndex="1" X="-935.3455" Y="4648.175" Z="728.7687" />
+				<CustomBehavior File="InteractWith" MobId="96782" GossipOptions="1" QuestId="41919" QuestObjectiveIndex="3" X="-755.9288" Y="4424.801" Z="737.7957" />
+				<CustomBehavior File="InteractWith" MobId="105333" GossipOptions="1" NumOfTimes="6" QuestId="41919" QuestObjectiveIndex="2" X="-851.9514" Y="4404.333" Z="717.0285" />
+				<CustomBehavior File="WaitTimer" QuestId="41919" QuestObjectiveIndex="2" WaitTime="30000" />
+			</While>
+			<TurnIn QuestName="The Shadows Reveal" QuestId="41919" TurnInName="Valeera Sanguinar" TurnInId="98102" X="-969.9045" Y="4447.61" Z="735.7388" />
+
+			<PickUp QuestName="A Matter of Finesse" QuestId="41920" GiverName="Valeera Sanguinar" GiverId="98102" X="-969.9045" Y="4447.61" Z="735.7388" />
+			<While Condition="DoQuest(41920)" >
+				<CustomBehavior File="Hooks\Avoid" AvoidName="ArcaneSentry" Command="Add" ObjectId="105385" Radius="3" AvoidWhen="!UNIT.Aggro" />
+				<!-- NOTE: <AddAvoid> : Need to avoid the fire stuff.  -->
+				<MoveTo X="-839.93" Y="4402.5" Z="740.4" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepStealth" UseWhen="!Me.Combat &amp;&amp; !Me.HasAura(1784)" >
+					<CustomBehavior File="RunCode"><![CDATA[
+							await Coroutine.Wait(5000, () => SpellManager.CanCast(1784));
+							SpellManager.Cast(1784);
+						]]>
+					</CustomBehavior>
+				</CustomBehavior>
+				<CustomBehavior File="InteractWith" MobId="248876" InteractByLooting="true" QuestId="41920" QuestObjectiveIndex="1" X="-843.0469" Y="4431.337" Z="742.8807" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="ArcaneSentry" Command="Remove" />
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepStealth" Command="Remove" />
+				<CustomBehavior File="InteractWith" MobId="105333" QuestId="41920" QuestObjectiveIndex="2" X="-851.9514" Y="4404.333" Z="717.0285" />
+			</While>
+			<TurnIn QuestName="A Matter of Finesse" QuestId="41920" TurnInName="Valeera Sanguinar" TurnInId="98102" X="-851.4618" Y="4401.409" Z="717.0576" />
+
+			<PickUp QuestName="Closing In" QuestId="41921" GiverName="Valeera Sanguinar" GiverId="98102" X="-851.4618" Y="4401.409" Z="717.0576" />
+			<While Condition="DoQuest(41921)" >
+				<CustomBehavior File="KillUntilComplete" MobId="105450" QuestId="41921" QuestObjectiveIndex="1" X="-801.9639" Y="4486.852" Z="745.9301" />
+			</While>
+			<TurnIn QuestName="Closing In" QuestId="41921" TurnInName="Valeera Sanguinar" TurnInId="98102" X="-851.4618" Y="4401.409" Z="717.0576" />
+
+			<PickUp QuestName="Traitor!" QuestId="41922" GiverName="Valeera Sanguinar" GiverId="98102" X="-851.4618" Y="4401.409" Z="717.0576" />
+			<TurnIn QuestName="Traitor!" QuestId="41922" TurnInName="Valeera Sanguinar" TurnInId="98102" X="-851.4618" Y="4401.409" Z="717.0576" />
+
+			<PickUp QuestName="Fangs of the Devourer" QuestId="41924" GiverName="Val'zuun" GiverId="105464" X="-851.0886" Y="4405.228" Z="716.9459" />
+			<While Condition="DoQuest(41924)" >
+				<CustomBehavior File="InteractWith" MobId="248901" QuestId="41924" QuestObjectiveIndex="1" X="-846.2379" Y="4408.116" Z="717.1523" />
+
+				<CustomBehavior File="Hooks\Avoid" AvoidName="ShadowgoreStalker" Command="Add" ObjectId="105539" Radius="4.5" AvoidWhen="!UNIT.Aggro" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="ShadowgoreBloodmaiden" Command="Add" ObjectId="105537" Radius="4" AvoidWhen="!UNIT.Aggro" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="ShadowgoreDarkcaster" Command="Add" ObjectId="105538" Radius="4" AvoidWhen="!UNIT.Aggro" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="EyeOfXirus" Command="Add" ObjectId="105541" Radius="17" AvoidWhen="!UNIT.Aggro" />
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<MoveTo X="1875.384" Y="1283.559" Z="91.83971" />
+					<CustomBehavior File="KillUntilComplete" MobId="105536" X="1854.158" Y="1275.573" Z="91.71672" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<DisableBehavior Name="Combat" />
+					<CustomBehavior File="WaitTimer" WaitTime="5000" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							var soulkeeperPoi = Unit(105580);  
+
+							if (!StyxWoW.Me.HasAura(1784)) SpellManager.Cast(1784);
+							await Coroutine.Wait(1500, () => StyxWoW.Me.HasAura(1784));
+
+							soulkeeperPoi.Target();
+							StyxWoW.Me.SetFacing(soulkeeperPoi.Location);
+							await Coroutine.Sleep(450);
+
+							SpellManager.Cast(921);
+							await Coroutine.Sleep(500);
+							LootFrame.Instance.LootAll();
+							await Coroutine.Sleep(2000);
+						]]>
+					</CustomBehavior>
+					<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<CustomBehavior File="InteractWith" MobId="249809" X="1847.932" Y="1259.83" Z="56.99668" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+					<CustomBehavior File="InteractWith" MobId="248992" X="1869.599" Y="1271.953" Z="57.0953" TerminateWhen="IsScenarioCriteriaComplete(2)" />
+					<CustomBehavior File="InteractWith" MobId="249390" X="1854.505" Y="1296.273" Z="62.13059" TerminateWhen="IsScenarioCriteriaComplete(3)" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<!-- NOTE: <AddAvoid> : Eyes spin in circles shooting lasers.  They didn't seem to hit me, and if they did, they did no damage.  Low Priority.
+											Name="Beaming Eye" Entry="106053"
+					-->
+					<CustomBehavior File="KillUntilComplete" MobId="105542" X="1854.795" Y="1327.929" Z="66.13662" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+
+					<CustomBehavior File="Hooks\Avoid" AvoidName="ChaosGuard" Command="Add" ObjectId="105596" Radius="5" AvoidWhen="!UNIT.Aggro" />
+
+					<MoveTo X="1891.177" Y="1293.519" Z="91.7283" />
+					<CustomBehavior File="WaitTimer" WaitTime="90000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<!-- Tough fight.  Relying on CR to actually AoE when she summons her clones and to use "Crimson Vail" to heal. -->
+					<CustomBehavior File="KillUntilComplete" MobId="105660" X="1854.139" Y="1275.446" Z="91.71667" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+					<CustomBehavior File="InteractWith" MobId="249347" InteractByLooting="true" WaitTime="1500" X="1854.052" Y="1275.41" Z="91.71647" />
+					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+				</If>
+
+
+				<If Condition="HasItem(128476)" >
+					<CustomBehavior File="Hooks\Avoid" AvoidName="ShadowgoreStalker" Command="Remove" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="ShadowgoreBloodmaiden" Command="Remove" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="ChaosGuard" Command="Remove" />
+					<MoveTo X="1854.965" Y="1419.862" Z="92.1505" />
+					<CustomBehavior File="InteractWith" MobId="248908" X="1855.167" Y="1425.644" Z="92.68004" />
+				</If>
+			</While>
+			<If Condition="QuestDone(41924)" > <!-- CheckMapId &amp;&amp; not in class hall -->
+				<MoveTo X="-970.8673" Y="4438.853" Z="735.7394" />
+				<CustomBehavior File="InteractWith" MobId="97004" GossipOptions="1" X="-973.3143" Y="4435.202" Z="735.7391" /> <!-- Enter class hall -->
+				<CustomBehavior File="InteractWith" MobId="246387" X="-909.7969" Y="4538.942" Z="707.6417" /> <!-- Open hidden bookcase -->
+			</If>
+			<TurnIn QuestName="Fangs of the Devourer" QuestId="41924" TurnInName="Valeera Sanguinar" TurnInId="98102" X="-951.6077" Y="4550.641" Z="698.5583" />
+		<!-- END Story: Artifact Weapon - Fangs of the Devourer -->
+
+
+		<If Condition="!IsQuestCompleted(40950)" >
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Rogue [Echo].xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	Honoring Success (40950) is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	Honoring Success (40950) is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

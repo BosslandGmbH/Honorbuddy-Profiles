@@ -1,0 +1,239 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Demon Hunter - Havoc - Twinblades of the Deceiver [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Get Continuation Quest -->
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
+
+		<!-- NOTE: 
+			The NPC changes depending on what the player chose while questing in the DemonHunter starting zone.
+			We can detect which NPC was chosen by checking which finale quest was completed.  The quest being: "Between Us and Freedom"
+			QuestId 39688 = Kayn Sunfury
+			QuestId 40255 = Altruis the Sufferer
+		-->
+
+		<!-- Story: Artifact Weapon - Twinblades of the Deceiver -->
+		<If Condition="IsQuestCompleted(39688)" >  <!-- Kayn -->
+			<!-- NOTE: <TechnicalCheck> : These NPC locations will vary depending on if this is the player's first artifact weapon or not.
+											This current XYZ/Id is for the first artifact weapon.  Add support for other artifact quests later. -->
+			<PickUp QuestName="Making Arrangements" QuestId="40819" GiverName="Kayn Sunfury" GiverId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
+			<TurnIn QuestName="Making Arrangements" QuestId="40819" TurnInName="Kayn Sunfury" TurnInId="94902" X="-952.618" Y="4332.883" Z="740.184" />
+
+			<PickUp QuestName="By Any Means" QuestId="39051" GiverName="Kayn Sunfury" GiverId="94902" X="-952.618" Y="4332.883" Z="740.184" />
+			<While Condition="DoQuest(39051)" >
+				<CustomBehavior File="InteractWith" MobId="96313" GossipOptions="2,2" QuestId="39051" QuestObjectiveIndex="1" X="-957.408" Y="4329.056" Z="740.1688" />
+				<CustomBehavior File="InteractWith" MobId="242174" QuestId="39051" QuestObjectiveIndex="2" X="-960.4443" Y="4324.997" Z="740.1581" />
+				<!-- NOTE: <WIP> : This quest involves going through a door and into an instance.  Using IW to open the door, and CTM to go into portal, use TerminateWhen to shut off CTM -->
+				<CustomBehavior File="MyCTM" QuestId="39051" QuestObjectiveIndex="2" X="-965.9781" Y="4318.647" Z="740.0172" TerminateWhen="Me.MapId == 1234" /> <!-- NOTE: <CheckMapId> -->
+				<CustomBehavior File="WaitTimer" WaitTime="60000" />
+				<!-- NOTE: <AddAvoids> : Avoids aren't really needed, but could work good here. -->
+				<CustomBehavior File="KillUntilComplete" MobId="94731" QuestId="39051" X="1357.16" Y="-263.2" Z="38.6565" />
+			</While>
+			<TurnIn QuestName="By Any Means" QuestId="39051" TurnInName="Kayn Sunfury" TurnInId="94902" X="1300.66" Y="-260.674" Z="44.2852" />
+
+			<PickUp QuestName="The Hunt" QuestId="39247" GiverName="Kayn Sunfury" GiverId="94902" X="1300.66" Y="-260.674" Z="44.2852" />
+			<If Condition="DoQuest(39247)" >
+				<!-- NOTE: <WIP> : This quest involves going through a door and into an instance.  Using IW to open the door, and CTM to go into portal. -->
+				<If Condition="Me.MapId == 1234" >  <!-- NOTE: <CheckMapId>, inside of Dalaran prison -->
+					<MoveTo X="1290.327" Y="-262.9491" Z="44.36398" />
+					<CustomBehavior File="MyCTM" X="1261.129" Y="-263.3456" Z="44.36398" TerminateWhen="Me.MapId == 1234" />  <!-- NOTE: <CheckMapId> Leaving Dalaran Prison-->
+				</If>
+				<If Condition="Me.MapId == 1234" >  <!-- NOTE: <CheckMapId> If in Dalaran -->
+					<CustomBehavior File="InteractWith" MobId="94321" QuestId="41119" QuestObjectiveIndex="1" X="-844.6198" Y="4253.933" Z="746.2827" />
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
+					<!-- User gets off at X="1263.974" Y="5235.755" Z="93.53168" -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" />
+				</If>
+			</If>
+		</If>
+
+		<If Condition="IsQuestCompleted(40255)" >  <!-- Altruis -->
+			<!-- NOTE: <TechnicalCheck> : These NPC locations will vary depending on if this is the player's first artifact weapon or not.
+											This current XYZ/Id is for the first artifact weapon.  Add support for other artifact quests later. -->
+			<PickUp QuestName="Making Arrangements" QuestId="41120" GiverName="Altruis the Sufferer" GiverId="99254" X="-852.2726" Y="4256.074" Z="746.285" />
+			<TurnIn QuestName="Making Arrangements" QuestId="41120" TurnInName="Altruis the Sufferer" TurnInId="103156" X="-952.618" Y="4332.883" Z="740.1839" />
+
+			<PickUp QuestName="By Any Means" QuestId="41121" GiverName="Altruis the Sufferer" GiverId="103156" X="-952.618" Y="4332.883" Z="740.1839" />
+			<While Condition="DoQuest(41121)" >
+				<CustomBehavior File="InteractWith" MobId="96313" GossipOptions="2,2" QuestId="41121" QuestObjectiveIndex="1" X="-957.408" Y="4329.056" Z="740.1688" />
+				<CustomBehavior File="InteractWith" MobId="242174" QuestId="41121" QuestObjectiveIndex="2" X="-960.4443" Y="4324.997" Z="740.1581" />
+				<!-- NOTE: <WIP> : This quest involves going through a door and into an instance.  Using IW to open the door, and CTM to go into portal, use TerminateWhen to shut off CTM -->
+				<CustomBehavior File="MyCTM" QuestId="41121" QuestObjectiveIndex="2" X="-962.2867" Y="4322.663" Z="740.1408" TerminateWhen="Me.MapId == 1234" />  <!-- NOTE: <CheckMapId> -->
+				<CustomBehavior File="WaitTimer" WaitTime="60000" />
+				<!-- NOTE: <AddAvoids> : Avoids aren't really needed, but could work good here. -->
+				<CustomBehavior File="KillUntilComplete" MobId="94731" QuestId="41121" X="1357.16" Y="-263.2" Z="38.6565" />
+			</While>
+			<TurnIn QuestName="By Any Means" QuestId="41121" TurnInName="Altruis the Sufferer" TurnInId="103156" X="1300.66" Y="-260.674" Z="44.27068" />
+
+			<PickUp QuestName="The Hunt" QuestId="41119" GiverName="Altruis the Sufferer" GiverId="103156" X="1300.66" Y="-260.674" Z="44.27068" />
+			<If Condition="DoQuest(41119)" >
+				<!-- NOTE: <WIP> : This quest involves going through a door and into an instance.  Using IW to open the door, and CTM to go into portal. -->
+				<If Condition="Me.MapId == 1234" >  <!-- NOTE: <CheckMapId>, inside of Dalaran prison -->
+					<MoveTo X="1290.327" Y="-262.9491" Z="44.36398" />
+					<CustomBehavior File="MyCTM" X="1261.129" Y="-263.3456" Z="44.36398" TerminateWhen="Me.MapId == 1234" />  <!-- NOTE: <CheckMapId> Leaving Dalaran Prison-->
+				</If>
+				<If Condition="Me.MapId == 1234" >  <!-- NOTE: <CheckMapId> If in Dalaran -->
+					<CustomBehavior File="InteractWith" MobId="94321" QuestId="41119" QuestObjectiveIndex="1" X="-844.6198" Y="4253.933" Z="746.2827" />
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
+					<!-- User gets off at X="1263.974" Y="5235.755" Z="93.53168" -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" />
+				</If>
+			</If>
+		</If>
+
+		<While Condition="DoQuest(39247, 41119)" >
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+				<CustomBehavior File="KillUntilComplete" MobId="95423" X="1037.984" Y="5137.779" Z="58.55843" TerminateWhen="Unit(95423) == null || Unit(95423, u =&gt; u.IsDead) != null" />
+				<CustomBehavior File="InteractWith" MobId="243428" WaitForNpcs="false" X="1055.153" Y="5091.441" Z="53.74208" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+
+				<CustomBehavior File="KillUntilComplete" MobId="95285" X="1198.953" Y="5002.883" Z="57.87693" TerminateWhen="Unit(95285) == null || Unit(95285, u =&gt; u.IsDead) != null" />
+				<CustomBehavior File="InteractWith" MobId="243472" WaitForNpcs="false" X="1211.149" Y="5027.758" Z="60.36699" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+
+				<!-- NOTE: <AddAvoid> : He seems to do a frontal attack that does about medium damage. I killed him fine with standing in it, but it got my health down low. -->
+				<CustomBehavior File="KillUntilComplete" MobId="95429" X="1003.443" Y="4931.136" Z="36.27768" TerminateWhen="Unit(95429) == null || Unit(95429, u =&gt; u.IsDead) != null" />
+				<CustomBehavior File="InteractWith" MobId="243473" WaitForNpcs="false" X="970.566" Y="4906.897" Z="36.06742" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+				<CustomBehavior File="WaitTimer" WaitTime="15000" />
+			</If>
+
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+				<MoveTo X="997.6365" Y="4895.81" Z="36.16906" />
+				<CustomBehavior File="MyCTM" X="974.1993" Y="4842.693" Z="35.06141" />
+				<!-- NOTE: <AddAvoid> : This NPC casts Eye Beam.  It didn't seem to do much damage, but it would help to get out of it. -->
+				<CustomBehavior File="KillUntilComplete" MobId="94836" X="958.002" Y="4804.31" Z="34.60534" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+			</If>
+
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+				<CustomBehavior File="InteractWith" MobId="251878" InteractByLooting="true" WaitTime="1500" X="965.2691" Y="4826.967" Z="34.67542" />
+				<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+				<CustomBehavior File="WaitTimer" WaitTime="12000" /> <!-- Wait for little cinematic. -->
+			</If>
+
+			<CustomBehavior File="InteractWith" MobId="101902" X="971.3768" Y="4841.856" Z="35.01244" />
+			<CustomBehavior File="WaitTimer" WaitTime="18000" />
+		</While>
+
+		<If Condition="HasQuest(39247)" >
+			<TurnIn QuestName="The Hunt" QuestId="39247" TurnInName="Kor'vas Bloodthorn" TurnInId="102799" X="-835.9692" Y="4265.4" Z="746.2537" />
+		</If>
+		<If Condition="HasQuest(41119)" >
+			<TurnIn QuestName="The Hunt" QuestId="41119" TurnInName="Kor'vas Bloodthorn" TurnInId="102799" X="-835.9692" Y="4265.4" Z="746.2537" />
+		</If>
+		<!-- END Story: Artifact Weapon - Twinblades of the Deceiver -->
+
+
+		<If Condition="!IsQuestCompleted(42869)" >
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Demon Hunter [Echo].xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	Eternal Vigil (42869) is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	Eternal Vigil (42869) is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

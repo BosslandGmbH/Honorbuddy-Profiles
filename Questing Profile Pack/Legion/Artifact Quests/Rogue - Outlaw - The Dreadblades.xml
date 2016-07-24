@@ -1,0 +1,241 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Rogue - Outlaw - The Dreadblades [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+		<Mob Name="Raging Current" Id="102300" Flags="Combat" />
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Get Continuation Quest -->
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
+
+		<!-- Story: Artifact Weapon - The Dreadblades -->
+			<PickUp QuestName="A Friendly Accord" QuestId="40847" GiverName="Fleet Admiral Tethys" GiverId="94159" X="-949.3837" Y="4549.32" Z="698.2386" />
+			<While Condition="DoQuest(40847)" >
+				<If Condition="Me.MapId != 0" > <!-- Go to Eastern Kingdoms -->
+					<CustomBehavior File="InteractWith" MobId="249382" X="-916.7535" Y="4534.221" Z="706.9974" /> <!-- Open bookcase to leave hidden room -->
+					<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran, enter Dalaran Portal Room -->
+						<MoveTo X="-847.6401" Y="4463.277" Z="735.8799" />
+						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TerminateWhen in portal room. -->
+					</If>
+					<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran Portal Room, entering Karazhan -->
+						<MoveTo X="-872.8339" Y="4501.604" Z="580.1613" />
+						<CustomBehavior File="InteractWith" MobId="246009" WaitTime="1000" X="-869.9479" Y="4503.124" Z="580.4584" />
+					</If>
+				</If>
+				<MoveTo Nav="Fly" X="-14336.99" Y="500.0012" Z="19.68285" />
+			</While>
+			<TurnIn QuestName="A Friendly Accord" QuestId="40847" TurnInName="Fleet Admiral Tethys" TurnInId="102120" X="-14335.34" Y="499.5063" Z="19.76163" />
+
+			<PickUp QuestName="The Dreadblades" QuestId="40849" GiverName="Fleet Admiral Tethys" GiverId="102120" X="-14335.34" Y="499.5063" Z="19.76163" />
+			<While Condition="DoQuest(40849)" >
+				<CustomBehavior File="InteractWith" MobId="102120" GossipOptions="1" QuestId="40849" QuestObjectiveIndex="1" X="-14335.34" Y="499.5063" Z="19.76163" />
+				<CustomBehavior File="WaitTimer" WaitTime="250000" TerminateWhen="Me.MapId != 0" />
+
+				<CustomBehavior File="Hooks\Avoid" AvoidName="LandMines" Command="Add" ObjectId="246459" Radius="2.8" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="Dreadhound" Command="Add" ObjectId="102191" Radius="10" AvoidWhen="!UNIT.Aggro &amp;&amp; UNIT.HasAura(201626)" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="DreadCrewman" Command="Add" ObjectId="102194" Radius="5" AvoidWhen="!UNIT.Aggro" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="DreadLookout" Command="Add" ObjectId="102252" Radius="5" AvoidWhen="!UNIT.Aggro" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="DreadSharpshooter" Command="Add" ObjectId="102192" Radius="17" AvoidWhen="!UNIT.Aggro &amp;&amp; UNIT.HasAura(201746)" />
+
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepStealth" UseWhen="!Me.Combat &amp;&amp; !Me.HasAura(1784)" >
+					<CustomBehavior File="RunCode"><![CDATA[
+							await Coroutine.Wait(5000, () => SpellManager.CanCast(1784));
+							SpellManager.Cast(1784);
+						]]>
+					</CustomBehavior>
+				</CustomBehavior>
+
+				<DisableBehavior Name="Pull" />
+				<UseMount Value="false" />
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<MoveTo X="-1326.95" Y="5874.578" Z="17.58014" />
+					<CustomBehavior File="ForcedDismount" />
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepStealth" UseWhen="!Me.Combat &amp;&amp; !Me.HasAura(1784)" >
+						<CustomBehavior File="RunCode"><![CDATA[
+								await Coroutine.Wait(5000, () => SpellManager.CanCast(1784));
+								SpellManager.Cast(1784);
+							]]>
+						</CustomBehavior>
+					</CustomBehavior>
+
+					<CustomBehavior File="MyCTM" X="-1294.44" Y="5842.177" Z="20.11839" />
+					<CustomBehavior File="MyCTM" X="-1275.617" Y="5835.776" Z="16.98751" />
+					<CustomBehavior File="MyCTM" X="-1264.342" Y="5816.942" Z="12.57043" />
+
+					<!-- NOTE: <AddAvoid> : Boss drops bombs around the area, need to avoid them. -->
+					<CustomBehavior File="KillUntilComplete" MobId="102185" X="-1211.049" Y="5802.76" Z="19.23608" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+					<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<MoveTo X="-1143.897" Y="6110.218" Z="43.83926" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+				</If>
+
+				<CustomBehavior File="Hooks\Avoid" AvoidName="LandMines" Command="Remove" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="Dreadhound" Command="Remove" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="DreadCrewman" Command="Remove" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="DreadLookout" Command="Remove" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="DreadSharpshooter" Command="Remove" />
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<CustomBehavior File="WaitTimer" WaitTime="35000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<!-- NOTE: <AddAvoid>: Stuff starts  falling from the ceiling -->
+
+					<CustomBehavior File="InteractWith" MobId="246473" X="-1214.47" Y="6139.858" Z="47.08427" /> <!-- NOTE: <Optimization> : Open door to temple, can terminate if in temple. -->
+					<MoveTo X="-1233.155" Y="6148.064" Z="35.43583" />
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="InterruptHeal" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.CastingSpellId == 208094 &amp;&amp; SpellManager.CanCast(1766)" >
+						<CustomBehavior File="RunCode"><![CDATA[
+								SpellManager.Cast(1766);
+								await Coroutine.Sleep(350);
+							]]>
+						</CustomBehavior>
+					</CustomBehavior>
+					<CustomBehavior File="KillUntilComplete" MobId="102298" X="-1275.234" Y="6167.17" Z="30.15948" TerminateWhen="Unit(102300) == null" />
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="InterruptHeal" Command="Remove" />
+					<MoveTo X="-1337.985" Y="6277.858" Z="9.483399" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<CustomBehavior File="Hooks\Avoid" AvoidName="MusketBarrage" Command="Add" ObjectId="63677" Radius="5" AvoidWhen="UNIT.CastingSpellId == 208226" AvoidLocationProducer="UNIT.Location.RayCast(UNIT.Rotation, 8)" />
+					<CustomBehavior File="KillUntilComplete" MobId="102293" X="-1359.75" Y="6322.288" Z="9.492381" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="MusketBarrage" Command="Remove" />
+
+					<CustomBehavior File="InteractWith" MobId="254087" InteractByLooting="true" WaitTime="1500" X="-1353.01" Y="6307.258" Z="8.608286" />
+					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+				</If>
+
+				<If Condition="!IsObjectiveComplete(3, 40849)" >
+					<MoveTo X="-1187.847" Y="6128.662" Z="41.94556" />
+					<CustomBehavior File="InteractWith" MobId="102352" QuestId="40849" QuestObjectiveIndex="3" X="-1177.016" Y="6124.61" Z="43.7804" />
+					<CustomBehavior File="WaitTimer" WaitTime="23000" />
+				</If>
+			</While>
+			<If Condition="QuestDone(40849)" >
+				<MoveTo X="-970.6606" Y="4438.941" Z="735.739" />
+				<CustomBehavior File="InteractWith" MobId="97004" GossipOptions="1" X="-973.3143" Y="4435.202" Z="735.7391" /> <!-- Open class hall door -->
+				<CustomBehavior File="InteractWith" MobId="246387" X="-909.7969" Y="4538.942" Z="707.6417" />
+			</If>
+			<TurnIn QuestName="The Dreadblades" QuestId="40849" TurnInName="Fleet Admiral Tethys" TurnInId="94159" X="-949.3837" Y="4549.319" Z="698.2384" />
+		<!-- END Story: Artifact Weapon - The Dreadblades -->
+
+
+		<If Condition="!IsQuestCompleted(40950)" >
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Rogue [Echo].xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	Honoring Success (40950) is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	Honoring Success (40950) is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

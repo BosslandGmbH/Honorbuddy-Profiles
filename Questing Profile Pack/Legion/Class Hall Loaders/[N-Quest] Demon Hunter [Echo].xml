@@ -86,48 +86,256 @@
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
 
-		<!-- Loc: Dalaran -->
-			<PickUp QuestName="Call of the Illidari" QuestId="39261" GiverName="Kor'vas Bloodthorn" GiverId="99343" X="-855.8668" Y="4595.054" Z="748.8666" />
-			<!-- NOTE: <NPCConflict> : In this area, Kayn Sunfury may not be availible if the player picks Altruis the Sufferer during the quest 'A New Direction(40373)' -->
-			<TurnIn QuestName="Call of the Illidari" QuestId="39261" TurnInName="Kayn Sunfury" TurnInId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
+		<!-- NOTE: 
+			The NPC changes depending on what the player chose while questing in the DemonHunter starting zone.
+			We can detect which NPC was chosen by checking which finale quest was completed.  The quest being: "Between Us and Freedom"
+			QuestId 39688 = Kayn Sunfury
+			QuestId 40255 = Altruis the Sufferer
+		-->
 
-			<PickUp QuestName="The Power to Survive" QuestId="40814" GiverName="Kayn Sunfury" GiverId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
-			<While Condition="DoQuest(40814)" >
-				<CustomBehavior File="UserDialog" QuestId="40373" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" Text="Choose an artifact weapon." />
-				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="QuestChoiceFrameOption1.OptionButton:Click();" /> <!-- Verus Artifact Weapon -->
-				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="StaticPopup1Button1:Click();" />
+		<!-- First Artifact Quest -->
+			<If Condition="IsQuestCompleted(39688)" >  <!-- Kayn -->
+				<PickUp QuestName="Call of the Illidari" QuestId="39261" GiverName="Kor'vas Bloodthorn" GiverId="99343" X="-834.0088" Y="4394.81" Z="737.6318" />
+				<TurnIn QuestName="Call of the Illidari" QuestId="39261" TurnInName="Kayn Sunfury" TurnInId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
+
+				<PickUp QuestName="The Power to Survive" QuestId="40814" GiverName="Kayn Sunfury" GiverId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
+				<While Condition="DoQuest(40814)" >
+					<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+						<CustomBehavior File="InteractWith" MobId="99247" GossipOptions="1" QuestId="40814" QuestObjectiveIndex="1" X="-852.2726" Y="4256.069" Z="746.2852" />
+					</If>
+
+					<CustomBehavior File="UserDialog" QuestId="40814" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" 
+					Text="Choose an artifact weapon.\n\nIf you do not choose within 5minutes, the bot will pick the one appropriate for your current specialization." />
+					
+					<If Condition="!IsQuestCompleted(40814)" >
+						<If Condition="Me.Specialization == WoWSpec.DemonHunterHavoc" >
+							<CustomBehavior File="Misc\RunLua" QuestId="40814" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1000" />
+						</If>
+						<If Condition="Me.Specialization == WoWSpec.DemonHunterVengeance" >
+							<CustomBehavior File="Misc\RunLua" QuestId="40814" Lua="QuestChoiceFrameOption2.OptionButton:Click()" WaitTime="1000" />
+						</If>
+						<CustomBehavior File="Misc\RunLua" QuestId="40814" Lua="StaticPopup1Button1:Click();" />
+					</If>
+				</While>
+				<TurnIn QuestName="The Power to Survive" QuestId="40814" TurnInName="Kayn Sunfury" TurnInId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
+			</If>
+
+			<If Condition="IsQuestCompleted(40255)" >  <!-- Altruis -->
+				<PickUp QuestName="Call of the Illidari" QuestId="39047" GiverName="Kor'vas Bloodthorn" GiverId="99343" X="-834.0088" Y="4394.81" Z="737.6318" />
+				<TurnIn QuestName="Call of the Illidari" QuestId="39047" TurnInName="Altruis the Sufferer" TurnInId="99254" X="-852.2726" Y="4256.069" Z="746.2852" />
+
+				<PickUp QuestName="The Power to Survive" QuestId="40816" GiverName="Altruis the Sufferer" GiverId="99254" X="-852.2726" Y="4256.069" Z="746.2852" />
+				<While Condition="DoQuest(40816)" >
+					<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+						<CustomBehavior File="InteractWith" MobId="99254" GossipOptions="1" QuestId="40816" QuestObjectiveIndex="1" X="-852.2726" Y="4256.069" Z="746.2852" />
+					</If>
+
+					<CustomBehavior File="UserDialog" QuestId="40816" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" 
+					Text="Choose an artifact weapon.\n\nIf you do not choose within 5minutes, the bot will pick the one appropriate for your current specialization." />
+					
+					<If Condition="!IsQuestCompleted(40816)" >
+						<If Condition="Me.Specialization == WoWSpec.DemonHunterHavoc" >
+							<CustomBehavior File="Misc\RunLua" QuestId="40816" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1000" />
+						</If>
+						<If Condition="Me.Specialization == WoWSpec.DemonHunterVengeance" >
+							<CustomBehavior File="Misc\RunLua" QuestId="40816" Lua="QuestChoiceFrameOption2.OptionButton:Click()" WaitTime="1000" />
+						</If>
+						<CustomBehavior File="Misc\RunLua" QuestId="40816" Lua="StaticPopup1Button1:Click();" />
+					</If>
+				</While>
+				<TurnIn QuestName="The Power to Survive" QuestId="40816" TurnInName="Altruis the Sufferer" TurnInId="99254" X="-852.2726" Y="4256.069" Z="746.2852" />
+			</If>
+
+			<If Condition="((IsQuestCompleted(39688) &amp;&amp; !IsQuestCompleted(39247)) || (IsQuestCompleted(40255) &amp;&amp; !IsQuestCompleted(41119))) &amp;&amp; NeedsQuest(42869) &amp;&amp; Me.Specialization == WoWSpec.DemonHunterHavoc" > <!-- 39247+41119 = Kayn+Altruis  Twinblades of the Deceiver finale -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Demon Hunter- Havoc - Twinblades of the Deceiver.xml" />
+			</If>
+			<If Condition="((IsQuestCompleted(39688) &amp;&amp; !IsQuestCompleted(40249)) || (IsQuestCompleted(40255) &amp;&amp; !IsQuestCompleted(41863))) &amp;&amp; NeedsQuest(42869) &amp;&amp; Me.Specialization == WoWSpec.DemonHunterVengeance" > <!-- 40249+41863 = Kayn+Altruis   Aldrachi Warblades finale -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Demon Hunter - Vengeance - Aldrachi Warblades.xml" />
+			</If>
+		<!-- END First Artifact Quest -->
+
+		<!-- Introductory Class Hall Quests -->
+			<PickUp QuestName="Eternal Vigil" QuestId="42869" GiverName="Kor'vas Bloodthorn" GiverId="102799" X="-835.9722" Y="4265.393" Z="746.2537" />
+			<While Condition="DoQuest(42869)" >
+				<MoveTo X="-818.7419" Y="4257.544" Z="746.2667" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="MyCTM" X="-822.0472" Y="4253.448" Z="745.927" />
+				<CustomBehavior File="RunCode"><![CDATA[
+						WoWMovement.Move(WoWMovement.MovementDirection.Forward, TimeSpan.FromSeconds(3));
+						await Coroutine.Sleep(650);
+						WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+						await Coroutine.Sleep(300);
+						WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+						SpellManager.Cast(131347);
+						await Coroutine.Sleep(4000);
+					]]>
+				</CustomBehavior>
+				<CustomBehavior File="MyCTM" X="-942.347" Y="4085.248" Z="648.2783" />
 			</While>
-			<TurnIn QuestName="The Power to Survive" QuestId="40814" TurnInName="Kayn Sunfury" TurnInId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
+			<TurnIn QuestName="Eternal Vigil" QuestId="42869" TurnInName="Jace Darkweaver" TurnInId="109196" X="-945.4254" Y="4090.016" Z="648.2668" />
 
-			<PickUp QuestName="Making Arrangements" QuestId="40819" GiverName="Kayn Sunfury" GiverId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
-			<TurnIn QuestName="Making Arrangements" QuestId="40819" TurnInName="Kayn Sunfury" TurnInId="94902" X="-952.618" Y="4332.883" Z="740.184" />
-
-			<PickUp QuestName="By Any Means" QuestId="39051" GiverName="Kayn Sunfury" GiverId="94902" X="-952.618" Y="4332.883" Z="740.184" />
-			<While Condition="DoQuest(39051)" >
-				<CustomBehavior File="InteractWith" MobId="96313" GossipOptions="2,2" QuestId="39051" QuestObjectiveIndex="1" X="-957.408" Y="4329.056" Z="740.1688" />
-				<CustomBehavior File="InteractWith" MobId="242174" QuestId="39051" QuestObjectiveIndex="2" X="-960.4443" Y="4324.997" Z="740.1581" />
-				<!-- NOTE: <WIP> : This quest involves going through a door and into an instance.  Using IW to open the door, and CTM to go into portal, use TerminateWhen to shut off CTM -->
-				<CustomBehavior File="MyCTM" QuestId="39051" QuestObjectiveIndex="2" X="-965.9781" Y="4318.647" Z="740.0172" TerminateWhen="Me.MapId == XXX" />
-				<!-- NOTE: <AddAvoids> : Avoids aren't really needed, but could work good here. -->
-				<CustomBehavior File="KillUntilComplete" MobId="94731" QuestId="39051" X="1357.16" Y="-263.2" Z="38.6565" />
+			<PickUp QuestName="Securing the Way" QuestId="42872" GiverName="Jace Darkweaver" GiverId="109196" X="-945.4254" Y="4090.016" Z="648.2668" />
+			<While Condition="DoQuest(42872)" >
+				<CustomBehavior File="WaitTimer" WaitTime="5000" QuestId="42872" QuestObjectiveIndex="1" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="3000" QuestId="42872" QuestObjectiveIndex="1" Lua="ExtraActionButton1:Click();" />
+				<CustomBehavior File="InteractWith" MobId="251579" WaitTime="3000" QuestId="42872" QuestObjectiveIndex="2" X="-964.0347" Y="4066.075" Z="648.1824" />
 			</While>
-			<TurnIn QuestName="By Any Means" QuestId="39051" TurnInName="Kayn Sunfury" TurnInId="94902" X="1300.66" Y="-260.674" Z="44.2852" />
+			<TurnIn QuestName="Securing the Way" QuestId="42872" TurnInName="Jace Darkweaver" TurnInId="109196" X="-945.4254" Y="4090.016" Z="648.2668" />
 
-			<PickUp QuestName="The Hunt" QuestId="39247" GiverName="Kayn Sunfury" GiverId="94902" X="1300.66" Y="-260.674" Z="44.2852" />
-			<While Condition="DoQuest(39247)" >
-				<!-- NOTE: <WIP> : This quest involves going through a door and into an instance.  Using IW to open the door, and CTM to go into portal. -->
-				<If Condition="Me.MapId == XXX" >
-					<MoveTo X="1290.327" Y="-262.9491" Z="44.36398" />
-					<CustomBehavior File="MyCTM" X="1261.129" Y="-263.3456" Z="44.36398" TerminateWhen="Me.MapId == XXX" />
+			<If Condition="IsQuestCompleted(39688)" >  <!-- Kayn -->
+				<PickUp QuestName="Return to Mardum" QuestId="41221" GiverName="Matron Mother Malevolence" GiverId="109295" X="-948.3802" Y="4091.924" Z="650.8849" />
+				<While Condition="DoQuest(41221)" >
+					<CustomBehavior File="InteractWith" MobId="251286" QuestId="41221" X="-963.8559" Y="4066.109" Z="648.1834" />
+				</While>
+				<TurnIn QuestName="Return to Mardum" QuestId="41221" TurnInName="Kayn Sunfury" TurnInId="95240" X="1524.832" Y="1417.696" Z="243.9209" />
+
+				<PickUp QuestName="Unbridled Power" QuestId="41037" GiverName="Kayn Sunfury" GiverId="95240" X="1524.832" Y="1417.696" Z="243.9209" />
+				<While Condition="DoQuest(41037)" >
+					<CustomBehavior File="InteractWith" MobId="254245" QuestId="41037" QuestObjectiveIndex="1" X="1527.5" Y="1412.491" Z="244.0878" />
+					<CustomBehavior File="WaitTimer" QuestId="41037" WaitTime="60000" />
+				</While>
+				<TurnIn QuestName="Unbridled Power" QuestId="41037" TurnInName="Kayn Sunfury" TurnInId="95240" X="1551.044" Y="1413.82" Z="237.1087" />
+
+				<PickUp QuestName="Spoils of Victory" QuestId="41062" GiverName="Kayn Sunfury" GiverId="95240" X="1551.044" Y="1413.82" Z="237.1087" />
+				<While Condition="DoQuest(41062)" >
+					<CustomBehavior File="InteractWith" MobId="98650" GossipOptions="1" QuestId="41062" QuestObjectiveIndex="1" X="1561.389" Y="1425.25" Z="237.1088" />
+					<MoveTo X="1583.775" Y="1412.066" Z="218.0267" />
+					<CustomBehavior File="WaitTimer" QuestId="41062" WaitTime="17000" />
+				</While>
+				<TurnIn QuestName="Spoils of Victory" QuestId="41062" TurnInName="Battlelord Gaardoun" TurnInId="103025" X="1584.427" Y="1409.263" Z="218.027" />
+			</If>
+
+			<If Condition="IsQuestCompleted(40255)" >  <!-- Altruis -->
+				<PickUp QuestName="Return to Mardum" QuestId="41033" GiverName="Matron Mother Malevolence" GiverId="109295" X="-948.3802" Y="4091.924" Z="650.8849" />
+				<While Condition="DoQuest(41033)" >
+					<CustomBehavior File="InteractWith" MobId="251286" QuestId="41033" X="-963.8559" Y="4066.109" Z="648.1834" />
+				</While>
+				<TurnIn QuestName="Return to Mardum" QuestId="41033" TurnInName="Altruis the Sufferer" TurnInId="95237" X="1524.832" Y="1417.696" Z="243.9209" />
+
+				<PickUp QuestName="Unbridled Power" QuestId="41060" GiverName="Altruis the Sufferer" GiverId="95237" X="1524.832" Y="1417.696" Z="243.9209" />
+				<While Condition="DoQuest(41060)" >
+					<CustomBehavior File="InteractWith" MobId="254245" QuestId="41060" QuestObjectiveIndex="1" X="1527.5" Y="1412.491" Z="244.0878" />
+					<CustomBehavior File="WaitTimer" QuestId="41060" WaitTime="60000" />
+				</While>
+				<TurnIn QuestName="Unbridled Power" QuestId="41060" TurnInName="Altruis the Sufferer" TurnInId="95237" X="1551.044" Y="1413.82" Z="237.1087" />
+
+				<PickUp QuestName="Spoils of Victory" QuestId="41070" GiverName="Altruis the Sufferer" GiverId="95237" X="1551.044" Y="1413.82" Z="237.1087" />
+				<While Condition="DoQuest(41070)" >
+					<CustomBehavior File="InteractWith" MobId="98650" GossipOptions="1" QuestId="41070" QuestObjectiveIndex="1" X="1561.389" Y="1425.25" Z="237.1088" />
+					<MoveTo X="1583.775" Y="1412.066" Z="218.0267" />
+					<CustomBehavior File="WaitTimer" QuestId="41070" WaitTime="17000" />
+				</While>
+				<TurnIn QuestName="Spoils of Victory" QuestId="41070" TurnInName="Battlelord Gaardoun" TurnInId="103025" X="1584.427" Y="1409.263" Z="218.027" />
+			</If>
+
+			<PickUp QuestName="Cursed Forge of the Nathrezim" QuestId="41064" GiverName="Battlelord Gaardoun" GiverId="103025" X="1584.414" Y="1409.262" Z="218.027" />
+			<While Condition="DoQuest(41064)" >
+				<!-- /dump GetMouseFocus():GetPowerID(); C_ArtifactUI.AddPower(powerId); -->
+				<CustomBehavior File="InteractWith" MobId="245037" WaitTime="2000" QuestId="41047" X="4499.827" Y="5250.55" Z="863.7143" />
+				<If Condition="HasItem(127829)" > <!-- Twinblades of the Deceiver -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1330);" />
 				</If>
-				<CustomBehavior File="InteractWith" MobId="94321" QuestId="39247" QuestObjectiveIndex="1" X="-844.6198" Y="4253.933" Z="746.2827" />
-				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
-				<!-- User gets off at X="1263.974" Y="5235.755" Z="93.53168" -->
+				<If Condition="HasItem(128832)" > <!-- Aldrachi Warblades -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1328);" />
+				</If>
 			</While>
+			<TurnIn QuestName="Cursed Forge of the Nathrezim" QuestId="41064" TurnInName="Battlelord Gaardoun" TurnInId="103025" X="1584.414" Y="1409.262" Z="218.027" />
 
+			<PickUp QuestName="The Hunter's Gaze" QuestId="41066" GiverName="Allari the Souleater" GiverId="95238" X="1568.799" Y="1410.712" Z="217.7683" />
+			<While Condition="DoQuest(41066)" >
+				<CustomBehavior File="InteractWith" MobId="250677" GossipOptions="1" QuestId="41066" QuestObjectiveIndex="1" X="1561.598" Y="1413.018" Z="217.8644" />
+				<CustomBehavior File="WaitTimer" QuestId="41066" WaitTime="40000" />
+			</While>
+			<TurnIn QuestName="The Hunter's Gaze" QuestId="41066" TurnInName="Allari the Souleater" TurnInId="95238" X="1568.799" Y="1410.712" Z="217.7683" />
 
-		<!-- END Loc: Dalaran -->
+			<If Condition="IsQuestCompleted(39688)" >  <!-- Kayn -->
+				<PickUp QuestName="Time is of the Essence" QuestId="41067" GiverName="Allari the Souleater" GiverId="95238" X="1568.799" Y="1410.712" Z="217.7683" />
+				<TurnIn QuestName="Time is of the Essence" QuestId="41067" TurnInName="Kayn Sunfury" TurnInId="95240" X="1551.054" Y="1413.816" Z="237.1085" />
 
+				<PickUp QuestName="Direct Our Wrath" QuestId="41069" GiverName="Kayn Sunfury" GiverId="95240" X="1551.054" Y="1413.816" Z="237.1085" />
+				<While Condition="DoQuest(41069)" >
+					<CustomBehavior File="InteractWith" MobId="98613" WaitTime="1500" QuestId="41069" QuestObjectiveIndex="1" X="1561.429" Y="1413.071" Z="237.1086" />
+					<If Condition="NeedsQuest(39718)" > <!-- Azsuna -->
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</If>
+				</While>
+				<TurnIn QuestName="Direct Our Wrath" QuestId="41069" TurnInName="Kayn Sunfury" TurnInId="95240" X="1551.054" Y="1413.816" Z="237.1085" />
+			</If>
+
+			<If Condition="IsQuestCompleted(40255)" >  <!-- Altruis -->
+				<PickUp QuestName="Time is of the Essence" QuestId="41096" GiverName="Allari the Souleater" GiverId="95238" X="1568.799" Y="1410.712" Z="217.7683" />
+				<TurnIn QuestName="Time is of the Essence" QuestId="41096" TurnInName="Altruis the Sufferer" TurnInId="95237" X="1551.054" Y="1413.816" Z="237.1085" />
+
+				<PickUp QuestName="Direct Our Wrath" QuestId="41099" GiverName="Altruis the Sufferer" GiverId="95237" X="1551.054" Y="1413.816" Z="237.1085" />
+				<While Condition="DoQuest(41099)" >
+					<CustomBehavior File="InteractWith" MobId="98613" WaitTime="1500" QuestId="41099" QuestObjectiveIndex="1" X="1561.429" Y="1413.071" Z="237.1086" />
+					<If Condition="NeedsQuest(39718)" > <!-- Azsuna -->
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</If>
+				</While>
+				<TurnIn QuestName="Direct Our Wrath" QuestId="41099" TurnInName="Altruis the Sufferer" TurnInId="95237" X="1551.054" Y="1413.816" Z="237.1085" />
+			</If>
+
+			<While Condition="DoQuest(39718)" >
+				<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" QuestId="39718" X="1457.668" Y="1411.165" Z="244.9198" /> <!-- NOTE: <ConditionalCheck> : UseWhen in Class Hall,  TerminateWhen Me In Dalaran -->
+				<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" /> <!-- Walk off ledge -->
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />		
+			</While>
+		<!-- END Introductory Class Hall Quests -->
+
+		<!-- Boolean for IsAchievementCompleted defaults to false. -->
+		<!-- Azsuna -->
+			<If Condition="!IsAchievementCompleted(10763, false)" > 
+				<If Condition="NeedsQuest(39718)" >
+					<CustomBehavior File="InteractWith" MobId="98613" WaitTime="1500" X="1561.429" Y="1413.071" Z="237.1086" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" />
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />
+			</If>
+		<!-- END Azsuna -->
+
+		<!-- Val'sharah -->
+			<If Condition="!IsAchievementCompleted(10698, false)" >
+				<If Condition="NeedsQuest(39731)" >
+					<CustomBehavior File="InteractWith" MobId="98613" WaitTime="1500" X="1561.429" Y="1413.071" Z="237.1086" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39731);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" />
+				<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" /> <!-- Walk off ledge -->
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Val'sharah [Echo].xml" />
+			</If>
+		<!-- END Val'sharah -->
+
+		<!-- Highmountain -->
+			<If Condition="!IsAchievementCompleted(10059, false)" >
+				<If Condition="NeedsQuest(39733)" >
+					<CustomBehavior File="InteractWith" MobId="98613" WaitTime="1500" X="1561.429" Y="1413.071" Z="237.1086" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39733);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" />
+				<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" /> <!-- Walk off ledge -->
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Highmountain [Echo].xml" />
+			</If>
+		<!-- END Highmountain -->
+
+		<!-- Stormheim -->
+			<If Condition="!IsAchievementCompleted(10790, false)" >
+				<If Condition="NeedsQuest(39735)" >
+					<CustomBehavior File="InteractWith" MobId="98613" WaitTime="1500" X="1561.429" Y="1413.071" Z="237.1086" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39735);" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+				</If>
+				<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" />
+				<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" /> <!-- Walk off ledge -->
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Stormehim [Echo].xml" />
+			</If>
+		<!-- END Stormheim -->
 
 	</QuestOrder>
 </HBProfile>

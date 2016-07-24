@@ -1,0 +1,379 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Rogue - Assassination - The Kingslayers [Echo]</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+		<Mob Name="XXX" Entry="123" />
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<InitOrder>
+		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> <!-- Use LevelBot default -->
+	</InitOrder>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Get Continuation Quest -->
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
+
+		<!-- Story: Artifact Weapon - Anguish and Sorrow -->
+			<PickUp QuestName="Finishing the Job" QuestId="42501" GiverName="Princess Tess Greymane" GiverId="94138" X="-952.7674" Y="4545.634" Z="698.2386" />
+			<PickUp QuestName="No Sanctuary" QuestId="42502" GiverName="Princess Tess Greymane" GiverId="94138" X="-952.7674" Y="4545.634" Z="698.2386" />
+
+			<While Condition="DoQuest(42501, 42502) &amp;&amp; Me.MapId != 0" >
+				<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran, enter Dalaran Portal Room -->
+					<MoveTo X="-847.6401" Y="4463.277" Z="735.8799" />
+					<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TerminateWhen in portal room. -->
+				</If>
+				<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran Portal Room, entering Karazhan -->
+					<MoveTo X="-872.7674" Y="4501.16" Z="580.1588" />
+					<CustomBehavior File="InteractWith" MobId="246009" WaitTime="1000" X="-869.9479" Y="4503.124" Z="580.4584" />
+				</If>
+			</While>
+
+			<While Condition="DoQuest(42501)" >
+				<MoveTo Nav="Fly" X="-11318.89" Y="-2552.286" Z="95.25981" />
+				<!-- NOTE: <AddInterrupt> : We can interrupt this guy's life drain to prevent him from healing.  Not required, but it can speed up the process of this quest. -->
+				<CustomBehavior File="KillUntilComplete" MobId="107683" QuestId="42501" QuestObjectiveIndex="4" X="-11292.74" Y="-2549.524" Z="97.03492" />
+				<CustomBehavior File="InteractWith" MobId="107683" MobState="Dead" InteractByLooting="true" QuestId="42501" QuestObjectiveIndex="5" X="-11292.74" Y="-2549.524" Z="97.03536" />
+			</While>
+			<TurnIn QuestId="42501" />
+
+			<While Condition="DoQuest(42502)" >
+				<If Condition="Me.IsHorde" >
+					<UseMount Value="false" />
+					<DisableBehavior Name="Combat" />
+					<MoveTo Nav="Fly" X="-10664.26" Y="316.4452" Z="39.31865" />
+					<CustomBehavior File="RunCode" Code="SpellManager.Cast(1784);" />
+					<MoveTo Nav="Run" X="-10734.29" Y="317.1105" Z="40.31185" />
+					<MoveTo Nav="Run" X="-10696.32" Y="302.0346" Z="43.992" />
+				</If>
+				<If Condition="Me.IsAlliance" >
+					<MoveTo Nav="Fly" X="-10734.95" Y="316.9702" Z="40.28419" />
+				</If>
+				<CustomBehavior File="KillUntilComplete" MobId="107736" QuestId="42502" QuestObjectiveIndex="4" X="-10686.38" Y="318.9931" Z="47.6298" />
+				<CustomBehavior File="InteractWith" MobId="107736" MobState="Dead" InteractByLooting="true" QuestId="42502" QuestObjectiveIndex="5" X="-10686.38" Y="318.9931" Z="47.6298" />
+
+				<If Condition="Me.IsAlliance" >
+					<MoveTo X="-10764.11" Y="301.4554" Z="38.8124" /> <!-- Move out of house -->
+				</If>
+				<If Condition="Me.IsHorde" >
+					<MoveTo X="-10718.66" Y="306.4664" Z="40.77358" />
+					<DisableBehavior Name="Combat" />
+					<CustomBehavior File="RunCode" Code="SpellManager.Cast(1784);" />
+					<MoveTo Nav="Run" X="-10661.49" Y="337.7441" Z="40.03153" />
+					<UseMount Value="true" />
+				</If>
+			</While>
+			<TurnIn QuestId="42502" />
+
+			<PickUp QuestName="Codebreaker" QuestId="42503" GiverName="NONE" />
+			<While Condition="DoQuest(42503)" >
+				<CustomBehavior File="UseItem" QuestId="42502" QuestObjectiveIndex="1" ItemId="138102" />
+				<MoveTo Nav="Fly" X="-10596.08" Y="-1049.163" Z="45.47667" />
+			</While>
+			<TurnIn QuestName="Codebreaker" QuestId="42503" />
+
+			<PickUp QuestName="Cloak and Dagger" GiverName="NONE" QuestId="42539" />
+			<While Condition="DoQuest(42539)" >
+				<MoveTo Nav="Fly" X="-10596.08" Y="-1049.163" Z="45.47667" />
+				<CustomBehavior File="InteractWith" MobId="250682" InteractByLooting="true" QuestId="42539" QuestObjectiveIndex="1" X="-10592.91" Y="-1160.429" Z="31.03213" />
+				<If Condition="!IsObjectiveComplete(3, 42539)" >
+					<MoveTo X="-10577.1" Y="-1111.97" Z="30.06988" />
+					<CustomBehavior File="WaitTimer" WaitTime="30000" TerminateWhen="Unit(107837, u =&gt; u.Attackable) != null" /> <!-- There is a short time where the unit in question isn't attackable. -->
+					<CustomBehavior File="KillUntilComplete" MobIds="107837" QuestId="42539" QuestObjectiveIndex="3" X="-10552.57" Y="-1108.682" Z="31.42902" />
+				</If>
+				<CustomBehavior File="InteractWith" MobId="250678" InteractByLooting="true" QuestId="42539" QuestObjectiveIndex="2" X="-10501.39" Y="-1154.778" Z="34.95739" />
+			</While>
+			<TurnIn QuestName="Cloak and Dagger" QuestId="42539" />
+
+			<PickUp QuestName="Preparation" QuestId="42568" GiverName="NONE" />
+			<TurnIn Nav="Fly" QuestName="Preparation" QuestId="42568" TurnInName="Garona Halforcen" TurnInId="107979" X="-9156.442" Y="259.0191" Z="80.26308" />
+
+			<PickUp QuestName="The Unseen Blade" QuestId="42504" GiverName="Garona Halforcen" GiverId="107979" X="-9156.442" Y="259.0191" Z="80.26308" />
+			<While Condition="DoQuest(42504)" >
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepStealth" UseWhen="!Me.Combat &amp;&amp; !Me.HasAura(1784)" >
+					<CustomBehavior File="RunCode"><![CDATA[
+							await Coroutine.Wait(5000, () => SpellManager.CanCast(1784));
+							SpellManager.Cast(1784);
+							await Coroutine.Sleep(350);
+						]]>
+					</CustomBehavior>
+				</CustomBehavior>
+				<!-- 2.5 yards seems to be the aggro point in which a StormwindGuard will attack.  They will sense your presence at about 6.5 -->
+				<CustomBehavior File="Hooks\Avoid" AvoidName="StormwindGuard" Command="Add" ObjectId="108059" Radius="4" AvoidWhen="!UNIT.Aggro" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="SuspiciousStormwindGuard" Command="Add" ObjectId="109966" Radius="4" AvoidWhen="!UNIT.Aggro" />
+				<!-- XXX yards seems to be the aggro point in which a StormwindGuard will attack.  They will sense your presence at about 15.5 -->
+				<CustomBehavior File="Hooks\Avoid" AvoidName="StormwindPatroller" Command="Add" ObjectId="108058" Radius="17" AvoidWhen="!UNIT.Aggro" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="OfficerJaxon" Command="Add" ObjectId="108149" Radius="4" AvoidWhen="!UNIT.Aggro" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="IronforgeRifleman" Command="Add" ObjectId="108435" Radius="4" AvoidWhen="!UNIT.Aggro" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="ExplosiveTrap" Command="Add" ObjectId="251198" Radius="3" />
+
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepStealth" Command="Disable" />
+
+
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<MoveTo X="-9084.96" Y="418.6754" Z="92.41916" />
+					<CustomBehavior File="WaitTimer" WaitTime="85000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<DisableBehavior Name="Pull" />
+					<UseMount Value="false" />
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepStealth" Command="Enable" />
+
+					<MoveTo X="-8857.717" Y="572.1356" Z="101.0672" />
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepStealth" Command="Disable" />
+					<CustomBehavior File="InteractWith" MobId="251016" InteractByLooting="true" X="-8857.399" Y="573.9618" Z="102.1763" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<DisableBehavior Name="Pull" />
+					<UseMount Value="false" />
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepStealth" Command="Enable" />
+
+					<MoveTo X="-8826.003" Y="657.1369" Z="98.09137" />
+					<CustomBehavior File="Misc\RunLua" Lua="ScenarioObjectiveBlock.currentLine.SpellButton:Click();" /> 
+					<!-- NOTE: <CheckFunctionality> : This :Click(); may not work.  
+						May be able to cast this?  spellID is 214645
+					-->
+					<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<DisableBehavior Name="Pull" />
+					<UseMount Value="false" />
+
+					<!-- <CustomBehavior File="Hooks\Avoid" AvoidName="SuspiciousStormwindGuard" Command="Remove" />  We need to pickpocket this NPC. -->
+
+					<MoveTo X="-8834.058" Y="652.2285" Z="98.02869" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							SpellManager.Cast(1725);
+							SpellManager.ClickRemoteLocation(new WoWPoint(-8848.966, 645.9767, 96.5323));
+						]]>
+					</CustomBehavior>
+
+					<MoveTo X="-8838.788" Y="650.3577" Z="98.02688" />
+					<CustomBehavior File="MyCTM" X="-8838.955" Y="654.0544" Z="98.02695" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							Lua.DoString("MoveForwardStart();");
+							await Coroutine.Sleep(350);
+							Lua.DoString("JumpOrAscendStart();");
+							await Coroutine.Sleep(350);
+							Lua.DoString("MoveForwardStop();");
+						]]>
+					</CustomBehavior>
+					<CustomBehavior File="MyCTM" X="-8844.807" Y="658.8715" Z="97.48805" />
+					<CustomBehavior File="MyCTM" X="-8857.374" Y="661.9294" Z="97.10667" />
+					<CustomBehavior File="InteractWith" MobId="109966" MinRange="4" NumOfTimes="50" CollectionDistance="200" InteractByCastingSpellId="921" X="-8864.846" Y="611.9828" Z="93.25418" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+
+					<If Condition="IsScenarioCriteriaComplete(1) &amp;&amp; !IsScenarioCriteriaComplete(2)" >
+						<MoveTo X="-8843.919" Y="676.0266" Z="98.3197" />
+						<CustomBehavior File="Misc\RunLua" Lua="ScenarioObjectiveBlock.currentLine.SpellButton:Click();" /> 
+						<!-- NOTE: <CheckFunctionality> : This :Click(); may not work.  
+							May be able to cast this?  spellID is 218893
+						-->
+					</If>
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<DisableBehavior Name="Pull" />
+					<UseMount Value="false" />
+					<MoveTo X="-8640.369" Y="423.2663" Z="101.9687" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<DisableBehavior Name="Pull" />
+					<UseMount Value="false" />
+					<CustomBehavior File="InteractWith" MobId="251053" X="-8634.951" Y="419.1406" Z="103.7019" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+					<CustomBehavior File="KillUntilComplete" MobIds="108216, 108217" X="-8622.455" Y="406.1658" Z="102.9248" TerminateWhen="IsScenarioCriteriaComplete(2)" />
+					<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 7" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+					<DisableBehavior Name="Pull" />
+					<UseMount Value="false" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="CaledraDawnbreeze" Command="Add" ObjectId="108400" Radius="17" />
+
+					<MoveTo X="-8574.233" Y="474.011" Z="104.3" />
+					<CustomBehavior File="RunCode" Code="SpellManager.Cast(2983);" /> <!-- Hopefully this will be enough to get past the Paladin's hammer.. -->
+					<!-- NOTE: <AddAvoid...AnotherAvoid...> : When player comes up to the keep, a paladin throws down an AoE hammer -->
+					<MoveTo X="-8440.142" Y="329.8994" Z="144.2569" />
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="SapStun" UseWhen="Unit(108397, u =&gt; u.Distance &lt; 5.5) != null &amp;&amp; SpellManager.CanCast(6770)" >
+						<CustomBehavior File="RunCode"><![CDATA[
+								var sapstunPoi = Unit(108397, u => u.Distance < 5.5);
+
+								if (sapstunPoi != null)
+								{
+									sapstunPoi.Target();
+									SpellManager.Cast(6770);
+								}
+							]]>
+						</CustomBehavior>
+						<CustomBehavior File="WaitTimer" WaitTime="1100" />
+					</CustomBehavior>
+					<CustomBehavior File="WaitTimer" WaitTime="750" />
+
+					<CustomBehavior File="MyCTM" X="-8429.74" Y="316.2578" Z="145.4981" />
+					<CustomBehavior File="MyCTM" X="-8420.621" Y="313.4034" Z="146.3215" />
+					<CustomBehavior File="MyCTM" X="-8416.863" Y="305.3437" Z="146.9939" />
+					<CustomBehavior File="MyCTM" X="-8407.354" Y="295.3132" Z="147.0735" />
+					<CustomBehavior File="MyCTM" X="-8385.879" Y="268.5989" Z="155.3482" />
+					<MoveTo X="-8363.268" Y="258.2816" Z="155.3482" />
+
+					<CustomBehavior File="RunCode"><![CDATA[
+							var fatiguedRitualist = Unit(108333);
+
+							if (fatiguedRitualist != null)
+							{
+								fatiguedRitualist.Target();
+								StyxWoW.Me.SetFacing(fatiguedRitualist.Location);
+								await Coroutine.Sleep(550);
+								SpellManager.Cast(6770);
+							}
+						]]>
+					</CustomBehavior>
+					<CustomBehavior File="WaitTimer" WaitTime="65000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 7" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8" >
+					<CustomBehavior File="Hooks\Avoid" AvoidName="StormwindGuard" Command="Remove" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="StormwindPatroller" Command="Remove" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="SuspiciousStormwindGuard" Command="Remove" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="OfficerJaxon" Command="Remove" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="IronforgeRifleman" Command="Remove" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="CaledraDawnbreeze" Command="Remove" />
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepStealth" Command="Remove" />
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="SapStun" Command="Remove" />
+
+					<!-- NOTE: <AddAvoid> 218360, ground effect. -->
+					<CustomBehavior File="KillUntilComplete" MobId="107831" X="-8321.934" Y="287.851" Z="156.8341" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 8" />
+
+					<CustomBehavior File="WaitTimer" WaitTime="35000" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 9" >
+					<MoveTo X="-8321.584" Y="282.8618" Z="156.8328" />
+					<CustomBehavior File="WaitTimer" WaitTime="35000" TerminateWhen="Object(251107) != null" />
+					<CustomBehavior File="InteractWith" MobId="251107" InteractByLooting="true" WaitTime="1500" X="-8318.085" Y="283.8073" Z="156.8326" />
+					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 10" >
+					<CustomBehavior File="InteractWith" MobId="251123" X="-8427.797" Y="212.4653" Z="155.3472" />
+				</If>
+
+				<CustomBehavior File="InteractWith" MobId="97004" GossipOptions="1" X="-973.3143" Y="4435.202" Z="735.7391" /> <!-- Open class hall door -->
+				<CustomBehavior File="InteractWith" MobId="246387" X="-909.7969" Y="4538.942" Z="707.6417" /> <!-- Use torch to open back room -->
+			</While>
+			<TurnIn QuestName="The Unseen Blade" QuestId="42504" TurnInName="Garona Halforcen" TurnInId="94141" X="-950.1632" Y="4545.66" Z="698.1556" />
+
+		<!-- END Story: Artifact Weapon - Anguish and Sorrow -->
+
+		<If Condition="!IsQuestCompleted(40950)" >
+			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Rogue [Echo].xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	Honoring Success (40950) is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	Honoring Success (40950) is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->
