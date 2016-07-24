@@ -3917,8 +3917,24 @@
 				<CustomBehavior File="InteractWith" QuestId="13613" MobId="33266" InteractByUsingItemId="45001" WaitTime="3000" NumOfTimes="5" CollectionDistance="400" X="1367.989" Y="-2159.796" Z="94.48354" />
 			</While>
 			<Objective QuestName="Empty Quivers" QuestId="13615" Type="CollectItem" ItemId="45004" CollectCount="10" />
-			<Objective QuestName="Mor'shan Defense" QuestId="13612" Type="KillMob" MobId="33193" KillCount="5" />
-			<Objective QuestName="Mor'shan Defense" QuestId="13612" Type="KillMob" MobId="33195" KillCount="5" />
+			<While Condition="HasQuest(13612) &amp;&amp; !IsQuestCompleted(13612)" >
+				<!-- NOTE: It's a known issue here that if the player is a Pandaren, and hasn't relogged since first making the character - these mobs won't be attackable.
+							There's not much we can do here to fix this.  ~EchoTiger -->
+				<CustomBehavior File="InteractWith" MobState="Dead" QuestId="13612" CollectionDistance="200" NumOfTimes="100" >
+					<HuntingGrounds>
+						<Hotspot X="1388.342" Y="-2136.236" Z="94.44975" />
+						<Hotspot X="1348.711" Y="-2182.372" Z="92.83549" />
+						<Hotspot X="1362.249" Y="-2215.977" Z="93.02898" />
+						<Hotspot X="1508.054" Y="-2258.073" Z="96.21212" />
+						<Hotspot X="1373.221" Y="-2305.109" Z="93.26451" />
+						<Hotspot X="1491.025" Y="-2212.962" Z="95.81299" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueUnit Id="33193" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 13612)" />
+						<PursueUnit Id="33195" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(2, 13612)" />
+					</PursuitList>
+				</CustomBehavior>
+			</While>
 			<TurnIn QuestName="Mor'shan Defense" QuestId="13612" TurnInName="Kadrak" TurnInId="8582" />
 			<TurnIn QuestName="Empty Quivers" QuestId="13615" TurnInName="Truun" TurnInId="33284" />
 			<TurnIn QuestName="Rescue the Fallen" QuestId="13613" TurnInName="Dinah Halfmoon" TurnInId="33263" />
