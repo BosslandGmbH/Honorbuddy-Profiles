@@ -118,7 +118,7 @@
 			<PickUp QuestName="Alodi's Gems" QuestId="42455" GiverName="Alodi" GiverId="102846" X="-817.3871" Y="4690.511" Z="939.6633" />
 
 			<While Condition="DoQuest(42455)" >
-				<If Condition="Me.MapId == 111111" >  <!-- NOTE: <Add-CheckMapId> : Leaving Class Hall, entering Dalaran. -->
+				<If Condition="Me.MapId == 1513" >  <!-- NOTE: <CheckID> : Leaving Class Hall, entering Dalaran. -->
 					<CustomBehavior File="InteractWith" MobId="244510" WaitTime="3000" X="-832.6424" Y="4685.265" Z="939.9924" />
 				</If>
 
@@ -131,11 +131,11 @@
 			</While>
 
 			<While Condition="DoQuest(42476, 42477)" >
-				<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran, enter Dalaran Portal Room -->
-					<MoveTo X="-847.6401" Y="4463.277" Z="735.8799" />
-					<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TerminateWhen in portal room. -->
-				</If>
-				<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran Portal Room, entering Karazhan -->
+				<If Condition="Me.MapId != 0" >
+					<If Condition="Me.Z &gt; 605" > <!-- NOTE: <CheckFunction> : Dalaran to Dalaran Portal Room -->
+						<MoveTo X="-850.0136" Y="4460.374" Z="735.6611" />
+						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" TerminateWhen="Me.Z &lt;= 605" />
+					</If>
 					<MoveTo X="-872.7674" Y="4501.16" Z="580.1588" />
 					<CustomBehavior File="InteractWith" MobId="246009" WaitTime="1000" X="-869.9479" Y="4503.124" Z="580.4584" />
 				</If>
@@ -153,7 +153,7 @@
 				<CustomBehavior File="WaitTimer" QuestId="42476" QuestObjectiveIndex="5" WaitTime="90000" />
 			</While>
 
-			<If Condition="(IsQuestCompleted(42476) &amp;&amp; IsQuestCompleted(42477) &amp;&amp; IsQuestCompleted(42455)) &amp;&amp; Me.MapId != 1111111" > <!-- NOTE: <MapIdCheck> : Add MapId for class hall -->
+			<If Condition="(IsQuestCompleted(42476) &amp;&amp; IsQuestCompleted(42477) &amp;&amp; IsQuestCompleted(42455)) &amp;&amp; Me.MapId != 1513" > <!-- NOTE: <CheckID> : ID for class hall -->
 				<CustomBehavior File="RunCode" Code="SpellManager.Cast(193759);" />
 				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsCasting" />
 			</If>
@@ -164,7 +164,7 @@
 
 			<PickUp QuestName="The Mage Hunter" QuestId="42479" GiverName="Meryl Felstorm" GiverId="102700" X="-816.66" Y="4695" Z="939.6638" />
 			<While Condition="DoQuest(42479)" >
-				<If Condition="Me.MapId == 111111" >  <!-- NOTE: <Add-CheckMapId> : Leaving Class Hall, entering Dalaran. -->
+				<If Condition="Me.MapId == 1513" >  <!-- NOTE: <CheckID> : Leaving Class Hall, entering Dalaran. -->
 					<CustomBehavior File="InteractWith" MobId="244510" WaitTime="3000" X="-832.6424" Y="4685.265" Z="939.9924" />
 				</If>
 				<CustomBehavior File="InteractWith" MobId="96813" GossipOptions="1" WaitTime="3000" QuestId="42479" QuestObjectiveIndex="1" X="-863.934" Y="4298.434" Z="745.3463" />

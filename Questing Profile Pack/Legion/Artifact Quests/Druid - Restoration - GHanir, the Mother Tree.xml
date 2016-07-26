@@ -158,13 +158,13 @@
 
 			<PickUp QuestName="In Deep Slumber" QuestId="41436" GiverName="Naralex" GiverId="104349" X="4289" Y="7426.044" Z="-17.43501" />
 			<While Condition="DoQuest(41436)" >
-				<If Condition="Me.MapId == 111111"> <!-- NOTE: <Add-CheckMapId> : Going into emerald dream, need Map/Zone Id for it. -->
+				<If Condition="true"> <!-- NOTE: <Add-CheckAura> : Drink potion for dreamwalking aura, need to check internal auras for this.  If dont have aura, useitem -->
 					<MoveTo X="4300.369" Y="7422.058" Z="-17.13339" /> <!-- Go to bed. -->
 					<CustomBehavior File="UseItem" ItemId="135506" />
 					<CustomBehavior File="WaitTimer" WaitTime="15000" />
 				</If>
 
-				<CustomBehavior File="Hooks\DoWhen" ActivityName="PreventCorruption" AllowUseDuringCombat="true" UseWhen="(!Me.HasAura(774) || !Me.HasAura(33763) || SpellManager.CanCast(18562)) &amp;&amp; Me.MapId == 111111" > <!-- NOTE: <Add-CheckMapId> : Going into emerald dream, need Map/Zone Id for it. -->
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="PreventCorruption" AllowUseDuringCombat="true" UseWhen="(!Me.HasAura(774) || !Me.HasAura(33763) || SpellManager.CanCast(18562))" > <!-- NOTE: <Add-CheckAura> : If have dreamwalking aura.  Same aura as mentioned in the note above. -->
 					<!-- All that may be needed here is Lifebloom.  It's able to surpress the corruption very efficiently on its own. -->
 					<If Condition="!Me.HasAura(774)" > <!-- Rejuvenation -->
 						<CustomBehavior File="RunCode" Code="SpellManager.Cast(774); await Coroutine.Wait(2000, ()=&gt; !SpellManager.GlobalCooldown);" />
@@ -203,13 +203,13 @@
 
 			<PickUp QuestName="Cleansing the Mother Tree" QuestId="41689" GiverName="Lyessa Bloomwatcher" GiverId="104577" X="3970.218" Y="7389.277" Z="23.9126" />
 			<While Condition="DoQuest(41689)" >
-				<If Condition="Me.MapId == 111111" >  <!-- NOTE: <Add-CheckMapId> : Leaving Class Hall, entering Dreamway. -->
+				<If Condition="Me.ZoneId == 7846" >  <!-- NOTE: <CheckID> : Leaving Class Hall, entering Dreamway. -->
 					<MoveTo X="4141.608" Y="7302.58" Z="22.75611" />
-					<CustomBehavior File="MyCTM" X="4150.013" Y="7293.335" Z="22.77204" TerminateWhen="Me.MapId == 22222" /> <!-- Shut off when entered Dreamway -->
+					<CustomBehavior File="MyCTM" X="4150.013" Y="7293.335" Z="22.77204" TerminateWhen="Me.MapId == 1540" /> <!-- Shut off when entered Dreamway -->
 				</If>
-				<If Condition="Me.MapId == 111111" >  <!-- NOTE: <Add-CheckMapId> : Leaving Dreamway, entering Hyjal. -->
+				<If Condition="Me.MapId == 1540" >  <!-- NOTE: <Add-CheckMapId> : Leaving Dreamway, entering Hyjal. -->
 					<MoveTo X="1638.552" Y="1452.757" Z="11.00389" />
-					<CustomBehavior File="MyCTM" X="1634.344" Y="1440.743" Z="11.02077" TerminateWhen="Me.MapId == 22222" /> <!-- Shut off when entered Hyjal -->
+					<CustomBehavior File="MyCTM" X="1634.344" Y="1440.743" Z="11.02077" TerminateWhen="Me.MapId == 1" /> <!-- Shut off when entered Hyjal -->
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
@@ -398,13 +398,13 @@
 			</While>
 
 			<If Condition="HasItem(128306) &amp;&amp; QuestDone(41689)" >
-				<If Condition="Me.MapId == 111111" >  <!-- NOTE: <Add-CheckMapId> : Leaving Hyjal, entering Dreamway. -->
+				<If Condition="Me.MapId == 1" >  <!-- NOTE: <Add-CheckMapId> : Leaving Hyjal, entering Dreamway. -->
 					<MoveTo X="5460.457" Y="-3442.266" Z="1560.056" />
-					<CustomBehavior File="MyCTM" X="5451.568" Y="-3434.243" Z="1559.89" TerminateWhen="Me.MapId == 22222" /> <!-- Shut off when entered Dreamway -->
+					<CustomBehavior File="MyCTM" X="5451.568" Y="-3434.243" Z="1559.89" TerminateWhen="Me.MapId == 1540" /> <!-- Shut off when entered Dreamway -->
 				</If>
-				<If Condition="Me.MapId == 111111" >  <!-- NOTE: <Add-CheckMapId> : Leaving Dreamway, entering Class Hall. -->
+				<If Condition="Me.MapId == 1540" >  <!-- NOTE: <Add-CheckMapId> : Leaving Dreamway, entering Class Hall. -->
 					<MoveTo X="1772.043" Y="1507.481" Z="7.891945" />
-					<CustomBehavior File="MyCTM" X="1783.71" Y="1500.368" Z="10.05346" TerminateWhen="Me.MapId == 22222" /> <!-- Shut off when entered Class Hall -->
+					<CustomBehavior File="MyCTM" X="1783.71" Y="1500.368" Z="10.05346" TerminateWhen="Me.MapId == 22222" /> <!-- <CheckMapId~>  Probably ZoneId for this - Shut off when entered Class Hall -->
 				</If>
 			</If>
 			<TurnIn QuestName="Cleansing the Mother Tree" QuestId="41689" TurnInName="Lyessa Bloomwatcher" TurnInId="104577" X="3970.218" Y="7389.277" Z="23.91248" />	

@@ -109,7 +109,7 @@
 			<PickUp QuestName="The Light's Wrath" QuestId="41625" GiverName="Alonsus Faol" GiverId="101314" X="2602.816" Y="-534.5225" Z="89.00004" /> 
 			<!-- :END1 -->
 			<While Condition="DoQuest(41625)" >
-				<If Condition="Me.MapId != 111111" ><!-- NOTE: <CheckMapId> : Need to check if the player isn't in Dalaran -->
+				<If Condition="true" ><!-- NOTE: <CheckZoneId~> : Need to check if the player isn't in Dalaran -->
 					<CustomBehavior File="RunCode"><![CDATA[
 						Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Using Dalaran Hearthstone");
 						await CommonCoroutines.StopMoving(); 
@@ -130,14 +130,14 @@
 
 			<PickUp QuestName="A New Threat" QuestId="41626" GiverName="Archmage Kalec" GiverId="105081" X="-857.1511" Y="4637.633" Z="749.2797" />
 			<While Condition="DoQuest(41626)" >
-				<If Condition="Me.MapId == 111111" > <!-- NOTE: <CheckMapIds> : Dalaran to Dragonshrine -->
-					<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <ZoneId> : Dalaran to Dalaran Portal Room -->
+				<If Condition="Me.MapId != 571" >
+					<If Condition="Me.Z &gt; 605" > <!-- NOTE: <CheckFunction> : Dalaran to Dalaran Portal Room -->
 						<MoveTo X="-850.0136" Y="4460.374" Z="735.6611" />
-						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TermianteWhen="Me.ZoneId == DALARAN PORTAL ROOM -->
+						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" TerminateWhen="Me.Z &lt;= 605" />
 					</If>
 					<MoveTo X="-889.3405" Y="4503.787" Z="580.0774" />
 					<CustomBehavior File="InteractWith" MobId="246013" X="-892.7344" Y="4506.432" Z="580.4584" />
-					<CustomBehavior File="WaitTimer" WaitTime="10000" TermianteWhen="Me.ZoneId == 111111" /> <!-- NOTE: Terminate when player is in Dalaran Crater -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TermianteWhen="Me.MapId == 571" />
 				</If>
 				<MoveTo QuestId="41626" QuestObjectiveIndex="2" X="3132.267" Y="469.468" Z="21.36447" />
 				<CustomBehavior File="InteractWith" MobIds="104551, 104570, 248375" NumOfTimes="3" QuestId="41626" QuestObjectiveIndex="3" X="3128.747" Y="470.8965" Z="21.08807" />
@@ -189,8 +189,10 @@
 
 			<PickUp QuestName="The Nexus Vault" QuestId="41631" GiverName="Image of Kalec" />
 			<While Condition="DoQuest(41631)" >
-				<MoveTo X="3891.174" Y="6985.424" Z="69.48839" />
-				<CustomBehavior	File="MyCTM" X="3904.694" Y="6985.984" Z="69.48815" /> <!-- NOTE: <ChecMapId> : TerminateWhen inside of portal -->
+				<If Condition="Me.MapId != 576" > <!-- NOTE: <CheckID> : TerminateWhen inside of portal -->
+					<MoveTo X="3891.174" Y="6985.424" Z="69.48839" />
+					<CustomBehavior	File="MyCTM" X="3904.694" Y="6985.984" Z="69.48815" TerminateWhen="Me.MapId == 576" /> 
+				</If>
 
 				<!--NOTE: <AddSupport> : Could add a DoWhen that casts Mass Dispel when player is fighting unit  Name="Illusory Wyrmling" Entry="104879"
 										This will insta-kill them all.

@@ -86,14 +86,14 @@
 		<!-- First Artifact Quest -->
 			<PickUp QuestName="Priestly Matters" QuestId="40705" GiverName="Hooded Priestess" GiverId="102333" X="-830.28" Y="4397.555" Z="737.5258" />
 			<While Condition="DoQuest(40705)" >
-				<If Condition="Me.MapId == 111111" > <!-- NOTE: <CheckMapIds> : Dalaran to Dalaran Crater -->
-					<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <ZoneId> : Dalaran to Dalaran Portal Room -->
+				<If Condition="Me.MapId != 0" >
+					<If Condition="Me.Z &gt; 605" > <!-- NOTE: <CheckFunction> : Dalaran to Dalaran Portal Room -->
 						<MoveTo X="-850.0136" Y="4460.374" Z="735.6611" />
-						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TermianteWhen="Me.ZoneId == DALARAN PORTAL ROOM -->
+						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" TerminateWhen="Me.Z &lt;= 605" />
 					</If>
 					<MoveTo X="-881.3472" Y="4505.167" Z="580.0989" />
 					<CustomBehavior File="InteractWith" MobId="246008" X="-880.408" Y="4511.733" Z="580.4584" />
-					<CustomBehavior File="WaitTimer" WaitTime="10000" TermianteWhen="Me.ZoneId == 111111" /> <!-- NOTE: Terminate when player is in Dalaran Crater -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TermianteWhen="Me.MapId == 0" /> <!-- NOTE: Terminate when player is in Dalaran Crater -->
 					<CustomBehavior File="RunCode"><![CDATA[
 							SpellManager.Cast("Levitate");
 							await Coroutine.Sleep(2500);
@@ -143,9 +143,9 @@
 		<!-- Introductory Class Hall Quests -->
 			<PickUp QuestName="The Light and the Void" QuestId="40938" GiverName="Prophet Velen" GiverId="101313" X="-695.5399" Y="4492.624" Z="728.5385" />
 			<While Condition="DoQuest(40938)" >
-				<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <ZoneId> : Dalaran to Dalaran Portal Room -->
+				<If Condition="Me.Z &gt; 605" > <!-- NOTE: <CheckID> : Dalaran to Dalaran Portal Room -->
 					<MoveTo X="-850.0136" Y="4460.374" Z="735.6611" />
-					<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TermianteWhen="Me.ZoneId == DALARAN PORTAL ROOM -->
+					<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" TerminateWhen="Me.Z &lt;= 605" />
 				</If>
 				<MoveTo X="-878.7432" Y="4495.537" Z="580.3096" />
 				<CustomBehavior File="InteractWith" MobId="246663" QuestId="40938" QuestObjectiveIndex="2" X="-881.2205" Y="4497.129" Z="580.3108" />

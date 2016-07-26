@@ -109,14 +109,14 @@
 			<PickUp QuestName="Ulthalesh, the Deadwind Harvester" QuestId="40495" GiverName="Calydus" GiverId="101097" X="-858.3073" Y="4456.332" Z="695.9575" />
 			<!-- :END1 -->
 			<While Condition="DoQuest(40495)" >
-				<If Condition="Me.MapId == 111111" > <!-- NOTE: <CheckMapIds> : Dalaran to Karazhan -->
-					<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <ZoneId> : Dalaran to Dalaran Portal Room -->
+				<If Condition="Me.MapId != 0" > <!-- NOTE: <CheckMapIds> : Dalaran to Karazhan -->
+					<If Condition="Me.Z &gt; 605" > <!-- NOTE: <CheckFunction> : Dalaran to Dalaran Portal Room -->
 						<MoveTo X="-850.0136" Y="4460.374" Z="735.6611" />
-						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TermianteWhen="Me.ZoneId == DALARAN PORTAL ROOM -->
+						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" TerminateWhen="Me.Z &lt;= 605" />
 					</If>
 					<MoveTo X="-872.5156" Y="4501.743" Z="580.1682" />
 					<CustomBehavior File="InteractWith" MobId="246009" X="-869.9479" Y="4503.124" Z="580.4584" />
-					<CustomBehavior File="WaitTimer" WaitTime="5000" TermianteWhen="Me.ZoneId == 111111" /> <!-- NOTE: Terminate when player is in Karazhan -->
+					<CustomBehavior File="WaitTimer" WaitTime="5000" TermianteWhen="Me.MapId == 0" /> <!-- NOTE: Terminate when player is in Karazhan -->
 				</If>
 				<MoveTo Nav="Fly" X="-10355.38" Y="-1256.694" Z="35.30087" />
 				<MoveTo Nav="Run" X="-10366.78" Y="-1256.696" Z="35.91049" />
@@ -237,7 +237,7 @@
 			<PickUp QuestName="The Power Possessed" QuestId="40712" GiverName="Revil Kost" GiverId="101282" X="-10871.4" Y="-1961.52" Z="-41.03577" />
 			<!-- Alternative "mean" quest. 
 			<PickUp QuestName="The Power Possessed" QuestId="41156" GiverName="Revil Kost" GiverId="101282" X="-10871.4" Y="-1961.52" Z="-41.03577" /> -->
-			<If Condition="HasQuest(41156)" > <!-- NOTE: <CheckMapId> :  need to &amp;&amp; the map Id.  Should only run is player is in Karazhan Catacombs. --> 
+			<If Condition="HasQuest(41156) &amp;&amp; Me.ZoneId == 41" > <!-- NOTE: <CheckId> Should only run if player is in Karazhan Catacombs. --> 
 				<CustomBehavior File="RunCode"><![CDATA[
 					Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Using Dalaran Hearthstone");
 					await CommonCoroutines.StopMoving(); 

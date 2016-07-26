@@ -84,9 +84,11 @@
 
 		<!-- Introductory Class Hall Quests -->
 			<PickUp QuestName="Before the Storm" QuestId="12103" GiverName="Initiate Da-Nel" GiverId="98519" X="-833.6994" Y="4388.54" Z="737.8624" />
-			<While Condition="HasQuest(12103)" > <!-- &amp;&amp; ME IS IN DALARAN -->
-				<CustomBehavior File="RunCode" Code="SpellManager.Cast(126892);" />
-				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Me.MapId != 111111" />
+			<While Condition="HasQuest(12103)" > 
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0" > <!-- NOTE ~> Replace with ZoneId after ID can be recovered -->
+					<CustomBehavior File="RunCode" Code="SpellManager.Cast(126892);" />
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 0" />
+				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
 					<CustomBehavior File="InteractWith" MobId="97778" GossipOptions="1" X="3807.865" Y="1789.863" Z="950.3509" />

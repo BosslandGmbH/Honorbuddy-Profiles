@@ -111,20 +111,20 @@
 		<!-- Story: Artifact Weapon - Stromkar, the Warbreaker -->
 			<PickUp QuestName="The Sword of Kings" QuestId="41105" GiverName="Odyn" GiverId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
 			<While Condition="DoQuest(41105)" >
-				<If Condition="Me.MapId == 111111" > <!-- NOTE: <CheckMapIds> : Warrior Class Hall to Dalaran -->
+				<If Condition="Me.MapId == 1479" > <!-- NOTE: <CheckID> : Warrior Class Hall to Dalaran -->
 					<CustomBehavior File="InteractWith" MobId="96679" GossipOptions="1" X="1082.998" Y="7229.331" Z="98.11845" />
 					<!-- NOTE: <CheckMe> : As a warrior learns more locations throughout Draenor, the gossip options for the Stormflgiht master will change.
 											We need a way to actually click by name instead of index.
 					-->
 				</If>
-				<If Condition="Me.MapId == 111111" > <!-- NOTE: <CheckMapIds> : Dalaran to Dalaran Crater -->
-					<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <ZoneId> : Dalaran to Dalaran Portal Room -->
+				<If Condition="Me.MapId != 0" > <!-- NOTE: <CheckMapIds> : Dalaran to Dalaran Crater -->
+					<If Condition="Me.Z &gt; 605" > <!-- NOTE: <CheckFunction> : Dalaran to Dalaran Portal Room -->
 						<MoveTo X="-850.0136" Y="4460.374" Z="735.6611" />
-						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TermianteWhen="Me.ZoneId == DALARAN PORTAL ROOM -->
+						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" TerminateWhen="Me.Z &lt;= 605" />
 					</If>
 					<MoveTo X="-881.3472" Y="4505.167" Z="580.0989" />
 					<CustomBehavior File="InteractWith" MobId="246008" X="-880.408" Y="4511.733" Z="580.4584" />
-					<CustomBehavior File="WaitTimer" WaitTime="10000" TermianteWhen="Me.ZoneId == 111111" /> <!-- NOTE: Terminate when player is in Dalaran Crater -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TermianteWhen="Me.MapId == 0" /> <!-- NOTE: Terminate when player is in Dalaran Crater -->
 					<CustomBehavior File="RunCode"><![CDATA[
 							SpellManager.Cast("Heroic Leap");
 							await Coroutine.Sleep(2500);

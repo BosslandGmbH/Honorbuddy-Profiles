@@ -218,14 +218,12 @@
 			<PickUp QuestName="The Brother's Trail" QuestId="42377" GiverName="Travard" GiverId="106337" X="-853.9722" Y="4280.39" Z="746.2767" />
 			<While Condition="DoQuest(42377)" >
 				<If Condition="Me.MapId != 571" > <!-- Go to Northrend -->
-					<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran, enter Dalaran Portal Room -->
+					<If Condition="Me.Z &gt; 605" > <!-- NOTE: <CheckFunction> : Dalaran to Dalaran Portal Room -->
 						<MoveTo X="-847.6401" Y="4463.277" Z="735.8799" />
-						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TerminateWhen in portal room. -->
+						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" TerminateWhen="Me.Z &lt;= 605" />
 					</If>
-					<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran Portal Room, entering Northrend -->
-						<MoveTo X="-889.9857" Y="4504.066" Z="580.149" />
-						<CustomBehavior File="InteractWith" MobId="246013" WaitTime="1000" X="-892.7344" Y="4506.432" Z="580.4584" />
-					</If>
+					<MoveTo X="-889.9857" Y="4504.066" Z="580.149" />
+					<CustomBehavior File="InteractWith" MobId="246013" WaitTime="1000" X="-892.7344" Y="4506.432" Z="580.4584" />
 				</If>
 				<CustomBehavior File="InteractWith" MobId="107289" GossipOptions="1,1" QuestId="42377" QuestObjectiveIndex="2" X="3590.153" Y="264.9774" Z="340.8468" />
 				<CustomBehavior File="InteractWith" MobId="250367" QuestId="42377" QuestObjectiveIndex="3" X="4563.012" Y="472.8004" Z="65.67351" />
@@ -241,16 +239,14 @@
 			<PickUp QuestName="The Silver Hand" QuestId="42120" GiverName="Travard" GiverId="106337" X="-853.9722" Y="4280.39" Z="746.2758" />
 			<While Condition="DoQuest(42120)" >
 				<If Condition="Me.MapId != 0" >
-					<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran, enter Dalaran Portal Room -->
+					<If Condition="Me.Z &gt; 605" > <!-- NOTE: <CheckFunction> : Dalaran to Dalaran Portal Room -->
 						<MoveTo X="-847.6401" Y="4463.277" Z="735.8799" />
-						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TerminateWhen in portal room. -->
+						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" TerminateWhen="Me.Z &lt;= 605" />
 					</If>
-					<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran Portal Room, entering Dalaran Crater -->
-						<MoveTo X="-881.0235" Y="4507.995" Z="580.1562" />
-						<CustomBehavior File="InteractWith" MobId="246008" WaitTime="1000" X="-880.408" Y="4511.733" Z="580.4584" />
-						<CustomBehavior File="RunCode" Code="SpellManager.Cast(1022);" /> <!-- Ice Block to prevent fall damage. -->
-						<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsFalling" />
-					</If>
+					<MoveTo X="-881.0235" Y="4507.995" Z="580.1562" />
+					<CustomBehavior File="InteractWith" MobId="246008" WaitTime="1000" X="-880.408" Y="4511.733" Z="580.4584" />
+					<CustomBehavior File="RunCode" Code="SpellManager.Cast(1022);" /> <!-- Ice Block to prevent fall damage. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsFalling" />
 				</If>
 
 				<MoveTo X="2130.502" Y="2415.371" Z="119.1868" />

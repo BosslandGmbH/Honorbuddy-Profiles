@@ -76,9 +76,9 @@
 
 		<!-- Introductory Class Hall Quests -->
 			<PickUp QuestName="A Summons From Moonglade" QuestId="40643" GiverName="Archdruid Hamuul Runetotem" GiverId="101061" X="-836.509" Y="4392.921" Z="737.6797" /> <!-- May be a bit slow to spawn after first entering Dalaran. -->
-			<While Condition="HasQuest(40643)" > <!-- &amp;&amp; ME IS IN DALARAN -->
+			<While Condition="HasQuest(40643)" > <!-- NOTE ~> Add ID check &amp;&amp; ME IS IN DALARAN -->
 				<CustomBehavior File="RunCode" Code="SpellManager.Cast(18960);" />
-				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Me.MapId != 111111" />
+				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Me.MapId != 111111 || !Me.IsCasting" />
 			</While>
 			<TurnIn QuestName="A Summons From Moonglade" QuestId="40643" TurnInName="Archdruid Hamuul Runetotem" TurnInId="101064" X="8001.76" Y="-2680.266" Z="512.0837" />
 
@@ -105,9 +105,9 @@
 
 			<PickUp QuestName="To The Dreamgrove" QuestId="40645" GiverName="Malfurion Stormrage" GiverId="103875" X="7559.609" Y="-2921.609" Z="464.9646" />
 			<While Condition="DoQuest(40645)" >
-				<If Condition="Me.MapId == 111111"> <!-- NOTE: <Add-CheckMapId> -->  
+				<If Condition="Me.MapId != 1540" > <!-- NOTE: <CheckID> -->  
 					<MoveTo X="7564.955" Y="-2939.629" Z="467.6891" />
-					<CustomBehavior File="MyCTM" X="7563.886" Y="-2960.902" Z="467.976" TerminateWhen="Me.MapId == 111111" /> <!-- NOTE: <Add-CheckMapId> --> 
+					<CustomBehavior File="MyCTM" X="7563.886" Y="-2960.902" Z="467.976" TerminateWhen="Me.MapId == 1540" />
 				</If>
 				<MoveTo X="1704.347" Y="1548.302" Z="2.620985" />
 				<CustomBehavior File="WaitTimer" QuestId="40645" QuestObjectiveIndex="2" WaitTime="60000" />
@@ -115,7 +115,7 @@
 				<!-- NOTE: <AddAvoid> : Severity - minor. -->
 				<CustomBehavior File="KillUntilComplete" MobId="103246" QuestId="40645" QuestObjectiveIndex="3" X="1750.29" Y="1327.941" Z="2.448324" />
 				<MoveTo X="1766.435" Y="1508.679" Z="7.188321" />
-				<CustomBehavior File="MyCTM" X="1784.506" Y="1504.145" Z="9.844843" TerminateWhen="Me.MapId == 1077" /> <!-- NOTE: <Add-CheckMapId> -->
+				<CustomBehavior File="MyCTM" X="1784.506" Y="1504.145" Z="9.844843" TerminateWhen="Me.ZoneId == 7846" /> <!-- NOTE: <CheckID> Player entering Druid Class Hall -->
 
 				<MoveTo QuestId="40645" X="3976.025" Y="7391.25" Z="23.92067" />
 			</While>

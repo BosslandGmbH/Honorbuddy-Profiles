@@ -182,7 +182,7 @@
 			<!--START1: Need to detect if this is the player's first artifact quest since the NPC is in a different location. -->
 			<PickUp QuestName="The Vindicator's Plea" QuestId="41957" GiverName="Alonsus Faol" GiverId="101314" X="2602.816" Y="-534.5225" Z="89.00004" />
 			<!-- :END1 -->
-			<If Condition="HasQuest(41957) &amp;&amp; Me.MapId != 111111" ><!-- NOTE: <CheckMapId> : Need to check if the player isn't in Dalaran -->
+			<If Condition="HasQuest(41957)" ><!-- NOTE: <CheckMapId~> &amp;&amp; Me.MapId != 111111 : Need to check if the player isn't in Dalaran -->
 				<CustomBehavior File="InteractWith" MobId="105769" WaitTime="10000" GossipOptions="1" X="2600.161" Y="-513.6042" Z="88.99979" />
 			</If>
 			<TurnIn QuestName="The Vindicator's Plea" QuestId="41957" TurnInName="Vindicator Boros" TurnInId="105602" X="-785.1249" Y="4562.131" Z="727.1848" />
@@ -234,10 +234,9 @@
 
 			<PickUp QuestName="Return of the Light" QuestId="42074" GiverName="Jace Darkweaver" GiverId="106011" X="-854.3229" Y="3623.9" Z="5.235844" />
 			<While Condition="DoQuest(42074)" >
-				<!-- NOTE: <CheckMapId> : Player goes through big portal.  Could use a mapId check here for this below logic. -->
-				<If Condition="Me.MapId != 111111" >
+				<If Condition="Me.MapId != 1489" > <!-- NOTE: <CheckID> : Player goes through big portal.  Could use a mapId check here for this below logic. -->
 					<MoveTo X="-830.1863" Y="3675.801" Z="26.49424" />
-					<CustomBehavior File="MyCTM" X="-820.3788" Y="3686.787" Z="27.03888" /> <!-- TERMIANTE WHEN INSIDE -->
+					<CustomBehavior File="MyCTM" X="-820.3788" Y="3686.787" Z="27.03888" TerminateWhen="Me.MapId == 1489" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >

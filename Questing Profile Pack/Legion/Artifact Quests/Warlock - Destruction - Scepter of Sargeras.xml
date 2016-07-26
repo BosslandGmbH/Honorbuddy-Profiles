@@ -109,14 +109,14 @@
 			<PickUp QuestName="Finding the Scepter" QuestId="43100" GiverName="Calydus" GiverId="101097" X="-858.3073" Y="4456.332" Z="695.9576" />
 			<!-- :END1 -->
 			<While Condition="DoQuest(43100)" >
-				<If Condition="Me.MapId == 111111" > <!-- NOTE: <CheckMapIds> : Dalaran to Karazhan -->
-					<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <ZoneId> : Dalaran to Dalaran Portal Room -->
+				<If Condition="Me.MapId != 0" > <!-- NOTE: <CheckMapIds> : Dalaran to Karazhan -->
+					<If Condition="Me.Z &gt; 605" > <!-- NOTE: <CheckFunction> : Dalaran to Dalaran Portal Room -->
 						<MoveTo X="-850.0136" Y="4460.374" Z="735.6611" />
-						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TermianteWhen="Me.ZoneId == DALARAN PORTAL ROOM -->
+						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" TerminateWhen="Me.Z &lt;= 605" />
 					</If>
 					<MoveTo X="-881.0706" Y="4508.371" Z="580.1635" />
 					<CustomBehavior File="InteractWith" MobId="246008" X="-880.408" Y="4511.733" Z="580.4584" />
-					<CustomBehavior File="WaitTimer" WaitTime="5000" TermianteWhen="Me.ZoneId == 111111" /> <!-- NOTE: Terminate when player is in Dalaran Crater -->
+					<CustomBehavior File="WaitTimer" WaitTime="5000" TermianteWhen="Me.MapId == 0" /> <!-- NOTE: Terminate when player is in Dalaran Crater -->
 				</If>
 
 				<MoveTo Nav="Fly" QuestId="43100" QuestObjectiveIndex="2" X="1039.002" Y="-2517.533" Z="59.17514" />

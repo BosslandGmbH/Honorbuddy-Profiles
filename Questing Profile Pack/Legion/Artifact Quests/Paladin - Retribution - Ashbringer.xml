@@ -111,16 +111,14 @@
 			<!-- END: <Technical Check -->
 			<While Condition="DoQuest(42770)" >
 				<If Condition="Me.MapId != 0" >
-					<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran, enter Dalaran Portal Room -->
-						<MoveTo X="-847.6401" Y="4463.277" Z="735.8799" />
-						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" /> <!-- TerminateWhen in portal room. -->
+					<If Condition="Me.Z &gt; 605" > <!-- NOTE: <CheckFunction> : Dalaran to Dalaran Portal Room -->
+						<MoveTo X="-850.0136" Y="4460.374" Z="735.6611" />
+						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" TerminateWhen="Me.Z &lt;= 605" />
 					</If>
-					<If Condition="Me.ZoneId == 111111" > <!-- NOTE: <Add-CheckZoneID> : Leaving Dalaran Portal Room, entering Dalaran Crater -->
-						<MoveTo X="-881.0235" Y="4507.995" Z="580.1562" />
-						<CustomBehavior File="InteractWith" MobId="246008" WaitTime="1000" X="-880.408" Y="4511.733" Z="580.4584" />
-						<CustomBehavior File="RunCode" Code="SpellManager.Cast(1022);" /> <!-- Blessing of Protection to prevent fall damage. -->
-						<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsFalling" />
-					</If>
+					<MoveTo X="-881.0235" Y="4507.995" Z="580.1562" />
+					<CustomBehavior File="InteractWith" MobId="246008" WaitTime="1000" X="-880.408" Y="4511.733" Z="580.4584" />
+					<CustomBehavior File="RunCode" Code="SpellManager.Cast(1022);" /> <!-- Blessing of Protection to prevent fall damage. -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsFalling" />
 				</If>
 				<MoveTo X="1098.106" Y="-1800.179" Z="62.13031" />
 			</While>

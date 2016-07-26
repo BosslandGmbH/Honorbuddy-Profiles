@@ -161,9 +161,11 @@
 
 			<PickUp QuestName="The Trial at the Temple" QuestId="42765" GiverName="The Monkey King" GiverId="109187" X="935.5245" Y="-2418.598" Z="168.5976" />
 			<While Condition="DoQuest(42765)" >
-				<!-- NOTE: <MapIdCheck> : Need to If-check if we're outside of the temple first.  If we are, go in. -->
-				<MoveTo X="960.0986" Y="-2469.125" Z="180.234" />
-				<CustomBehavior File="MyCTM" X="958.3696" Y="-2476.02" Z="180.5053" /> <!-- TerminateWhen inside temple. -->
+				<If Condition="Me.MapId != 960" > <!-- NOTE: <CheckID> : Check id for Temple of the Jade Serpent -->
+					<MoveTo X="960.0986" Y="-2469.125" Z="180.234" />
+					<CustomBehavior File="MyCTM" X="958.3696" Y="-2476.02" Z="180.5053" TerminateWhen="Me.MapId == 960" /> <!-- TerminateWhen inside temple. -->
+					<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Me.MapId == 960" />
+				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
 					<MoveTo X="952.6828" Y="-2519.703" Z="180.3754" />
