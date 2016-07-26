@@ -1,0 +1,123 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../Schemas/EchoSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Legion Auto-Loader</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<QuestOrder> <!-- No checkpoints here. -->
+
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+
+					async Task SkipCutscene()
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(3000);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(3000);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<If Condition="Me.Class == WoWClass.DemonHunter &amp;&amp; ((Me.IsAlliance &amp;&amp; !IsQuestCompleted(44473)) || (Me.IsHorde &amp;&amp; !IsQuestCompleted(41002))" >
+			<CustomBehavior File="LoadProfile" ProfileName="[N-Quest] Demon Hunter Starting Zone [Echo]" />	
+		</If>
+
+		<If Condition="!IsQuestCompleted(44663)" > <!-- Legion Introductory Quest Finale, 44814 auto-flags complete if this one is comlete. -->
+			<CustomBehavior File="LoadProfile" ProfileName="[N - Quest] Legion Intro Quests [Echo]" />
+		</If>
+
+		<!-- Load Class Hall stuff -->
+			<!--
+			NOTE <ImproveLater> : This is currently the easy solution.
+			I'm thinking a RunCode where Me.Class auto-fills the text with using ProfileManager.LoadNew to load the profilewould be more clean.
+			-->
+			<If Condition="Me.Class == WoWClass.Warrior" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N - Quest] Warrior [Echo]" RememberProfile="true" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Paladin" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N - Quest] Paladin [Echo]" RememberProfile="true" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Hunter" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N - Quest] Hunter [Echo]" RememberProfile="true" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Rogue" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N - Quest] Rogue [Echo]" RememberProfile="true" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Priest" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N - Quest] Priest [Echo]" RememberProfile="true" />
+			</If>
+			<If Condition="Me.Class == WoWClass.DeathKnight" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N - Quest] Death Knight [Echo]" RememberProfile="true" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Shaman" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N - Quest] Shaman [Echo]" RememberProfile="true" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Mage" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N - Quest] Mage [Echo]" RememberProfile="true" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Warlock" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N - Quest] Warlock [Echo]" RememberProfile="true" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Monk" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N - Quest] Monk [Echo]" RememberProfile="true" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Druid" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N - Quest] Druid [Echo]" RememberProfile="true" />
+			</If>
+			<If Condition="Me.Class == WoWClass.DemonHunter" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N - Quest] Demon Hunter [Echo]" RememberProfile="true" />
+			</If>
+		<!-- END Load Class Hall stuff -->
+
+	</QuestOrder>
+</HBProfile>
