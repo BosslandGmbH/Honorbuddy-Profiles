@@ -5434,11 +5434,19 @@
 				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for bot {TimeRemaining}" />
 			</While>
 			<If Condition="HasQuest(14360) &amp;&amp; !IsQuestCompleted(14360)">
-				<Objective QuestName="Nothing a Couple of Melons Won't Fix" QuestId="14360" Type="CollectItem" ItemId="48106" CollectCount="8" />
+				<While Condition="GetItemCount(48106) &lt; 8" >
+					<CustomBehavior File="InteractWith" MobId="195440" InteractByLooting="true" NumOfTimes="8" TerminateWhen="GetItemCount(48106) &gt;= 8" >
+						<HuntingGrounds>
+							<Hotspot X="-131.2409" Y="683.5321" Z="103.5407" />
+							<Hotspot X="-131.2409" Y="683.5321" Z="103.5407" />
+							<Hotspot X="-180.2767" Y="733.9078" Z="91.1605" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</While>
 				<MoveTo X="-87.77672" Y="768.8437" Z="132.8921" />
-				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for agro to clear {TimeRemaining}" />
+				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for agro to clear {TimeRemaining}" TerminateWhen="!Me.Combat" />
 				<UseItem QuestId="14360" ItemId="48106" X="-87.77672" Y="768.8437" Z="132.8921" />
-				<CustomBehavior File="WaitTimer" WaitTime="3000" GoalText="Waiting for quest to complete {TimeRemaining}" />
+				<CustomBehavior File="WaitTimer" QuestId="14360" WaitTime="3000" GoalText="Waiting for quest to complete {TimeRemaining}" />
 			</If>
 			<While Condition="HasQuest(14360) &amp;&amp; IsQuestCompleted(14360)">
 				<TurnIn QuestId="14360" />
