@@ -7053,19 +7053,26 @@
 				<PickUp QuestName="Pamela's Doll" QuestId="27384" GiverName="Pamela Redpath" GiverId="10926" X="1452.869" Y="-3596.774" Z="86.9902" />
 				<PickUp QuestName="I'm Not Supposed to Tell You This" QuestId="27392" GiverName="Pamela Redpath" GiverId="10926" X="1452.869" Y="-3596.774" Z="86.9902" />
 				<Objective QuestName="I'm Not Supposed to Tell You This" QuestId="27392" Type="CollectItem" ItemId="60987" CollectCount="1" />
-
 				<If Condition="HasQuest(27384) &amp;&amp; !IsQuestCompleted(27384)">
-					<UseMount Value="false" />
-					<CustomBehavior File="ForcedDismount" />
-					<CustomBehavior File="CollectThings" QuestId="27384" MobId="176116" IgnoreMobsInBlackspots="false" CollectItemId="12886" CollectItemCount="1" X="1437.439" Y="-3703.893" Z="76.86717" />
-					<CustomBehavior File="CollectThings" QuestId="27384" MobId="176142" IgnoreMobsInBlackspots="false" CollectItemId="12887" CollectItemCount="1" X="1437.439" Y="-3703.893" Z="76.86717" />
-					<CustomBehavior File="CollectThings" QuestId="27384" MobId="176143" IgnoreMobsInBlackspots="false" CollectItemId="12888" CollectItemCount="1" X="1437.439" Y="-3703.893" Z="76.86717" />
+					<While Condition="!(HasItem(12888) &amp;&amp; HasItem(12886) &amp;&amp; HasItem(12887))" >
+						<CustomBehavior File="InteractWith" InteractByLooting="true" NumOfTimes="3" QuestId="27384" >
+							<HuntingGrounds>
+								<Hotspot X="1411.691" Y="-3719.976" Z="78.17376" />
+								<Hotspot X="1470.399" Y="-3721.009" Z="80.51619" />
+								<Hotspot X="1477.118" Y="-3716.008" Z="80.51584" />
+							</HuntingGrounds>
+							<PursuitList>
+								<PursueGameObject Id="176116" PursueWhen="!HasItem(12886)" />
+								<PursueGameObject Id="176142" PursueWhen="!HasItem(12887)" />
+								<PursueGameObject Id="176143" PursueWhen="!HasItem(12888)" />
+							</PursuitList>
+						</CustomBehavior>
+					</While>
+					<MoveTo X="1449.49" Y="-3601.773" Z="85.07184" />
 					<While Condition="HasQuest(27384) &amp;&amp; !IsQuestCompleted(27384)">
 						<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:12886&quot;)" />
 					</While>
-					<UseMount Value="true" />
 				</If>
-
 				<TurnIn QuestName="Pamela's Doll" TurnInName="Pamela Redpath" QuestId="27384" TurnInId="10926" X="1452.869" Y="-3596.774" Z="86.9902" />
 				<TurnIn QuestName="I'm Not Supposed to Tell You This" QuestId="27392" TurnInName="Pamela Redpath" TurnInId="10926" X="1452.869" Y="-3596.774" Z="86.9902" />
 				<PickUp QuestName="Uncle Carlin" GiverName="Pamela Redpath" QuestId="27385" GiverId="10926" X="1452.869" Y="-3596.774" Z="86.9902" />
