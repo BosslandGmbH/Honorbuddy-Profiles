@@ -5465,14 +5465,31 @@
         <CustomBehavior File="KillUntilComplete" QuestId="14196" MobId="35384" X="-91.41228" Y="858.9595" Z="119.8986" />
         </If>
         -->
-			<Objective QuestName="To the Hilt!" QuestId="14219" Type="CollectItem" ItemId="48943" CollectCount="20" />
-			<Objective QuestName="Ten Pounds of Flesh" QuestId="14213" Type="CollectItem" ItemId="48857" CollectCount="10" />
-			<UseItem ItemId="48943" QuestName="To the Hilt!" QuestId="14219" X="-342.2977" Y="818.1179" Z="94.28691" />
+			<While Condition="(GetItemCount(48857) &lt; 10 &amp;&amp; GetItemCount(48943) &lt; 20) &amp;&amp; (HasQuest(14219) &amp;&amp; HasQuest(14213))" >
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="GetItemCount(48857) &gt;= 10 &amp;&amp; GetItemCount(48943) &gt;= 20" >
+					<HuntingGrounds>
+						<Hotspot X="-181.2269" Y="706.2009" Z="91.5888" />
+						<Hotspot X="-55.0735" Y="658.1883" Z="91.36597" />
+						<Hotspot X="-125.839" Y="792.1818" Z="121.9394" />
+						<Hotspot X="-226.3314" Y="873.5565" Z="92.35506" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueUnit Id="4670" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="4674" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="4675" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueGameObject Id="195519" PursueWhen="GetItemCount(48943) &lt;= 20" />
+					</PursuitList>
+				</CustomBehavior>
+			</While>
+			<While Condition="HasQuest(14219) &amp;&amp; !IsQuestCompleted(14219)" >
+				<MoveTo X="54.07096" Y="879.9769" Z="141.7661" />
+				<UseItem ItemId="48943" QuestName="To the Hilt!" QuestId="14219" X="-342.2977" Y="818.1179" Z="94.28691" />
+			</While>
 			<TurnIn QuestName="To the Hilt!" QuestId="14219" TurnInName="Elune's Handmaiden" TurnInId="195517" TurnInType="Object" X="-342.2977" Y="818.1179" Z="94.28691" />
 			<If Condition="HasQuest(14213)">
 				<MoveTo X="-240.7148" Y="694.8555" Z="100.8951" />
 				<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:48857&quot;)" />
-				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for quest to complete {TimeRemaining}" />
+				<CustomBehavior File="WaitTimer" QuestId="14213" WaitTime="5000" GoalText="Waiting for quest to complete {TimeRemaining}" />
 			</If>
 			<!--<UseItem QuestId="14213" ItemId="48857" QuestName="Ten Pounds of Flesh" X="-240.7148" Y="694.8555" Z="100.8951"/>-->
 			<TurnIn QuestName="Ten Pounds of Flesh" QuestId="14213" TurnInName="Elune's Brazier" TurnInType="Object" TurnInId="195497" X="-240.7148" Y="694.8555" Z="100.8951" />
