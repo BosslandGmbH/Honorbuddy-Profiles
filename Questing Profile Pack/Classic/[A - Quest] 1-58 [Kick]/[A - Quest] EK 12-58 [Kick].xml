@@ -10576,9 +10576,21 @@
 			<PickUp QuestName="Demoniac Vessel" QuestId="26186" GiverName="Cenarion Observer Shayana" GiverId="42352"
 					X="-12701.84" Y="-2807.339" Z="5.820333" />
 			<If Condition="HasQuest(26186) &amp;&amp; !IsQuestCompleted(26186)">
-				<Objective QuestName="Demoniac Vessel" QuestId="26186" Type="CollectItem" ItemId="57177" CollectCount="4" />
-				<Objective QuestName="Demoniac Vessel" QuestId="26186" Type="CollectItem" ItemId="57178" CollectCount="20" />
-				<Objective QuestName="Demoniac Vessel" QuestId="26186" Type="CollectItem" ItemId="57179" CollectCount="2" />
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="1000" TerminateWhen="GetItemCount(57177) &gt;=4 &amp;&amp; GetItemCount(57178) &gt;=20 &amp;&amp; GetItemCount(57179) &gt;=2" >
+					<HuntingGrounds>
+						<Hotspot X="-11897.3" Y="-2551.494" Z="-23.27049" />
+						<Hotspot X="-11875.39" Y="-2674.74" Z="0.1754021" />
+						<Hotspot X="-12039.87" Y="-2649.746" Z="-23.14241" />
+						<Hotspot X="-12084.9" Y="-2580.866" Z="-24.86729" />
+						<Hotspot X="-11975.21" Y="-2479.839" Z="-25.08699" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueUnit Id="42336" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; GetItemCount(57177) &gt;=4" />
+						<PursueUnit Id="42337" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; GetItemCount(57178) &gt;=20" />
+						<PursueUnit Id="42338" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; GetItemCount(57179) &gt;=2" />
+					</PursuitList>
+				</CustomBehavior>
+
 				<MoveTo X="-12701.84" Y="-2807.339" Z="5.820333" />
 				<While Condition="HasQuest(26186) &amp;&amp; !IsQuestCompleted(26186)">
 					<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:57177&quot;)" NumOfTimes="4" WaitTime="1000" />
