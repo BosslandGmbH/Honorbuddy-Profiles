@@ -2063,8 +2063,23 @@
                                     X="-69.47663" Y="1964.127" Z="81.38124" />
 				<CustomBehavior File="ForcedDismount" />
 			</If>
-			<Objective QuestName="Disrupt Their Reinforcements" QuestId="10208" Type="CollectItem"
-                           ItemId="28513" CollectCount="8" />
+			<While Condition="HasQuest(10208) &amp;&amp; !IsQuestCompleted(10208) &amp;&amp; GetItemCount(28513) &lt; 8" >
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" CollectionDistance="200" TerminateWhen="GetItemCount(28513) &gt;= 8" >
+					<HuntingGrounds>
+						<Hotspot X="-112.1306" Y="1902.275" Z="79.72694" />
+						<Hotspot X="-1.093397" Y="1921.339" Z="65.18952" />
+						<Hotspot X="31.58214" Y="1787.517" Z="54.78316" />
+						<Hotspot X="179.5356" Y="1760.238" Z="35.45339" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueUnit Id="18975" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="19190" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="18918" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="18975" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="16950" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					</PursuitList>
+				</CustomBehavior>
+			</While>
 
 			<While Condition="HasQuest(10208) &amp;&amp; !IsObjectiveComplete(1,10208)">
 				<MoveTo X="-107.9884" Y="1896.608" Z="79.06393" />
@@ -2075,7 +2090,6 @@
                                     MobId="184290" NonCompeteDistance="0"
                                     PreInteractMountStrategy="DismountOrCancelShapeshift" Range="5"
                                     CollectionDistance="500" X="-84.27579" Y="1881.582" Z="74.63772" />
-				<MoveTo X="-63.95285" Y="1867.862" Z="68.97736" />
 			</While>
 
 			<While Condition="HasQuest(10208) &amp;&amp; !IsObjectiveComplete(2,10208)">
@@ -2087,8 +2101,6 @@
                                     MobId="184289" NonCompeteDistance="0"
                                     PreInteractMountStrategy="DismountOrCancelShapeshift" Range="5"
                                     CollectionDistance="500" X="146.2598" Y="1717.889" Z="38.41195" />
-				<MoveTo X="-564.7162" Y="1791.949" Z="63.04517" />
-				<MoveTo X="118.7868" Y="1718.642" Z="41.60941" />
 			</While>
 		</If>
 		<If Condition="HasQuest(10208) &amp;&amp; IsQuestCompleted(10208)" >
