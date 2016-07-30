@@ -2851,8 +2851,19 @@
 				<CustomBehavior File="FlyTo" DestName="Void Ridge" X="-798.045" Y="1624.816" Z="64.14857" />
 				<CustomBehavior File="ForcedDismount" />
 			</If>
-			<Objective QuestName="Void Ridge" QuestId="10294" Type="CollectItem" ItemId="29161"
-                           CollectCount="40" />
+            <While Condition="HasQuest(10294) &amp;&amp; !IsQuestCompleted(10294)" >
+            	<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" CollectionDistance="200" TerminateWhen="IsQuestCompleted(10294)" >
+					<HuntingGrounds>
+						<Hotspot X="-767.915" Y="1570.622" Z="45.25616" />
+						<Hotspot X="-872.5275" Y="1496.829" Z="32.0794" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueGameObject Id="1234" />
+						<PursueUnit Id="17014" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="19527" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					</PursuitList>
+				</CustomBehavior>
+            </While>
 		</If>
 		<If Condition="HasQuest(10294) &amp;&amp; IsQuestCompleted(10294)" >
 			<If Condition="CanFly()" >
