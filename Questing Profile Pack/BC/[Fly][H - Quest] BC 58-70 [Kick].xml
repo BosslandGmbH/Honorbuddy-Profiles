@@ -2417,8 +2417,22 @@
                                         X="-1082.794" Y="2021.2" Z="67.38318" />
 					<CustomBehavior File="ForcedDismount" />
 				</If>
-				<Objective QuestId="10538" QuestName="Boiling Blood" Type="CollectItem" ItemId="30425"
-                               CollectCount="12" />
+                <While Condition="HasQuest(10538) &amp;&amp; !IsQuestCompleted(10538) &amp;&amp; GetItemCount(30425) &lt; 12" >
+					<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" CollectionDistance="200" TerminateWhen="GetItemCount(30425) &gt;= 12" >
+						<HuntingGrounds>
+							<Hotspot X="-1161.497" Y="1987.513" Z="73.56194" />
+							<Hotspot X="-1125.766" Y="2042.949" Z="66.96599" />
+							<Hotspot X="-1015.989" Y="2029.966" Z="67.72254" />
+						</HuntingGrounds>
+						<PursuitList>
+							<PursueUnit Id="19424" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+							<PursueUnit Id="16907" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+							<PursueUnit Id="19422" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+							<PursueUnit Id="16871" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						</PursuitList>
+					</CustomBehavior>
+                </While>
+
 			</If>
 			<If Condition="CanFly()" >
 				<CustomBehavior File="FlyTo" DestName="Pot" X="-975.1716" Y="2176.951" Z="15.38566" />
