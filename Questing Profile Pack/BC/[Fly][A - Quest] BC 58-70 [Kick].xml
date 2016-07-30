@@ -2639,8 +2639,20 @@
 				<CustomBehavior File="FlyTo" DestName="Voidwalkers Gone Wild" X="-1297.304" Y="3155.365" Z="40.902" />
 				<CustomBehavior File="ForcedDismount" />
 			</If>
-			<Objective QuestName="Voidwalkers Gone Wild" QuestId="9351" Type="CollectItem" ItemId="23218"
-					   ItemName="Condensed Voidwalker Essence" CollectCount="10" />
+            <While Condition="HasQuest(9351) &amp;&amp; !IsQuestCompleted(9351)" >
+            	<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(9351)" >
+					<HuntingGrounds>
+						<Hotspot X="-1423.355" Y="3115.428" Z="3.19782" />
+						<Hotspot X="-1422.792" Y="3185.797" Z="17.12988" />
+						<Hotspot X="-1345.694" Y="3172.604" Z="34.38902" />
+						<Hotspot X="-1360.818" Y="2979.14" Z="-7.924045" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueUnit Id="16974" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="16975" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					</PursuitList>
+				</CustomBehavior>
+            </While>
 		</If>
 		<If Condition="HasQuest(9351) &amp;&amp; IsQuestCompleted(9351)">
 			<If Condition="CanFly()">
