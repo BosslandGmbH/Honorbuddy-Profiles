@@ -282,8 +282,19 @@
         <Objective QuestName="The Damned" QuestId="26802" Type="CollectItem" ItemId="3264" CollectCount="4"/>
         <TurnIn QuestName="The Damned" QuestId="26802" TurnInId="1570" TurnInName="Executor Arren"/>
         <PickUp QuestName="Night Web's Hollow" QuestId="24973" GiverName="Executor Arren" GiverId="1570"/>
-        <Objective QuestName="Night Web's Hollow" QuestId="24973" Type="KillMob" MobId="1504" KillCount="8"/>
-        <Objective QuestName="Night Web's Hollow" QuestId="24973" Type="KillMob" MobId="1505" KillCount="5"/>
+        <While Condition="HasQuest(24973) &amp;&amp; !IsQuestCompleted(24973)" >
+            <CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" CollectionDistance="200" TerminateWhen="IsQuestCompleted(24973)" >
+                <HuntingGrounds>
+                    <Hotspot X="2061.875" Y="1734.946" Z="78.886" />
+                    <Hotspot X="2044.407" Y="1871.006" Z="102.1651" />
+                    <Hotspot X="2009.89" Y="1949.922" Z="102.7824" />
+                </HuntingGrounds>
+                <PursuitList>
+                    <PursueUnit Id="1504" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 24973)" />
+                    <PursueUnit Id="1505" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(2, 24973)" />
+                </PursuitList>
+            </CustomBehavior>
+        </While>
         <TurnIn QuestName="Night Web's Hollow" QuestId="24973" TurnInName="Executor Arren" TurnInId="1570"/>
         <PickUp QuestName="No Better Than the Zombies" QuestId="24970" GiverName="Executor Arren" GiverId="1570"/>
         <TurnIn QuestName="No Better Than the Zombies" QuestId="24970" TurnInName="Darnell" TurnInId="49425"/>
