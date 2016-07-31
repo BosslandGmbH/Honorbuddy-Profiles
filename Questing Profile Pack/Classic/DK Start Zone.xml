@@ -429,7 +429,9 @@
 				<MoveTo DestName="Inconspicuous Mine Car" X="2391.104" Y="-5900.058" Z="109.1245" />
 
 				<CustomBehavior File="InteractWith" MobId="190767" WaitTime="3000" PreInteractMountStrategy="DismountOrCancelShapeshift" X="2391.104" Y="-5900.058" Z="109.1245" />
+				<DisableBehavior Name="Pull" />
 				<CustomBehavior File="WaitTimer" WaitTime="90000" QuestId="12701" GoalText="Waiting to be transported to the ships: {TimeRemaining}" />
+				<EnableBehavior Name="Pull" />
 			</If>
 
 
@@ -440,7 +442,8 @@
 			<CustomBehavior File="Vehicles\CannonControl" VehicleId="28833" MobId="28834" QuestId="12701"
                         MaxAngle="0.4363" MinAngle="-0.4363" Gravity="15" Velocity="75"
                         Buttons="2,1" ExitButton="5" />
-			<CustomBehavior File="WaitTimer" WaitTime="70000" VariantTime="10000" />
+            <CustomBehavior File="WaitTimer" WaitTime="10000" />
+			<CustomBehavior File="WaitTimer" WaitTime="70000" VariantTime="10000" TerminateWhen="!Me.InVehicle" />
 			<EnableBehavior Name="Combat" />
 		</If>
 
@@ -521,17 +524,15 @@
 		<EnableBehavior Name="Pull" />
 		<LootMobs Value="true" />
 
-		<Objective QuestName="The Plaguebringer's Request" QuestId="12716" Type="CollectItem" ItemId="39328" CollectCount="10" />
-		<!-- No override given, but bot knows where to go
-        <Quest Id="12716" Name="The Plaguebringer's Request">
-            <Objective Type="CollectItem" ItemId="39328" CollectCount="10">
-                <CollectFrom>
-                </CollectFrom>
-                <Hotspots>
-                </Hotspots>
-            </Objective>
-        </Quest>
-    -->
+
+		<CustomBehavior File="KillUntilComplete" MobIds="28941, 28939, 28936, 28610" QuestId="12716" QuestObjectiveIndex="3" >
+			<HuntingGrounds>
+				<Hotspot X="1690.946" Y="-5920.781" Z="120.7451" />
+				<Hotspot X="1736.432" Y="-5900.522" Z="116.2124" />
+				<Hotspot X="1621.734" Y="-5784.735" Z="116.1375" />
+				<Hotspot X="1589.405" Y="-5751.618" Z="119.9634" />
+			</HuntingGrounds>
+		</CustomBehavior>
 
 		<CustomBehavior File="InteractWith" QuestId="12719" QuestObjectiveIndex="1" NonCompeteDistance="0" MobId="28945"
       X="1580.829" Y="-5702.371" Z="121.6818" />
