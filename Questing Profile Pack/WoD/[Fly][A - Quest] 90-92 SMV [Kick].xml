@@ -2050,15 +2050,13 @@
 						<CustomBehavior File="Hooks\DoWhen" ActivityName="UseCallToArms" Command="Remove" />
 					</While>
 					<While Condition="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber == 2">
-						<While Condition="!Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(2).IsComplete">
-							<CustomBehavior File="InteractWith" MobId="79875" MobId2="79843" NonCompeteDistance="0" NumOfTimes="20" TerminateWhen="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.GetStep(2).IsComplete"
-												WaitTime="2000" Range="3" CollectionDistance="1000" MobState="Alive" WaitForNpcs="False" PreInteractMountStrategy="DismountOrCancelShapeshift" > <!-- 5x noobs for part 1 of stage 2 -->
-								<HuntingGrounds WaypointVisitStrategy="InOrder" >
-									<Hotspot X="806.3987" Y="-2896.955" Z="102.3077" />
-									<Hotspot X="742.618" Y="-2958.512" Z="100.3674" />
-								</HuntingGrounds>
-							</CustomBehavior>
-						</While>
+						<CustomBehavior File="InteractWith" MobId="79875" MobId2="79843" NonCompeteDistance="0" NumOfTimes="20" TerminateWhen="Bots.DungeonBuddy.Helpers.ScriptHelpers.CurrentScenarioInfo.CurrentStage.StageNumber != 2"
+											WaitTime="2000" Range="3" CollectionDistance="1000" MobState="Alive" WaitForNpcs="False" PreInteractMountStrategy="DismountOrCancelShapeshift" > <!-- 5x noobs for part 1 of stage 2 -->
+							<HuntingGrounds WaypointVisitStrategy="InOrder" >
+								<Hotspot X="806.3987" Y="-2896.955" Z="102.3077" />
+								<Hotspot X="742.618" Y="-2958.512" Z="100.3674" />
+							</HuntingGrounds>
+						</CustomBehavior>
 						<CustomBehavior File="NoCombatMoveTo" X="579.8438" Y="-3004.25" Z="76.73641" />
 						<MoveTo Nav="Fly" DestName="The Defense of Karabor Stage 2" X="578.7453" Y="-3074.575" Z="59.6398" />
 					</While>
@@ -2143,11 +2141,12 @@
 				<!-- Our Garrison / Gloomshade Grove -->
 				<TurnIn Nav="Fly" QuestName="Fast Expansion" QuestId="33814" TurnInName="Baros Alexston" TurnInId="77209" X="1866.705" Y="264.1406" Z="77.17209" />
 				<PickUp Nav="Fly" QuestName="Bigger is Better" QuestId="36592" GiverName="Baros Alexston" GiverId="77209" X="1866.262" Y="263.6458" Z="77.17221" />
-				<If Condition="HasQuest(36592) &amp;&amp; !IsQuestCompleted(36592)" > <!-- Bigger is Better -->
-					<CustomBehavior File="InteractWith" QuestId="36592" MobId="81369" Range="5" X="1868.496" Y="262.1124" Z="77.15714" />
-					<CustomBehavior File="Misc\RunLua" Lua="C_Garrison.UpgradeGarrison()" WaitTime="5000" />
+				<While Condition="HasQuest(36592) &amp;&amp; !IsQuestCompleted(36592)" > <!-- Bigger is Better -->
+					<CustomBehavior File="InteractWith" QuestId="36592" MobId="81369" WaitTime="2000" Range="5" X="1868.496" Y="262.1124" Z="77.15714" />
+					<CustomBehavior File="Misc\RunLua" Lua="GarrisonBuildingFrame.TownHallBox.UpgradeButton:Click();" WaitTime="1500" />
+					<CustomBehavior File="Misc\RunLua" Lua="GarrisonBuildingFrame.Confirmation.UpgradeGarrisonButton:Click();" WaitTime="5000" />
 					<CustomBehavior File="Misc\RunLua" Lua="if MovieFrame and MovieFrame:IsVisible() then MovieFrame:StopMovie() elseif CinematicFrame and CinematicFrame:IsVisible() then CinematicFrame_CancelCinematic() end" WaitTime="2000" />
-				</If>
+				</While>
 				<TurnIn QuestName="Bigger is Better" QuestId="36592" TurnInName="Baros Alexston" TurnInId="77209" X="1866.262" Y="263.6458" Z="77.17221" />
 				<PickUp Nav="Fly" QuestName="Things Are Not Goren Our Way" QuestId="34192" GiverName="Timothy Leens" GiverId="77730" X="1899.896" Y="101.2778" Z="83.52695" />
 				<Objective QuestName="Things Are Not Goren Our Way" QuestId="34192" Type="KillMob" MobId="81396" KillCount="1" />
