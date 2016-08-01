@@ -437,11 +437,12 @@
 		<TurnIn Nav="Fly" QuestName="Taking a Trip to the Top of the Tank" QuestId="35747" TurnInName="Thaelin Darkanvil" TurnInId="80521" X="4062.665" Y="-2019.338" Z="74.87279" />
 		<PickUp Nav="Fly" QuestName="A Taste of Iron" QuestId="34445" GiverName="Thaelin Darkanvil" GiverId="80521" X="4062.665" Y="-2019.338" Z="74.87279" />
 		<If Condition="HasQuest(34445) &amp;&amp; !IsQuestCompleted(34445)" > <!-- A Taste of Iron - Vehicle Quest -->
-			<If Condition="!IsObjectiveComplete(1, 34445)"> <!-- Mount Turret -->
-				<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" MobId="231261" NonCompeteDistance="0" Range="5" X="4054.708" Y="-2019.128" Z="73.14471" />
+			<If Condition="!Me.HasAura(164042)"> <!-- Mount Turret -->
+				<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" MobId="231261" NonCompeteDistance="0" Range="5" X="4054.708" Y="-2019.128" Z="73.14471" TerminateWhen="Me.HasAura(164042)" />
+				<CustomBehavior File="WaitTimer" WaitTime="15000" />
 			</If>
 			<CustomBehavior File="RunCode"><![CDATA[
-				while (!IsObjectiveComplete(2, 34445))
+				while (Me.HasAura(164042))
 				{
 					Lua.DoString("OverrideActionBarButton1:Click();");
 					SpellManager.ClickRemoteLocation(new WoWPoint(3923.166, -2020.857, 19.50727));
@@ -449,11 +450,9 @@
 				}
 			]]>
 			</CustomBehavior>
-			<While Condition="!IsObjectiveComplete(3, 34445)"> <!-- Click Trigger -->
-				<CustomBehavior File="WaitTimer" WaitTime="6000" GoalText="Waiting for Cutscene {TimeRemaining}" />
-				<MoveTo X="4065.838" Y="-2022.482" Z="75.43866" />
-				<CustomBehavior File="InteractWith" QuestId="34445" MobId="232538" NonCompeteDistance="0" Range="6" X="4065.838" Y="-2022.482" Z="75.43866" />
-			</While>
+			<CustomBehavior File="WaitTimer" WaitTime="6000" GoalText="Waiting for Cutscene {TimeRemaining}" />
+			<MoveTo X="4065.838" Y="-2022.482" Z="75.43866" />
+			<CustomBehavior File="InteractWith" QuestId="34445" MobId="232538" NonCompeteDistance="0" Range="6" X="4065.838" Y="-2022.482" Z="75.43866" />
 			<CustomBehavior File="WaitTimer" WaitTime="3000" GoalText="Waiting for Cinematic {TimeRemaining}" />
 			<CustomBehavior File="Misc\RunLua" Lua="if MovieFrame and MovieFrame:IsVisible() then MovieFrame:StopMovie() elseif CinematicFrame and CinematicFrame:IsVisible() then CinematicFrame_CancelCinematic() end" WaitTime="2000" />
 			<CustomBehavior File="WaitTimer" WaitTime="4000" GoalText="Waiting for cutscene to end {TimeRemaining}" />
