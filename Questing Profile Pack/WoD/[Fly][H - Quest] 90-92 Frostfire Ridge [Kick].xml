@@ -420,11 +420,15 @@
 			<If Condition="!IsObjectiveComplete(1, 34445)"> <!-- Mount Turret -->
 				<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" MobId="231261" NonCompeteDistance="0" Range="5" X="4054.708" Y="-2019.128" Z="73.14471" />
 			</If>
-			<While Condition="!IsObjectiveComplete(2, 34445)"> <!-- Kill Mobs -->
-				<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarButton1:Click()" WaitTime="100" />
-				<CustomBehavior File="SpellLocation" QuestId="34445" X="3923.166" Y="-2020.857" Z="19.50727" />
-				<CustomBehavior File="WaitTimer" WaitTime="400" GoalText="Waiting for GCD {TimeRemaining}" />
-			</While>
+			<CustomBehavior File="RunCode"><![CDATA[
+				while (!IsObjectiveComplete(2, 34445))
+				{
+					Lua.DoString("OverrideActionBarButton1:Click();");
+					SpellManager.ClickRemoteLocation(new WoWPoint(3923.166, -2020.857, 19.50727));
+					await Coroutine.Sleep(500);
+				}
+			]]>
+			</CustomBehavior>
 			<While Condition="!IsObjectiveComplete(3, 34445)"> <!-- Click Trigger -->
 				<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for Cutscene {TimeRemaining}" />
 				<MoveTo Nav="Fly" X="4065.838" Y="-2022.482" Z="75.43866" />
