@@ -5786,8 +5786,15 @@
 			<If Condition="HasQuest(11313) &amp;&amp; !IsQuestCompleted(11313)">
 				<CustomBehavior File="FlyTo" DestName="Objective" X="2249.167" Y="-5216.702" Z="251.7328" />
 				<CustomBehavior File="ForcedDismount" />
-				<Objective QuestName="Spirits of the Ice" QuestId="11313" Type="CollectItem" ItemId="33605"
-						   CollectCount="15" />
+                <CustomBehavior File="KillUntilComplete" MobId="23919" QuestId="11313" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="2199.357" Y="-5209.135" Z="247.5145" />
+						<Hotspot X="2133.124" Y="-5082.19" Z="235.6528" />
+						<Hotspot X="2195.616" Y="-5043.63" Z="240.5323" />
+						<Hotspot X="2282.61" Y="-4987.751" Z="247.0559" />
+						<Hotspot X="2265.126" Y="-5067.191" Z="253.1169" />
+					</HuntingGrounds>
+				</CustomBehavior>
 			</If>
 			<If Condition="HasQuest(11313) &amp;&amp; IsQuestCompleted(11313)">
 				<CustomBehavior File="FlyTo" DestName="Turnin Quest" X="2196.874" Y="-5115.478" Z="240.0747" />
@@ -5807,12 +5814,9 @@
 				<PickUp QuestName="Wild Vines" QuestId="11315" GiverName="Lurielle" GiverId="24117" />
 			</If>
 
+			<CustomBehavior File="FlyTo" QuestId="11314" DestName="The Fallen Sisters" X="2119.278" Y="-4520.043" Z="217.504" />
 			<While Condition="HasQuest(11314) &amp;&amp; !IsQuestCompleted(11314)">
-				<CustomBehavior File="FlyTo" DestName="Objective" X="2119.278" Y="-4520.043" Z="217.504" />
-				<CustomBehavior File="ForcedDismount" />
-				<CustomBehavior File="CombatUseItemOnV2" QuestId="11314" MobId="23678" ItemId="33606"
-								NumOfTimesToUseItem="50" MaxRangeToUseItem="15" UseWhenMobHasHealthPercent="100"
-								UseItemStrategy="UseItemOncePerTarget" ItemAppliesAuraId="AssumeItemUseAlwaysSucceeds">
+				<CustomBehavior File="InteractWith" QuestId="11314" MobId="23678" PreInteractMountStrategy="Dismount" InteractByUsingItemId="33606" Range="29" IgnoreCombat="true"  >
 					<HuntingGrounds WaypointVisitStrategy="InOrder">
 						<Hotspot X="2009.681" Y="-4505.578" Z="207.2003" />
 						<Hotspot X="1969.585" Y="-4582.572" Z="207.794" />
@@ -5821,6 +5825,7 @@
 						<Hotspot X="1919.673" Y="-4498.236" Z="201.7129" />
 					</HuntingGrounds>
 				</CustomBehavior>
+				<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="!Me.Combat" />
 			</While>
 			<If Condition="HasQuest(11315) &amp;&amp; !IsQuestCompleted(11315)">
 				<CustomBehavior File="FlyTo" DestName="Objective" X="2119.278" Y="-4520.043" Z="217.504" />
