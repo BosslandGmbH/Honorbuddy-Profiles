@@ -5816,6 +5816,7 @@
 
 			<CustomBehavior File="FlyTo" QuestId="11314" DestName="The Fallen Sisters" X="2119.278" Y="-4520.043" Z="217.504" />
 			<While Condition="HasQuest(11314) &amp;&amp; !IsQuestCompleted(11314)">
+				<DisableBehavior Name="Pull" />
 				<CustomBehavior File="InteractWith" QuestId="11314" MobId="23678" PreInteractMountStrategy="Dismount" InteractByUsingItemId="33606" Range="29" IgnoreCombat="true"  >
 					<HuntingGrounds WaypointVisitStrategy="InOrder">
 						<Hotspot X="2009.681" Y="-4505.578" Z="207.2003" />
@@ -5827,6 +5828,7 @@
 				</CustomBehavior>
 				<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="!Me.Combat" />
 			</While>
+			<EnableBehavior Name="Pull" />
 			<If Condition="HasQuest(11315) &amp;&amp; !IsQuestCompleted(11315)">
 				<CustomBehavior File="FlyTo" DestName="Objective" X="2119.278" Y="-4520.043" Z="217.504" />
 				<CustomBehavior File="ForcedDismount" />
@@ -5911,14 +5913,14 @@
 			<If Condition="HasQuest(11350) &amp;&amp; !IsQuestCompleted(11350)">
 				<CustomBehavior File="FlyTo" X="2130.394" Y="-5375.467" Z="237.8083" />
 				<CustomBehavior File="ForcedDismount" />
-
-				<Objective QuestName="The Book of Runes" QuestId="11350" Type="CollectItem" ItemId="33780"
-						   CollectCount="1" />
-				<Objective QuestName="The Book of Runes" QuestId="11350" Type="CollectItem" ItemId="33778"
-						   CollectCount="1" />
-				<Objective QuestName="The Book of Runes" QuestId="11350" Type="CollectItem" ItemId="33779"
-						   CollectCount="1" />
-
+				<CustomBehavior File="KillUntilComplete" MobIds="23796, 24030" QuestId="11350" TerminateWhen="HasItem(33778) &amp;&amp; HasItem(33779) &amp;&amp; HasItem(33780)" >
+					<HuntingGrounds>
+						<Hotspot X="2128.865" Y="-5442.167" Z="237.9031" />
+						<Hotspot X="2146.337" Y="-5490.181" Z="240.2718" />
+						<Hotspot X="2080.505" Y="-5498.385" Z="228.8977" />
+						<Hotspot X="2093.762" Y="-5432.638" Z="236.4202" />
+					</HuntingGrounds>
+				</CustomBehavior>
 				<If Condition="HasItem(33778) &amp;&amp; HasItem(33779) &amp;&amp; HasItem(33780)">
 					<While Condition="HasQuest(11350) &amp;&amp; !IsQuestCompleted(11350)">
 						<CustomBehavior File="WaitTimer" WaitTime="3000" GoalText="Using item {TimeRemaining}" />
