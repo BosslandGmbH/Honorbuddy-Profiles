@@ -23,6 +23,8 @@
 	</AvoidMobs>
 
 	<Blackspots>
+		<Blackspot X="4374.568" Y="-297.5128" Z="-260.5943" Radius="17.39243" /> <!-- Mob green spawner in the Tomb of the Penitent -->
+		<Blackspot X="4378.355" Y="-302.6247" Z="-260.4254" Radius="7.410383" />
 	</Blackspots>
 
 	<Blacklist>
@@ -384,8 +386,11 @@
 
 			<PickUp QuestName="Grand Theft Felbat" QuestId="39682" GiverName="Kayn Sunfury" GiverId="96665" X="4079.023" Y="-306.7014" Z="-281.5352" />
 			<While Condition="DoQuest(39682)" >
+				<DisableBehavior Name="Pull" />
+				<MoveTo X="4390.233" Y="-300.0419" Z="-260.4258" /> <!-- Get away from object or we will get stuck on it. -->
 				<CustomBehavior File="InteractWith" MobId="96659" QuestId="39682" QuestObjectiveIndex="1" X="4437.868" Y="-283.0434" Z="-244.7543" />
 				<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
+				<EnableBehavior Name="Pull" />
 			</While>
 			<TurnIn QuestName="Grand Theft Felbat" QuestId="39682" TurnInName="Kor'vas Bloodthorn" TurnInId="97643" X="4456.744" Y="-395.5313" Z="126.0077" />
 
@@ -399,9 +404,9 @@
 				<PickUp QuestName="Forged in Fire" QuestId="40254" GiverName="Allari the Souleater" GiverId="96675" X="4458.162" Y="-393.3403" Z="125.8987" />
 			</If>
 
-			<While Condition="DoQuest(39685, 40254)" >
+			<While Condition="DoQuest(39683, 40254)" >
 				<!-- NOTE: <AddAvoid> : Boss spawns green fireballs all around the room. -->
-				<CustomBehavior File="KillUntilComplete" MobId="96682" QuestId="39685" X="4660.464" Y="-451.5764" Z="122.0296" />
+				<CustomBehavior File="KillUntilComplete" MobId="96682" QuestId="39683" X="4660.464" Y="-451.5764" Z="122.0296" />
 				<CustomBehavior File="KillUntilComplete" MobId="96682" QuestId="40254" X="4660.464" Y="-451.5764" Z="122.0296" />
 			</While>
 
@@ -427,11 +432,13 @@
 			<TurnIn QuestName="Frozen in Time" QuestId="39685" TurnInName="Allari the Souleater" TurnInId="96675" X="4458.162" Y="-393.3403" Z="125.8987" />
 
 			<PickUp QuestName="All The Way Up" QuestId="39686" GiverName="Allari the Souleater" GiverId="96675" X="4458.162" Y="-393.3403" Z="125.8987" />
+			<DisableBehavior Name="Pull" />
 			<TurnIn QuestName="All The Way Up" QuestId="39686" TurnInName="Kor'vas Bloodthorn" TurnInId="97644" X="4282.924" Y="-451.7708" Z="259.5203" />
+			<EnableBehavior Name="Pull" />
 
 			<PickUp QuestName="A New Direction" QuestId="40373" GiverName="Kor'vas Bloodthorn" GiverId="97644" X="4282.924" Y="-451.7708" Z="259.5203" />
 			<While Condition="DoQuest(40373)" >
-				<CustomBehavior File="InteractWith" MobId="244455" QuestId="40373" QuestObjectiveIndex="1" X="4302.416" Y="-451.7986" Z="260.235" />
+				<CustomBehavior File="InteractWith" MobId="244455" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" NumOfTimes="3"  Range="8" QuestId="40373" QuestObjectiveIndex="1" X="4294.834" Y="-450.2843" Z="259.9997" />
 				<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 				<CustomBehavior File="InteractWith" MobId="97644" GossipOptions="1" QuestId="40373" X="4282.924" Y="-451.7708" Z="259.5203" />
 				<CustomBehavior File="UserDialog" QuestId="40373" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="60" ExpiryAction="InputEnabled_Continue" Text="Choose a follower." />
@@ -479,7 +486,7 @@
 
 				<PickUp QuestName="Demons Among Them" QuestId="44463" GiverName="Jace Darkweaver" GiverId="102585" X="-8386.645" Y="256.592" Z="155.3483" />
 				<While Condition="DoQuest(44463)" >
-					<CustomBehavior File="InteractWith" MobId="100429" QuestId="44463" QuestObjectiveIndex="1" X="-8361.81" Y="230.6198" Z="157.9789" />
+					<CustomBehavior File="InteractWith" MobId="100429" GossipOptions="1" QuestId="44463" QuestObjectiveIndex="1" X="-8361.81" Y="230.6198" Z="157.9789" />
 					<CustomBehavior File="RunCode" Code="await SkipCutscene();" />					
 					<CustomBehavior File="KillUntilComplete" MobId="100993" QuestId="44463" QuestObjectiveIndex="2" >
 						<HuntingGrounds>
