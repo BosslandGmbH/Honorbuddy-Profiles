@@ -257,7 +257,7 @@
 
 			<PickUp QuestName="The Imp Mother's Tome" QuestId="40222" GiverName="Kor'vas Bloodthorn" GiverId="98711" X="1729.004" Y="1290.427" Z="82.89674" />
 			<While Condition="DoQuest(40222)" >
-				<CustomBehavior File="InteractWith" MobId="98986" InteractByLooting="true" QuestId="40222" X="1880.26" Y="1140.319" Z="80.16714" />
+				<CustomBehavior File="KillUntilComplete" MobId="98986" QuestId="40222" X="1880.26" Y="1140.319" Z="80.16714" />
 			</While>
 			<TurnIn QuestName="The Imp Mother's Tome" QuestId="40222" TurnInName="Kor'vas Bloodthorn" TurnInId="99045" X="1454.29" Y="1763.451" Z="54.43828" />
 
@@ -266,9 +266,8 @@
 
 			<PickUp QuestName="Fel Secrets" QuestId="40051" GiverName="Kor'vas Bloodthorn" GiverId="99045" X="1454.29" Y="1763.451" Z="54.43799" />
 			<While Condition="DoQuest(40051)" >
-				<CustomBehavior File="InteractWith" MobId="245112" WaitTime="2500" QuestId="40051" X="1455.868" Y="1761.759" Z="55.65202" />
-				<CustomBehavior File="UserDialog" QuestId="40051" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="60" ExpiryAction="InputEnabled_Continue" Text="Choose a specialization." />
-				<CustomBehavior File="Misc\RunLua" Lua="QuestChoiceFrameOption1.OptionButton:Click();" /> <!-- Havoc -->
+				<CustomBehavior File="InteractWith" MobId="245112" WaitTime="2500" NonCompeteDistance="0" Range="4" QuestId="40051" X="1455.868" Y="1761.759" Z="55.65202" />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestChoiceFrameOption1.OptionButton:Click();" /> <!-- Havoc, we don't want Singular bugging out. -->
 				<!-- Vengeance
 				QuestChoiceFrameOption2.OptionButton:Click(); -->
 			</While>
@@ -306,14 +305,16 @@
 
 			<PickUp QuestName="The Keystone" QuestId="38728" GiverName="Cyana Nightglaive" GiverId="97297" X="1469.057" Y="1411.031" Z="243.8633" />
 			<While Condition="DoQuest(38728)" >
-				<CustomBehavior File="InteractWith" MobId="100333" InteractByLooting="true" QuestId="38728" X="1559.513" Y="1407.249" Z="237.1088" />
+				<DisableBehavior Name="Pull" />
+				<CustomBehavior File="KillUntilComplete" MobId="100333" QuestId="38728" QuestObjectiveIndex="1" X="1559.513" Y="1407.249" Z="237.1088" />
 				<MoveTo X="1624.532" Y="1413.022" Z="208.7414" />
+				<EnableBehavior Name="Pull" />
 			</While>
 			<TurnIn QuestName="The Keystone" QuestId="38728" TurnInName="Kayn Sunfury" TurnInId="97303" X="1626.918" Y="1413.984" Z="208.7414" />
 
 			<PickUp QuestName="Return to the Black Temple" QuestId="38729" GiverName="Kayn Sunfury" GiverId="97303" X="1626.918" Y="1413.984" Z="208.7414" />
 			<While Condition="DoQuest(38729)" >
-				<CustomBehavior File="InteractWith" MobId="245728" QuestId="38729" QuestObjectiveIndex="1" X="1629.439" Y="1414.21" Z="210.3634" />
+				<CustomBehavior File="InteractWith" MobId="245728" NonCompeteDistance="0" QuestId="38729" QuestObjectiveIndex="1" X="1629.439" Y="1414.21" Z="210.3634" />
 			</While>
 			<If Condition="QuestDone(38729)" >
 				<TurnIn QuestName="Return to the Black Temple" QuestId="38729" TurnInName="Fel Portal" TurnInType="Object" TurnInId="244466" X="1636.608" Y="1414.271" Z="208.7355" />
