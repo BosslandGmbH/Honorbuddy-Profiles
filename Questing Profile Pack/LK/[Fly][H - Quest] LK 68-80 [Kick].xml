@@ -10791,7 +10791,9 @@
 			<TurnIn QuestName="Playing Along" QuestId="12528" TurnInName="High-Shaman Rakjak" TurnInId="28082" />
 			<PickUp QuestName="The Ape Hunter's Slave" QuestId="12529" GiverName="High-Shaman Rakjak"
 						GiverId="28082" />
-			<CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for npc to spawn {TimeRemaining}" />
+            <CustomBehavior File="InteractWith" MobId="28138" WaitTime="5000" GossipOptions="1" X="5263.772" Y="4511.331" Z="-84.79513" /> <!-- This is a temporary patch to fix a Blizzard bug where the NPC summon item isn't given to you. -->
+            <CustomBehavior File="UseItem" ItemId="38619" />
+			<CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for npc to spawn {TimeRemaining}" TerminateWhen="Unit(28214) != null" />
 			<PickUp QuestName="Tormenting the Softknuckles" QuestId="12530" GiverName="Goregek the Gorilla Hunter"
 						GiverId="28214" />
 		</If>
@@ -10800,7 +10802,9 @@
 			<CustomBehavior File="ForcedDismount" />
 			<PickUp QuestName="The Ape Hunter's Slave" QuestId="12529" GiverName="High-Shaman Rakjak"
 						GiverId="28082" />
-			<CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for npc to spawn {TimeRemaining}" />
+            <CustomBehavior File="InteractWith" MobId="28138" WaitTime="5000" GossipOptions="1" X="5263.772" Y="4511.331" Z="-84.79513" /> <!-- This is a temporary patch to fix a Blizzard bug where the NPC summon item isn't given to you. -->
+            <CustomBehavior File="UseItem" ItemId="38619" />
+			<CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for npc to spawn {TimeRemaining}" TerminateWhen="Unit(28214) != null" />
 			<PickUp QuestName="Tormenting the Softknuckles" QuestId="12530" GiverName="Goregek the Gorilla Hunter"
 						GiverId="28214" />
 		</If>
@@ -10921,8 +10925,14 @@
 		<If Condition="HasQuest(12531) &amp;&amp; !IsQuestCompleted(12531)">
 			<CustomBehavior File="FlyTo" DestName="kill Serfex" X="4856.5" Y="4395.31" Z="-62.08129" />
 			<CustomBehavior File="ForcedDismount" />
-			<Objective QuestName="The Underground Menace" QuestId="12531" Type="CollectItem" ItemId="38473"
-						   CollectCount="1" />
+            <CustomBehavior File="KillUntilComplete" MobId="28083" QuestId="12531" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="4820.208" Y="4761.527" Z="-76.13779" />
+					<Hotspot X="4771.806" Y="4700.383" Z="-68.31072" />
+					<Hotspot X="4857.012" Y="4394.469" Z="-61.99173" />
+					<Hotspot X="4801.377" Y="4365.442" Z="-56.77114" />
+				</HuntingGrounds>
+			</CustomBehavior>
 		</If>
 		<If Condition="HasQuest(12535) &amp;&amp; !IsQuestCompleted(12535)">
 			<CustomBehavior File="FlyTo" DestName="collect crystals" X="4741.547" Y="4368.969" Z="-31.60911" />
@@ -10948,6 +10958,11 @@
 			<CustomBehavior File="ForcedDismount" />
 			<PickUp QuestName="A Rough Ride" QuestId="12536" GiverName="High-Shaman Rakjak" GiverId="28082" />
 		</If>
+
+		<If Condition="HasQuest(12536) &amp;&amp; !HasItem(38512)" > <!-- Temporary fix to patch around a Blizz-end issue where the player doesn't get the hunting horn. -->
+			<CustomBehavior File="InteractWith" MobId="28138" GossipOptions="1" X="5263.772" Y="4511.331" Z="-84.79517" />
+		</If>
+
 		<If Condition="HasQuest(12536) &amp;&amp; !IsQuestCompleted(12536)">
 			<CustomBehavior File="FlyTo" DestName="croc" X="5301.503" Y="4433.174" Z="-98.05336" />
 			<CustomBehavior File="ForcedDismount" />
@@ -11085,9 +11100,10 @@
 								PreInteractMountStrategy="Dismount" X="5474.152" Y="4461.753" Z="-137.9803" />
 			<CustomBehavior File="WaitTimer" WaitTime="5000" />
 			<!-- Accept Quest -->
-			<CustomBehavior File="InteractWith" MobId="28217" AuraIdMissingFromMob="51329"
-								InteractByQuestFrameDisposition="Accept"
-								WaitForNpcs="false" PreInteractMountStrategy="Dismount" />
+            <CustomBehavior File="InteractWith" MobId="28217" AuraIdMissingFromMob="51329"
+                            WaitForNpcs="false" PreInteractMountStrategy="Dismount" />
+            <CustomBehavior File="Misc\RunLua" Lua="GossipTitleButton1:Click()" WaitTime="500" />
+            <CustomBehavior File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click()" WaitTime="1000" />
 			<!-- Start Escort -->
 			<CustomBehavior File="EscortGroup" QuestId="12570" StartNpcId="28217" StartEscortGossipOptions="1"
 								EscortNpcId="28217" EscortCountMax="1" EscortCompleteWhen="QuestCompleteOrFails" />
@@ -11272,6 +11288,11 @@
 			<CustomBehavior File="ForcedDismount" />
 			<PickUp QuestName="Back So Soon?" QuestId="12574" GiverName="High-Oracle Soo-say" GiverId="28027" />
 		</If>
+
+		<If Condition="HasQuest(12574) &amp;&amp; !HasItem(38623)" >
+			<CustomBehavior File="InteractWith" MobId="28027" GossipOptions="1" X="5650.8" Y="4551.022" Z="-134.8536" />
+		</If>
+
 		<If Condition="HasQuest(12574) &amp;&amp; IsQuestCompleted(12574)">
 			<CustomBehavior File="FlyTo" DestName="Turnin Quest" X="6168.69" Y="5091.19" Z="-97.2488" />
 			<CustomBehavior File="ForcedDismount" />
@@ -11296,10 +11317,8 @@
 			<CustomBehavior File="ForcedDismount" />
 			<CustomBehavior File="WaitTimer" WaitTime="15000"
 								GoalText="Waiting for Tartek to 'spawn' {TimeRemaining}" />
-			<Objective QuestName="The Lost Mistwhisper Treasure" QuestId="12575" Type="KillMob" MobId="28105"
-						   KillCount="1" />
-			<Objective QuestName="The Lost Mistwhisper Treasure" QuestId="12575" Type="CollectItem" ItemId="38601"
-						   CollectCount="1" />
+            <CustomBehavior File="KillUntilComplete" MobId="28105" QuestId="12575" QuestObjectiveIndex="1" X="6707.924" Y="5130.927" Z="-19.38803" />
+            <CustomBehavior File="InteractWith" MobId="190578" InteractByLooting="true" QuestId="12575" QuestObjectiveIndex="2" X="6721.811" Y="5112.904" Z="-14.36479" />
 		</If>
 		<If Condition="HasQuest(12576) &amp;&amp; !IsQuestCompleted(12576)">
 			<CustomBehavior File="FlyTo" DestName="kill Frenzyhearts" X="6637.929" Y="5142.848" Z="-37.0036" />
@@ -11331,6 +11350,10 @@
 			<PickUp QuestName="The Angry Gorloc" QuestId="12578" GiverName="High-Oracle Soo-say" GiverId="28027" />
 		</If>
 
+		<If Condition="HasQuest(12578) &amp;&amp; !HasItem(38624)" >
+			<CustomBehavior File="InteractWith" MobId="28138" GossipOptions="1" X="5263.772" Y="4511.331" Z="-84.79517" />
+		</If>
+
 		<CustomBehavior File="Message" Text="Compiling Mosswalker Village Quests" LogColor="CornflowerBlue" />
 
 		<If Condition="!HasQuest(12578) &amp;&amp; !IsQuestCompleted(12578)">
@@ -11339,6 +11362,9 @@
 			<PickUp QuestName="The Angry Gorloc" QuestId="12578" GiverName="High-Oracle Soo-say" GiverId="28027" />
 		</If>
 		<While Condition="HasQuest(12578)">
+			<If Condition="!HasItem(38624)" >
+				<CustomBehavior File="InteractWith" MobId="28027" GossipOptions="1" X="5650.8" Y="4551.022" Z="-134.8537" />
+			</If>
 			<CustomBehavior File="FlyTo" DestName="Turnin Quest" X="5804.352" Y="3684.366" Z="-20.47348" />
 			<CustomBehavior File="ForcedDismount" />
 			<If Condition="Object(28122) == null">
@@ -11383,7 +11409,7 @@
 		<While Condition="HasQuest(12580) &amp;&amp; !IsQuestCompleted(12580)">
 			<CustomBehavior File="InteractWith" NonCompeteDistance="0" QuestId="12580" MobId="28113"
 								MobState="Alive" WaitForNpcs="false" InteractByGossipOptions="1"
-
+								PreInteractMountStrategy="Dismount"  AuraIdMissingFromMob="49132"
 								CollectionDistance="30" >
 				<HuntingGrounds>
 					<Hotspot X="5813.002" Y="3631.94" Z="-11.94503" />
