@@ -28,6 +28,7 @@
 	</Blackspots>
 
 	<Blacklist>
+		<Mob Name="Ash'golm" Id="96681" Flags="Combat" />
 	</Blacklist>
 
 	<Mailboxes> 
@@ -241,7 +242,7 @@
 					<PursuitList>
 						<PursueUnit Id="97014" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
 						<PursueUnit Id="96278" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
-						<PursueUnit Id="96280" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<!--<PursueUnit Id="96280" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />, sometimes they spawn down in the lava which bugs the bot out -->
 						<PursueUnit Id="97034" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
 						<PursueUnit Id="96277" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
 						<PursueUnit Id="96279" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
@@ -269,7 +270,7 @@
 
 			<PickUp QuestName="Fel Secrets" QuestId="40051" GiverName="Kor'vas Bloodthorn" GiverId="99045" X="1454.29" Y="1763.451" Z="54.43799" />
 			<While Condition="DoQuest(40051)" >
-				<CustomBehavior File="InteractWith" MobId="245112" WaitTime="2500" NonCompeteDistance="0" Range="4" QuestId="40051" X="1455.868" Y="1761.759" Z="55.65202" />
+				<CustomBehavior File="InteractWith" MobId="245112" WaitTime="1500" NonCompeteDistance="0" Range="4" QuestId="40051" X="1455.868" Y="1761.759" Z="55.65202" />
 				<CustomBehavior File="Misc\RunLua" Lua="QuestChoiceFrameOption1.OptionButton:Click();" /> <!-- Havoc, we don't want Singular bugging out. -->
 				<!-- Vengeance
 				QuestChoiceFrameOption2.OptionButton:Click(); -->
@@ -309,7 +310,7 @@
 			<PickUp QuestName="The Keystone" QuestId="38728" GiverName="Cyana Nightglaive" GiverId="97297" X="1469.057" Y="1411.031" Z="243.8633" />
 			<While Condition="DoQuest(38728)" >
 				<DisableBehavior Name="Pull" />
-				<CustomBehavior File="KillUntilComplete" MobId="100333" QuestId="38728" QuestObjectiveIndex="1" X="1559.513" Y="1407.249" Z="237.1088" />
+				<CustomBehavior File="KillUntilComplete" MobId="93802" QuestId="38728" QuestObjectiveIndex="1" X="1559.513" Y="1407.249" Z="237.1088" />
 				<MoveTo X="1624.532" Y="1413.022" Z="208.7414" />
 				<EnableBehavior Name="Pull" />
 			</While>
@@ -339,13 +340,13 @@
 
 			<While Condition="DoQuest(38690)" >
 				<DisableBehavior Name="Pull" />
-				<CustomBehavior File="InteractWith" NonCompeteDistance="0" CollectionDistance="200" Range="3" QuestId="38690" >
+				<CustomBehavior File="InteractWith" NonCompeteDistance="0" WaitTime="500" CollectionDistance="200" Range="3" QuestId="38690" >
 					<HuntingGrounds>
 						<Hotspot X="4327.04" Y="-551.9789" Z="-281.825" />
 						<Hotspot X="4325.488" Y="-446.7546" Z="-283.3723" />
 					</HuntingGrounds>
 					<PursuitList>
-						<PursueGameObject Id="244588" PursueWhen="GAMEOBJECT.DynamicFlags == -65278" /> 
+						<PursueGameObject Id="244588" PursueWhen="GAMEOBJECT.DynamicFlags == -65278 &amp;&amp; GAMEOBJECT.Y &gt; -580" /> 
 					</PursuitList>
 				</CustomBehavior>
 				<EnableBehavior Name="Pull" />
@@ -418,7 +419,7 @@
 
 			<While Condition="DoQuest(39685)" >
 				<MoveTo X="4307.469" Y="-451.9037" Z="123.6291" />
-				<CustomBehavior File="MyCTM" X="4269.218" Y="-450.9295" Z="106.7285" />
+				<CustomBehavior File="MyCTM" X="4262.402" Y="-451.0682" Z="105.8641" />
 				<!-- NOTE: <AddAvoid> : Red lava on floor.  Must avoid this -->
 				<CustomBehavior File="InteractWith" MobId="99709" QuestId="39685" X="4244.663" Y="-486.8472" Z="106.5437" />
 				<CustomBehavior File="InteractWith" MobId="99731" QuestId="39685" X="4203.372" Y="-451.6823" Z="106.5461" />
@@ -438,9 +439,15 @@
 			<TurnIn QuestName="Frozen in Time" QuestId="39685" TurnInName="Allari the Souleater" TurnInId="96675" X="4458.162" Y="-393.3403" Z="125.8987" />
 
 			<PickUp QuestName="All The Way Up" QuestId="39686" GiverName="Allari the Souleater" GiverId="96675" X="4458.162" Y="-393.3403" Z="125.8987" />
-			<DisableBehavior Name="Pull" />
-			<TurnIn QuestName="All The Way Up" QuestId="39686" TurnInName="Kor'vas Bloodthorn" TurnInId="97644" X="4282.924" Y="-451.7708" Z="259.5203" />
-			<EnableBehavior Name="Pull" />
+			<If Condition="QuestDone(39686)" >
+				<MoveTo X="4407.529" Y="-451.7023" Z="256.3372" />
+				<CustomBehavior File="MyCTM" X="4360.043" Y="-418.4301" Z="256.3376" />
+				<MoveTo X="4317.918" Y="-430.6085" Z="259.3551" />
+				<CustomBehavior File="MyCTM" X="4284.085" Y="-451.4592" Z="259.5193" />
+				<DisableBehavior Name="Pull" />
+				<TurnIn QuestName="All The Way Up" QuestId="39686" TurnInName="Kor'vas Bloodthorn" TurnInId="97644" X="4282.924" Y="-451.7708" Z="259.5203" />
+				<EnableBehavior Name="Pull" />
+			</If>
 
 			<PickUp QuestName="A New Direction" QuestId="40373" GiverName="Kor'vas Bloodthorn" GiverId="97644" X="4282.924" Y="-451.7708" Z="259.5203" />
 			<While Condition="DoQuest(40373)" >
@@ -452,26 +459,32 @@
 			</While>
 			<TurnIn QuestName="A New Direction" QuestId="40373" TurnInName="Kor'vas Bloodthorn" TurnInId="97644" X="4282.924" Y="-451.7708" Z="259.5196" />
 
-			<If Condition="Me.Specialization == WoWSpec.DemonHunterHavoc" >
+			<!--<If Condition="Me.Specialization == WoWSpec.DemonHunterHavoc" >  This Id: 39688 shown up for havoc as well.  May be a faction related thing, or may depend on which follower is chosen above.
 				<PickUp QuestName="Between Us and Freedom" QuestId="39688" GiverName="Kor'vas Bloodthorn" GiverId="97644" X="4282.924" Y="-451.7708" Z="259.5196" />
 			</If>
 			<If Condition="Me.Specialization == WoWSpec.DemonHunterVengeance" >
 				<PickUp QuestName="Between Us and Freedom" QuestId="40255" GiverName="Kor'vas Bloodthorn" GiverId="97644" X="4282.924" Y="-451.7708" Z="259.5196" />
+			</If> -->
+			
+			<If Condition="NeedsBreadcrumbQuest(39694, 39688, 40373, 40255, 40256)" >
+				<CustomBehavior File="InteractWith" MobId="97644" InteractByQuestFrameDisposition="Accept" X="4282.924" Y="-451.7708" Z="259.5193" TerminateWhen="DoQuest(39694, 39688, 40373, 40255, 40256)" />
+				<CustomBehavior File="MyCTM" X="4202.687" Y="-451.0579" Z="269.8311" />
 			</If>
-			<While Condition="DoQuest(40373, 40255)" >
-				<CustomBehavior File="KillUntilComplete" MobId="96783" QuestId="39688" X="4185.642" Y="-627.7885" Z="255.4879" />
-				<CustomBehavior File="KillUntilComplete" MobId="96783" QuestId="40255" X="4185.642" Y="-627.7885" Z="255.4879" />
+			<While Condition="DoQuest(39694, 39688, 40373, 40255, 40256)" >
+				<CustomBehavior File="KillUntilComplete" MobId="96783" QuestId="39694" X="4185.642" Y="-627.7885" Z="255.4879" TerminateWhen="!DoQuest(39694, 39688, 40373, 40255, 40256)" />
 			</While>
-			<If Condition="QuestDone(40373, 40255)" >
+			<If Condition="QuestDone(39694, 39688, 40373, 40255, 40256)" >
 				<MoveTo X="4161.926" Y="-852.6156" Z="291.4435" />
+				<CustomBehavior File="InteractWith" MobIds="96666, 96669" InteractByQuestFrameDisposition="Complete" X="4282.924" Y="-451.7708" Z="259.5193" TerminateWhen="!DoQuest(39694, 39688, 40373, 40255, 40256)" />
+
 			</If>
-			<!-- NOTE: <NPCConflict> : In this area, Kayn Sunfury may not be availible if the player picks Altruis the Sufferer during the quest 'A New Direction(40373)' -->
+			<!-- NOTE: <NPCConflict> : In this area, Kayn Sunfury may not be availible if the player picks Altruis the Sufferer during the quest 'A New Direction(40373)'
 			<If Condition="Unit(39688) != null" >
 				<TurnIn QuestName="Between Us and Freedom" QuestId="39688" TurnInName="Kayn Sunfury" TurnInId="96666" X="4160.994" Y="-855.743" Z="291.1073" />
 			</If>
 			<If Condition="Unit(96669) != null" >
 				<TurnIn QuestName="Between Us and Freedom" QuestId="40255" TurnInName="Altruis the Sufferer" TurnInId="96669" X="XXX" Y="YYY" Z="ZZZ" />
-			</If>
+			</If> -->
 
 			<PickUp QuestName="Illidari, We Are Leaving" QuestId="39689" GiverName="Archmage Khadgar" GiverId="97978" X="4154.077" Y="-868.8698" Z="290.947" />
 			<TurnIn QuestName="Illidari, We Are Leaving" QuestId="39689" TurnInName="Archmage Khadgar" TurnInId="97978" X="4154.077" Y="-868.8698" Z="290.947" />
