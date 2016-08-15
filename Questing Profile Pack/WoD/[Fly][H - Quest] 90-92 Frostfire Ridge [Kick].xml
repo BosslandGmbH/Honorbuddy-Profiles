@@ -352,8 +352,26 @@
 			<CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for Cinematic {TimeRemaining}" />
 			<CustomBehavior File="Misc\RunLua" Lua="if MovieFrame and MovieFrame:IsVisible() then MovieFrame:StopMovie() elseif CinematicFrame and CinematicFrame:IsVisible() then CinematicFrame_CancelCinematic() end" WaitTime="2000" />
 		</If>
-		<Objective Nav="Fly" QuestName="The Battle of the Forge" QuestId="34439" Type="KillMob" MobId="80775" KillCount="3" />
-		<Objective Nav="Fly" QuestName="The Battle of the Forge" QuestId="34439" Type="KillMob" MobId="80786" KillCount="15" />
+		<CustomBehavior File="KillUntilComplete" QuestId="34439" >
+			<HuntingGrounds>
+				<Hotspot X="4564.294" Y="-2039.26" Z="-17.96849" />
+				<Hotspot X="4526.458" Y="-2084.793" Z="-17.1782" />
+				<Hotspot X="4533.692" Y="-2185.161" Z="-15.3794" />
+				<Hotspot X="4539.031" Y="-2214.725" Z="-14.58103" />
+				<Hotspot X="4471.87" Y="-2124.049" Z="-15.60532" />
+				<Hotspot X="4564.921" Y="-1976.974" Z="-14.02075" />
+				<Hotspot X="4564.294" Y="-2039.26" Z="-17.96849" />
+				<Hotspot X="4526.458" Y="-2084.793" Z="-17.1782" />
+				<Hotspot X="4533.692" Y="-2185.161" Z="-15.3794" />
+				<Hotspot X="4539.031" Y="-2214.725" Z="-14.58103" />
+				<Hotspot X="4471.87" Y="-2124.049" Z="-15.60532" />
+				<Hotspot X="4564.921" Y="-1976.974" Z="-14.02075" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="80786" PursueWhen="!IsObjectiveComplete(1, 34439)" />
+				<PursueUnit Id="80775" PursueWhen="!IsObjectiveComplete(2, 34439)" />
+			</PursuitList>
+		</CustomBehavior>
 		<If Condition="HasQuest(34439) &amp;&amp; IsQuestCompleted(34439)" > <!-- The Battle of the Forge -->
 			<TurnIn Nav="Fly" QuestName="The Battle of the Forge" QuestId="34439" TurnInName="Cordana Felsong" TurnInId="78996" X="4417.996" Y="-2090.691" Z="2.777354" /> <!-- cutscene -->
 			<CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for Cinematic {TimeRemaining}" />
@@ -417,24 +435,48 @@
 		<TurnIn Nav="Fly" QuestName="Taking a Trip to the Top of the Tank" QuestId="35747" TurnInName="Thaelin Darkanvil" TurnInId="80521" X="4062.665" Y="-2019.338" Z="74.87279" />
 		<PickUp Nav="Fly" QuestName="A Taste of Iron" QuestId="34445" GiverName="Thaelin Darkanvil" GiverId="80521" X="4062.665" Y="-2019.338" Z="74.87279" />
 		<If Condition="HasQuest(34445) &amp;&amp; !IsQuestCompleted(34445)" > <!-- A Taste of Iron - Vehicle Quest -->
-			<If Condition="!Me.HasAura(164042)"> <!-- Mount Turret -->
-				<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" MobId="231261" NonCompeteDistance="0" Range="5" X="4054.708" Y="-2019.128" Z="73.14471" TerminateWhen="Me.HasAura(164042)" />
-				<CustomBehavior File="WaitTimer" WaitTime="15000" />
-			</If>
+			<!--
+				There's some very strange things happening with this quest.  So I'm resorting to very primitive methods of handling it.
+				For as long as this quest is broken, please do not modify any of this code or it will mess up again
+					~EchoTiger
+			-->
+			<DisableBehavior Name="All" />
 			<CustomBehavior File="RunCode"><![CDATA[
+				var cannonPoi = Object(231261);
+				while (!Me.HasAura(164042))
+				{
+					cannonPoi.Interact();
+					await Coroutine.Yield();
+				}
+				await Coroutine.Sleep(15000);
+
 				while (Me.HasAura(164042))
 				{
-					Lua.DoString("OverrideActionBarButton1:Click();");
+					Styx.Helpers.KeyboardManager.KeyUpDown((char)System.Windows.Forms.Keys.D1);
 					SpellManager.ClickRemoteLocation(new WoWPoint(3923.166, -2020.857, 19.50727));
 					await Coroutine.Sleep(500);
 				}
+				await Coroutine.Sleep(6000);
+
+				var cannonTrigger = Object(232538);
+				while (cannonTrigger != null && !IsQuestCompleted(34445) && !Bots.DungeonBuddy.Helpers.ScriptHelpers.InCinematic)
+				{
+					while (cannonTrigger.Distance > 5)
+					{
+						Navigator.MoveTo(cannonTrigger.Location);
+						await Coroutine.Yield();
+					}
+					await CommonCoroutines.StopMoving();
+					cannonTrigger.Interact();
+					await Coroutine.Yield();
+				}
+
+				await Coroutine.Sleep(3000);
+				Lua.DoString("if MovieFrame and MovieFrame:IsVisible() then MovieFrame:StopMovie() elseif CinematicFrame and CinematicFrame:IsVisible() then CinematicFrame_CancelCinematic() end");
+				await Coroutine.Sleep(4000);
 			]]>
 			</CustomBehavior>
-			<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for Cutscene {TimeRemaining}" />
-			<MoveTo X="4065.838" Y="-2022.482" Z="75.43866" />
-			<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" QuestId="34445" MobId="232538" NonCompeteDistance="0" Range="6" X="4065.838" Y="-2022.482" Z="75.43866" />
-			<CustomBehavior File="WaitTimer" WaitTime="3000" GoalText="Waiting for Cinematic {TimeRemaining}" />
-			<CustomBehavior File="Misc\RunLua" Lua="if MovieFrame and MovieFrame:IsVisible() then MovieFrame:StopMovie() elseif CinematicFrame and CinematicFrame:IsVisible() then CinematicFrame_CancelCinematic() end" WaitTime="2000" />
+			<EnableBehavior Name="All" />
 		</If>
 		<TurnIn Nav="Fly" QuestName="A Taste of Iron" QuestId="34445" TurnInName="Thaelin Darkanvil" TurnInId="80521" X="4062.665" Y="-2019.338" Z="74.87279" />
 		<PickUp Nav="Fly" QuestName="The Home Stretch" QuestId="34446" GiverName="Thaelin Darkanvil" GiverId="80521" X="4062.665" Y="-2019.338" Z="74.87279" />

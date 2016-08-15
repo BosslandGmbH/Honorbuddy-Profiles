@@ -370,8 +370,26 @@
 			<CustomBehavior File="Misc\RunLua" Lua="if MovieFrame and MovieFrame:IsVisible() then MovieFrame:StopMovie() elseif CinematicFrame and CinematicFrame:IsVisible() then CinematicFrame_CancelCinematic() end" WaitTime="2000" />
 			<CustomBehavior File="WaitTimer" WaitTime="4000" GoalText="Waiting for cutscene to end {TimeRemaining}" />
 		</If>
-		<Objective Nav="Fly" QuestName="The Battle of the Forge" QuestId="34439" Type="KillMob" MobId="80775" KillCount="3" />
-		<Objective Nav="Fly" QuestName="The Battle of the Forge" QuestId="34439" Type="KillMob" MobId="80786" KillCount="15" />
+		<CustomBehavior File="KillUntilComplete" QuestId="34439" >
+			<HuntingGrounds>
+				<Hotspot X="4564.294" Y="-2039.26" Z="-17.96849" />
+				<Hotspot X="4526.458" Y="-2084.793" Z="-17.1782" />
+				<Hotspot X="4533.692" Y="-2185.161" Z="-15.3794" />
+				<Hotspot X="4539.031" Y="-2214.725" Z="-14.58103" />
+				<Hotspot X="4471.87" Y="-2124.049" Z="-15.60532" />
+				<Hotspot X="4564.921" Y="-1976.974" Z="-14.02075" />
+				<Hotspot X="4564.294" Y="-2039.26" Z="-17.96849" />
+				<Hotspot X="4526.458" Y="-2084.793" Z="-17.1782" />
+				<Hotspot X="4533.692" Y="-2185.161" Z="-15.3794" />
+				<Hotspot X="4539.031" Y="-2214.725" Z="-14.58103" />
+				<Hotspot X="4471.87" Y="-2124.049" Z="-15.60532" />
+				<Hotspot X="4564.921" Y="-1976.974" Z="-14.02075" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="80786" PursueWhen="!IsObjectiveComplete(1, 34439)" />
+				<PursueUnit Id="80775" PursueWhen="!IsObjectiveComplete(2, 34439)" />
+			</PursuitList>
+		</CustomBehavior>
 		<If Condition="HasQuest(34439) &amp;&amp; IsQuestCompleted(34439)" > <!-- The Battle of the Forge -->
 			<TurnIn Nav="Fly" QuestName="The Battle of the Forge" QuestId="34439" TurnInName="Cordana Felsong" TurnInId="78996" X="4417.996" Y="-2090.691" Z="2.777354" /> <!-- cutscene -->
 			<CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for Cinematic {TimeRemaining}" />
@@ -406,56 +424,57 @@
 				<CustomBehavior File="InteractWith" MobId="78568" GossipOptions="1" NonCompeteDistance="0" X="4364.854" Y="-2115.491" Z="2.372287" /> <!-- Thaelin Darkanvil -->
 				<MoveTo Nav="Fly" DestName="Taking a Trip to the Top of the Tank 1" X="4338.178" Y="-2060.592" Z="1.166897" />
 			</While>
-			<While Condition="!IsObjectiveComplete(2, 35747)"> <!-- Kill Gogluk
-                <MoveTo Nav="Fly" DestName="Taking a Trip to the Top of the Tank 2" X="4338.178" Y="-2060.592" Z="1.166897" />
-                <CustomBehavior File="EscortGroup" QuestId="35747" EscortCompleteWhen="QuestObjectiveComplete" QuestObjectiveIndex="2" EscortCountMax="1"
-                                            EscortNpcId="78568" EscortMaxFightDistance="15" SearchForNpcsRadius="75" >
-                    <SearchPath>
-                        <Hotspot X="4338.178" Y="-2060.592" Z="1.166897" />
-                        <Hotspot X="4278.509" Y="-2019.878" Z="3.447598" />
-                        <Hotspot X="4209.694" Y="-1980.295" Z="15.53718" />
-                        <Hotspot X="4159.312" Y="-1968.087" Z="21.50705" />
-                        <Hotspot X="4108.087" Y="-1931.512" Z="26.35879" />
-                        <Hotspot X="4068.011" Y="-1922.626" Z="25.98899" />
-                        <Hotspot X="4065.759" Y="-1955.649" Z="27.77714" />
-                    </SearchPath>
-                </CustomBehavior>
-                -->
-				<MoveTo Nav="Fly" DestName="Taking a Trip to the Top of the Tank 2a" X="4109.659" Y="-1930.428" Z="26.4752" />
-				<CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Kill noob mobs {TimeRemaining}" />
-				<MoveTo Nav="Fly" DestName="Taking a Trip to the Top of the Tank 2b" X="4065.759" Y="-1955.649" Z="27.83311" />
-				<While Condition="!IsObjectiveComplete(2, 35747)"> <!-- Thaelin Darkanvil & Kill Gogluk -->
-					<MoveTo Nav="Fly" DestName="Taking a Trip to the Top of the Tank 2c" X="4065.759" Y="-1955.649" Z="27.83311" />
-					<CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Kill Gogluk npc 86039 {TimeRemaining}" />
-				</While>
-			</While>
+			<CustomBehavior File="KillUntilComplete" MobId="86039" QuestId="35747" QuestObjectiveIndex="2" X="4072.941" Y="-1946.655" Z="26.96227" />
 			<While Condition="!IsObjectiveComplete(3, 35747)"> <!-- Climb the rear chains -->
 				<MoveTo Nav="Fly" DestName="Taking a Trip to the Top of the Tank 3" X="4064.357" Y="-2021.231" Z="74.99429" />
-				<CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for Thaelin {TimeRemaining}" />
+				<CustomBehavior File="WaitTimer" WaitTime="20000" QuestId="35747" GoalText="Waiting for Thaelin {TimeRemaining}" />
 			</While>
 		</If>
-		<TurnIn Nav="Fly" QuestName="Taking a Trip to the Top of the Tank" QuestId="35747" TurnInName="Thaelin Darkanvil" TurnInId="80521" X="4062.665" Y="-2019.338" Z="74.87279" />
+		<TurnIn Nav="Fly" QuestName="Taking a Trip to the Top of the Tank" QuestId="35747" TurnInName="Thaelin Darkanvil" TurnInId="80521" X="4063.77" Y="-2020.121" Z="75.3912" />
 		<PickUp Nav="Fly" QuestName="A Taste of Iron" QuestId="34445" GiverName="Thaelin Darkanvil" GiverId="80521" X="4062.665" Y="-2019.338" Z="74.87279" />
 		<If Condition="HasQuest(34445) &amp;&amp; !IsQuestCompleted(34445)" > <!-- A Taste of Iron - Vehicle Quest -->
-			<If Condition="!Me.HasAura(164042)"> <!-- Mount Turret -->
-				<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" MobId="231261" NonCompeteDistance="0" Range="5" X="4054.708" Y="-2019.128" Z="73.14471" TerminateWhen="Me.HasAura(164042)" />
-				<CustomBehavior File="WaitTimer" WaitTime="15000" />
-			</If>
+			<!--
+				There's some very strange things happening with this quest.  So I'm resorting to very primitive methods of handling it.
+				For as long as this quest is broken, please do not modify any of this code or it will mess up again
+					~EchoTiger
+			-->
+			<DisableBehavior Name="All" />
 			<CustomBehavior File="RunCode"><![CDATA[
+				var cannonPoi = Object(231261);
+				while (!Me.HasAura(164042))
+				{
+					cannonPoi.Interact();
+					await Coroutine.Yield();
+				}
+				await Coroutine.Sleep(15000);
+
 				while (Me.HasAura(164042))
 				{
-					Lua.DoString("OverrideActionBarButton1:Click();");
+					Styx.Helpers.KeyboardManager.KeyUpDown((char)System.Windows.Forms.Keys.D1);
 					SpellManager.ClickRemoteLocation(new WoWPoint(3923.166, -2020.857, 19.50727));
 					await Coroutine.Sleep(500);
 				}
+				await Coroutine.Sleep(6000);
+
+				var cannonTrigger = Object(232538);
+				while (cannonTrigger != null && !IsQuestCompleted(34445) && !Bots.DungeonBuddy.Helpers.ScriptHelpers.InCinematic)
+				{
+					while (cannonTrigger.Distance > 5)
+					{
+						Navigator.MoveTo(cannonTrigger.Location);
+						await Coroutine.Yield();
+					}
+					await CommonCoroutines.StopMoving();
+					cannonTrigger.Interact();
+					await Coroutine.Yield();
+				}
+
+				await Coroutine.Sleep(3000);
+				Lua.DoString("if MovieFrame and MovieFrame:IsVisible() then MovieFrame:StopMovie() elseif CinematicFrame and CinematicFrame:IsVisible() then CinematicFrame_CancelCinematic() end");
+				await Coroutine.Sleep(4000);
 			]]>
 			</CustomBehavior>
-			<CustomBehavior File="WaitTimer" WaitTime="6000" GoalText="Waiting for Cutscene {TimeRemaining}" />
-			<MoveTo X="4065.838" Y="-2022.482" Z="75.43866" />
-			<CustomBehavior File="InteractWith" QuestId="34445" MobId="232538" NonCompeteDistance="0" Range="6" X="4065.838" Y="-2022.482" Z="75.43866" />
-			<CustomBehavior File="WaitTimer" WaitTime="3000" GoalText="Waiting for Cinematic {TimeRemaining}" />
-			<CustomBehavior File="Misc\RunLua" Lua="if MovieFrame and MovieFrame:IsVisible() then MovieFrame:StopMovie() elseif CinematicFrame and CinematicFrame:IsVisible() then CinematicFrame_CancelCinematic() end" WaitTime="2000" />
-			<CustomBehavior File="WaitTimer" WaitTime="4000" GoalText="Waiting for cutscene to end {TimeRemaining}" />
+			<EnableBehavior Name="All" />
 		</If>
 		<TurnIn Nav="Fly" QuestName="A Taste of Iron" QuestId="34445" TurnInName="Thaelin Darkanvil" TurnInId="80521" X="4062.665" Y="-2019.338" Z="74.87279" />
 		<PickUp Nav="Fly" QuestName="The Home Stretch" QuestId="35884" GiverName="Thaelin Darkanvil" GiverId="80521" X="4062.665" Y="-2019.338" Z="74.87279" />
