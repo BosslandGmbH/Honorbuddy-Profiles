@@ -5448,10 +5448,20 @@
 			<If Condition="HasQuest(11910) &amp;&amp; !IsQuestCompleted(11910)">
 				<CustomBehavior File="FlyTo" DestName="Secrets of the Ancients" X="3607.986" Y="6958.359" Z="170.6434" />
 				<CustomBehavior File="ForcedDismount" />
-				<Objective QuestName="Secrets of the Ancients" QuestId="11910" Type="CollectItem" CollectCount="3"
-                           ItemId="35483" />
-				<Objective QuestName="Secrets of the Ancients" QuestId="11910" Type="CollectItem" CollectCount="3"
-                           ItemId="35484" />
+				<CustomBehavior File="KillUntilComplete" MobId="25709" QuestId="11910" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="3614.967" Y="7283.658" Z="225.263" />
+						<Hotspot X="3526.994" Y="7178.39" Z="223.3145" />
+						<Hotspot X="3847.73" Y="7243.043" Z="171.3852" />
+					</HuntingGrounds>
+				</CustomBehavior>
+				<CustomBehavior File="KillUntilComplete" MobId="25707" QuestId="11910" QuestObjectiveIndex="2" >
+					<HuntingGrounds>
+						<Hotspot X="3550.354" Y="7079.796" Z="209.816" />
+						<Hotspot X="3670.209" Y="6965.558" Z="157.6386" />
+						<Hotspot X="3732.892" Y="6874.349" Z="155.9917" />
+					</HuntingGrounds>
+				</CustomBehavior>
 			</If>
 			<If Condition="HasQuest(11900) &amp;&amp; !IsQuestCompleted(11900)">
 
@@ -12462,7 +12472,7 @@
 		<While Condition="HasQuest(12540)">
 
 			<CustomBehavior File="FlyTo" DestName="injured Rainspeaker" X="5474.979" Y="4460.299" Z="-138.386" />
-			<CustomBehavior File="InteractWith" MobId="28217" InteractByGossipOptions="1"
+			<CustomBehavior File="InteractWith" MobId="28217" WaitForNpcs="false" InteractByGossipOptions="1"
                                 PreInteractMountStrategy="Dismount" AuraIdOnMob="51329" X="5474.152" Y="4461.753"
                                 Z="-137.9803" />
 			<CustomBehavior File="WaitTimer" WaitTime="30000"
@@ -12557,7 +12567,13 @@
 				</If>
 			</If>
 			<PickUp QuestName="Gods like Shiny Things" QuestId="12572" GiverName="Lafoo" GiverId="28120" />
+			<CustomBehavior File="WaitTimer" WaitTime="1500" />
 		</If>
+
+		<If Condition="!HasItem(38622) &amp;&amp; HasQuest(12572)" >
+			<CustomBehavior File="InteractWith" MobId="80775" GossipOptions="1" X="4564.59" Y="-2029.702" Z="-18.04301" TerminateWhen="HasItem(38622)" />
+		</If>
+
 		<If Condition="HasQuest(12572) &amp;&amp; !IsQuestCompleted(12572)">
 			<CustomBehavior File="FlyTo" DestName="collect 6 Shiny Things" X="5585.037" Y="4501.27" Z="-139.9448" />
 			<!-- <Objective QuestName="Gods like Shiny Things" QuestId="12572" Type="CollectItem" ItemId="38575" CollectCount="6" />

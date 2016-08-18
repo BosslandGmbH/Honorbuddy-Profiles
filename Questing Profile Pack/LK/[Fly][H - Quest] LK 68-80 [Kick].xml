@@ -4630,10 +4630,20 @@
 			<If Condition="HasQuest(11910) &amp;&amp; !IsQuestCompleted(11910)">
 				<CustomBehavior File="FlyTo" DestName="Objective" X="3607.986" Y="6958.359" Z="170.6434" />
 				<CustomBehavior File="ForcedDismount" />
-				<Objective QuestName="Secrets of the Ancients" QuestId="11910" Type="CollectItem"
-						   CollectCount="3" ItemId="35483" Nav="Fly" />
-				<Objective QuestName="Secrets of the Ancients" QuestId="11910" Type="CollectItem"
-						   CollectCount="3" ItemId="35484" Nav="Fly" />
+				<CustomBehavior File="KillUntilComplete" MobId="25709" QuestId="11910" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="3614.967" Y="7283.658" Z="225.263" />
+						<Hotspot X="3526.994" Y="7178.39" Z="223.3145" />
+						<Hotspot X="3847.73" Y="7243.043" Z="171.3852" />
+					</HuntingGrounds>
+				</CustomBehavior>
+				<CustomBehavior File="KillUntilComplete" MobId="25707" QuestId="11910" QuestObjectiveIndex="2" >
+					<HuntingGrounds>
+						<Hotspot X="3550.354" Y="7079.796" Z="209.816" />
+						<Hotspot X="3670.209" Y="6965.558" Z="157.6386" />
+						<Hotspot X="3732.892" Y="6874.349" Z="155.9917" />
+					</HuntingGrounds>
+				</CustomBehavior>
 			</If>
 			<If Condition="HasQuest(11900) &amp;&amp; !IsQuestCompleted(11900)">
 
@@ -11087,21 +11097,21 @@
 		<While Condition="HasQuest(12540)">
 
 			<CustomBehavior File="FlyTo" DestName="injured Rainspeaker" X="5474.979" Y="4460.299" Z="-138.386" />
-			<CustomBehavior File="InteractWith" MobId="28217" InteractByGossipOptions="1" PreInteractMountStrategy="Dismount"
-								 AuraIdOnMob="51329" X="5474.152" Y="4461.753"
-								Z="-137.9803" />
+			<CustomBehavior File="InteractWith" MobId="28217" WaitForNpcs="false" InteractByGossipOptions="1"
+                                PreInteractMountStrategy="Dismount" AuraIdOnMob="51329" X="5474.152" Y="4461.753"
+                                Z="-137.9803" />
 			<CustomBehavior File="WaitTimer" WaitTime="30000"
-								GoalText="Waiting for InteractWith to clear puppy for next quest {TimeRemaining}" />
-			<CustomBehavior File="Message" Text="Turnin 'Just Following Orders' to injured Rainspeaker"
-								LogColor="Yellow" />
+                                GoalText="Waiting for InteractWith to clear puppy for next quest {TimeRemaining}" />
+			<CustomBehavior File="Message" Text="Turnin 'Just Following Orders' to injured Rainspeaker" LogColor="Yellow" />
 			<CustomBehavior File="WaitTimer" WaitTime="10000"
-								GoalText="Waiting for quest to update {TimeRemaining}" />
+                                GoalText="Waiting for quest to update {TimeRemaining}" />
 			<CustomBehavior File="Message" Text="Get quest from the injured Rainspeaker" LogColor="Yellow" />
-			<CustomBehavior File="InteractWith" MobId="28217" 
-								AuraIdMissingFromMob="51329" X="5474.152" Y="4461.753" Z="-137.9803" />
+			<CustomBehavior File="InteractWith" MobId="28217" PreInteractMountStrategy="Dismount" KeepTargetSelected="True" CollectionDistance="10" />
+			<CustomBehavior File="Message" Text="Get quest from the injured Rainspeaker" LogColor="Yellow" />
+			<CustomBehavior File="InteractWith" MobId="28217" PreInteractMountStrategy="Dismount" AuraIdMissingFromMob="51329" X="5474.152" Y="4461.753" Z="-137.9803" />
 			<CustomBehavior File="RunMacro" Macro="/click QuestFrameCompleteQuestButton" />
 			<CustomBehavior File="WaitTimer" WaitTime="30000"
-								GoalText="Waiting for InteractWith to clear puppy for next quest {TimeRemaining}" />
+                                GoalText="Waiting for InteractWith to clear puppy for next quest {TimeRemaining}" />
 		</While>
 
 		<While Condition="!IsQuestCompleted(12570)">
