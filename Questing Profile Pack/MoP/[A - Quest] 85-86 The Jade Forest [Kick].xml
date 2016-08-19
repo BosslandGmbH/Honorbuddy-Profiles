@@ -1543,7 +1543,20 @@
 				X="-566.1215" Y="-2303.628" Z="18.45896" />
 		<While Condition="HasQuest(29890) &amp;&amp; !IsQuestCompleted(29890)">
 			<MoveTo X="-630.2978" Y="-2364.32" Z="22.86646" />
-			<CustomBehavior File="SpecificQuests\29890-JadeForest-FindingYourCenter" />
+			<DisableBehavior Name="Combat" />
+			<If Condition="!Me.InVehicle" >
+				<CustomBehavior File="InteractWith" MobId="213754" NonCompeteDistance="0" WaitTime="2800" X="-632.4323" Y="-2366.182" Z="23.46704" />
+			</If>
+			<While Condition="Me.InVehicle &amp;&amp; !Bots.DungeonBuddy.Helpers.ScriptHelpers.InCinematic" >
+				<If Condition="Lua.GetReturnVal&lt;int&gt;(&quot;return UnitPower(&apos;player&apos;, ALTERNATE_POWER_INDEX)&quot;, 0) &lt; 50" >
+					<CustomBehavior File="Misc\RunLua" WaitTime="400" Lua="OverrideActionBarButton2:Click();" />
+				</If>
+				<If Condition="Lua.GetReturnVal&lt;int&gt;(&quot;return UnitPower(&apos;player&apos;, ALTERNATE_POWER_INDEX)&quot;, 0) &gt;= 50" >
+					<CustomBehavior File="Misc\RunLua" WaitTime="400" Lua="OverrideActionBarButton1:Click();" />
+				</If>
+			</While>
+			<CustomBehavior File="Misc\RunLua" Lua="if MovieFrame and MovieFrame:IsVisible() then MovieFrame:StopMovie() elseif CinematicFrame and CinematicFrame:IsVisible() then CinematicFrame_CancelCinematic() end" WaitTime="1000" />
+			<EnableBehavior Name="Combat" />
 			<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for quest to complete {TimeRemaining}" />
 		</While>
 		<If Condition="HasQuest(29890) &amp;&amp; IsQuestCompleted(29890)">
