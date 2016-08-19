@@ -1305,10 +1305,60 @@
 			<PickUp QuestName="SI:7 Report: Fire From the Sky" QuestId="29725"
 					GiverName="Sully &quot;The Pickle&quot; McLeary" GiverId="55282"
 					X="-156.0701" Y="-2658.927" Z="0.9811339" />
-			<CustomBehavior File="WaitTimer" WaitTime="56000" />
 		</If>
 		<While Condition="HasQuest(29725) &amp;&amp; !IsQuestCompleted(29725)">
-			<CustomBehavior File="SpecificQuests\29725-JadeForest-SI7ReportFireFromtheSky" />
+			<DisableBehavior Name="Combat" />
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="KillTiger" LogExecution="false" AllowUseDuringCombat="true" AllowUseInVehicle="true" UseWhen="Unit(55550, u =&gt; u.IsAlive) != null" >
+				<CustomBehavior File="RunCode"><![CDATA[
+					var tigerPoi = Unit(55550, u => u.IsAlive);
+
+					while (tigerPoi != null && tigerPoi.IsValid && tigerPoi.IsAlive)
+					{
+						tigerPoi.Target();
+						Lua.DoString("OverrideActionBarButton1:Click();");
+						await Coroutine.Sleep(2500);
+					}
+				]]>
+				</CustomBehavior>
+			</CustomBehavior>
+
+			<If Condition="!Me.InVehicle" >
+				<CustomBehavior File="InteractWith" MobId="55282" GossipOptions="1" QuestId="29725" X="-158.4948" Y="-2659.96" Z="1.111125" />
+			</If>
+			<CustomBehavior File="WaitTimer" WaitTime="45000" TerminateWhen="Unit(55353) == null" />
+
+			<If Condition="!IsObjectiveComplete(1, 29725)" >
+				<MoveTo X="716.3391" Y="-2090.078" Z="67.26476" />
+				<CustomBehavior File="WaitTimer" WaitTime="10000" />
+				<MoveTo X="754.3676" Y="-2065.328" Z="61.23263" />
+			</If>
+			<If Condition="!IsObjectiveComplete(2, 29725)" >
+				<MoveTo X="962.353" Y="-1959.976" Z="67.76358" />			
+			</If>
+			<If Condition="!IsObjectiveComplete(3, 29725)" >
+				<MoveTo X="777.6425" Y="-1789.076" Z="56.52419" />
+				<CustomBehavior File="WaitTimer" QuestId="29725" QuestObjectiveIndex="3" WaitTime="35000" />
+			</If>
+			<If Condition="!IsObjectiveComplete(4, 29725)" >
+				<MoveTo X="717.1549" Y="-2102.047" Z="66.09456" />
+				<CustomBehavior File="MyCTM" X="717.1549" Y="-2102.047" Z="66.09456" /> <!-- Precision -->
+				<CustomBehavior File="RunCode"><![CDATA[
+						var hozenPoi = Unit(55589, u => u.Distance < 4);
+
+							if (hozenPoi != null)
+							{
+								hozenPoi.Target();
+								Lua.DoString("OverrideActionBarButton1:Click();");
+								await Coroutine.Sleep(2500);
+							}
+
+					]]>
+				</CustomBehavior>
+				<CustomBehavior File="WaitTimer" WaitTime="6000" />
+			</If>
+
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="KillTiger" Command="Remove" />
+			<EnableBehavior Name="Combat" />
 		</While>
 		<TurnIn QuestName="SI:7 Report: Fire From the Sky" QuestId="29725"
 				TurnInName="Sully &quot;The Pickle&quot; McLeary" TurnInId="55282"
