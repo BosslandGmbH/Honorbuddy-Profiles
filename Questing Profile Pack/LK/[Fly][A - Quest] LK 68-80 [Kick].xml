@@ -12551,8 +12551,9 @@
 			<PickUp QuestName="Gods like Shiny Things" QuestId="12572" GiverName="Lafoo" GiverId="28120" />
 		</If>
 
-		<!-- Not needed for Lafoo.  He only gives 1 quest and has no TurnIn. ~EchoTiger
-		<CustomBehavior File="Hooks\DoWhen" ActivityName="ItemForAura_LafoosBugBag" ItemId="38622" UseWhen="HasItem(38622) &amp;&amp; !Me.HasAura(51623)" /> -->
+		<CustomBehavior File="Hooks\DoWhen" ActivityName="ItemForAura_LafoosBugBag" AllowUseWhileMounted="true" UseWhen="HasItem(38622) &amp;&amp; !Me.HasAura(51623) &amp;&amp; !Me.IsFlying" >
+			<CustomBehavior File="UseItem" ItemId="38622" WaitTime="850" />
+		</CustomBehavior>
 
 		<If Condition="!HasQuest(12571) &amp;&amp; !IsQuestCompleted(12571)">
 			<CustomBehavior File="FlyTo" DestName="Pickup: " X="5651.868" Y="4560.372" Z="-134.7812" />
@@ -12685,6 +12686,9 @@
                                 Z="-135.793" />
             <CustomBehavior File="KillUntilComplete" MobId="28358" QuestId="12571" QuestObjectiveIndex="2" X="5732" Y="4386.203" Z="-136.2201" />
 		</If>
+
+		<CustomBehavior File="Hooks\DoWhen" ActivityName="ItemForAura_LafoosBugBag" Command="Remove" />
+
 		<If Condition="HasQuest(12571) &amp;&amp; IsQuestCompleted(12571)">
 			<CustomBehavior File="FlyTo" DestName="Turnin: " X="5651.868" Y="4560.372" Z="-134.7812" />
 			<CustomBehavior File="ForcedDismount" />
