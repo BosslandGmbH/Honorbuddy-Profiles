@@ -11078,14 +11078,24 @@
 			</CustomBehavior>
 		</If>
 		<If Condition="HasQuest(12538) &amp;&amp; IsQuestCompleted(12538)">
-			<CustomBehavior File="FlyTo" DestName="Turnin Quest" X="6139.721" Y="4916.872" Z="-95.08303" />
-			<CustomBehavior File="ForcedDismount" />
+			<If Condition="Unit(28216) == null &amp;&amp; !HasItem(38512)" >
+				<CustomBehavior File="InteractWith" MobId="28138" GossipOptions="1" X="5263.772" Y="4511.331" Z="-84.79517" />
+			</If>
+			<If Condition="Unit(28216) == null" >
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="38512" />
+			</If>
 			<TurnIn QuestName="The Mist Isn't Listening" QuestId="12538" TurnInName="Zepik the Gorloc Hunter"
 						TurnInId="28216" />
 		</If>
 		<If Condition="HasQuest(12537) &amp;&amp; IsQuestCompleted(12537)">
-			<CustomBehavior File="FlyTo" DestName="Turnin Quest" X="6139.721" Y="4916.872" Z="-95.08303" />
-			<CustomBehavior File="ForcedDismount" />
+			<If Condition="Unit(28216) == null &amp;&amp; !HasItem(38512)" >
+				<CustomBehavior File="InteractWith" MobId="28138" GossipOptions="1" X="5263.772" Y="4511.331" Z="-84.79517" />
+			</If>
+			<If Condition="Unit(28216) == null" >
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="38512" />
+			</If>
 			<TurnIn QuestName="Lightning Definitely Strikes Twice" QuestId="12537"
 						TurnInName="Zepik the Gorloc Hunter" TurnInId="28216" />
 			<PickUp QuestName="Hoofing It" QuestId="12539" GiverName="Zepik the Gorloc Hunter" GiverId="28216" />
@@ -11125,37 +11135,26 @@
 			<CustomBehavior File="InteractWith" MobId="28217" WaitForNpcs="false" InteractByGossipOptions="1"
                                 PreInteractMountStrategy="Dismount" AuraIdOnMob="51329" X="5474.152" Y="4461.753"
                                 Z="-137.9803" />
-			<CustomBehavior File="WaitTimer" WaitTime="30000"
+			<CustomBehavior File="WaitTimer" WaitTime="5000"
                                 GoalText="Waiting for InteractWith to clear puppy for next quest {TimeRemaining}" />
 			<CustomBehavior File="Message" Text="Turnin 'Just Following Orders' to injured Rainspeaker" LogColor="Yellow" />
-			<CustomBehavior File="WaitTimer" WaitTime="10000"
-                                GoalText="Waiting for quest to update {TimeRemaining}" />
 			<CustomBehavior File="Message" Text="Get quest from the injured Rainspeaker" LogColor="Yellow" />
 			<CustomBehavior File="InteractWith" MobId="28217" PreInteractMountStrategy="Dismount" AuraIdMissingFromMob="51329" X="5474.152" Y="4461.753" Z="-137.9803" />
 			<CustomBehavior File="RunMacro" Macro="/click QuestFrameCompleteQuestButton" />
-			<CustomBehavior File="WaitTimer" WaitTime="30000"
-                                GoalText="Waiting for InteractWith to clear puppy for next quest {TimeRemaining}" />
 		</While>
 
 		<While Condition="!IsQuestCompleted(12570)">
 			<If Condition="HasQuest(12570)">
 				<CustomBehavior File="AbandonQuest" QuestId="12570" Type="All" />
 			</If>
-			<CustomBehavior File="FlyTo" DestName="Explore Sholazar Basin!" X="5576.258" Y="4319.175" Z="1" />
-			<CustomBehavior File="FlyTo" DestName="injured Rainspeaker" X="5472.924" Y="4381.387" Z="-139.6365" />
-			<CustomBehavior File="ForcedDismount" />
 			<CustomBehavior File="Message" Text="Gossip with the injured Rainspeaker" LogColor="Yellow" />
-
-			<!-- Death Rainspeaker -->
-			<CustomBehavior File="InteractWith" MobId="28217" AuraIdOnMob="51329" InteractByGossipOptions="1"
-								PreInteractMountStrategy="Dismount" X="5474.152" Y="4461.753" Z="-137.9803" />
-			<CustomBehavior File="WaitTimer" WaitTime="5000" />
 			<!-- Accept Quest -->
             <CustomBehavior File="InteractWith" MobId="28217" AuraIdMissingFromMob="51329"
                             WaitForNpcs="false" PreInteractMountStrategy="Dismount" />
             <CustomBehavior File="Misc\RunLua" Lua="GossipTitleButton1:Click()" WaitTime="500" />
             <CustomBehavior File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click()" WaitTime="1000" />
 			<!-- Start Escort -->
+			<CustomBehavior File="InteractWith" WaitForNpcs="false" MobId="28217" InteractByGossipOptions="1" />
 			<CustomBehavior File="EscortGroup" QuestId="12570" StartNpcId="28217" StartEscortGossipOptions="1"
 								EscortNpcId="28217" EscortCountMax="1" EscortCompleteWhen="QuestCompleteOrFails" />
 
