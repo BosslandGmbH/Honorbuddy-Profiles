@@ -175,8 +175,22 @@
 			</While>
 			<TurnIn QuestName="The Scythe of Souls" QuestId="37660" TurnInName="Allari the Souleater" TurnInId="89398" X="-90.15625" Y="6978.989" Z="12.41578" />
 
-			<PickUp QuestName="From Within" QuestId="36920" GiverName="Kayn Sunfury" GiverId="89362" X="-103.434" Y="6961.333" Z="12.46202" />
-			<TurnIn QuestName="From Within" QuestId="36920" TurnInName="Kor'vas Bloodthorn" TurnInId="90255" X="-412.9792" Y="7113.748" Z="1.571512" />
+			<If Condition="Me.Class == WoWClass.DemonHunter &amp;&amp; (HasQuest(44140) || !IsQuestCompleted(44140))" >
+				<If Condition="!HasQuest(44140)" >
+					<MoveTo X="-99.68051" Y="6963.089" Z="12.69694" />
+					<If Condition="Unit(89362) != null" >
+						<PickUp QuestName="From Within" QuestId="44140" GiverName="Kayn Sunfury" GiverId="89362" X="-79.12674" Y="6859.221" Z="30.98969" />
+					</If>
+					<If Condition="Unit(101927) != null" >
+						<PickUp QuestName="From Within" QuestId="44140" GiverName="Altruis the Sufferer" GiverId="101927" X="-79.12674" Y="6859.221" Z="30.98969" />
+					</If>
+				</If>
+				<TurnIn QuestName="From Within" QuestId="44140" TurnInName="Kor'vas Bloodthorn" TurnInId="90255" X="-412.9792" Y="7113.748" Z="1.571512" />
+			</If>
+			<If Condition="Me.Class != WoWClass.DemonHunter" >
+				<PickUp QuestName="From Within" QuestId="36920" GiverName="Kayn Sunfury" GiverId="89362" X="-103.434" Y="6961.333" Z="12.46202" />
+				<TurnIn QuestName="From Within" QuestId="36920" TurnInName="Kor'vas Bloodthorn" TurnInId="90255" X="-412.9792" Y="7113.748" Z="1.571512" />
+			</If>
 
 			<PickUp QuestName="Fel Machinations" QuestId="37656" GiverName="Wrathguard Invader" GiverId="110988" X="-409.8965" Y="7117.188" Z="2.223603" />
 			<PickUp QuestName="Saving Stellagosa" QuestId="37450" GiverName="Wrathguard Invader" GiverId="110988" X="-409.8965" Y="7117.188" Z="2.223603" />
@@ -185,12 +199,12 @@
 				<MoveTo QuestId="37450" QuestObjectiveIndex="1" X="-735.4157" Y="7344.977" Z="15.02042" />
 				<!-- NOTE: <AddAvoid> : Get out or purple stuff - it silences you. -->
 				<CustomBehavior File="InteractWith" MobId="86535" InteractByLooting="true" QuestId="37450" QuestObjectiveIndex="2" X="-670.6696" Y="7160.034" Z="27.95947" />
-				<CustomBehavior File="InteractWith" MobId="239455" NumOfTimes="3" QuestId="37450" QuestObjectiveIndex="3" X="-736.6461" Y="7338.293" Z="15.15532" />
+				<CustomBehavior File="InteractWith" MobId="239455" NonCompeteDistance="0" NumOfTimes="3" QuestId="37450" QuestObjectiveIndex="3" X="-736.6461" Y="7338.293" Z="15.15532" />
 			</While>
 			<TurnIn QuestName="Saving Stellagosa" QuestId="37450" TurnInName="Kor'vas Bloodthorn" TurnInId="110988" X="-723.8791" Y="7322.058" Z="15.21342" /> <!-- WoWAPI returns 90474 for this NPCId -->
 
 			<While Condition="DoQuest(37656)" >
-				<CustomBehavior File="InteractWith" MobIds="240123, 240075, 240122" NumOfTimes="6" QuestId="37653" QuestObjectiveIndex="1" >
+				<CustomBehavior File="InteractWith" MobIds="240123, 240075, 240122" NumOfTimes="6" QuestId="37656" QuestObjectiveIndex="1" >
 					<HuntingGrounds>
 						<!-- Staying near the Demon Hunters to avoid getting stuck in an endless loop of fighting mobs. -->
 						<Hotspot X="-377.3905" Y="7345.168" Z="40.44294" />
@@ -205,23 +219,32 @@
 			<TurnIn QuestName="Fel Machinations" QuestId="37656" TurnInName="Kor'vas Bloodthorn" TurnInId="110988" X="-174.0494" Y="7271.852" Z="13.4738" />
 
 			<While Condition="!IsQuestCompleted(36811)" > <!-- Bonus Objective: Retake Faronaar -->
-				<MoveTo X="-320.7442" Y="7365.427" Z="27.60932" />
-				<CustomBehavior File="KillUntilComplete" MobIds="103363, 103231, 103162, 89731, 103180, 103176" QuestId="36811" >
+				<CustomBehavior File="InteractWith" NonCompeteDistance="0" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(36811)" >
 					<HuntingGrounds>
 						<Hotspot X="-320.7442" Y="7365.427" Z="27.60932" />
 						<Hotspot X="-257.0323" Y="7285.456" Z="9.244231" />
 						<Hotspot X="-257.0323" Y="7285.456" Z="9.244231" />
 					</HuntingGrounds>
+					<PursuitList>
+						<PursueGameObject Id="239676" />
+						<PursueUnit Id="103363" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="103231" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="103162" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="89731" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="103180" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="103176" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="90661" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					</PursuitList>
 				</CustomBehavior>
 			</While>
 
-			<PickUp QuestName="Dark Revelations" QuestId="37449" GiverName="Kor'vas Bloodthorn" GiverId="110988" X="-174.0494" Y="7271.852" Z="13.4738" />
+			<PickUp QuestName="Dark Revelations" QuestId="37449" GiverName="Kor'vas Bloodthorn" GiverId="110988" X="-212.7293" Y="7229.569" Z="12.26306" />
 			<While Condition="NeedsQuest(37449) || DoQuest(37449)" >
 				<MoveTo X="-502.8906" Y="7499.088" Z="74.15278" />
 				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Me.Combat" />
 				<CustomBehavior File="KillUntilComplete" MobId="90621" QuestId="37449" QuestObjectiveIndex="1" X="-491.7935" Y="7501.004" Z="73.40841" />
-				<CustomBehavior File="InteractWith" MobId="90623" QuestId="37449" QuestObjectiveIndex="2" X="-518.5573" Y="7518.17" Z="74.2154" />
-				<CustomBehavior File="WaitTimer" WaitTime="47000" TerminateWhen="!Me.IsFlying" />
+				<CustomBehavior File="InteractWith" MobId="90623" QuestId="37449" X="-518.5573" Y="7518.17" Z="74.2154" />
+				<CustomBehavior File="WaitTimer" QuestId="37449" QuestObjectiveIndex="2" WaitTime="50000" TerminateWhen="!Me.InVehicle" />
 			</While>
 			<TurnIn QuestName="Dark Revelations" QuestId="37449" TurnInName="Kayn Sunfury" TurnInId="89362" X="-103.434" Y="6961.333" Z="12.46136" />
 		<!-- END Story: Behing Legion Lines -->
