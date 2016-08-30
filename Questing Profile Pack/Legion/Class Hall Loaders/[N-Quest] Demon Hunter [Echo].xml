@@ -92,62 +92,66 @@
 			QuestId 39688 = Kayn Sunfury
 			QuestId 40255 = Altruis the Sufferer
 		-->
-
+<DisableBehavior Name="FlightPath" />
 		<!-- First Artifact Quest -->
-			<If Condition="IsQuestCompleted(39688)" >  <!-- Kayn -->
-				<PickUp QuestName="Call of the Illidari" QuestId="39261" GiverName="Kor'vas Bloodthorn" GiverId="99343" X="-834.0088" Y="4394.81" Z="737.6318" />
-				<TurnIn QuestName="Call of the Illidari" QuestId="39261" TurnInName="Kayn Sunfury" TurnInId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
+			<!-- Overly complicated due to either Kayn or Altruis being here -->
+				<If Condition="!IsQuestCompleted(40814) &amp;&amp; !IsQuestCompleted(40816)" >
+					<MoveTo X="-851.9022" Y="4256.646" Z="746.2833" />
+				</If>
+				<If Condition="Unit(99247) != null " >  <!-- Kayn -->
+					<PickUp QuestName="Call of the Illidari" QuestId="39261" GiverName="Kor'vas Bloodthorn" GiverId="99343" X="-834.0088" Y="4394.81" Z="737.6318" />
+					<TurnIn QuestName="Call of the Illidari" QuestId="39261" TurnInName="Kayn Sunfury" TurnInId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
 
-				<PickUp QuestName="The Power to Survive" QuestId="40814" GiverName="Kayn Sunfury" GiverId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
-				<While Condition="DoQuest(40814)" >
-					<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
-						<CustomBehavior File="InteractWith" MobId="99247" GossipOptions="1" QuestId="40814" QuestObjectiveIndex="1" X="-852.2726" Y="4256.069" Z="746.2852" />
-					</If>
-
-					<CustomBehavior File="UserDialog" QuestId="40814" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" 
-					Text="Choose an artifact weapon.\n\nIf you do not choose within 5minutes, the bot will pick the one appropriate for your current specialization." />
-					
-					<If Condition="!IsQuestCompleted(40814)" >
-						<If Condition="Me.Specialization == WoWSpec.DemonHunterHavoc" >
-							<CustomBehavior File="Misc\RunLua" QuestId="40814" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1000" />
+					<PickUp QuestName="The Power to Survive" QuestId="40814" GiverName="Kayn Sunfury" GiverId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
+					<While Condition="DoQuest(40814)" >
+						<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+							<CustomBehavior File="InteractWith" MobId="99247" GossipOptions="1" QuestId="40814" QuestObjectiveIndex="1" X="-852.2726" Y="4256.069" Z="746.2852" />
 						</If>
-						<If Condition="Me.Specialization == WoWSpec.DemonHunterVengeance" >
-							<CustomBehavior File="Misc\RunLua" QuestId="40814" Lua="QuestChoiceFrameOption2.OptionButton:Click()" WaitTime="1000" />
-						</If>
-						<CustomBehavior File="Misc\RunLua" QuestId="40814" Lua="StaticPopup1Button1:Click();" />
-					</If>
-				</While>
-				<TurnIn QuestName="The Power to Survive" QuestId="40814" TurnInName="Kayn Sunfury" TurnInId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
-			</If>
 
-			<If Condition="IsQuestCompleted(40255)" >  <!-- Altruis -->
-				<PickUp QuestName="Call of the Illidari" QuestId="39047" GiverName="Kor'vas Bloodthorn" GiverId="99343" X="-834.0088" Y="4394.81" Z="737.6318" />
-				<TurnIn QuestName="Call of the Illidari" QuestId="39047" TurnInName="Altruis the Sufferer" TurnInId="99254" X="-852.2726" Y="4256.069" Z="746.2852" />
-
-				<PickUp QuestName="The Power to Survive" QuestId="40816" GiverName="Altruis the Sufferer" GiverId="99254" X="-852.2726" Y="4256.069" Z="746.2852" />
-				<While Condition="DoQuest(40816)" >
-					<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
-						<CustomBehavior File="InteractWith" MobId="99254" GossipOptions="1" QuestId="40816" QuestObjectiveIndex="1" X="-852.2726" Y="4256.069" Z="746.2852" />
-					</If>
-
-					<CustomBehavior File="UserDialog" QuestId="40816" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" 
-					Text="Choose an artifact weapon.\n\nIf you do not choose within 5minutes, the bot will pick the one appropriate for your current specialization." />
-					
-					<If Condition="!IsQuestCompleted(40816)" >
-						<If Condition="Me.Specialization == WoWSpec.DemonHunterHavoc" >
-							<CustomBehavior File="Misc\RunLua" QuestId="40816" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1000" />
+						<CustomBehavior File="UserDialog" QuestId="40814" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" 
+						Text="Choose an artifact weapon.\n\nIf you do not choose within 5minutes, the bot will pick the one appropriate for your current specialization." />
+						
+						<If Condition="!IsQuestCompleted(40814)" >
+							<If Condition="Me.Specialization == WoWSpec.DemonHunterHavoc" >
+								<CustomBehavior File="Misc\RunLua" QuestId="40814" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1000" />
+							</If>
+							<If Condition="Me.Specialization == WoWSpec.DemonHunterVengeance" >
+								<CustomBehavior File="Misc\RunLua" QuestId="40814" Lua="QuestChoiceFrameOption2.OptionButton:Click()" WaitTime="1000" />
+							</If>
+							<CustomBehavior File="Misc\RunLua" QuestId="40814" Lua="StaticPopup1Button1:Click();" />
 						</If>
-						<If Condition="Me.Specialization == WoWSpec.DemonHunterVengeance" >
-							<CustomBehavior File="Misc\RunLua" QuestId="40816" Lua="QuestChoiceFrameOption2.OptionButton:Click()" WaitTime="1000" />
+					</While>
+					<TurnIn QuestName="The Power to Survive" QuestId="40814" TurnInName="Kayn Sunfury" TurnInId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
+				</If>
+				<If Condition="Unit(99343) != null" >  <!-- Altruis -->
+					<PickUp QuestName="Call of the Illidari" QuestId="39047" GiverName="Kor'vas Bloodthorn" GiverId="99343" X="-834.0088" Y="4394.81" Z="737.6318" />
+					<TurnIn QuestName="Call of the Illidari" QuestId="39047" TurnInName="Altruis the Sufferer" TurnInId="99254" X="-852.2726" Y="4256.069" Z="746.2852" />
+
+					<PickUp QuestName="The Power to Survive" QuestId="40816" GiverName="Altruis the Sufferer" GiverId="99254" X="-852.2726" Y="4256.069" Z="746.2852" />
+					<While Condition="DoQuest(40816)" >
+						<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+							<CustomBehavior File="InteractWith" MobId="99254" GossipOptions="1" QuestId="40816" QuestObjectiveIndex="1" X="-852.2726" Y="4256.069" Z="746.2852" />
 						</If>
-						<CustomBehavior File="Misc\RunLua" QuestId="40816" Lua="StaticPopup1Button1:Click();" />
-					</If>
-				</While>
-				<TurnIn QuestName="The Power to Survive" QuestId="40816" TurnInName="Altruis the Sufferer" TurnInId="99254" X="-852.2726" Y="4256.069" Z="746.2852" />
-			</If>
+
+						<CustomBehavior File="UserDialog" QuestId="40816" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" 
+						Text="Choose an artifact weapon.\n\nIf you do not choose within 5minutes, the bot will pick the one appropriate for your current specialization." />
+						
+						<If Condition="!IsQuestCompleted(40816)" >
+							<If Condition="Me.Specialization == WoWSpec.DemonHunterHavoc" >
+								<CustomBehavior File="Misc\RunLua" QuestId="40816" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1000" />
+							</If>
+							<If Condition="Me.Specialization == WoWSpec.DemonHunterVengeance" >
+								<CustomBehavior File="Misc\RunLua" QuestId="40816" Lua="QuestChoiceFrameOption2.OptionButton:Click()" WaitTime="1000" />
+							</If>
+							<CustomBehavior File="Misc\RunLua" QuestId="40816" Lua="StaticPopup1Button1:Click();" />
+						</If>
+					</While>
+					<TurnIn QuestName="The Power to Survive" QuestId="40816" TurnInName="Altruis the Sufferer" TurnInId="99254" X="-852.2726" Y="4256.069" Z="746.2852" />
+				</If>
+			<!-- END last comment -->
 
 			<If Condition="((IsQuestCompleted(39688) &amp;&amp; !IsQuestCompleted(39247)) || (IsQuestCompleted(40255) &amp;&amp; !IsQuestCompleted(41119))) &amp;&amp; NeedsQuest(42869) &amp;&amp; Me.Specialization == WoWSpec.DemonHunterHavoc" > <!-- 39247+41119 = Kayn+Altruis  Twinblades of the Deceiver finale -->
-				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Demon Hunter- Havoc - Twinblades of the Deceiver.xml" />
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Demon Hunter - Havoc - Twinblades of the Deceiver.xml" />
 			</If>
 			<If Condition="((IsQuestCompleted(39688) &amp;&amp; !IsQuestCompleted(40249)) || (IsQuestCompleted(40255) &amp;&amp; !IsQuestCompleted(41863))) &amp;&amp; NeedsQuest(42869) &amp;&amp; Me.Specialization == WoWSpec.DemonHunterVengeance" > <!-- 40249+41863 = Kayn+Altruis   Aldrachi Warblades finale -->
 				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Demon Hunter - Vengeance - Aldrachi Warblades.xml" />
@@ -156,13 +160,14 @@
 
 		<!-- Introductory Class Hall Quests -->
 			<PickUp QuestName="Eternal Vigil" QuestId="42869" GiverName="Kor'vas Bloodthorn" GiverId="102799" X="-835.9722" Y="4265.393" Z="746.2537" />
-			<While Condition="DoQuest(42869)" >
-				<MoveTo X="-818.7419" Y="4257.544" Z="746.2667" />
+			<While Condition="HasQuest(42869) &amp;&amp; Me.Z &gt;= 665" >
+				<MoveTo X="-818.1966" Y="4265.469" Z="746.2773" />
 				<CustomBehavior File="ForcedDismount" />
-				<CustomBehavior File="MyCTM" X="-822.0472" Y="4253.448" Z="745.927" />
+				<CustomBehavior File="MyCTM" X="-821.7453" Y="4236.09" Z="743.0304" />
+				<CustomBehavior File="WaitTimer" WaitTime="750" />
 				<CustomBehavior File="RunCode"><![CDATA[
-						WoWMovement.Move(WoWMovement.MovementDirection.Forward, TimeSpan.FromSeconds(3));
-						await Coroutine.Sleep(650);
+						Me.SetFacing(4);
+						await Coroutine.Sleep(750);
 						WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
 						await Coroutine.Sleep(300);
 						WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
@@ -178,7 +183,8 @@
 			<While Condition="DoQuest(42872)" >
 				<CustomBehavior File="WaitTimer" WaitTime="5000" QuestId="42872" QuestObjectiveIndex="1" />
 				<CustomBehavior File="Misc\RunLua" WaitTime="3000" QuestId="42872" QuestObjectiveIndex="1" Lua="ExtraActionButton1:Click();" />
-				<CustomBehavior File="InteractWith" MobId="251579" WaitTime="3000" QuestId="42872" QuestObjectiveIndex="2" X="-964.0347" Y="4066.075" Z="648.1824" />
+				<CustomBehavior File="WaitTimer" WaitTime="7000" />
+				<CustomBehavior File="InteractWith" MobId="109273" WaitTime="3000" QuestId="42872" QuestObjectiveIndex="2" X="-964.0347" Y="4066.075" Z="648.1824" />
 			</While>
 			<TurnIn QuestName="Securing the Way" QuestId="42872" TurnInName="Jace Darkweaver" TurnInId="109196" X="-945.4254" Y="4090.016" Z="648.2668" />
 
