@@ -84,14 +84,14 @@
 
 		<!-- Introductory Class Hall Quests -->
 			<PickUp QuestName="Before the Storm" QuestId="12103" GiverName="Initiate Da-Nel" GiverId="98519" X="-833.6994" Y="4388.54" Z="737.8624" />
-			<While Condition="HasQuest(12103)" > 
+			<While Condition="DoQuest(12103)" > 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0" > <!-- NOTE ~> Replace with ZoneId after ID can be recovered -->
 					<CustomBehavior File="RunCode" Code="SpellManager.Cast(126892);" />
 					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 0" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
-					<CustomBehavior File="InteractWith" MobId="97778" GossipOptions="1" X="3807.865" Y="1789.863" Z="950.3509" />
+					<CustomBehavior File="InteractWith" MobId="97778" X="3807.865" Y="1789.863" Z="950.3509" />
 					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Me.Combat" />
 					<CustomBehavior File="KillUntilComplete" MobId="98011" X="3823.602" Y="1779.754" Z="950.3506" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
 				</If>
@@ -102,7 +102,7 @@
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
 					<MoveTo X="3847.54" Y="1948.933" Z="931.8522" />
-					<CustomBehavior File="WaitTimer" WaitTime="23000" /> <!-- NOTE: <OptmiizeTimer> : Need to reduce time or TerminateWhen -->
+					<CustomBehavior File="WaitTimer" WaitTime="18000" /> <!-- NOTE: <OptmiizeTimer> : Need to reduce time or TerminateWhen -->
 					<CustomBehavior File="InteractWith" MobId="97774" X="3849.718" Y="1946.925" Z="931.8537" />
 					<CustomBehavior File="WaitTimer" WaitTime="30000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
 				</If>
@@ -113,6 +113,7 @@
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<CustomBehavior File="KillUntilComplete" MobId="98496" X="3955.729" Y="1722.396" Z="931.399" TerminateWhen="Unit(98496, u =&gt; u.IsDead) != null" />
 					<MoveTo X="3878.246" Y="1725.902" Z="932.6702" />
 					<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
 				</If>
@@ -126,6 +127,8 @@
 					<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 					<CustomBehavior File="WaitTimer" QuestId="12103" WaitTime="10000" />
 				</If>
+
+				<CustomBehavior File="WaitTimer" WaitTime="60000" QuestId="12103" />
 			</While>
 			<TurnIn QuestName="Before the Storm" QuestId="12103" TurnInName="Fearsome Jang" TurnInId="99181" X="819.0156" Y="3607.688" Z="173.9884" />
 
@@ -178,7 +181,7 @@
 			<PickUp QuestName="Purity of Form" QuestId="40698" GiverName="Iron-Body Ponshu" GiverId="100438" X="924.4167" Y="3606.167" Z="196.3308" />
 			<While Condition="DoQuest(40698)" >
 				<!-- /dump GetMouseFocus():GetPowerID(); C_ArtifactUI.AddPower(powerId); -->
-				<CustomBehavior File="InteractWith" MobId="247320" WaitTime="2000" QuestId="40698" X="927.4323" Y="3604.589" Z="196.3184" />
+				<CustomBehavior File="InteractWith" MobId="245098" Range="17" NonCompeteDistance="0" WaitTime="2000" QuestId="40698" X="927.4323" Y="3604.589" Z="196.3184" />
 				<If Condition="HasItem(128938)" > <!-- Fu Zan, the Wanderer's Companion -->
 					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1293);" />
 				</If>
@@ -196,7 +199,7 @@
 
 			<PickUp QuestName="The Fight Begins" QuestId="40795" GiverName="Master Hsu" GiverId="99179" X="721.8212" Y="3569.807" Z="140.6221" />
 			<While Condition="DoQuest(40795)" >
-				<CustomBehavior File="InteractWith" MobId="99041" WaitTime="1500" QuestId="40795" X="712.5781" Y="3565.833" Z="140.6215" />
+				<CustomBehavior File="InteractWith" MobId="99041" NonCompeteDistance="0" WaitTime="1500" QuestId="40795" X="712.5781" Y="3565.833" Z="140.6215" />
 				<If Condition="NeedsQuest(39718)" > <!-- Azsuna -->
 					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
 					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />

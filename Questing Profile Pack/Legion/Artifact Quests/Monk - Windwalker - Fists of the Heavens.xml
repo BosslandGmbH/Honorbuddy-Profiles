@@ -19,10 +19,6 @@
 
 	<TargetElites>true</TargetElites>
 
-	<AvoidMobs>
-		<Mob Name="XXX" Entry="123" />
-	</AvoidMobs>
-
 	<Blackspots>
 	</Blackspots>
 
@@ -34,6 +30,8 @@
 
 	<Vendors>
 	</Vendors>
+
+	<DefaultNavType>Fly</DefaultNavType> <!-- For the old world zones we go to. -->
 
 	<InitOrder>
 		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
@@ -107,13 +105,13 @@
 		<!-- Story: Artifact Weapon - Fists of the Heavens -->
 			<PickUp QuestName="The Legend of the Sands" QuestId="40569" GiverName="Iron-Body Ponshu" GiverId="100438" X="924.4167" Y="3606.167" Z="196.3307" />
 			<While Condition="DoQuest(40569)" >
-				<CustomBehavior File="InteractWith" MobId="100475" GossipOptions="1, 1, 1" QuestId="40569" QuestObjectiveIndex="1" X="741.6945" Y="3667.398" Z="143.2645" />
+				<CustomBehavior File="InteractWith" MobId="100475" NonCompeteDistance="0" GossipOptions="1, 1, 1, 1" QuestId="40569" QuestObjectiveIndex="1" X="741.6945" Y="3667.398" Z="143.2645" />
 			</While>
 			<TurnIn QuestName="The Legend of the Sands" QuestId="40569" TurnInName="Li Li Stormstout" TurnInId="100475" X="741.6945" Y="3667.398" Z="143.2645" />
 
 			<PickUp QuestName="Off To Adventure!" QuestId="40633" GiverName="Li Li Stormstout" GiverId="100475" X="XXX" Y="YYY" Z="ZZZ" />
 			<While Condition="DoQuest(40633)" >
-				<CustomBehavior File="InteractWith" MobId="102531" QuestId="40633" QuestObjectiveIndex="1" X="742.4219" Y="3629.197" Z="142.6947" />
+				<CustomBehavior File="InteractWith" MobId="102531" NonCompeteDistance="0" QuestId="40633" QuestObjectiveIndex="1" X="742.4219" Y="3629.197" Z="142.6947" />
 				<CustomBehavior File="WaitTimer" WaitTime="12000" />
 				<MoveTo Name="Li Li Stormstout" X="-9386.915" Y="-955.684" Z="113.7651" />
 				<CustomBehavior File="WaitTimer" WaitTime="1500" />
@@ -128,9 +126,11 @@
 
 			<PickUp QuestName="Into The Heavens" QuestId="40570" GiverName="King Phaoris" GiverId="47684" X="-9380.082" Y="-958.9618" Z="113.7649" />
 			<While Condition="DoQuest(40570)" >
-				<MoveTo QuestId="40570" QuestObjectiveIndex="1" X="-9438.153" Y="-959.9589" Z="111.0121" />
-				<CustomBehavior File="UseItem" QuestId="40570" QuestObjectiveIndex="1" ItemId="132745" />
-				<CustomBehavior File="WaitTimer" WaitTime="25000" />
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0" >
+					<MoveTo QuestId="40570" QuestObjectiveIndex="1" X="-9438.153" Y="-959.9589" Z="111.0121" />
+					<CustomBehavior File="UseItem" QuestId="40570" QuestObjectiveIndex="1" ItemId="132745" />
+					<CustomBehavior File="WaitTimer" WaitTime="26000" />
+				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
 					<CustomBehavior File="KillUntilComplete" MobIds="100769, 100770" X="-718.0573" Y="480.3958" Z="644.6066" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
@@ -148,7 +148,7 @@
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
-					<CustomBehavior File="InteractWith" MobId="100715" NumOfTimes="3" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" >
+					<CustomBehavior File="InteractWith" MobId="100715" Range="4" NumOfTimes="6" TerminateWhen="IsScenarioCriteriaComplete(1)" >
 						<HuntingGrounds>
 							<Hotspot X="-818.4373" Y="450.9123" Z="700.0224" />
 							<Hotspot X="-850.7686" Y="515.2173" Z="699.9993" />
@@ -156,25 +156,31 @@
 						</HuntingGrounds>
 					</CustomBehavior>
 					<CustomBehavior File="WaitTimer" WaitTime="35000" TerminateWhen="Unit(100647) != null" />
-					<CustomBehavior File="KillUntilComplete" MobId="100647" X="-917.7604" Y="567.5712" Z="716.5313" TerminateWhen="Unit(100647, u =&gt; u.IsDead) != null" />
+					<CustomBehavior File="KillUntilComplete" MobId="100647" X="-917.7604" Y="567.5712" Z="716.5313" TerminateWhen="IsScenarioCriteriaComplete(2)" />
 					<MoveTo X="-977.6823" Y="506.3613" Z="700.0155" /> <!-- Could use a roll logic here to make the player go through the pushback faster. -->
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
 					<!-- NOTE: <AddAvoids> : Four waves of mobs spawn and attack the player.  The only logic we need here is avoiding area affects and frontal-cone attacks. -->
-					<CustomBehavior File="WaitTimer" WaitTime="300000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" />
+					<MoveTo X="-977.6823" Y="506.3613" Z="700.0155" /> <!-- Could use a roll logic here to make the player go through the pushback faster. -->
+					<CustomBehavior File="KillUntilComplete" MobIds="101098, 101092, 100830" X="-994.9135" Y="474.1765" Z="699.9752" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
 					<!-- Remove avoids. -->
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
-					<CustomBehavior File="InteractWith" MobId="100940" X="-1009.071" Y="479.2083" Z="700.012" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+					<CustomBehavior File="InteractWith" MobId="100830" X="-1009.071" Y="479.2083" Z="700.012" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
 					<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="SingularShoveOff" AllowUseDuringCombat="true" UseWhen="Unit(100760) != null &amp;&amp; Blacklist.Contains(Unit(100760), BlacklistFlags.Combat)" >
+						<CustomBehavior File="RunCode" Code="Blacklist.Clear(u =&gt; u.Entry == 100760)" />
+					</CustomBehavior>
 					<!-- NOTE: <AddAvoid> : Boss drops lightning on the ground, similar to the lightning dropped by the mobs above in scenario 1.  Wave 1 -->
 					<CustomBehavior File="KillUntilComplete" MobId="100760" X="-1225.967" Y="389.3854" Z="662.1934" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
 					<!-- Remove avoid -->
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="SingularShoveOff" Command="Remove" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
