@@ -42,6 +42,10 @@
 		<Vendor Name="Falara Nightsong" Type="Repair" Entry="89640" X="-89.1441" Y="6951.358" Z="14.10535" /> <!-- Illidari Strand -->
 	</Vendors>
 
+	<Blackspots>
+		<Blackspot X="-93.79848" Y="6982.305" Z="12.39837" Radius="3.731443" /> <!-- GameObjects near Allari the Souleater in Illidari Stand -->
+	</Blackspots>
+
 	<InitOrder>
 		<!-- Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet. -->
 		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
@@ -141,13 +145,19 @@
 			</While>
 
 			<While Condition="DoQuest(37653)" >
-				<CustomBehavior File="InteractWith" MobIds="90241, 90230, 101944, 101943" NumOfTimes="100" InteractByUsingItemId="122100" MobState="Dead" QuestId="37653" >
+				<CustomBehavior File="InteractWith" NumOfTimes="100" InteractByUsingItemId="122100" MobState="Dead" QuestId="37653" >
 					<HuntingGrounds>
 						<!-- Staying near the Demon Hunters to avoid getting stuck in an endless loop of fighting mobs. -->
 						<Hotspot X="-110.4761" Y="7007.057" Z="9.384081" />
 						<Hotspot X="-131.1502" Y="6996.284" Z="8.15946" />
 						<Hotspot X="-173.1669" Y="6984.174" Z="2.666158" />
 					</HuntingGrounds>
+					<PursuitList>
+						<PursueUnit Id="90241" PursueWhen="(!UNIT.HasAura(178763) &amp;&amp; UNIT.KilledByMe) || (UNIT.IsAlive &amp;&amp; !UNIT.TaggedByOther)" />
+						<PursueUnit Id="90230" PursueWhen="(!UNIT.HasAura(178763) &amp;&amp; UNIT.KilledByMe) || (UNIT.IsAlive &amp;&amp; !UNIT.TaggedByOther)" />
+						<PursueUnit Id="101944" PursueWhen="(!UNIT.HasAura(178763) &amp;&amp; UNIT.KilledByMe) || (UNIT.IsAlive &amp;&amp; !UNIT.TaggedByOther)" />
+						<PursueUnit Id="101943" PursueWhen="(!UNIT.HasAura(178763) &amp;&amp; UNIT.KilledByMe) || (UNIT.IsAlive &amp;&amp; !UNIT.TaggedByOther)" />
+					</PursuitList>
 				</CustomBehavior>
 			</While>
 
@@ -158,15 +168,15 @@
 			<While Condition="DoQuest(37660)" >
 				<MoveTo X="-155.1597" Y="6906.518" Z="13.15537" />
 				<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Unit(90403, u =&gt; u.Distance &lt;= 5) != null" />
-				<CustomBehavior File="InteractWith" MobId="90403" GossipOptions="1" QuestId="37660" QuestObjectiveIndex="1" X="-155.1597" Y="6906.518" Z="13.15537" />
+				<CustomBehavior File="InteractWith" MobId="90403" NonCompeteDistance="0" GossipOptions="1" QuestId="37660" QuestObjectiveIndex="1" X="-155.1597" Y="6906.518" Z="13.15537" />
 
-				<CustomBehavior File="InteractWith" MobId="239338" QuestId="37660" QuestObjectiveIndex="2" X="-158.8906" Y="6893.831" Z="14.79161" />
+				<CustomBehavior File="InteractWith" MobId="239338" NonCompeteDistance="0" QuestId="37660" QuestObjectiveIndex="2" X="-158.8906" Y="6893.831" Z="14.79161" />
 				<CustomBehavior File="WaitTimer" WaitTime="15000" QuestId="37660" QuestObjectiveIndex="3" />
 
-				<CustomBehavior File="InteractWith" MobId="239332" QuestId="37660" QuestObjectiveIndex="4" X="-163.9184" Y="6917.265" Z="12.65213" />
+				<CustomBehavior File="InteractWith" MobId="239332" NonCompeteDistance="0" QuestId="37660" QuestObjectiveIndex="4" X="-163.9184" Y="6917.265" Z="12.65213" />
 				<CustomBehavior File="WaitTimer" WaitTime="25000" QuestId="37660" QuestObjectiveIndex="5" />
 
-				<CustomBehavior File="InteractWith" MobId="237017" QuestId="37660" QuestObjectiveIndex="6" X="-157.6337" Y="6904.867" Z="13.32249" />
+				<CustomBehavior File="InteractWith" MobId="237017" NonCompeteDistance="0" QuestId="37660" QuestObjectiveIndex="6" X="-157.6337" Y="6904.867" Z="13.32249" />
 
 				<CustomBehavior File="KillUntilComplete" MobId="89673" QuestId="37660" QuestObjectiveIndex="7" X="-161.5538" Y="6903.051" Z="13.31845" />
 
