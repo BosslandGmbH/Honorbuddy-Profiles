@@ -103,7 +103,7 @@
 				]]>
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
-
+<DisableBehavior Name="FlightPath" />
 		<If Condition="QuestDone(39718)" >
 			<TurnIn QuestName="Paradise Lost" QuestId="39718" TurnInName="Archmage Khadgar" TurnInId="86563" X="-833.8698" Y="4276.531" Z="746.255" /> <!-- Breadcrumb from Class Hall -->
 		</If>
@@ -111,26 +111,37 @@
 		<!-- Story: Behind Legion Lines -->
 			<PickUp QuestName="Down to Azsuna" QuestId="41220" GiverName="Archmage Khadgar" GiverId="86563" X="-833.8698" Y="4276.531" Z="746.255" />
 			<While Condition="DoQuest(41220)" >
-				<CustomBehavior File="InteractWith" MobId="96813" GossipOptions="1" WaitTime="1500" QuestId="41220" QuestObjectiveIndex="1" X="-833.8698" Y="4276.531" Z="746.255" />
-				<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click();" />
-				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
+				<CustomBehavior File="InteractWith" MobId="86563" NonCompeteDistance="0" GossipOptions="1" WaitTime="1500" QuestId="41220" QuestObjectiveIndex="1" X="-833.8698" Y="4276.531" Z="746.255" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="2000" Lua="StaticPopup1Button1:Click();" />
 			</While>
 			<TurnIn QuestName="Down to Azsuna" QuestId="41220" TurnInName="Archmage Khadgar" TurnInId="93337" X="-79.12674" Y="6859.221" Z="30.98969" />
 
-			<PickUp QuestName="Into the Fray" QuestId="38834" GiverName="Archmage Khadgar" GiverId="93337" X="-79.12674" Y="6859.221" Z="30.98969" />
-			<TurnIn QuestName="Into the Fray" QuestId="38834" TurnInName="Kayn Sunfury" TurnInId="89362" X="-103.434" Y="6961.333" Z="12.46201" />
+			<If Condition="Me.Class == WoWClass.DemonHunter &amp;&amp; !IsQuestCompleted(44137)" >
+					<PickUp QuestName="Into the Fray" QuestId="44137" GiverName="Archmage Khadgar" GiverId="93337" X="-79.12674" Y="6859.221" Z="30.98969" />
+					<MoveTo X="-99.68051" Y="6963.089" Z="12.69694" />
+					<If Condition="Unit(89362) != null" >
+						<TurnIn QuestName="Into the Fray" QuestId="44137" TurnInName="Kayn Sunfury" TurnInId="89362" X="-103.434" Y="6961.333" Z="12.46201" />
+					</If>
+					<If Condition="Unit(101927) != null" >
+						<TurnIn QuestName="Into the Fray" QuestId="44137" TurnInName="Altruis the Sufferer" TurnInId="101927" X="-103.434" Y="6961.333" Z="12.46201" />
+					</If>
+			</If>
+			<If Condition="Me.Class != WoWClass.DemonHunter">
+				<PickUp QuestName="Into the Fray" QuestId="38834" GiverName="Archmage Khadgar" GiverId="93337" X="-79.12674" Y="6859.221" Z="30.98969" />
+				<TurnIn QuestName="Into the Fray" QuestId="38834" TurnInName="Kayn Sunfury" TurnInId="89362" X="-103.434" Y="6961.333" Z="12.46201" />
+			</If>
 
 			<PickUp QuestName="Reignite the Wards" QuestId="37658" GiverName="Jace Darkweaver" GiverId="90317" X="-109.7865" Y="6988.105" Z="12.11385" />
 			<PickUp QuestName="Demon Souls" QuestId="37653" GiverName="Allari the Souleater" GiverId="89398" X="-90.15625" Y="6978.989" Z="12.41577" />
 
 			<While Condition="DoQuest(37658)" >
-				<CustomBehavior File="InteractWith" MobId="239985" QuestId="37658" QuestObjectiveIndex="3" X="-97.22743" Y="7052.647" Z="0.2602924" />
-				<CustomBehavior File="InteractWith" MobId="239984" QuestId="37658" QuestObjectiveIndex="2" X="-168.2743" Y="7074.222" Z="3.751625" />
-				<CustomBehavior File="InteractWith" MobId="239452" QuestId="37658" QuestObjectiveIndex="1" X="-235.4271" Y="7038.738" Z="3.501538" />
+				<CustomBehavior File="InteractWith" MobId="239985" Range="4" NonCompeteDistance="0" QuestId="37658" QuestObjectiveIndex="3" X="-97.22743" Y="7052.647" Z="0.2602924" />
+				<CustomBehavior File="InteractWith" MobId="239984" Range="4" NonCompeteDistance="0" QuestId="37658" QuestObjectiveIndex="2" X="-168.2743" Y="7074.222" Z="3.751625" />
+				<CustomBehavior File="InteractWith" MobId="239452" Range="4" NonCompeteDistance="0" QuestId="37658" QuestObjectiveIndex="1" X="-235.4271" Y="7038.738" Z="3.501538" />
 			</While>
 
 			<While Condition="DoQuest(37653)" >
-				<CustomBehavior File="InteractWith" MobIds="90241, 90230, 101944, 101943" NumOfTimes="8" InteractByUsingItemId="122100" MobState="Dead" QuestId="37653" >
+				<CustomBehavior File="InteractWith" MobIds="90241, 90230, 101944, 101943" NumOfTimes="100" InteractByUsingItemId="122100" MobState="Dead" QuestId="37653" >
 					<HuntingGrounds>
 						<!-- Staying near the Demon Hunters to avoid getting stuck in an endless loop of fighting mobs. -->
 						<Hotspot X="-110.4761" Y="7007.057" Z="9.384081" />
