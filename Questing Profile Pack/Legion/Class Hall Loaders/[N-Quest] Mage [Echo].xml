@@ -88,22 +88,14 @@
 
 			<PickUp QuestName="The Dreadlord's Prize" QuestId="41036" GiverName="Meryl Felstorm" GiverId="102700" X="-843.1996" Y="4431.201" Z="742.5364" />
 			<While Condition="DoQuest(41036)" >
-				<CustomBehavior File="InteractWith" MobId="242174" NumOfTimes="6" QuestId="41036" X="-960.4443" Y="4324.997" Z="740.1581" /> <!-- May not be needed if this door is added to the jumplinks. -->
+				<CustomBehavior File="InteractWith" MobId="242174" NonCompeteDistance="0" QuestId="41036" X="-960.4443" Y="4324.997" Z="740.1581" /> <!-- May not be needed if this door is added to the jumplinks. -->
 				<MoveTo X="-965.15" Y="4319.328" Z="740.0412" />
-				<CustomBehavior File="MyCTM" X="-969.4932" Y="4313.164" Z="739.8709" /> <!--  TerminateWhen="ME IN VIOLET HOLD -->
+				<CustomBehavior File="MyCTM" X="-969.8125" Y="4314.124" Z="742.1796" TerminateWhen="Me.MapId == 1494" /> <!-- NOTE: <CheckID> -->
 				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" />
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
-					<DisableBehavior NAme="Combat" />
-					<MoveTo X="1295.606" Y="-263.2991" Z="44.36476" />
-					<CustomBehavior File="RunCode"><![CDATA[
-							var kathranatirPoi = Unit(102785);
-							StyxWoW.Me.SetFacing(kathranatirPoi.Location);
-							await Coroutine.Sleep(350);
-							SpellManager.Cast(133);
-							await Coroutine.Sleep(5000);
-						]]>
-					</CustomBehavior>
+					<CustomBehavior File="KillUntilComplete" MobId="102785" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" /> 
+
 					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
 				</If>
 
@@ -111,6 +103,8 @@
 					<If Condition="!IsScenarioCriteriaComplete(1)" >
 						<MoveTo X="1321.57" Y="-262.668" Z="43.99799" />
 						<CustomBehavior File="RunCode"><![CDATA[
+								Me.SetFacing(6);
+								await Coroutine.Sleep(750);
 								if (SpellManager.CanCast(1953)) SpellManager.Cast(1953);
 								else if (SpellManager.CanCast(212653)) SpellManager.Cast(212653);
 								await Coroutine.Sleep(1500);
@@ -155,9 +149,8 @@
 		<!-- First Artifact Quest -->
 			<PickUp QuestName="A Mage's Weapon" QuestId="41085" GiverName="Meryl Felstorm" GiverId="102700" X="-816.66" Y="4695" Z="939.6641" />
 			<While Condition="DoQuest(41085)" >
-				<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
-					<CustomBehavior File="InteractWith" MobId="246952" GossipOptions="1" QuestId="41085" QuestObjectiveIndex="1" X="-783.6354" Y="4689.01" Z="944.4333" />
-				</If>
+				<CustomBehavior File="InteractWith" MobId="246952" GossipOptions="1" QuestId="41085" X="-783.6354" Y="4689.01" Z="944.4333" TerminateWhen="Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" />
+
 
 				<CustomBehavior File="UserDialog" QuestId="41085" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" 
 				Text="Choose an artifact weapon.\n\nIf you do not choose within 5minutes, the bot will pick the one appropriate for your current specialization." />
