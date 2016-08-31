@@ -388,7 +388,13 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="Love Lost" QuestId="41056" GiverName="Tyrande Whisperwind" GiverId="102938" X="2903.66" Y="5889.236" Z="297.1159" />
 			<TurnIn QuestName="Love Lost" QuestId="41056" TurnInName="Tyrande Whisperwind" TurnInId="103022" X="3145.665" Y="5774.15" Z="308.1792" />
 
-			<PickUp QuestName="Dark Side of the Moon" QuestId="41708" GiverName="Tyrande Whisperwind" GiverId="103022" X="3145.665" Y="5774.15" Z="308.1792" />
+			<If Condition="Me.IsAlliance" >
+				<PickUp QuestName="Dark Side of the Moon" QuestId="41708" GiverName="Tyrande Whisperwind" GiverId="103022" X="3145.665" Y="5774.15" Z="308.1792" />
+			</If>
+			<If Condition="Me.IsHorde" >
+				<PickUp QuestName="Dark Side of the Moon" QuestId="41890" GiverName="Tyrande Whisperwind" GiverId="103022" X="3145.665" Y="5774.15" Z="308.1792" />
+			</If>
+
 			<PickUp QuestName="Lost in Retreat" QuestId="38671" GiverName="Mender Onelle" GiverId="94863" X="3151.359" Y="5779.863" Z="308.1489" />
 			<PickUp QuestName="Wormtalon Wreckage" QuestId="41707" GiverName="Aldos Duskwing" GiverId="95117" X="3152.448" Y="5777.948" Z="308.1564" />
 
@@ -416,14 +422,20 @@ END INITORDER COMMENT -->
 					</HuntingGrounds>
 				</CustomBehavior>
 			</While>
-			<While Condition="DoQuest(41708)" >
-				<If Condition="!IsObjectiveComplete(1, 41708)" >
+			<While Condition="DoQuest(41708, 41890)" >
+				<If Condition="(HasQuest(41708) &amp;&amp; !IsObjectiveComplete(1, 41708)) || (HasQuest(41890) &amp;&amp; !IsObjectiveComplete(1, 41890))" >
 					<MoveTo X="3126.056" Y="5915.359" Z="287.155" />
 				</If>
-				<CustomBehavior File="WaitTimer" WaitTime="300000" QuestId="41708" QuestObjectiveIndex="2" />
+				<CustomBehavior File="WaitTimer" WaitTime="300000" TerminateWhen="IsQuestCompleted(41708) || IsQuestCompleted(41890)" />
 			</While>
 
-			<TurnIn QuestName="Dark Side of the Moon" QuestId="41708" TurnInName="Tyrande Whisperwind" TurnInId="104885" X="3123.241" Y="5918.394" Z="286.052" />
+			<If Condition="Me.IsAlliance" >
+				<TurnIn QuestName="Dark Side of the Moon" QuestId="41708" TurnInName="Tyrande Whisperwind" TurnInId="104885" X="3123.241" Y="5918.394" Z="286.052" />
+			</If>
+			<If Condition="Me.IsHorde" >
+				<TurnIn QuestName="Dark Side of the Moon" QuestId="41890" TurnInName="Tyrande Whisperwind" TurnInId="104885" X="3123.241" Y="5918.394" Z="286.052" />
+			</If>
+
 			<!-- NOTE: <OptimizationOppertunity> : Can CTM from X="3114.07" Y="5905.733" Z="286.0641"  to X="3104.46" Y="5886.076" Z="285.0655"  after above TurnIn to quickly shortcut leave the location -->
 			<TurnIn QuestName="Lost in Retreat" QuestId="38671" TurnInName="Mender Onelle" TurnInId="94863" X="3151.359" Y="5779.863" Z="308.1495" />
 			<TurnIn QuestName="Wormtalon Wreckage" QuestId="41707" TurnInName="Aldos Duskwing" TurnInId="95117" X="3152.448" Y="5777.948" Z="308.1561" />
