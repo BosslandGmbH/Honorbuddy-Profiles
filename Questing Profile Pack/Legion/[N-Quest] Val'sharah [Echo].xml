@@ -515,17 +515,31 @@ END INITORDER COMMENT -->
 			</While>
 			<TurnIn QuestName="Softening the Target" QuestId="43702" TurnInName="Tyrande Whisperwind" TurnInId="104728" X="3413.7" Y="6124.011" Z="211.797" />
 
-			<PickUp QuestName="Close Enough to Touch" QuestId="38687" GiverName="Tyrande Whisperwind" GiverId="104728" X="3413.7" Y="6124.011" Z="211.797" />
-			<While Condition="DoQuest(38687)" >
+			<If Condition="Me.IsAlliance" >
+				<PickUp QuestName="Close Enough to Touch" QuestId="38687" GiverName="Tyrande Whisperwind" GiverId="104728" X="3413.7" Y="6124.011" Z="211.797" />
+			</If>
+			<If Condition="Me.IsHorde" >
+				<PickUp QuestName="Close Enough to Touch" QuestId="41763" GiverName="Tyrande Whisperwind" GiverId="104728" X="3413.7" Y="6124.011" Z="211.797" />
+			</If>
+			<While Condition="DoQuest(38687, 41763)" >
 				<CustomBehavior File="InteractWith" MobId="111258" QuestId="38687" QuestObjectiveIndex="2" X="3609.905" Y="6132.729" Z="178.1244" />
 				<CustomBehavior File="InteractWith" MobId="111260" QuestId="38687" QuestObjectiveIndex="3" X="3746.8" Y="6165.945" Z="183.9481" />
 				<CustomBehavior File="InteractWith" MobId="111259" QuestId="38687" QuestObjectiveIndex="4" X="3751.627" Y="6315.099" Z="186.5862" />
-				<If Condition="!IsObjectiveComplete(5, 38687)" >
+				<!-- Cheap way of handling the Horde variant.. :P -->
+				<CustomBehavior File="InteractWith" MobId="111258" QuestId="41763" QuestObjectiveIndex="2" X="3609.905" Y="6132.729" Z="178.1244" />
+				<CustomBehavior File="InteractWith" MobId="111260" QuestId="41763" QuestObjectiveIndex="3" X="3746.8" Y="6165.945" Z="183.9481" />
+				<CustomBehavior File="InteractWith" MobId="111259" QuestId="41763" QuestObjectiveIndex="4" X="3751.627" Y="6315.099" Z="186.5862" />
+				<If Condition="!IsObjectiveComplete(5, 38687) || !IsObjectiveComplete(5, 41763)" >
 					<MoveTo X="3574.203" Y="6390.636" Z="167.4113" /> <!-- NOTE: <TerminationNeeded> : This MoveTo needs to terminate once the cutscene is detected so the cutscenes can be skipped. -->
 					<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 				</If>
 			</While>
-			<TurnIn QuestName="Close Enough to Touch" QuestId="38687" TurnInName="Tyrande Whisperwind" TurnInId="104799" X="3547.351" Y="6420.47" Z="168.303" />
+			<If Condition="Me.IsAlliance" >
+				<TurnIn QuestName="Close Enough to Touch" QuestId="38687" TurnInName="Tyrande Whisperwind" TurnInId="104799" X="3547.351" Y="6420.47" Z="168.303" />
+			</If>
+			<If Condition="Me.IsHorde" >
+				<TurnIn QuestName="Close Enough to Touch" QuestId="41763" TurnInName="Tyrande Whisperwind" TurnInId="104799" X="3547.351" Y="6420.47" Z="168.303" />
+			</If>
 
 			<PickUp QuestName="The Fate of Val'sharah" QuestId="38743" GiverName="Tyrande Whisperwind" GiverId="102937" X="3545.144" Y="6420.871" Z="168.2894" />
 			<While Condition="DoQuest(38743)" >
