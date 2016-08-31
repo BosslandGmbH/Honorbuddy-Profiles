@@ -118,11 +118,11 @@ END INITORDER COMMENT -->
 					</If>
 					<MoveTo X="-881.0706" Y="4508.371" Z="580.1635" />
 					<CustomBehavior File="InteractWith" MobId="246008" X="-880.408" Y="4511.733" Z="580.4584" />
-					<CustomBehavior File="WaitTimer" WaitTime="5000" TermianteWhen="Me.MapId == 0" /> <!-- NOTE: Terminate when player is in Dalaran Crater -->
+					<CustomBehavior File="WaitTimer" WaitTime="5000" TermianteWhen="Me.MapId == 0" />
 				</If>
 
 				<MoveTo Nav="Fly" QuestId="43100" QuestObjectiveIndex="2" X="1039.002" Y="-2517.533" Z="59.17514" />
-				<CustomBehavior File="InteractWith" MobIds="251696, 251698, 251697" NumOfTimes="3" QuestId="43100" QuestObjectiveIndex="2" >
+				<CustomBehavior File="InteractWith" MobIds="251696, 251698, 251697" NumOfTimes="3" QuestId="43100" QuestObjectiveIndex="3" >
 					<HuntingGrounds>
 						<Hotspot X="1085.391" Y="-2553.199" Z="60.73085" />
 						<Hotspot X="1138.709" Y="-2561.298" Z="60.03284" />
@@ -130,7 +130,6 @@ END INITORDER COMMENT -->
 				</CustomBehavior>
 				<CustomBehavior File="InteractWith" MobId="109608" InteractByLooting="true" MobState="Dead" QuestId="43100" QuestObjectiveIndex="4" X="1234.781" Y="-2593.855" Z="89.93652" />
 				<CustomBehavior File="InteractWith" MobId="109698" GossipOptions="1" QuestId="43100" QuestObjectiveIndex="5" X="1097.059" Y="-2557.212" Z="59.36293" />
-				<CustomBehavior File="WaitTimer" QuestId="43100" WaitTime="25000" />
 			</While>
 			<TurnIn QuestName="Finding the Scepter" QuestId="43100" TurnInName="Calydus" TurnInId="109698" X="1097.059" Y="-2557.212" Z="59.36293" />
 
@@ -163,7 +162,7 @@ END INITORDER COMMENT -->
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
-					<MoveTo Name="Nagaz" Entry="109955" X="-912.1054" Y="1142.513" Z="84.87541" />
+					<MoveTo X="-916.1213" Y="1129.24" Z="84.57043" />
 					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Me.Combat" />
 					<CustomBehavior File="KillUntilComplete" MobId="109955" X="-912.1054" Y="1142.513" Z="84.54206" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
 				</If>
@@ -186,14 +185,17 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="MyCTM" X="-1203.665" Y="1051.747" Z="111.5119" />
 					<CustomBehavior File="MyCTM" X="-1261.589" Y="1050.437" Z="106.9946" />
 					<CustomBehavior File="MyCTM" X="-1261.589" Y="1050.437" Z="106.9946" />
+					<CustomBehavior File="MyCTM" X="-364.96" Y="-4529.02" Z="170.19" TerminateWhen="Me.ZoneId == 8309" />
 					<!-- NOTE: <AddSupport> : Need to enter Baradin Hold instance portal.  I tried capturing the XYZ but the load time was litterately .5seconds -->
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 10" >
+					<CustomBehavior File="Hooks\Avoid" AvoidName="FelFire" Command="Add" ObjectType="AreaTrigger" ObjectId="12004" Radius="8" />
 					<CustomBehavior File="InteractWith" MobId="109981" X="-72.57639" Y="-4530.167" Z="170.1918" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 10" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="FelFire" Command="Remove" />
 				</If>
 
-				<CustomBehavior File="InteractWith" QuestId="43153" QuestObjectiveIndex="3" MobId="110800" X="-129.8281" Y="-4529.592" Z="170.1916" TerminateWhen="Object(43153) == null" />
+				<CustomBehavior File="InteractWith" QuestId="43153" QuestObjectiveIndex="3" MobId="110800" X="-129.8281" Y="-4529.592" Z="170.1916" />
 				<!-- Adding terminate here in case any of the Ifs above fails to capture the current scenario state. -->
 			</While>
 			<TurnIn QuestName="An Eye for a Scepter" QuestId="43153" TurnInName="Calydus" TurnInId="109838" X="-816.1059" Y="4263.452" Z="746.2813" />
@@ -203,7 +205,7 @@ END INITORDER COMMENT -->
 				<CustomBehavior File="InteractWith" MobId="110479" QuestId="43254" QuestObjectiveIndex="1" X="-818.0382" Y="4258.453" Z="746.306" />
 				<CustomBehavior File="WaitTimer" QuestId="43254" QuestObjectiveIndex="1" WaitTime="60000" />
 				<MoveTo QuestId="43254" QuestObjectiveIndex="2" X="-650.8748" Y="2590.3" Z="82.38479" />
-				<CustomBehavior File="WaitTimer" QuestId="43254" QuestObjectiveIndex="3" WaitTime="70000" />
+				<CustomBehavior File="WaitTimer" QuestId="43254" QuestObjectiveIndex="2" WaitTime="70000" />
 				<CustomBehavior File="KillUntilComplete" MobId="110556" QuestId="43254" QuestObjectiveIndex="3" X="-639.2794" Y="2574.77" Z="82.38639" />
 				<CustomBehavior File="WaitTimer" WaitTime="30000" TerminateWhen="Object(252054, u =&gt; u.ToGameObject().CanUse()) != null" />
 
@@ -211,10 +213,11 @@ END INITORDER COMMENT -->
 				<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
 				<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
 
-				<CustomBehavior File="InteractWith" MobId="252046" QuestId="43254" QuestObjectiveIndex="5" X="-656.9566" Y="2600.425" Z="82.24527" />
+				<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Object(252046, u =&gt; u.ToGameObject().CanUse()) != null" />
+				<CustomBehavior File="InteractWith" MobId="252046" QuestId="43254" QuestObjectiveIndex="5" InteractBlacklistTimeInSeconds="1" X="-656.9566" Y="2600.425" Z="82.24527" />
 				<CustomBehavior File="WaitTimer" WaitTime="11000" TerminateWhen="!Me.IsCasting" />
 
-				<CustomBehavior File="InteractWith" MobId="110476"  QuestId="43254" QuestObjectiveIndex="6" X="-693.1285" Y="2647.298" Z="77.49017" />
+				<CustomBehavior File="InteractWith" MobId="110476"  QuestId="43254" QuestObjectiveIndex="6" InteractBlacklistTimeInSeconds="1" X="-693.1285" Y="2647.298" Z="77.49017" />
 			</While>
 			<TurnIn QuestName="Ritual Ruination" QuestId="43254" TurnInName="Calydus" TurnInId="101097" X="-858.3073" Y="4456.332" Z="695.9575" />
 

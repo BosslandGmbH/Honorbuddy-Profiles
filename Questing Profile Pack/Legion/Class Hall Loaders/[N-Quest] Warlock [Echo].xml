@@ -93,10 +93,10 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="The New Blood" QuestId="40729" GiverName="Ritssyn Flamescowl" GiverId="101456" X="-842.4809" Y="4446.772" Z="696.0022" />
 			<While Condition="DoQuest(40729)" >
-				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0"
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0" >
 					<MoveTo X="-858.4168" Y="4455.454" Z="695.9582" />
 					<CustomBehavior File="WaitTimer" WaitTime="35000" />
-					<CustomBehavior File="InteractWith" MobId="101433" Range="20" QuestId="40729" QuestObjectiveIndex="1" X="-868.9045" Y="4438.607" Z="696.6592" />
+					<CustomBehavior File="InteractWith" MobId="101433" WaitForNpcs="false" Range="20" QuestId="40729" QuestObjectiveIndex="1" X="-868.9045" Y="4438.607" Z="696.6592" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
@@ -150,7 +150,8 @@ END INITORDER COMMENT -->
 					<MoveTo X="3130.772" Y="909.872" Z="247.6052" />
 					<CustomBehavior File="KillUntilComplete" MobId="98834" X="3089.86" Y="854.8242" Z="243.3767" TerminateWhen="Unit(98834, u =&gt; u.IsDead) != null" />
 					<MoveTo X="3089.327" Y="838.8879" Z="243.8869" />
-					<CustomBehavior File="MyCTM" X="3086.196" Y="825.6235" Z="243.671" /> <!-- NOTE: <AddTerminateWhen> : Shut off when player goes through portal. -->
+					<CustomBehavior File="MyCTM" X="3086.196" Y="825.6235" Z="243.671" TerminateWhen="Me.ZoneId == 8392" /> <!-- 8392 Circle of Wills -->
+					<CustomBehavior File="WaitTimer" WaitTime="10000" QuestId="40729" />
 				</If>
 			</While>
 			<TurnIn QuestName="The New Blood" QuestId="40729" TurnInName="Calydus" TurnInId="101097" X="-858.3073" Y="4456.332" Z="695.9575" />
@@ -195,9 +196,9 @@ END INITORDER COMMENT -->
 		<!-- Introductory Class Hall Quests -->
 			<PickUp QuestName="The Heart of the Dreadscar" QuestId="40731" GiverName="Calydus" GiverId="101097" X="-858.3073" Y="4456.332" Z="695.9575" />
 			<While Condition="DoQuest(40731)" >
-				<If Condition="Me.MapId == 1107" > <!-- NOTE: <CheckID> : There was two Dreadscar Rifts in the area table.  Using 1107 as it was around other scenario-based IDs. -->
+				<If Condition="Me.MapId != 1522" >
 					<MoveTo X="-867.2147" Y="4444.254" Z="696.6596" />
-					<CustomBehavior File="MyCTM" X="-874.9042" Y="4436.101" Z="696.6596" TerminateWhen="Me.MapId == 1107" /> <!-- TerminateWhen inside -->
+					<CustomBehavior File="MyCTM" X="-874.9042" Y="4436.101" Z="696.6596" TerminateWhen="Me.MapId == 1522" /> <!-- TerminateWhen inside -->
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
@@ -207,11 +208,15 @@ END INITORDER COMMENT -->
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
 					<CustomBehavior File="InteractWith" MobId="101468" X="3095.13" Y="962.903" Z="257.7383" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
-					<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2"  />
+					<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
-					<CustomBehavior File="InteractWith" MobId="246148" IgnoreLoSToTarget="true" MinRange="6.5" X="3148.451" Y="1146.177" Z="291.8969" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+					<MoveTo X="3115.054" Y="1110.766" Z="286.6478" />
+					<CustomBehavior File="MyCTM" X="3144.965" Y="1142.593" Z="288.9298" />
+					<CustomBehavior File="WaitTimer" WaitTime="1000" />
+					<CustomBehavior File="InteractWith" MobId="246148" IgnoreLoSToTarget="true" MovementBy="ClickToMoveOnly" Range="6" X="3148.451" Y="1146.177" Z="291.8969" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+					<CustomBehavior File="MyCTM" X="3115.378" Y="1111.142" Z="286.6543" />
 					<CustomBehavior File="WaitTimer" QuestId="40731" WaitTime="45000" />
 				</If>
 			</While>
@@ -235,14 +240,13 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="Rebuilding the Council" QuestId="40823" GiverName="Calydus" GiverId="101097" X="3121.295" Y="1106.274" Z="286.4948" />
 			<While Condition="DoQuest(40823)" >
-				<CustomBehavior File="InteractWith" MobId="101921" QuestId="40823" QuestObjectiveIndex="1" X="2992.059" Y="1148.891" Z="209.6857" />
-				<CustomBehavior File="WaitTimer" WaitTime="20000" />
+				<CustomBehavior File="InteractWith" MobId="101921" NonCompeteDistance="0" QuestId="40823" QuestObjectiveIndex="1" X="2992.059" Y="1148.891" Z="209.6857" />
 			</While>
 			<TurnIn QuestName="Rebuilding the Council" QuestId="40823" TurnInName="Ritssyn Flamescowl" TurnInId="101921" X="2984.213" Y="1157.557" Z="211.9093" />
 
 			<PickUp QuestName="The Path of the Dreadscar" QuestId="40824" GiverName="Ritssyn Flamescowl" GiverId="101921" X="2984.213" Y="1157.557" Z="211.9093" />
 			<While Condition="DoQuest(40824)" >
-				<CustomBehavior File="InteractWith" MobId="101979" WaitTime="1500" QuestId="40824" X="3038.363" Y="887.6805" Z="247.2501" />
+				<CustomBehavior File="InteractWith" MobId="101979" WaitTime="1500" NonCompeteDistance="0" QuestId="40824" X="3038.363" Y="887.6805" Z="247.2501" />
 				<If Condition="NeedsQuest(39718)" > <!-- Azsuna -->
 					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
 					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
@@ -252,7 +256,7 @@ END INITORDER COMMENT -->
 
 			<While Condition="DoQuest(39718)" >
 				<MoveTo X="3088.475" Y="838.9525" Z="243.8864" />
-				<CustomBehavior File="MyCTM" X="3084.979" Y="819.9088" Z="243.6615" /> <!-- NOTE: <ConditionalCheck> : Leaving in Class Hall,  TerminateWhen Me In Dalaran -->
+				<CustomBehavior File="MyCTM" X="3084.979" Y="819.9088" Z="243.6615" TerminateWhen="Me.ZoneId == 8392" />
 				<CustomBehavior File="WaitTimer" WaitTime="3000" />
 				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />		
 			</While>
@@ -273,7 +277,7 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
 				</If>
 				<MoveTo X="3088.475" Y="838.9525" Z="243.8864" />
-				<CustomBehavior File="MyCTM" X="3084.979" Y="819.9088" Z="243.6615" /> <!-- NOTE: <ConditionalCheck> : Leaving in Class Hall,  TerminateWhen Me In Dalaran -->
+				<CustomBehavior File="MyCTM" X="3084.979" Y="819.9088" Z="243.6615" TerminateWhen="Me.ZoneId == 8392" />
 				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />
 			</If>
 		<!-- END Azsuna -->
@@ -286,7 +290,7 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
 				</If>
 				<MoveTo X="3088.475" Y="838.9525" Z="243.8864" />
-				<CustomBehavior File="MyCTM" X="3084.979" Y="819.9088" Z="243.6615" /> <!-- NOTE: <ConditionalCheck> : Leaving in Class Hall,  TerminateWhen Me In Dalaran -->
+				<CustomBehavior File="MyCTM" X="3084.979" Y="819.9088" Z="243.6615" TerminateWhen="Me.ZoneId == 8392" />
 				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Val'sharah [Echo].xml" />
 			</If>
 		<!-- END Val'sharah -->
@@ -299,7 +303,7 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
 				</If>
 				<MoveTo X="3088.475" Y="838.9525" Z="243.8864" />
-				<CustomBehavior File="MyCTM" X="3084.979" Y="819.9088" Z="243.6615" /> <!-- NOTE: <ConditionalCheck> : Leaving in Class Hall,  TerminateWhen Me In Dalaran -->
+				<CustomBehavior File="MyCTM" X="3084.979" Y="819.9088" Z="243.6615" TerminateWhen="Me.ZoneId == 8392" />
 				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Highmountain [Echo].xml" />
 			</If>
 		<!-- END Highmountain -->
@@ -312,7 +316,7 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
 				</If>
 				<MoveTo X="3088.475" Y="838.9525" Z="243.8864" />
-				<CustomBehavior File="MyCTM" X="3084.979" Y="819.9088" Z="243.6615" /> <!-- NOTE: <ConditionalCheck> : Leaving in Class Hall,  TerminateWhen Me In Dalaran -->
+				<CustomBehavior File="MyCTM" X="3084.979" Y="819.9088" Z="243.6615" TerminateWhen="Me.ZoneId == 8392" />
 				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Stormehim [Echo].xml" />
 			</If>
 		<!-- END Stormheim -->
