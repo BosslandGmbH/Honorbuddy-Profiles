@@ -93,19 +93,22 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="The New Blood" QuestId="40729" GiverName="Ritssyn Flamescowl" GiverId="101456" X="-842.4809" Y="4446.772" Z="696.0022" />
 			<While Condition="DoQuest(40729)" >
-				<MoveTo X="-858.4168" Y="4455.454" Z="695.9582" />
-				<CustomBehavior File="WaitTimer" WaitTime="35000" />
-				<CustomBehavior File="InteractWith" MobId="101433" Range="20" QuestId="40729" QuestObjectiveIndex="1" X="-868.9045" Y="4438.607" Z="696.6592" />
-				<CustomBehavior File="WaitTimer" WaitTime="105000" />
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0"
+					<MoveTo X="-858.4168" Y="4455.454" Z="695.9582" />
+					<CustomBehavior File="WaitTimer" WaitTime="35000" />
+					<CustomBehavior File="InteractWith" MobId="101433" Range="20" QuestId="40729" QuestObjectiveIndex="1" X="-868.9045" Y="4438.607" Z="696.6592" />
+				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
 					<CustomBehavior File="WaitTimer" WaitTime="70000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<DisableBehavior Name="Combat" />
 					<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
 					<CustomBehavior File="WaitTimer" WaitTime="15000" />
 					<CustomBehavior File="MyCTM" X="2966.855" Y="1130.815" Z="206.5542" />
+					<EnableBEhavior Name="Combat" />
 					<CustomBehavior File="KillUntilComplete" MobId="98836" X="2971.992" Y="1127.061" Z="207.5549" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
 				</If>
 
@@ -133,7 +136,7 @@ END INITORDER COMMENT -->
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
-					<CustomBehavior File="KillUntilComplete" MobId="99516" X="3095.802" Y="970.7292" Z="257.6465" TerminateWhen="Unit(99516, u =&gt; u.IsDead) != null" />
+					<CustomBehavior File="KillUntilComplete" MobId="99516" X="3095.802" Y="970.7292" Z="257.6465" TerminateWhen="Unit(99516, u =&gt; u.IsDead) != null ||  Unit(99516) == null" />
 					<MoveTo X="3095.609" Y="969.7092" Z="257.7378" />
 					<CustomBehavior File="WaitTimer" WaitTime="20000" />
 					<CustomBehavior File="InteractWith" MobId="245924" InteractByLooting="true" X="3095.983" Y="963.5382" Z="257.3805" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
