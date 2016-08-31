@@ -19,8 +19,14 @@
 
 	<TargetElites>true</TargetElites>
 
+	<DefaultNavType>Fly</DefaultNavType>
+
 	<Vendors>
 	</Vendors>
+
+	<Blackspots>
+		<Blackspot X="1718.169" Y="1538.183" Z="1.801449" Radius="16.2485" />
+	</Blackspots>
 
 <!-- INITORDER COMMENT 
 	<InitOrder>
@@ -78,9 +84,13 @@ END INITORDER COMMENT -->
 
 		<!-- Introductory Class Hall Quests -->
 			<PickUp QuestName="A Summons From Moonglade" QuestId="40643" GiverName="Archdruid Hamuul Runetotem" GiverId="101061" X="-836.509" Y="4392.921" Z="737.6797" /> <!-- May be a bit slow to spawn after first entering Dalaran. -->
-			<While Condition="HasQuest(40643)" > <!-- NOTE ~> Add ID check &amp;&amp; ME IS IN DALARAN -->
-				<CustomBehavior File="RunCode" Code="SpellManager.Cast(18960);" />
-				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Me.MapId != 111111 || !Me.IsCasting" />
+			<!-- Seems to have id 53854 if player abandoned the quest -->
+			<While Condition="DoQuest(40643)" > <!-- NOTE ~> Add ID check &amp;&amp; ME IS IN DALARAN -->
+				<CustomBehavior File="RunCode" Code="
+					if (Me.ZoneId != 493)
+						SpellManager.Cast(18960);
+				" />
+				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Me.ZoneId == 493 || !Me.IsCasting" />
 			</While>
 			<TurnIn QuestName="A Summons From Moonglade" QuestId="40643" TurnInName="Archdruid Hamuul Runetotem" TurnInId="101064" X="8001.76" Y="-2680.266" Z="512.0837" />
 
@@ -97,8 +107,10 @@ END INITORDER COMMENT -->
 			<While Condition="DoQuest(40644)" >
 				<MoveTo QuestId="40644" QuestObjectiveIndex="1" X="7566.188" Y="-2899.177" Z="460.0998" />
 				<CustomBehavior File="WaitTimer" QuestId="40644" QuestObjectiveIndex="2" WaitTime="60000" />
-				<While Condition="IsObjectiveComplete(1, 40644)" >
+				<While Condition="DoQuest(40644)" >
 					<MoveTo X="7565.53" Y="-2925.842" Z="465.2671" />
+					<CustomBehavior File="MyCTM" X="7565.618" Y="-2926.026" Z="465.2986" />
+					<CustomBehavior File="WaitTimer" WaitTime="1500" />
 					<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
 					<CustomBehavior File="WaitTimer" QuestId="40644" QuestObjectiveIndex="3" WaitTime="16000" />
 				</While>
@@ -107,15 +119,18 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="To The Dreamgrove" QuestId="40645" GiverName="Malfurion Stormrage" GiverId="103875" X="7559.609" Y="-2921.609" Z="464.9646" />
 			<While Condition="DoQuest(40645)" >
-				<If Condition="Me.MapId != 1540" > <!-- NOTE: <CheckID> -->  
+				<If Condition="Me.ZoneId != 7979" > <!-- NOTE: <CheckID> -->  
 					<MoveTo X="7564.955" Y="-2939.629" Z="467.6891" />
-					<CustomBehavior File="MyCTM" X="7563.886" Y="-2960.902" Z="467.976" TerminateWhen="Me.MapId == 1540" />
+					<CustomBehavior File="MyCTM" X="7563.886" Y="-2960.902" Z="467.976" TerminateWhen="Me.ZoneId == 7979" />
 				</If>
 				<MoveTo X="1704.347" Y="1548.302" Z="2.620985" />
 				<CustomBehavior File="WaitTimer" QuestId="40645" QuestObjectiveIndex="2" WaitTime="60000" />
 
-				<!-- NOTE: <AddAvoid> : Severity - minor. -->
-				<CustomBehavior File="KillUntilComplete" MobId="103246" QuestId="40645" QuestObjectiveIndex="3" X="1750.29" Y="1327.941" Z="2.448324" />
+				<If Condition="!IsObjectiveComplete(3, 40645)" >
+					<MoveTo X="1680.632" Y="1453.776" Z="3.355846" />
+					<!-- NOTE: <AddAvoid> : Severity - medium-high. -->
+					<CustomBehavior File="KillUntilComplete" MobId="103246" QuestId="40645" QuestObjectiveIndex="3" X="1750.29" Y="1327.941" Z="2.448324" />
+				</If>
 				<MoveTo X="1766.435" Y="1508.679" Z="7.188321" />
 				<CustomBehavior File="MyCTM" X="1784.506" Y="1504.145" Z="9.844843" TerminateWhen="Me.ZoneId == 7846" /> <!-- NOTE: <CheckID> Player entering Druid Class Hall -->
 

@@ -112,7 +112,9 @@ END INITORDER COMMENT -->
 			<!-- :END1 -->
 			<While Condition="DoQuest(40710)" >
 				<!-- Leave class hall and go to Tirisfal, not needed if this is our first artifact. -->
-				<MoveTo QuestId="40710" QuestObjectiveIndex="1" X="2184.243" Y="2404.892" Z="118.4258" />
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0 &amp;&amp; !HasItem(128827)" >
+					<MoveTo QuestId="40710" QuestObjectiveIndex="1" X="2069.151" Y="2434.454" Z="126.8198" />
+				</If>
 
 				<If Condition="!IsObjectiveComplete(2, 40710)" >
 					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
@@ -192,7 +194,7 @@ END INITORDER COMMENT -->
 					</If>
 				</If>
 
-				<If Condition="!IsObjectiveComplete(3, 40710)" >
+				<If Condition="!IsObjectiveComplete(3, 40710) &amp;&amp; HasItem(128827)" >
 					<CustomBehavior File="InteractWith" MobId="247351" QuestId="40710" QuestObjectiveIndex="3" X="1883.158" Y="2206.844" Z="38.29892" /> <!-- NOTE: Can terminate if we're already in Dalaran -->
 					<MoveTo X="-702.8652" Y="4489.302" Z="729.4102" />
 				</If>
