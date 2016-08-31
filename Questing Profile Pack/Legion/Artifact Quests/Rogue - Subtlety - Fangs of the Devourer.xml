@@ -109,11 +109,11 @@ END INITORDER COMMENT -->
 		<!-- Story: Artifact Weapon - Fangs of the Devourer -->
 			<PickUp QuestName="The Shadows Reveal" QuestId="41919" GiverName="Valeera Sanguinar" GiverId="98102" X="-951.6077" Y="4550.643" Z="698.5582" />
 			<While Condition="DoQuest(41919)" >
-				<CustomBehavior File="InteractWith" MobId="249382" X="-916.7535" Y="4534.221" Z="706.9974" /> <!-- Open bookcase to leave hidden room -->
+				<CustomBehavior File="InteractWith" MobId="249382" NonCompeteDistance="0" X="-916.7535" Y="4534.221" Z="706.9974" /> <!-- Open bookcase to leave hidden room -->
 
-				<CustomBehavior File="InteractWith" MobId="105332" GossipOptions="1" QuestId="41919" QuestObjectiveIndex="1" X="-935.3455" Y="4648.175" Z="728.7687" />
-				<CustomBehavior File="InteractWith" MobId="96782" GossipOptions="1" QuestId="41919" QuestObjectiveIndex="3" X="-755.9288" Y="4424.801" Z="737.7957" />
-				<CustomBehavior File="InteractWith" MobId="105333" GossipOptions="1" NumOfTimes="6" QuestId="41919" QuestObjectiveIndex="2" X="-851.9514" Y="4404.333" Z="717.0285" />
+				<CustomBehavior File="InteractWith" MobId="105332" NonCompeteDistance="0" GossipOptions="1" QuestId="41919" QuestObjectiveIndex="1" X="-935.3455" Y="4648.175" Z="728.7687" />
+				<CustomBehavior File="InteractWith" MobId="96782" NonCompeteDistance="0" GossipOptions="1" QuestId="41919" QuestObjectiveIndex="3" X="-755.9288" Y="4424.801" Z="737.7957" />
+				<CustomBehavior File="InteractWith" MobId="105333" NonCompeteDistance="0" GossipOptions="1" NumOfTimes="6" QuestId="41919" QuestObjectiveIndex="2" X="-851.9514" Y="4404.333" Z="717.0285" />
 				<CustomBehavior File="WaitTimer" QuestId="41919" QuestObjectiveIndex="2" WaitTime="30000" />
 			</While>
 			<TurnIn QuestName="The Shadows Reveal" QuestId="41919" TurnInName="Valeera Sanguinar" TurnInId="98102" X="-969.9045" Y="4447.61" Z="735.7388" />
@@ -134,30 +134,44 @@ END INITORDER COMMENT -->
 				<CustomBehavior File="InteractWith" MobId="248876" InteractByLooting="true" QuestId="41920" QuestObjectiveIndex="1" X="-843.0469" Y="4431.337" Z="742.8807" />
 				<CustomBehavior File="Hooks\Avoid" AvoidName="ArcaneSentry" Command="Remove" />
 				<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepStealth" Command="Remove" />
-				<CustomBehavior File="InteractWith" MobId="105333" QuestId="41920" QuestObjectiveIndex="2" X="-851.9514" Y="4404.333" Z="717.0285" />
+				<CustomBehavior File="InteractWith" MobId="105333" GossipOptions="1" NonCompeteDistance="0" QuestId="41920" QuestObjectiveIndex="2" X="-851.9514" Y="4404.333" Z="717.0285" />
 			</While>
 			<TurnIn QuestName="A Matter of Finesse" QuestId="41920" TurnInName="Valeera Sanguinar" TurnInId="98102" X="-851.4618" Y="4401.409" Z="717.0576" />
 
 			<PickUp QuestName="Closing In" QuestId="41921" GiverName="Valeera Sanguinar" GiverId="98102" X="-851.4618" Y="4401.409" Z="717.0576" />
 			<While Condition="DoQuest(41921)" >
+				<!-- Add avoid -->
 				<CustomBehavior File="KillUntilComplete" MobId="105450" QuestId="41921" QuestObjectiveIndex="1" X="-801.9639" Y="4486.852" Z="745.9301" />
 			</While>
 			<TurnIn QuestName="Closing In" QuestId="41921" TurnInName="Valeera Sanguinar" TurnInId="98102" X="-851.4618" Y="4401.409" Z="717.0576" />
 
 			<PickUp QuestName="Traitor!" QuestId="41922" GiverName="Valeera Sanguinar" GiverId="98102" X="-851.4618" Y="4401.409" Z="717.0576" />
+			<If Condition="HasQuest(41922)" >
+				<MoveTo X="-837.2621" Y="4390.207" Z="737.7202" />
+			</If>
 			<TurnIn QuestName="Traitor!" QuestId="41922" TurnInName="Valeera Sanguinar" TurnInId="98102" X="-851.4618" Y="4401.409" Z="717.0576" />
 
 			<PickUp QuestName="Fangs of the Devourer" QuestId="41924" GiverName="Val'zuun" GiverId="105464" X="-851.0886" Y="4405.228" Z="716.9459" />
 			<While Condition="DoQuest(41924)" >
-				<CustomBehavior File="InteractWith" MobId="248901" QuestId="41924" QuestObjectiveIndex="1" X="-846.2379" Y="4408.116" Z="717.1523" />
+				<CustomBehavior File="InteractWith" MobId="248901" NonCompeteDistance="0" QuestId="41924" X="-846.2379" Y="4408.116" Z="717.1523" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 0" />
 
 				<CustomBehavior File="Hooks\Avoid" AvoidName="ShadowgoreStalker" Command="Add" ObjectId="105539" Radius="4.5" AvoidWhen="!UNIT.Aggro" />
 				<CustomBehavior File="Hooks\Avoid" AvoidName="ShadowgoreBloodmaiden" Command="Add" ObjectId="105537" Radius="4" AvoidWhen="!UNIT.Aggro" />
 				<CustomBehavior File="Hooks\Avoid" AvoidName="ShadowgoreDarkcaster" Command="Add" ObjectId="105538" Radius="4" AvoidWhen="!UNIT.Aggro" />
 				<CustomBehavior File="Hooks\Avoid" AvoidName="EyeOfXirus" Command="Add" ObjectId="105541" Radius="17" AvoidWhen="!UNIT.Aggro" />
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepStealth" UseWhen="!Me.Combat &amp;&amp; !Me.HasAura(1784)" >
+					<CustomBehavior File="RunCode"><![CDATA[
+							await Coroutine.Wait(5000, () => SpellManager.CanCast(1784));
+							SpellManager.Cast(1784);
+						]]>
+					</CustomBehavior>
+				</CustomBehavior>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<UseMount Value="false" />
+					<DisableBehavior Name="Pull" />
 					<MoveTo X="1875.384" Y="1283.559" Z="91.83971" />
+					<EnableBehavior Name="Pull" />
 					<CustomBehavior File="KillUntilComplete" MobId="105536" X="1854.158" Y="1275.573" Z="91.71672" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
 				</If>
 
@@ -185,8 +199,8 @@ END INITORDER COMMENT -->
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
 					<CustomBehavior File="InteractWith" MobId="249809" X="1847.932" Y="1259.83" Z="56.99668" TerminateWhen="IsScenarioCriteriaComplete(1)" />
-					<CustomBehavior File="InteractWith" MobId="248992" X="1869.599" Y="1271.953" Z="57.0953" TerminateWhen="IsScenarioCriteriaComplete(2)" />
-					<CustomBehavior File="InteractWith" MobId="249390" X="1854.505" Y="1296.273" Z="62.13059" TerminateWhen="IsScenarioCriteriaComplete(3)" />
+					<CustomBehavior File="InteractWith" MobId="248992" Range="4" X="1869.599" Y="1271.953" Z="57.0953" TerminateWhen="IsScenarioCriteriaComplete(2)" />
+					<CustomBehavior File="InteractWith" MobId="249390" Range="8" X="1854.505" Y="1296.273" Z="62.13059" TerminateWhen="IsScenarioCriteriaComplete(3)" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
@@ -216,18 +230,22 @@ END INITORDER COMMENT -->
 				</If>
 
 
+				<CustomBehavior File="Hooks\Avoid" AvoidName="ShadowgoreStalker" Command="Remove" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="ShadowgoreBloodmaiden" Command="Remove" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="ChaosGuard" Command="Remove" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="ShadowgoreDarkcaster" Command="Remove" />
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepStealth" Command="Remove" />
+
 				<If Condition="HasItem(128476)" >
-					<CustomBehavior File="Hooks\Avoid" AvoidName="ShadowgoreStalker" Command="Remove" />
-					<CustomBehavior File="Hooks\Avoid" AvoidName="ShadowgoreBloodmaiden" Command="Remove" />
-					<CustomBehavior File="Hooks\Avoid" AvoidName="ChaosGuard" Command="Remove" />
 					<MoveTo X="1854.965" Y="1419.862" Z="92.1505" />
 					<CustomBehavior File="InteractWith" MobId="248908" X="1855.167" Y="1425.644" Z="92.68004" />
 				</If>
+				<UseMount Value="true" />
 			</While>
 			<If Condition="QuestDone(41924) &amp;&amp; Me.ZoneId != 8011" > <!-- NOTE: <CheckID>,  Rogue Class Hall -->
 				<MoveTo X="-970.8673" Y="4438.853" Z="735.7394" />
 				<CustomBehavior File="InteractWith" MobId="97004" GossipOptions="1" X="-973.3143" Y="4435.202" Z="735.7391" /> <!-- Enter class hall -->
-				<CustomBehavior File="InteractWith" MobId="246387" X="-909.7969" Y="4538.942" Z="707.6417" /> <!-- Open hidden bookcase -->
+				<CustomBehavior File="InteractWith" MobId="246387" NonCompeteDistance="0" X="-909.7969" Y="4538.942" Z="707.6417" /> <!-- Open hidden bookcase -->
 			</If>
 			<TurnIn QuestName="Fangs of the Devourer" QuestId="41924" TurnInName="Valeera Sanguinar" TurnInId="98102" X="-951.6077" Y="4550.641" Z="698.5583" />
 		<!-- END Story: Artifact Weapon - Fangs of the Devourer -->
