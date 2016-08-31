@@ -440,15 +440,32 @@ END INITORDER COMMENT -->
 			<TurnIn QuestName="Lost in Retreat" QuestId="38671" TurnInName="Mender Onelle" TurnInId="94863" X="3151.359" Y="5779.863" Z="308.1495" />
 			<TurnIn QuestName="Wormtalon Wreckage" QuestId="41707" TurnInName="Aldos Duskwing" TurnInId="95117" X="3152.448" Y="5777.948" Z="308.1561" />
 
-			<PickUp QuestName="Heart of the Nightmare" QuestId="41724" GiverName="Tyrande Whisperwind" GiverId="103022" X="3145.665" Y="5774.15" Z="308.18" />
-			<TurnIn QuestName="Heart of the Nightmare" QuestId="41724" TurnInName="Tyrande Whisperwind" TurnInId="104728" X="3320.364" Y="5958.033" Z="249.0644" />
+			<If Condition="Me.IsAlliance" >
+				<PickUp QuestName="Heart of the Nightmare" QuestId="41724" GiverName="Tyrande Whisperwind" GiverId="103022" X="3145.665" Y="5774.15" Z="308.18" />
+			</If>
+			<If Condition="Me.IsHorde" >
+				<PickUp QuestName="Heart of the Nightmare" QuestId="38675" GiverName="Tyrande Whisperwind" GiverId="103022" X="3145.665" Y="5774.15" Z="308.18" />
+			</If>
+
+			<If Condition="Me.IsAlliance" >
+				<TurnIn QuestName="Heart of the Nightmare" QuestId="41724" TurnInName="Tyrande Whisperwind" TurnInId="104728" X="3320.364" Y="5958.033" Z="249.0644" />
+			</If>
+			<If Condition="Me.IsHorde" >
+				<PickUp QuestName="Heart of the Nightmare" QuestId="38675" GiverName="Tyrande Whisperwind" GiverId="103022" X="3145.665" Y="5774.15" Z="308.18" />
+			</If>
 
 			<!-- NOTE: <TechnicalCheck> : This mob's XYZ is wayyyyy off.  This applies for all occurences of mobId 92783. -->
 			<PickUp QuestName="Reading the Leaves" QuestId="38684" GiverName="Elothir" GiverId="92783" X="-7.052065E-05" Y="7.241555E-05" Z="0.02027451" />
-			<PickUp QuestName="Given to Corruption" QuestId="41893" GiverName="Elothir" GiverId="92783" X="-7.052065E-05" Y="7.241555E-05" Z="0.02027451" />
 
-			<While Condition="DoQuest(41893)" >
-				<CustomBehavior File="KillUntilComplete" MobId="92989" QuestId="41893" QuestObjectiveIndex="1" X="3666.594" Y="5815.972" Z="227.9332" />
+			<If Condition="Me.IsAlliance" >
+				<PickUp QuestName="Given to Corruption" QuestId="41893" GiverName="Elothir" GiverId="92783" X="-7.052065E-05" Y="7.241555E-05" Z="0.02027451" />
+			</If>
+			<If Condition="Me.IsHorde" >
+				<PickUp QuestName="Given to Corruption" QuestId="41749" GiverName="Elothir" GiverId="92783" X="-7.052065E-05" Y="7.241555E-05" Z="0.02027451" />
+			</If>
+
+			<While Condition="DoQuest(41893, 41749)" >
+				<CustomBehavior File="KillUntilComplete" MobId="92989" X="3666.594" Y="5815.972" Z="227.9332" TerminateWhen="IsQuestCompleted(41893) || IsQuestCompleted(41749)" />
 			</While>
 			<While Condition="DoQuest(38684)" >
 				<CustomBehavior File="KillUntilComplete" MobIds="97338, 93155, 97337" QuestId="38684" QuestObjectiveIndex="1" >
@@ -479,7 +496,13 @@ END INITORDER COMMENT -->
 
 
 			<TurnIn QuestName="Reading the Leaves" QuestId="38684" TurnInName="Elothir" TurnInId="92783" X="-7.052065E-05" Y="7.241555E-05" Z="0.02027451" />
-			<TurnIn QuestName="Given to Corruption" QuestId="41893" TurnInName="Elothir" TurnInId="92783" X="-7.052065E-05" Y="7.241555E-05" Z="0.02027451" />
+
+			<If Condition="Me.IsAlliance" >
+				<TurnIn QuestName="Given to Corruption" QuestId="41893" TurnInName="Elothir" TurnInId="92783" X="-7.052065E-05" Y="7.241555E-05" Z="0.02027451" />
+			</If>
+			<If Condition="Me.IsHorde" >
+				<TurnIn QuestName="Given to Corruption" QuestId="41749" TurnInName="Elothir" TurnInId="92783" X="-7.052065E-05" Y="7.241555E-05" Z="0.02027451" />
+			</If>
 
 			<PickUp QuestName="Softening the Target" QuestId="43702" GiverName="Elothir" GiverId="104728" X="3320.365" Y="5958.033" Z="249.0662" />
 			<While Condition="DoQuest(43702)" >
