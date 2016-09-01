@@ -44,6 +44,7 @@
 
 	<Blackspots>
 		<Blackspot X="-93.79848" Y="6982.305" Z="12.39837" Radius="3.731443" /> <!-- GameObjects near Allari the Souleater in Illidari Stand -->
+		<Blackspot X="-376.3742" Y="6675.382" Z="4.599216" Radius="23.31855" /> <!-- Bad navigation spot. -->
 	</Blackspots>
 
 <!-- INITORDER COMMENT 
@@ -928,7 +929,9 @@ END INITORDER COMMENT -->
 			<While Condition="DoQuest(37470)" >
 				<!-- NOTE: <AddAvoid> : Could use some avoids here for this boss.  Bubbles fall from sky with stun player.    Waves also spawn from boss.
 				Avoids aren't completely needed.  Boss is easy enough. -->
+				<DisableBehavior Name="Pull" />
 				<CustomBehavior File="KillUntilComplete" MobId="88855" QuestId="37470" QuestObjectiveIndex="1" X="-2.307292" Y="5697.265" Z="8.551732" />
+				<EnableBehavior Name="Pull" />
 			</While>
 			<TurnIn QuestName="The Head of the Snake" QuestId="37470" TurnInName="Prince Farondis" TurnInId="91403" X="0.9027778" Y="5765.165" Z="3.281234" />
 
@@ -950,10 +953,12 @@ END INITORDER COMMENT -->
 
 		<!-- Side Quests -->
 			<!-- Farondale -->
+			<!--
+				This quest is being commented because "Eye See You" bugs the bot out since it's not controlling the player
 			<TurnIn QuestName="Felblaze Ingress" QuestId="42372" TurnInName="Tehd Shoemaker" TurnInId="107244" X="534.8368" Y="5623.675" Z="77.29915" />
 			<PickUp QuestName="Eye See You" QuestId="42375" GiverName="Tehd Shoemaker" GiverId="107244" X="XXX" Y="YYY" Z="ZZZ" />
 			<While Condition="DoQuest(42375)" >
-				<!-- NOTE: <CheckLogic> : LegionBuddy is keeping the XYZ of the player instead of the controlled eye.  Avoid won't work if this remains this way. -->
+				NOTE: <CheckLogic> : LegionBuddy is keeping the XYZ of the player instead of the controlled eye.  Avoid won't work if this remains this way.
 				<CustomBehavior File="Hooks\Avoid" AvoidName="EyeOfZoth" Command="Add" ObjectType="Npc" ObjectId="107352" Radius="8" AvoidWhen="Me.HasAura(42375)" />
 				<If Condition="!Me.HasAura(212754)" >
 					<CustomBehavior File="InteractWith" MobId="107252" PreInteractMountStrategy="DismountOrCancelShapeshift" QuestId="42375" X="532.7066" Y="5623.68" Z="76.85637" />
@@ -964,6 +969,7 @@ END INITORDER COMMENT -->
 				<If Condition="IsQuestCompleted(42375) &amp;&amp; Me.HasAura(42375)" >
 					<CustomBehavior File="Misc\RunLua" Lua="PossessButton2:Click();" />
 				</If>
+				<CustomBehavior File="Hooks\Avoid" AvoidName="EyeOfZoth" Command="Remove" />
 			</While>
 			<TurnIn QuestName="Eye See You" QuestId="42375" TurnInName="Tehd Shoemaker" TurnInId="107244" X="534.8368" Y="5623.675" Z="77.29916" />
 
@@ -992,7 +998,7 @@ END INITORDER COMMENT -->
 
 			<TurnIn QuestName="They're Doing it Wrong" QuestId="42369" TurnInName="Tehd Shoemaker" TurnInId="107244" X="534.8368" Y="5623.675" Z="77.29911" />
 			<TurnIn QuestName="Quantity Over Quality" QuestId="42368" TurnInName="Marius Felbane" TurnInId="107245" X="537.368" Y="5622.202" Z="77.62996" />
-			<TurnIn QuestName="Arkethrax" QuestId="42367" TurnInName="Marius Felbane" TurnInId="107245" X="537.368" Y="5622.202" Z="77.62996" />
+			<TurnIn QuestName="Arkethrax" QuestId="42367" TurnInName="Marius Felbane" TurnInId="107245" X="537.368" Y="5622.202" Z="77.62996" />-->
 			<!-- END Farondale -->
 
 			<!-- Olivian Veil -->
@@ -1024,11 +1030,22 @@ END INITORDER COMMENT -->
 						</PursuitList>
 					</CustomBehavior>
 				</While>
-				<TurnIn QuestName="Minion! Kill Them!" QuestId="38232" TurnInName="Daglop" TurnInId="91165" X="-459.7767" Y="5711.571" Z="33.6305" /> <!-- NOTE: <CheckMe> : This NPC is considered 5730 yards away from the player since the NPC is mounted on the player.  Presumably a bug in my tool. -->
+				<While Condition="QuestDone(38232)" >
+					<CustomBehavior File="InteractWith" MobId="91165" IgnoreLoSToTarget="true" X="-459.7767" Y="5711.571" Z="33.6305" TerminateWhen="!HasQuest(38232)" />
+					<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestFrameCompleteButton:Click();" TerminateWhen="!HasQuest(38232)" />
+					<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestFrameCompleteQuestButton:Click();" TerminateWhen="!HasQuest(38232)" />
+					<!-- Using special handling here because the NPC sits behind the player, and normal logic will mess up.
+						<TurnIn QuestName="Minion! Kill Them!" QuestId="38232" TurnInName="Daglop" TurnInId="91165" X="-459.7767" Y="5711.571" Z="33.6305" /> -->
+				</While>
 
-				<PickUp QuestName="This IS In My Contract." QuestId="38237" GiverName="Daglop" GiverId="91165" X="-459.7767" Y="5711.571" Z="33.6305" />
+				<While Condition="NeedsQuest(38237)" >
+					<CustomBehavior File="InteractWith" MobId="91165" IgnoreLoSToTarget="true" X="-459.7767" Y="5711.571" Z="33.6305" TerminateWhen="HasQuest(38237)" />
+					<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestFrameAcceptButton:Click();" TerminateWhen="HasQuest(38237)" />
+					<!-- Using special handling here because the NPC sits behind the player, and normal logic will mess up.
+					<PickUp QuestName="This IS In My Contract." QuestId="38237" GiverName="Daglop" GiverId="91165" X="-459.7767" Y="5711.571" Z="33.6305" /> -->
+				</While>
 				<While Condition="DoQuest(38237)" >
-					<CustomBehavior File="InteractWith" MobId="91185" GossipOptions="1" QuestId="38237" QuestObjectiveIndex="1" X="-519.2882" Y="5607.612" Z="4.513755" />
+					<CustomBehavior File="InteractWith" MobId="91185" GossipOptions="1" QuestId="38237" QuestObjectiveIndex="1" X="-519.2882" Y="5607.612" Z="4.513766" />
 					<CustomBehavior File="KillUntilComplete" MobId="91184" QuestId="38237" QuestObjectiveIndex="2" X="-546.0191" Y="5659.53" Z="2.766259" />
 				</While>
 				<TurnIn QuestName="This IS In My Contract." QuestId="38237" TurnInName="Daglop" TurnInId="91166" X="-447.5054" Y="5736.651" Z="35.47715" />
@@ -1075,7 +1092,8 @@ END INITORDER COMMENT -->
 			<While Condition="DoQuest(37538)" >
 				<CustomBehavior File="InteractWith" MobId="89048" GossipOptions="1" QuestId="37538" X="-330.7951" Y="6673.232" Z="4.49795" />
 				<!-- NOTE: <CheckTimer> : May be too short. -->
-				<CustomBehavior File="WaitTimer" WaitTime="60000" QuestId="37538" />
+				<CustomBehavior File="KillUntilComplete" MobIds="89050" QuestId="37538" QuestObjectiveIndex="2" X="-351.4099" Y="6658.224" Z="0.8298512" />
+				<MoveTo X="-376.7884" Y="6610.452" Z="0.1315838" />
 			</While>
 			<TurnIn QuestName="Round 1, Fight!" QuestId="37538" TurnInType="Object" TurnInName="Okuna Longtusk's Pack" TurnInId="239120" X="-482.0625" Y="6676.999" Z="-2.054145" />
 
@@ -1153,12 +1171,19 @@ END INITORDER COMMENT -->
 
 					<!-- NOTE: <ChangeTarget> : Attack Oublion <89350> to start fight.  Once he turns immune shield on, switch target to  <89287> to kill, then switch back to 89350. -->
 					<!-- MOTE: <AddAvoid> : Mob 89287 spits water on the ground, need to dodge it. -->
-					<CustomBehavior File="KillUntilComplete" MobId="89350" QuestId="37657" QuestObjectiveIndex="2" X="-1001.184" Y="5626.036" Z="6.287228" />
+					<CustomBehavior File="KillUntilComplete" QuestId="37657" QuestObjectiveIndex="2" X="-1001.184" Y="5626.036" Z="6.287228" >
+						<PursuitList>
+							<PursueUnit Id="89350" Priority="1" PursueWhen="!UNIT.HasAura(178902)" />
+							<PursuitUnit Id="89287" Priority="1000" PursueWhen="UNIT.IsHostile" />
+						</PursuitList>
+					</CustomBehavior>
+
 
 					<!-- Get out of cave -->
 					<MoveTo X="-975.3384" Y="5626.203" Z="4.710858" />
 					<CustomBehavior File="MyCTM" X="-899.052" Y="5682.025" Z="-10.71182" />
-      			    <MoveTo X="-897.24" Y="5732.023" Z="-1.675074" />
+					<CustomBehavior File="MyCTM" X="-897.4653" Y="5734.594" Z="-1.259588" />
+      			    <MoveTo X="-916.111" Y="5746.806" Z="2.112487" />
 				</If>
 			</While>
 
