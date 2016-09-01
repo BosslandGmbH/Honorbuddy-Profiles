@@ -684,35 +684,75 @@ END INITORDER COMMENT -->
 				<CustomBehavior File="KillUntilComplete" MobId="92966" QuestId="38715" QuestObjectiveIndex="3" X="3096.058" Y="7245.313" Z="52.7952" />
 			</While>
 
-			<TurnIn QuestName="Maiev's Trail" QuestId="38714" TurnInName="Commander Jarod Shadowsong" TurnInId="92842" X="3117.556" Y="7191.446" Z="53.55869" />
-			<TurnIn QuestName="The Rook's Guard" QuestId="38715" TurnInName="Commander Jarod Shadowsong" TurnInId="92842" X="3117.556" Y="7191.446" Z="53.55869" />
+			<TurnIn QuestName="Maiev's Trail" QuestId="38714" TurnInName="Commander Jarod Shadowsong" TurnInId="94977" X="3117.556" Y="7191.446" Z="53.55869" />
+			<TurnIn QuestName="The Rook's Guard" QuestId="38715" TurnInName="Commander Jarod Shadowsong" TurnInId="94977" X="3117.556" Y="7191.446" Z="53.55869" />
 
-			<PickUp QuestName="Black Rook Prison" QuestId="38717" GiverName="Commander Jarod Shadowsong" GiverId="92842" X="3117.556" Y="7191.446" Z="53.55869" />
+			<PickUp QuestName="Black Rook Prison" QuestId="38717" GiverName="Commander Jarod Shadowsong" GiverId="94977" X="3117.556" Y="7191.446" Z="53.55869" />
 			<While Condition="DoQuest(38717)" >
 				<CustomBehavior File="KillUntilComplete" MobId="92419" QuestId="38717" QuestObjectiveIndex="1" X="3256.917" Y="7281.299" Z="90.76955" />
 				<!-- NOTE: <Functionality> : Could probably use InteractByLooting with InteractWith as a kill method instead since this quest requires looting an item. -->
 			</While>
 			<TurnIn QuestName="Black Rook Prison" QuestId="38717" TurnInName="Commander Jarod Shadowsong" TurnInId="92850" X="3338.097" Y="7370.288" Z="16.6435" />
 
-			<PickUp QuestName="Brotherly Love" QuestId="38724" GiverName="Commander Jarod Shadowsong" GiverId="92850" X="3338.097" Y="7370.288" Z="16.6435" />
-			<PickUp QuestName="Illidari Freedom" QuestId="38719" GiverName="Arduen Soulblade" GiverId="93029" X="3335.917" Y="7370.404" Z="16.64133" />
+			<If Condition="Me.Class == WoWClass.DemonHunter" >
+				<PickUp QuestName="Brotherly Love" QuestId="44457" GiverName="Commander Jarod Shadowsong" GiverId="92850" X="3338.097" Y="7370.288" Z="16.6435" />
+				<PickUp QuestName="Illidari Freedom" QuestId="44278" GiverName="Arduen Soulblade" GiverId="93029" X="3335.917" Y="7370.404" Z="16.64133" />
+			</If>
+			<If Condition="Me.Class != WoWClass.DemonHunter" >
+				<PickUp QuestName="Brotherly Love" QuestId="38724" GiverName="Commander Jarod Shadowsong" GiverId="92850" X="3338.097" Y="7370.288" Z="16.6435" />
+				<PickUp QuestName="Illidari Freedom" QuestId="38719" GiverName="Arduen Soulblade" GiverId="93029" X="3335.917" Y="7370.404" Z="16.64133" />
+			</If>
 
-			<While Condition="DoQuest(38719)" >
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="OpenDoors" UseWhen="ObjectManager.GetObjectsOfType&lt;WoWGameObject&gt;().FirstOrDefault(x =&gt; x.SubType == WoWGameObjectType.Door &amp;&amp; x.Distance &lt; 5 &amp;&amp; x.State == WoWGameObjectState.Ready) != null" >
+				<CustomBehavior File="RunCode" Code="
+						var gatePoi = ObjectManager.GetObjectsOfType&lt;WoWGameObject&gt;().FirstOrDefault(x =&gt; x.SubType == WoWGameObjectType.Door &amp;&amp; x.Distance &lt; 5 &amp;&amp; x.State == WoWGameObjectState.Ready);
+
+						while (gatePoi.State == WoWGameObjectState.Ready) 
+						{
+							gatePoi.Interact();
+							await Coroutine.Yield();
+						}
+					" />
+			</CustomBehavior>
+
+			<While Condition="DoQuest(38719, 44278)" >
 				<!-- NOTE: <Doors> : This area has several doors in which the bot will need to open while going between these interacts.
 					Name="Prison Gate" Entry="243316" X="3381.648" Y="7397.429" Z="15.67497"
 				-->
-				<CustomBehavior File="InteractWith" MobId="94974" GossipOptions="1" QuestId="38719" QuestObjectiveIndex="1" X="3367.568" Y="7408.228" Z="16.82367" />
-				<CustomBehavior File="InteractWith" MobId="94975" GossipOptions="1" QuestId="38719" QuestObjectiveIndex="3" X="3386.103" Y="7419.931" Z="16.76385" />
-				<CustomBehavior File="InteractWith" MobId="94976" GossipOptions="1" QuestId="38719" QuestObjectiveIndex="3" X="3399.964" Y="7315.924" Z="25.51813" />
+				<CustomBehavior File="InteractWith" MobId="94974" GossipOptions="1" NonCompeteDistance="0" QuestId="38719" QuestObjectiveIndex="1" X="3367.568" Y="7408.228" Z="16.82367" />
+				<CustomBehavior File="InteractWith" MobId="94975" GossipOptions="1" NonCompeteDistance="0" QuestId="38719" QuestObjectiveIndex="3" X="3386.103" Y="7419.931" Z="16.76385" />
+				<CustomBehavior File="InteractWith" MobId="94976" GossipOptions="1" NonCompeteDistance="0" QuestId="38719" QuestObjectiveIndex="2" X="3399.964" Y="7315.924" Z="25.51813" />
+
+				<CustomBehavior File="InteractWith" MobId="94974" GossipOptions="1" NonCompeteDistance="0" QuestId="44278" QuestObjectiveIndex="1" X="3367.568" Y="7408.228" Z="16.82367" />
+				<CustomBehavior File="InteractWith" MobId="94975" GossipOptions="1" NonCompeteDistance="0" QuestId="44278" QuestObjectiveIndex="3" X="3386.103" Y="7419.931" Z="16.76385" />
+				<CustomBehavior File="InteractWith" MobId="94976" GossipOptions="1" NonCompeteDistance="0" QuestId="44278" QuestObjectiveIndex="2" X="3399.964" Y="7315.924" Z="25.51813" />
+
+				<MoveTo X="3415.569" Y="7332.56" Z="24.01816" />
 			</While>
-			<TurnIn QuestName="Brotherly Love" QuestId="38724" TurnInName="Maiev Shadowsong" TurnInId="92987" X="3418.531" Y="7430.646" Z="16.76402" />
+
+
+			<If Condition="Me.Class == WoWClass.DemonHunter" >
+				<TurnIn QuestName="Brotherly Love" QuestId="44457" TurnInName="Maiev Shadowsong" TurnInId="92987" X="3418.531" Y="7430.646" Z="16.76402" />
+			</If>
+			<If Condition="Me.Class != WoWClass.DemonHunter" >
+				<TurnIn QuestName="Brotherly Love" QuestId="38724" TurnInName="Maiev Shadowsong" TurnInId="92987" X="3418.531" Y="7430.646" Z="16.76402" />
+			</If>
 
 			<PickUp QuestName="Lieutenant of the Tower" QuestId="38721" GiverName="Maiev Shadowsong" GiverId="93027" X="3418.53" Y="7430.705" Z="16.7646" />
 			<While Condition="DoQuest(38721)" >
 				<CustomBehavior File="KillUntilComplete" MobId="93031" QuestId="38721" QuestObjectiveIndex="1" X="3449.07" Y="7305.792" Z="24.05046" />
 				<CustomBehavior File="InteractWith" MobId="243227" GossipOptions="1" X="3469.553" Y="7292.207" Z="23.94489" /> <!-- NOTE: <Conditional> : Port out of area.  May need this outside the loop with a TerminateWhen to shut it off if the player is already out. -->
 			</While>
-			<TurnIn QuestName="Illidari Freedom" QuestId="38719" TurnInName="Asha Ravensong" TurnInId="95028" X="3089.549" Y="7450.205" Z="52.49718" />
+
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="OpenDoors" Command="Remove" />
+
+			<If Condition="Me.Class == WoWClass.DemonHunter" >
+				<TurnIn QuestName="Illidari Freedom" QuestId="44278" TurnInName="Asha Ravensong" TurnInId="95028" X="3089.549" Y="7450.205" Z="52.49718" />
+			</If>
+			<If Condition="Me.Class != WoWClass.DemonHunter" >
+				<TurnIn QuestName="Illidari Freedom" QuestId="38719" TurnInName="Asha Ravensong" TurnInId="95028" X="3089.549" Y="7450.205" Z="52.49718" />
+			</If>
+
 			<TurnIn QuestName="Lieutenant of the Tower" QuestId="38721" TurnInName="Maiev Shadowsong" TurnInId="93149" X="3094.365" Y="7464.921" Z="52.85364" />
 			<!-- bonus <PickUp QuestName="Black Rook Hold" QuestId="38716" GiverName="Kaldorei Windgryph" GiverId="91839" XXXX /> -->
 
