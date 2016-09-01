@@ -544,15 +544,15 @@ END INITORDER COMMENT -->
 				<PickUp QuestName="Close Enough to Touch" QuestId="41763" GiverName="Tyrande Whisperwind" GiverId="104728" X="3413.7" Y="6124.011" Z="211.797" />
 			</If>
 			<While Condition="DoQuest(38687, 41763)" >
-				<CustomBehavior File="InteractWith" MobId="111258" QuestId="38687" QuestObjectiveIndex="2" X="3609.905" Y="6132.729" Z="178.1244" />
-				<CustomBehavior File="InteractWith" MobId="111260" QuestId="38687" QuestObjectiveIndex="3" X="3746.8" Y="6165.945" Z="183.9481" />
-				<CustomBehavior File="InteractWith" MobId="111259" QuestId="38687" QuestObjectiveIndex="4" X="3769.656" Y="6349.799" Z="183.9394" /> <!-- Beta XYZ X="3751.627" Y="6315.099" Z="186.5862" /> -->
+				<CustomBehavior File="InteractWith" MobId="111258" QuestId="38687" QuestObjectiveIndex="2" InteractBlacklistTimeInSeconds="1" X="3609.905" Y="6132.729" Z="178.1244" />
+				<CustomBehavior File="InteractWith" MobId="111260" QuestId="38687" QuestObjectiveIndex="3" InteractBlacklistTimeInSeconds="1" X="3746.8" Y="6165.945" Z="183.9481" />
+				<CustomBehavior File="InteractWith" MobId="111259" QuestId="38687" QuestObjectiveIndex="4" InteractBlacklistTimeInSeconds="1" X="3769.656" Y="6349.799" Z="183.9394" /> <!-- Beta XYZ X="3751.627" Y="6315.099" Z="186.5862" /> -->
 				<!-- Cheap way of handling the Horde variant.. :P -->
-				<CustomBehavior File="InteractWith" MobId="111203" QuestId="41763" QuestObjectiveIndex="2" X="3609.905" Y="6132.729" Z="178.1244" />
-				<CustomBehavior File="InteractWith" MobId="111198" QuestId="41763" QuestObjectiveIndex="3" X="3746.8" Y="6165.945" Z="183.9481" />
-				<CustomBehavior File="InteractWith" MobId="111204" QuestId="41763" QuestObjectiveIndex="4" X="3769.656" Y="6349.799" Z="183.9394" />
+				<CustomBehavior File="InteractWith" MobId="111203" QuestId="41763" QuestObjectiveIndex="2" InteractBlacklistTimeInSeconds="1" X="3609.905" Y="6132.729" Z="178.1244" />
+				<CustomBehavior File="InteractWith" MobId="111198" QuestId="41763" QuestObjectiveIndex="3" InteractBlacklistTimeInSeconds="1" X="3746.8" Y="6165.945" Z="183.9481" />
+				<CustomBehavior File="InteractWith" MobId="111204" QuestId="41763" QuestObjectiveIndex="4" InteractBlacklistTimeInSeconds="1" X="3769.656" Y="6349.799" Z="183.9394" />
 				<If Condition="!IsObjectiveComplete(5, 38687) || !IsObjectiveComplete(5, 41763)" >
-					<MoveTo X="3574.203" Y="6390.636" Z="167.4113" /> <!-- NOTE: <TerminationNeeded> : This MoveTo needs to terminate once the cutscene is detected so the cutscenes can be skipped. -->
+					<MoveTo X="3576.754" Y="6388.25" Z="167.5658" /> <!-- NOTE: <TerminationNeeded> : This MoveTo needs to terminate once the cutscene is detected so the cutscenes can be skipped. -->
 					<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 				</If>
 			</While>
@@ -627,20 +627,24 @@ END INITORDER COMMENT -->
 			<TurnIn QuestName="A Sight For Sore Eyes" QuestId="38646" TurnInName="Granny Marl" TurnInId="92618" X="2707.609" Y="7462.568" Z="5.314145" />
 			<TurnIn QuestName="For the Corn!" QuestId="38647" TurnInName="Granny Marl" TurnInId="92618" X="2707.609" Y="7462.568" Z="5.314145" />
 
-			<While Condition="DoQuest(38644)" >
+			<If Condition="DoQuest(38644)" > <!-- Using if here because we need to pick up a quest during this. -->
 				<If Condition="!IsObjectiveComplete(1, 38644)" >
+					<MoveTo X="2568.631" Y="7487.165" Z="28.05258" />
+					<CustomBehavior File="WaitTimer" WaitTime="1000" /> <!-- Wait for aggro -->
 					<CustomBehavior File="InteractWith" MobId="243007" QuestId="38644" X="2565.066" Y="7486.539" Z="29.5022" /> <!-- NOTE: <Door> : This interacts with an object required to enter the next location. -->
 					<CustomBehavior File="InteractWith" MobId="92734" GossipOptions="1" QuestId="38644" QuestObjectiveIndex="1" X="2571.091" Y="7506.483" Z="19.94402" />
 					<CustomBehavior File="InteractWith" MobId="243007" QuestId="38644" X="2565.066" Y="7486.539" Z="29.5022" /> <!-- NOTE: <Door> : This interacts with an object required to enter the next location. -->
 				</If>
+				<CustomBehavior File="InteractWith" MobId="92618" NonCompeteDistance="0" QuestId="38644" QuestObjectiveIndex="2" X="2707.609" Y="7462.568" Z="5.313876" />
 				<If Condition="!IsObjectiveComplete(3, 38644)" >
 					<MoveTo X="2817.782" Y="7561.732" Z="4.199298" />
 				</If>
-			</While>
+			</If>
 
 			<PickUp QuestName="Shriek No More" QuestId="39117" GiverName="Cecily Radcliffe" GiverId="94117" X="2816.49" Y="7564.252" Z="4.321269" />
 			<While Condition="DoQuest(39117)" >
-				<CustomBehavior File="KillUntilComplete" MobId="94383" QuestId="39117" QuestObjectiveIndex="1" X="2876.653" Y="7622.971" Z="7.723" />
+				<!-- NOTE AddAvoid, get out of purple stuff. -->
+				<CustomBehavior File="KillUntilComplete" MobId="94383" QuestId="39117" QuestObjectiveIndex="1" X="2870.828" Y="7617.902" Z="2.028812" />
 			</While>
 			<TurnIn QuestName="Shriek No More" QuestId="39117" TurnInName="Cecily Radcliffe" TurnInId="94117" X="2816.49" Y="7564.252" Z="4.321269" />
 
