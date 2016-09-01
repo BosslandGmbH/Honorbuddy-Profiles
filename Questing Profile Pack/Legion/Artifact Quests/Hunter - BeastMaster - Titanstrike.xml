@@ -143,16 +143,39 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="Stolen Thunder" QuestId="41574" GiverName="Grif Wildheart" GiverId="104381" X="-861.1233" Y="4285.741" Z="746.2857" />
 			<While Condition="DoQuest(41574)" >
-				<CustomBehavior File="InteractWith" MobId="106235" QuestId="41574" QuestObjectiveIndex="1" X="-867.9774" Y="4287.264" Z="745.4191" />
-				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
-				<!-- User gets off around X="4799.894" Y="82.00793" Z="-3.060262" -->
-				<CustomBehavior File="InteractWith" MobId="104904" GossipOptions="1" QuestId="41574" QuestObjectiveIndex="2" X="4803.345" Y="77.96181" Z="-2.623047" />
-				<CustomBehavior File="RunCode" Code="await Coroutine.Wait(120000, ()=&gt; Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2)" />
-				<!-- NOTE: <AddAvoid> : Bot needs to kill Name="Swirling Storms" Entry="96455" as they are an AoE mob
-										Bot will need to avoid Name="Fierce Winds" Entry="106432" as its moving through the room -->
-				<!-- While avoiding the tornados, bot must get to X="4842.022" Y="337.6002" Z="-28.97828" and kill mobId Name="Spectral Windshaper" Entry="105968"  -->
-				<!-- Escort Name="Grif Wildheart" Entry="104904" X="4858.161" Y="316.7202" Z="-30.90926"  TerminateWhen="Unit(104904) == null" -->
-				<CustomBehavior File="InteractWith" MobId="249741" QuestId="41574" X="5003.885" Y="293.5677" Z="-26.92902" />
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0" >
+					<CustomBehavior File="InteractWith" MobId="106235" QuestId="41574" X="-867.9774" Y="4287.264" Z="745.4191" />
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.InVehicle" />
+				</If>
+				
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<CustomBehavior File="InteractWith" MobId="104904" GossipOptions="1" QuestId="41574" QuestObjectiveIndex="2" X="4803.345" Y="77.96181" Z="-2.623047" />
+					<CustomBehavior File="WaitTimer" WaitTime="120000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<MoveTo X="4820.82" Y="232.8854" Z="-21.70632" />
+					<CustomBehavior File="KillUntilComplete" MobId="105968" X="4850.866" Y="334.1354" Z="-28.97816" TerminateWhen="Unit(105968, u =&gt; u.IsDead) != null" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<MoveTo X="4883.318" Y="319.9752" Z="-36.76369" />
+					<CustomBehavior File="KillUntilComplete" MobIds="106335, 106341, 106344" X="4881.175" Y="317.5777" Z="-37.23773" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<CustomBehavior File="KillUntilComplete" MobIds="106354, 106352" X="4962.616" Y="321.9394" Z="-37.71339" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<CustomBehavior File="KillUntilComplete" MobId="104956" X="4988.034" Y="309.9923" Z="-29.27162" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<CustomBehavior File="WaitTimer" WaitTime="30000" TerminateWhen="Object(249741, u =&gt; u.ToGameObject().CanUse()) != null" />
+					<CustomBehavior File="InteractWith" MobId="249741" X="5003.885" Y="293.5677" Z="-26.92902" />
+				</If>
+
 			</While>
 			<TurnIn QuestName="Stolen Thunder" QuestId="41574" TurnInName="Mimiron" TurnInId="106558" X="2778.023" Y="2549.335" Z="364.3132" />
 			<!-- END Loc: Stormheim -->
@@ -160,14 +183,17 @@ END INITORDER COMMENT -->
 			<!-- Loc: Ulduar -->
 			<PickUp QuestName="The Creator's Workshop" QuestId="42158" GiverName="Mimiron" GiverId="106558" X="2778.023" Y="2549.335" Z="364.3132" />
 			<While Condition="DoQuest(42158)" >
-				<CustomBehavior File="InteractWith" MobId="106558" QuestId="42158" QuestObjectiveIndex="1" X="2778.023" Y="2549.335" Z="364.3132" />
+				<CustomBehavior File="InteractWith" MobId="106558" GossipOptions="1" QuestId="42158" X="2778.023" Y="2549.335" Z="364.3132" />
 
-				<CustomBehavior File="WaitTimer" WaitTime="20000" />
+				<MoveTo X="2738.671" Y="2616.625" Z="364.3146" />
+				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Object(249765, u =&gt; u.ToGameObject().CanUse()) != null" />
 				<!-- NOTE: <AddAvoid> : Bot will need to avoid the AoE that the fusion cores are releasing.  Can jump over the waves. -->
 				<CustomBehavior File="InteractWith" MobId="249765" X="2734.787" Y="2625.814" Z="365.2617" />
 				<CustomBehavior File="InteractWith" MobId="249773" X="2702.748" Y="2609.047" Z="365.3793" />
 
-				<CustomBehavior File="WaitTimer" WaitTime="20000" />
+
+				<MoveTo X="2731.237" Y="2547.176" Z="364.4337" />
+				<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Object(249766, u =&gt; u.ToGameObject().CanUse()) != null" />
 				<!-- NOTE: <AddAvoid> : Bot will need to avoid the lightning balls that are being cast by the leviathan -->
 				<CustomBehavior File="InteractWith" MobId="249766" X="2738.331" Y="2540.439" Z="365.2359" />
 				<CustomBehavior File="InteractWith" MobId="249769" X="2735.51" Y="2524.254" Z="362.2268" /> 
@@ -184,22 +210,43 @@ END INITORDER COMMENT -->
 
 			<!-- Loc: Stormpeaks -->
 			<PickUp QuestName="Never Hunt Alone" QuestId="42185" GiverName="Mimiron" GiverId="106558" X="2762.512" Y="2569.122" Z="364.3132" />
-			<While Condition="DoQuest(42158)" >
-				<!-- NOTE: <AddCondition : Could use a 'If In Ulduar' on the below interactwith -->
-				<CustomBehavior File="InteractWith" MobId="249755" X="2772.265" Y="2568.281" Z="364.3136" />
+			<While Condition="DoQuest(42185)" >
+				<If Condition="Object(249755) != null" >
+					<!-- NOTE: <AddCondition : Could use a 'If In Ulduar' on the below interactwith -->
+					<CustomBehavior File="InteractWith" MobId="249755" X="2772.265" Y="2568.281" Z="364.3136" />
+				</If>
 
-				<CustomBehavior File="InteractWith" MobId="106678" QuestId="42158" QuestObjectiveIndex="1" X="9324.997" Y="-1123.72" Z="1245.147" />
-				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
+				<If Condition="Unit(106678) != null" >
+					<CustomBehavior File="InteractWith" MobId="106678" QuestId="42185" QuestObjectiveIndex="2" X="9324.997" Y="-1123.72" Z="1245.147" />
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.InVehicle" />
+				</If>
 
-				<!-- Escort Name="Thorim" Entry="106714" X="7392.464" Y="-552.9268" Z="1897.497" TerminateWhen stage 3 ends -->
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+				</If>
 
-				<CustomBehavior File="InteractWith" MobId="103154" WaitTime="10000" QuestId="42158" X="7438.28" Y="-534.035" Z="1896.85" />
-				<CustomBehavior File="InteractWith" MobId="249812" InteractByLooting="true" QuestId="42158" X="7446.769" Y="-535.7726" Z="1896.985" />
-				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Unit(106854, u =&gt; u.Distance &lt; 30) != null" />
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+				</If>
 
-				<CustomBehavior File="InteractWith" MobId="106854" QuestId="42158" X="7437.393" Y="-557.033" Z="1896.851" />
-				<!-- Player lands at X="-821.7231" Y="4297.774" Z="746.2839" -->
-				<CustomBehavior File="WaitTimer" WaitTime="40000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<!-- NOTE: <AddAvoid> : get out of lightning on ground -->
+					<CustomBehavior File="KillUntilComplete" MobId="106730" X="7438.094" Y="-533.9827" Z="1896.851" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<CustomBehavior File="InteractWith" MobId="103154" WaitTime="10000" X="7438.28" Y="-534.035" Z="1896.85" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<CustomBehavior File="InteractWith" MobId="249812" InteractByLooting="true" QuestId="42185" X="7446.769" Y="-535.7726" Z="1896.985" />
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Unit(106854, u =&gt; u.Distance &lt; 30) != null" />
+				</If>
+
+				<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<CustomBehavior File="InteractWith" MobId="106854" WaitForNpcs="false" X="7437.393" Y="-557.033" Z="1896.851" />
+					<CustomBehavior File="WaitTimer" WaitTime="40000" TerminateWhen="!Me.InVehicle" /> 
+				</While>
 			</While>
 			<TurnIn QuestName="Never Hunt Alone" QuestId="42185" TurnInName="Grif Wildheart" TurnInId="106879" X="-819.5886" Y="4299.66" Z="746.2864" />
 			<!-- END Loc: Stormpeaks -->
