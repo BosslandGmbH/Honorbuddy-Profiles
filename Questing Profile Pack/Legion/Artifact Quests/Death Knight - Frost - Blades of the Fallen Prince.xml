@@ -96,8 +96,10 @@
 		<!-- Story: Artifact Weapon - Blades of the Fallen Prince -->
 			<PickUp QuestName="The Call of Icecrown" QuestId="38990" GiverName="Duke Lankral" GiverId="101441" X="-840.5833" Y="4271.512" Z="746.2618" />
 			<While Condition="DoQuest(38990)" >
-				<CustomBehavior File="InteractWith" MobId="95854" WaitTime="3000" QuestId="38990" QuestObjectiveIndex="1" X="-838.2668" Y="4270.183" Z="746.5203" />
-				<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0" >
+					<CustomBehavior File="InteractWith" MobId="95854" WaitTime="3000" QuestId="38990"  X="-838.2668" Y="4270.183" Z="746.5203" />
+					<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
 					<MoveTo X="-554.9478" Y="2211.186" Z="539.3419" />
@@ -107,63 +109,76 @@
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
 					<MoveTo X="-482.5884" Y="2211.229" Z="541.1676" />
-					<CustomBehavior File="MyCTM" X="4138.18" Y="2769.23" Z="350.963" /> <!-- NOTE: <AddTerminate> : Need to terminate then when the player has entered Icecrown -->
+					<CustomBehavior File="MyCTM" X="4138.18" Y="2769.23" Z="350.963" TerminateWhen="Me.ZoneId == 7695" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
-					<If Condition="Me.X &lt;= 4200" >
-						<MoveTo X="4181.413" Y="2816.862" Z="353.2509" />
-						<CustomBehavior File="RunCode"><![CDATA[
-								var magePoi = Unit(94913);
+					<If Condition="Unit(97320) != null" >
+						<If Condition="Me.X &lt;= 4200" >
+							<MoveTo X="4181.413" Y="2816.862" Z="353.2509" />
+							<CustomBehavior File="RunCode"><![CDATA[
+									var magePoi = Unit(94913);
 
-								if (magePoi != null)
-								{
-									StyxWoW.Me.SetFacing(magePoi.Location);
-									await Coroutine.Sleep(350);
+									if (magePoi != null)
+									{
+										magePoi.Target();
+										StyxWoW.Me.SetFacing(magePoi.Location);
+										await Coroutine.Sleep(450);
 
+										SpellManager.Cast(49576);
+									}
+								]]>
+							</CustomBehavior>
+							<MoveTo X="4213.39" Y="2815.095" Z="353.2506" />
+						</If>
+
+						<If Condition="Me.X &lt; 4234 &amp;&amp; Me.X &gt; 4200" >
+							<CustomBehavior File="Hooks\DoWhen" ActivityName="ShutOffCombat" AllowUseDuringCombat="true" UseWhen="ObjectManager.GetObjectsOfType&lt;WoWUnit&gt;().Where(x =&gt; x.Entry == 97320).All(x =&gt; x.HasAura(&quot;Hardened&quot;)) &amp;&amp; Bots.Grind.LevelBot.BehaviorFlags.HasFlag(Bots.Grind.BehaviorFlags.Combat)" >
+								<CustomBehavior File="RunCode" Code="Bots.Grind.LevelBot.BehaviorFlags &amp;= ~Bots.Grind.BehaviorFlags.Combat;" />
+							</CustomBehavior>
+							<MoveTo X="4214.419" Y="2768.343" Z="350.9633" />
+							<CustomBehavior File="WaitTimer" WaitTime="3000" />
+
+							<CustomBehavior File="RunCode"><![CDATA[
+									var pressureplatePoi = Unit(97595);
+									var gatekeeperPoi = Unit(97320, u => u.Location.Distance(pressureplatePoi.Location) > 1);
+
+									await Coroutine.Wait(30000, () => SpellManager.CanCast(49576));
+									WoWMovement.ClickToMove(new WoWPoint(4226.167, 2779.087, 350.9633));
+									gatekeeperPoi.Target();
+									await Coroutine.Sleep(5500);
+									StyxWoW.Me.SetFacing(gatekeeperPoi.Location);
+									await Coroutine.Sleep(1000);
 									SpellManager.Cast(49576);
+								]]> <!-- NOTE: <CheckLater> It may be worth using Control Undead here instead. -->
+							</CustomBehavior>
+
+							<CustomBehavior File="RunCode" Code="
+								while (Me.Location.Distance(new WoWPoint(4223.378, 2761.137, 350.9626)) &gt;= 1)
+								{
+									WoWMovement.ClickToMove(new WoWPoint(4223.378, 2761.137, 350.9626));
+									await Coroutine.Yield();
 								}
-							]]>
-						</CustomBehavior>
-					</If>
+							" /> <!-- Because MyCTM won't work in combat.. -->
 
-					<If Condition="Me.X &lt; 4234 &amp;&amp; Me.X &gt; 4200" >
-						<CustomBehavior File="Hooks\DoWhen" ActivityName="ShutOffCombat" AllowUseDuringCombat="true" UseWhen="ObjectManager.GetObjectsOfType&lt;WoWUnit&gt;().Where(x =&gt; x.Entry == 97320).All(x =&gt; x.HasAura(&quot;Hardened&quot;)) &amp;&amp; Bots.Grind.LevelBot.BehaviorFlags.HasFlag(Bots.Grind.BehaviorFlags.Combat)" >
-							<CustomBehavior File="RunCode" Code="Bots.Grind.LevelBot.BehaviorFlags &amp;= ~Bots.Grind.BehaviorFlags.Combat;" />
-						</CustomBehavior>
-						<MoveTo X="4214.419" Y="2768.343" Z="350.9633" />
-						<CustomBehavior File="WaitTimer" WaitTime="3000" />
-
-						<CustomBehavior File="RunCode"><![CDATA[
-								var pressureplatePoi = Unit(97595);
-								var gatekeeperPoi = Unit(97320, u => u.Location.Distance(pressureplatePoi.Location) > 1);
-
-								await Coroutine.Wait(30000, () => SpellManager.CanCast(49576));
-								WoWMovement.ClickToMove(new WoWPoint(4226.167, 2779.087, 350.9633));
-								await Coroutine.Sleep(5500);
-								StyxWoW.Me.SetFacing(gatekeeperPoi.Location);
-								await Coroutine.Sleep(350);
-								SpellManager.Cast(49576);
-							]]> <!-- NOTE: <CheckLater> It may be worth using Control Undead here instead. -->
-						</CustomBehavior>
-
-						<CustomBehavior File="MyCTM" X="4223.442" Y="2761.037" Z="350.9633" />
-						<CustomBehavior File="Hooks\DoWhen" ActivityName="ShutOffCombat" Command="Remove" />
-						<CustomBehavior File="WaitTimer" WaitTime="1500" />
-						<CustomBehavior File="RunCode" Code="Bots.Grind.LevelBot.BehaviorFlags |= Bots.Grind.BehaviorFlags.Combat;" />
-						<MoveTo X="4246.131" Y="2769.065" Z="350.9633" />
+							<CustomBehavior File="WaitTimer" WaitTime="1500" />
+							<CustomBehavior File="Hooks\DoWhen" ActivityName="ShutOffCombat" Command="Remove" />
+							<CustomBehavior File="WaitTimer" WaitTime="1500" />
+							<CustomBehavior File="RunCode" Code="Bots.Grind.LevelBot.BehaviorFlags |= Bots.Grind.BehaviorFlags.Combat;" />
+							<MoveTo X="4246.131" Y="2769.065" Z="350.9633" />
+						</If>
 					</If>
 
 					<If Condition="Me.X &gt; 4234" >
 						<If Condition="Unit(93948, u =&gt; u.IsAlive) != null" >
 							<CustomBehavior File="Hooks\Avoid" AvoidName="BaelgunWhirlwind" Command="Add" ObjectId="93948" Radius="10" AvoidWhen="UNIT.ChanneledCastingSpellId == 192647" />
-							<CustomBehavior File="KillUntilComplete" MobId="93948" X="4257.26" Y="2769.935" Z="349.3817" TerminateWhen="Unit(93948, u =&gt; u.IsDead) != null" />
+							<CustomBehavior File="KillUntilComplete" MobId="93948" X="4257.26" Y="2769.935" Z="349.3817" TerminateWhen="Unit(93948, u =&gt; u.IsDead) != null || Unit(93948) == null" />
 							<CustomBehavior File="Hooks\Avoid" AvoidName="BaelgunWhirlwind" Command="Remove" />
 						</If>
-						<CustomBehavior File="InteractWith" MobId="251882"  WaitForNpcs="false" InteractByLooting="true" WaitTime="1500" X="4262.204" Y="2765.536" Z="351.1211" />
+						<CustomBehavior File="InteractWith" MobId="251882" WaitForNpcs="false" InteractByLooting="true" WaitTime="1500" X="4259.546" Y="2765.99" Z="349.3201" />
 
 						<If Condition="Unit(93949, u =&gt; u.IsAlive) != null" >
-							<CustomBehavior File="Hooks\DoWhen" ActivityName="InterruptHeal" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.CanInterruptCurrentSpellCast" >
+							<CustomBehavior File="Hooks\DoWhen" ActivityName="InterruptHeal" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.IsCasting &amp;&amp; SpellManager.CanCast(47528, Me.CurrentTarget, true)" >
 								<CustomBehavior File="RunCode" Code="
 										await Coroutine.Wait(15000, () =&gt; SpellManager.CanCast(47528));
 										SpellManager.Cast(47528);
@@ -173,7 +188,7 @@
 							<CustomBehavior File="KillUntilComplete" MobId="93949" X="4353.202" Y="2670.301" Z="349.2956" TerminateWhen="Unit(93949, u =&gt; u.IsDead) != null" />
 							<CustomBehavior File="Hooks\DoWhen" ActivityName="InterruptHeal" Command="Remove" />
 						</If>
-						<CustomBehavior File="InteractWith" MobId="251884" WaitForNpcs="false" InteractByLooting="true" WaitTime="1500" X="4356.559" Y="2676.826" Z="350.2382" />
+						<CustomBehavior File="InteractWith" MobId="251884" WaitForNpcs="false" InteractByLooting="true" WaitTime="1500" X="4356.215" Y="2674.468" Z="349.3328" />
 
 						<If Condition="Unit(93950, u =&gt; u.IsAlive) != null" >
 							<MoveTo X="4455.575" Y="2734.752" Z="346.7824" />
@@ -183,10 +198,10 @@
 
 							<CustomBehavior File="KillUntilComplete" MobId="93950" X="4455.179" Y="2762.228" Z="349.3069" TerminateWhen="Unit(93950, u =&gt; u.IsDead) != null" />
 						</If>
-						<CustomBehavior File="InteractWith" MobId="251885" WaitForNpcs="false" InteractByLooting="true" WaitTime="1500" X="4452.075" Y="2775.922" Z="351.3703" />
+						<CustomBehavior File="InteractWith" MobId="251885" WaitForNpcs="false" InteractByLooting="true" WaitTime="1500" X="4452.525" Y="2773.805" Z="349.3133" />s
 
 						<If Condition="Unit(93951, u =&gt; u.IsAlive) != null" >
-							<CustomBehavior File="Hooks\DoWhen" ActivityName="InterruptHammer" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.CanInterruptCurrentSpellCast" >
+							<CustomBehavior File="Hooks\DoWhen" ActivityName="InterruptHammer" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.IsCasting &amp;&amp; SpellManager.CanCast(47528, Me.CurrentTarget, true)" >
 								<CustomBehavior File="RunCode" Code="
 										await Coroutine.Wait(15000, () =&gt; SpellManager.CanCast(47528));
 										SpellManager.Cast(47528);
@@ -210,17 +225,28 @@
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
-					<CustomBehavior File="InteractWith" MobId="100577" X="504.4896" Y="-2124.41" Z="841.3603" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+					<CustomBehavior File="InteractWith" MobId="100577" NumOfTimes="5" X="504.4896" Y="-2124.41" Z="841.3603" TerminateWhen="Me.Z &gt; 900" />
 					<CustomBehavior File="WaitTimer" WaitTime="5000" />
 
-					<CustomBehavior File="KillUntilComplete" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" >
-						<PursuitList>
-							<PursueUnit Id="94177" Priority="100" PursueWhen="!UNIT.HasAura(200816)" /> <!-- There's two Arthas here. The other ID is: 93963 -->
-							<PursueUnit Id="95321" Priority="500" />
-							<PursueUnit Id="95324" Priority="500" />
-							<PursueUnit Id="95323" Priority="600" /> <!-- Big buy, seems to heal for the most. -->
-						</PursuitList>
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="TargetSwitcher" LogExecution="false" AllowUseDuringCombat="true" UseAtInterval="3000" >
+						<!-- Using these hooks as a temporarily forced target switch since for whatever reason KUC isn't switching targets anymore...
+							Also doing it as interval because having two hooks to blacklist+whitelist was bugging out.. -->
+						<If Condition="Unit(93963, u =&gt; u.HasAura(189679)) != null &amp;&amp; !Blacklist.Contains(Unit(93963), BlacklistFlags.Combat)" >
+							<CustomBehavior File="RunCode" Code="Blacklist.Add(Unit(93963), BlacklistFlags.Combat, TimeSpan.FromMinutes(5));" />
+						</If>
+
+						<If Condition="Unit(93963, u =&gt; !u.HasAura(189679)) != null &amp;&amp; Blacklist.Contains(Unit(93963), BlacklistFlags.Combat)" >
+							<CustomBehavior File="RunCode" Code="Blacklist.Clear(u =&gt; u.Entry == 93963);" />
+						</If>
 					</CustomBehavior>
+
+					<CustomBehavior File="KillUntilComplete" MobIds="95321, 95324, 95323" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6 || Me.Z &lt;= 900" />
+					<!-- PursuitUnit Target switching isn't working here????
+						Also, Singular is only using auto attacks????
+					-->
+
+
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="TargetSwitcher" Command="Remove" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
