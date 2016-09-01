@@ -1189,22 +1189,49 @@ END INITORDER COMMENT -->
 
 			<TurnIn QuestName="Maritime Law" QuestId="37654" TurnInName="Looper Allen" TurnInId="106881" X="-660.3785" Y="5596.917" Z="2.778686" />
 
+			<!-- NOTE Uncomment this stuff when swimming is fixed.
 			<PickUp QuestName="The Captain's Foot Locker" QuestId="37659" GiverName="Looper Allen" GiverId="106881" X="-660.3785" Y="5596.917" Z="2.778686" />
-			<TurnIn QuestName="The Captain's Foot Locker" QuestId="37659" TurnInType="Object" TurnInName="Captain's Foot Locker" TurnInId="239328" X="-694.9913" Y="5502.919" Z="-10.44949" />
+			<If Condition="QuestDone(37659)" >
+				<MoveTo X="-627.4666" Y="5546.202" Z="-1.179256" />
+				<CustomBehavior File="MyCTM" X="-658.4992" Y="5523.313" Z="-7.244068" />
+				<CustomBehavior File="MyCTM" X="-670.3221" Y="5530.21" Z="-8.188878" />
+				<CustomBehavior File="MyCTM" X="-692.7347" Y="5508.795" Z="-9.65338" />
+				<TurnIn QuestName="The Captain's Foot Locker" QuestId="37659" TurnInType="Object" TurnInName="Captain's Foot Locker" TurnInId="239328" X="-694.9913" Y="5502.919" Z="-10.44949" />
+				<CustomBehavior File="MyCTM" X="-692.7347" Y="5508.795" Z="-9.65338" />
+				<CustomBehavior File="MyCTM" X="-670.3221" Y="5530.21" Z="-8.188878" />
+				<CustomBehavior File="MyCTM" X="-658.4992" Y="5523.313" Z="-7.244068" />
+			</If>
 
 			<If Condition="Me.IsAlliance" >
 				<PickUp QuestName="Fate of the Queen's Reprisal" QuestId="40794" GiverType="Object" GiverName="Chief Bitterbrine" GiverId="239328" X="-694.9913" Y="5502.919" Z="-10.44949" />
 			</If>
 			<If Condition="Me.IsHorde" >
-				<!-- NOTE: <FactionCheck> : This was developed on Alliance.  Need to check Horde functionality. -->
+				NOTE: <FactionCheck> : This was developed on Alliance.  Need to check Horde functionality. 
 				<PickUp QuestName="Fate of the Queen's Reprisal" QuestId="42244" GiverType="Object" GiverName="Chief Bitterbrine" GiverId="239328" X="-694.9913" Y="5502.919" Z="-10.44949" />
-			</If>
+			</If>-->
 
 			<If Condition="QuestDone(37657)" >
 				<TurnIn QuestName="Making the World Safe for Profit" QuestId="37657" TurnInName="Mr. Shackle" TurnInId="91419" X="-812.4496" Y="6101.11" Z="7.005449" />
 				<If Condition="HasItem(133549)" >
 					<CustomBehavior File="UseItem" ItemId="133549" />
 				</If>
+			</If>
+
+			<If Condition="Me.ZoneId == 7334" >
+				<CustomBehavior File="RunCode"><![CDATA[
+					Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Using Dalaran Hearthstone");
+					await CommonCoroutines.StopMoving(); 
+					WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+					if (dalaranHearth.Cooldown != 0) {
+						Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
+						await Coroutine.Wait(1200000, () => dalaranHearth.Cooldown == 0);
+					}
+					dalaranHearth.Interact();
+					var currentLoc = StyxWoW.Me.ZoneId;
+					await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
+					await Coroutine.Sleep(1500);
+				]]>
+				</CustomBehavior>
 			</If>
 
 			<If Condition="QuestDone(40794)" >
