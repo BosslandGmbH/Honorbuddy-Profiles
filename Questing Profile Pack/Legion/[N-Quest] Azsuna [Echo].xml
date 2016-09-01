@@ -835,31 +835,94 @@ END INITORDER COMMENT -->
 			</While>
 			<If Condition="QuestDone(37469)" >
 				<TurnIn QuestName="The Tidestone: Shattered" QuestId="37469" TurnInType="Object" TurnInName="Tidestone Core" TurnInId="240552" X="303.5608" Y="6260.765" Z="-50.3312" />
-				<CustomBehavior File="WaitTimer" WaitTime="23000" /> <!-- NOTE: <Optimization?> : Could terminate this wait timer when the player's zone Id changes.  However, this may not be a good idea as it takes some time for the quest NPC to show up anyways. -->
+				<CustomBehavior File="WaitTimer" WaitTime="27000" /> <!-- NOTE: <Optimization?> : Could terminate this wait timer when the player's zone Id changes.  However, this may not be a good idea as it takes some time for the quest NPC to show up anyways. -->
 			</If>
 
 			<PickUp QuestName="Save Yourself" QuestId="37530" GiverName="Prince Farondis" GiverId="89009" X="-98.34375" Y="6018.329" Z="0.4202359" />
 			<While Condition="DoQuest(37530)" >
-				<CustomBehavior File="InteractWith" MobId="89009" GossipOptions="1" NumOfTimes="6" QuestId="37530" QuestObjectiveIndex="1" X="-98.34375" Y="6018.329" Z="0.4202359" />
-				<!-- NOTE: <VehicleLogic> : The InteractWith above will get the player into the NPC-vehicle, after that the vehicle needs to move to
+				<CustomBehavior File="InteractWith" MobId="89009" WaitTime="10000" NonCompeteDistance="0" GossipOptions="1" NumOfTimes="6" QuestId="37530" X="-98.34375" Y="6018.329" Z="0.4202359" TerminateWhen="Me.InVehicle" />
+				<DisableBehavior Name="All" />
 
-					Spell 1: Main attack, no cooldown.
-					Spell 2: Secondary attack, 10second cooldown,  massive damage AoE
-					Spell 3: Blink teleport.  10second cooldown
-				
-					MoveTo X="-2.851773" Y="6275.382" Z="3.145893" and terminate when quest objective 2 is complete
+				<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+						async Task VehicleMove(WoWPoint moveTo)
+						{
+							while (Me.Location.Distance(moveTo) >= 5)
+							{
+								Navigator.MoveTo(moveTo);
+								await CombatAwareness();
+								await Coroutine.Yield();
+							}
+						}
 
-					MoveTo X="-8.0741" Y="6172.876" Z="2.924611"  and kill  Name="Athissa" Entry="89116" X="-21.28889" Y="6168.698" Z="4.330697" until objective 4 completes
+						async Task VehicleKill(uint unitId)
+						{
+							WoWUnit killMe = Unit(unitId);
+							if (killMe == null || Blacklist.Contains(killMe, BlacklistFlags.Combat)) return;
 
-					MoveTo X="-17.57986" Y="5973.469" Z="0.6993846"  until objective 5 completes
+							while (killMe != null && killMe.IsAlive)
+							{
+								while (Me.Location.Distance(killMe.Location) >= 39)
+								{
+									Navigator.MoveTo(killMe.Location);
+									await CombatAwareness();
+									await Coroutine.Yield();
+								}
 
-					Wait until objective 6 is complete
+								if (killMe.IsAlive)
+								{
+									await VehicleCombat(killMe);
+									await Coroutine.Yield();
+								}
+								await Coroutine.Yield();
+							}
+						}
 
-					MoveTo X="-97.60731" Y="6020.879" Z="0.3597451" until objective 7 is complete
-				-->
+						async Task VehicleCombat(WoWUnit vehicleKill)
+						{
+							if (Me.CurrentTarget != vehicleKill)
+							{
+								vehicleKill.Target();
+							}
+							await CommonCoroutines.StopMoving();
+							StyxWoW.Me.SetFacing(vehicleKill.Location);
+							await Coroutine.Sleep(150);
+							Styx.Helpers.KeyboardManager.KeyUpDown((char)System.Windows.Forms.Keys.D2);
+							Styx.Helpers.KeyboardManager.KeyUpDown((char)System.Windows.Forms.Keys.D1);
+							await Coroutine.Sleep(1050);
+						}
+
+						async Task CombatAwareness()
+						{
+							WoWUnit vehicleId = ObjectManager.GetObjectsOfType<WoWUnit>().FirstOrDefault(u => u.Entry == 89089);
+							var killArray = ObjectManager.GetObjectsOfType<WoWUnit>().Where(u => u.CurrentTarget == vehicleId);
+
+							if (killArray == null) return;
+
+							foreach (WoWUnit killMe in killArray)
+							{
+								await VehicleCombat(killMe);
+								await Coroutine.Yield();
+							}
+						}
+					]]>
+				</CustomBehavior>
+
+				<If Condition="Me.InVehicle" >
+					<CustomBehavior File="RunCode" QuestId="37530" QuestObjectiveIndex="2" Code="await VehicleMove(new WoWPoint(-3.882, 6276.46, 3.146761));" />
+					<CustomBehavior File="RunCode" QuestId="37530" QuestObjectiveIndex="3" Code="await VehicleMove(new WoWPoint(-26.50426, 6178.747, 4.55294));" />
+					<CustomBehavior File="RunCode" QuestId="37530" QuestObjectiveIndex="4" Code="await VehicleKill(89116);" />
+					<CustomBehavior File="RunCode" QuestId="37530" QuestObjectiveIndex="5" Code="await VehicleMove(new WoWPoint(-11.47015, 5977.641, 0.7397661));" />
+					<CustomBehavior File="WaitTimer" QuestId="37530" QuestObjectiveIndex="6" WaitTime="95000" />
+					<MoveTo X="-98.56056" Y="6020.948" Z="0.3888235" />
+				</If>
 			</While>
 			<!-- NOTE: <CheckMe> : The NPC will show up as the player's name, but internally shows up as 'Your Doppleganger' - need to make sure bot properly interacts for the quest turnin. -->
-			<TurnIn QuestName="Save Yourself" QuestId="37530" TurnInName="Your Doppelganger" TurnInId="89090" X="-101.252" Y="6021.44" Z="0.4745495" />
+			<While Condition="QuestDone(37530)" >
+				<CustomBehavior File="InteractWith" MobId="89090" X="-101.252" Y="6021.44" Z="0.475772" TerminateWhen="!HasQuest(37530)" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestInfoRewardsFrameQuestInfoItem1:Click();" TerminateWhen="!HasQuest(37530)" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestFrameCompleteQuestButton:Click();" TerminateWhen="!HasQuest(37530)" />
+				<EnableBehavior Name="All" />
+			</While>
 
 			<PickUp QuestName="The Head of the Snake" QuestId="37470" GiverName="Prince Farondis" GiverId="89009" X="-98.34375" Y="6018.329" Z="0.4202499" />
 			<While Condition="DoQuest(37470)" >
