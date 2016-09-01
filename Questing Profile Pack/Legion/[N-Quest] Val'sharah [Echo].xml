@@ -361,6 +361,19 @@ END INITORDER COMMENT -->
 				<!-- NOTE: <AddHook> : Player recvies a zone buff which can be used for massive AoE damage.  Need to detect aggro count - and use spell accordingly as it has a 5second cooldown.
 									Ideally, the player should be pulling masses of mobs and using this spell to kill them as the kill count required to complete the quest is 50 kills.
 				--> 
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="YseraWrath" AllowUseDuringCombat="true" LogExecution="false" UseAtInterval="5000" >
+					<CustomBehavior File="RunCode"><![CDATA[
+							if (Me.CurrentTarget != null)
+							{
+								Lua.DoString("ExtraActionButton1:Click();");
+								await Coroutine.Sleep(50);
+								SpellManager.ClickRemoteLocation(Me.CurrentTarget.Location);
+							}
+
+						]]>
+					</CustomBehavior>
+				</CustomBehavior>
+
 				<CustomBehavior File="KillUntilComplete" MobIds="114216, 114215, 114219, 92332" QuestId="38582" QuestObjectiveIndex="1" >
 					<HuntingGrounds>
 						<Hotspot X="2695.849" Y="6112.126" Z="247.5138" />
@@ -370,15 +383,17 @@ END INITORDER COMMENT -->
 						<Hotspot X="2876.041" Y="6029.743" Z="261.1362" />
 					</HuntingGrounds>
 				</CustomBehavior>
+
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="YseraWrath" Command="Remove" />
 				<!-- NOTE: <DisableHook> : As the player enters this new zoneId as per the KillUntilComplete, the zone spell is removed.
 										The hook should be detecting the player's current ZoneId to prevent it from casting when it can't.
 										The spell is also disabeld after quest is complete.
 				-->
 				<CustomBehavior File="KillUntilComplete" MobId="92335" QuestId="38582" QuestObjectiveIndex="3" X="2828.71" Y="5898.744" Z="234.482" />
 			</While>
-			<TurnIn QuestName="To Old Friends" QuestId="38582" TurnInName="Ysera" TurnInId="92710" X="2714.298" Y="6028.846" Z="279.3945" />
+			<TurnIn QuestName="To Old Friends" QuestId="38582" TurnInName="Ysera" TurnInId="92710" X="2717.447" Y="6027.452" Z="267.481" />
 
-			<PickUp QuestName="The Demon's Trail" QuestId="38753" GiverName="Ysera" GiverId="92710" X="2714.298" Y="6028.846" Z="279.3945" />
+			<PickUp QuestName="The Demon's Trail" QuestId="38753" GiverName="Ysera" GiverId="92710" X="2717.447" Y="6027.452" Z="267.481" />
 			<While Condition="DoQuest(38753)" >
 				<MoveTo X="2867.59" Y="5890.754" Z="299.1172" /> <!-- NOTE: <TerminationNeeded> : This MoveTo needs to terminate once the cutscene is detected so the cutscenes can be skipped.
 																	  NOTE: <LocationCheck> : Make sure this MoveTo is close enough to trigger the cutscenes. -->
