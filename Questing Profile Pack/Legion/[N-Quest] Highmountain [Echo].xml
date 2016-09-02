@@ -1261,31 +1261,34 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="Critter Scatter Shot" QuestId="39670" GiverName="Razik Gazbolt" GiverId="96513" X="4294.724" Y="3614.605" Z="898.6747" />
 			<PickUp QuestName="A True Hunter" QuestId="40000" GiverName="Lorna Stoutfoot" GiverId="97974" X="4304.073" Y="3617.26" Z="898.8616" />
 
-			<While Condition="DoQuest(39670, 40000)" >
-				<CustomBehavior File="InteractWith" NumOfTimes="12" >
-					<HuntingGrounds>
-						<Hotspot X="4165.068" Y="3644.004" Z="885.2387" />
-						<Hotspot X="4111.521" Y="3690.364" Z="879.6372" />
-						<Hotspot X="4053.116" Y="3645.582" Z="884.1232" />
-						<Hotspot X="4031.118" Y="3781.509" Z="879.7571" />
-					</HuntingGrounds>
+			<CustomBehavior File="InteractWith" MobIds="96548" MobState="Alive" QuestId="39670" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="4025.184" Y="3688.139" Z="875.8091" />
+					<Hotspot X="4008.913" Y="3730.467" Z="878.7299" />
+					<Hotspot X="4073.551" Y="3766.832" Z="875.8695" />
+					<Hotspot X="4166.058" Y="3640.896" Z="885.9991" />
+				</HuntingGrounds>
+			</CustomBehavior>
 
-					<PursuitList>
-						<PursueUnit Id="96548" PursueWhen="!IsObjectiveComplete(1, 39670)" />
-						<PursueUnit Id="97976" ConvertWhen="!IsObjectiveComplete(1, 40000)" PursueWhen="!IsObjectiveComplete(1, 40000)" ConvertBy="Killing" />  
-					</PursuitList>
-				</CustomBehavior>
-			</While>
+			<CustomBehavior File="KillUntilComplete" MobIds="97976, 103592" QuestId="40000" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="4025.184" Y="3688.139" Z="875.8091" />
+					<Hotspot X="4008.913" Y="3730.467" Z="878.7299" />
+					<Hotspot X="4073.551" Y="3766.832" Z="875.8695" />
+					<Hotspot X="4166.058" Y="3640.896" Z="885.9991" />
+				</HuntingGrounds>
+			</CustomBehavior>
 
 			<TurnIn QuestName="A True Hunter" QuestId="40000" TurnInName="Lorna Stoutfoot" TurnInId="97974" X="4304.073" Y="3617.26" Z="898.8616" />
 			<TurnIn QuestName="Critter Scatter Shot" QuestId="39670" TurnInName="Razik Gazbolt" TurnInId="96513" X="4294.724" Y="3614.605" Z="898.6751" />
 
 			<PickUp QuestName="Wolf Pack Attack" QuestId="39656" GiverName="Razik Gazbolt" GiverId="96513" X="4294.724" Y="3614.605" Z="898.6751" />
 			<If Condition="DoQuest(39656)" >
-				<CustomBehavior File="Hooks\DoWhen" ActivityName="CritterHandCannon" UseWhen="DoQuest(39656) &amp;&amp; Unit(94098, u =&gt; u.Aggro &amp;&amp; u.CurrentTarget.IsMe &amp;&amp; u.Distance &lt;= 8) != null &amp;&amp; Unit(97957, u =&gt; u.Aggro &amp;&amp; u.CurrentTarget.IsMe) != null" >
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="CritterHandCannon" LogExecution="false" AllowUseDuringCombat="true" UseAtInterval="1000" >
 					<CustomBehavior File="RunCode"><![CDATA[
 							var packLeader = Unit(97957, u => u.Aggro && u.CurrentTarget.IsMe);
-							if (packLeader != null) 
+							var howler = Unit(98273, u => u.Aggro);
+							if (packLeader != null && howler != null) 
 							{
 								Bots.Grind.LevelBot.BehaviorFlags &= ~Bots.Grind.BehaviorFlags.Combat;
 								WoWItem handCannon = StyxWoW.Me.BagItems.FirstOrDefault(i => i.Entry == 128651);
