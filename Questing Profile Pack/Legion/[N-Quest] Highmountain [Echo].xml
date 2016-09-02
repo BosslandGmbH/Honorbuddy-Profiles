@@ -35,7 +35,7 @@
 		<Mailbox X="4070.627" Y="4325.143" Z="768.275" /> <!-- Thunder Totem -->
 		<Mailbox X="4067.306" Y="4324.686" Z="768.1508" /> <!-- Thunder Totem -->
 		<Mailbox X="4853.22" Y="3958.505" Z="832.6034" /> <!-- Skyhorn -->
-		<Mailbox Name="CLiff's Edge" X="5215.825" Y="4898.948" Z="710.8175" /> <!-- Cliff's Edge -->
+		<Mailbox Name="Cliff's Edge" X="5215.825" Y="4898.948" Z="710.8175" /> <!-- Cliff's Edge -->
 	</Mailboxes>
 
 	<Vendors>
@@ -47,7 +47,7 @@
 		<Vendor Name="Cale Fireheart" Type="Repair" Entry="97876" X="3935.39" Y="3899.267" Z="905.3173" />
 		<Vendor Name="Crafty Palu" Type="Repair" Entry="108537" X="6470.426" Y="4746.604" Z="12.73519" /> <!-- Shipwreck Cove -->
 		<Vendor Name="Adaleigh Mae Nelson" Type="Food" Entry="108534" X="6455.857" Y="4732.254" Z="13.12072" /> <!-- Shipwreck Cove -->
-		<Vendor Name="Darbrul" Type="Repair" Entry="99205" X="5867.962" Y="4547.085" Z="614.298" UseWhen="IsQuestCompleted(40229)" />
+		<Vendor Name="Darbrul" Type="Repair" Entry="99205" X="5867.962" Y="4547.085" Z="614.298" UsableWhen="IsQuestCompleted(40229)" />
 	</Vendors>
 
 <!-- INITORDER COMMENT 
@@ -118,9 +118,10 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="Keepers of the Hammer" QuestId="38907" GiverName="Warbrave Oro" GiverId="97666" X="-827.2934" Y="4292.502" Z="746.2735" />
 			<While Condition="DoQuest(38907)" >
-				<If Condition="!IsObjectiveComplete(1, 38907)" >
+				<If Condition="Me.ZoneId == 7502" >
 					<MoveTo X="-863.934" Y="4298.434" Z="745.3463" />
-					<CustomBehavior File="TaxiRide" MobId="96813" DestName="Thunder Totem, Highmountain" />
+					<CustomBehavior File="InteractWith" MobId="96813" NonCompeteDistance="0" X="-863.934" Y="4298.434" Z="745.3467" />
+					<CustomBehavior File="Misc\RunLua" Lua="TakeTaxiNode(7);" />
 				</If>
 				<MoveTo X="4147.644" Y="4373.127" Z="767.992" />
 			</While>
@@ -192,7 +193,7 @@ END INITORDER COMMENT -->
 			</While>
 
 			<While Condition="DoQuest(39277)" >
-				<CustomBehavior File="InteractWith" MobIds="95013, 96124" InteractByUsingItemId="127988" Range="5" IgnoreCombat="true" QuestId="39277" QuestObjectiveIndex="1" >
+				<CustomBehavior File="InteractWith" MobIds="95013, 96124" InteractByUsingItemId="127988" MobState="Alive" Range="5" IgnoreCombat="true" QuestId="39277" QuestObjectiveIndex="1" >
 					<HuntingGrounds>
 						<Hotspot X="4038.536" Y="4775.965" Z="623.6185" />
 						<Hotspot X="3985.755" Y="4902.08" Z="624.2513" />
@@ -203,10 +204,13 @@ END INITORDER COMMENT -->
 				</CustomBehavior>
 			</While>
 
-			<PickUp QuestName="Moozy's Sojourn" QuestId="39323" GiverName="Rordan Waterwise" GiverId="96083" X="3943.739" Y="4843.707" Z="621.8448" />
+			<If Condition="NeedsQuest(39323)" >
+				<MoveTo X="3960.622" Y="4842.78" Z="625.2082" />
+				<PickUp QuestName="Moozy's Sojourn" QuestId="39323" GiverName="Rordan Waterwise" GiverId="96083" X="3943.739" Y="4843.707" Z="621.8448" />
+			</If>
 
 			<While Condition="DoQuest(39316)" >
-				<CustomBehavior File="InteractWith" MobId="243368" QuestId="39316" QuestObjectiveIndex="1" X="3987.133" Y="4657.559" Z="642.855" />
+				<CustomBehavior File="InteractWith" MobId="243368" NonCompeteDistance="0" QuestId="39316" QuestObjectiveIndex="1" X="3987.133" Y="4657.559" Z="642.855" />
 			</While>
 
 			<!-- NOTE: <BonusObjective> : <PickUp QuestName="Defend the Riverlands" QuestId="39274" GiverName="Jale Rivermane" GiverId="95956" XXXX /> -->
@@ -266,16 +270,18 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="The Underking Comes" QuestId="42104" GiverName="Jale Rivermane" GiverId="97662" X="3583.474" Y="4836.208" Z="700.3303" />
 			<While Condition="DoQuest(42104)" >
 				<!-- NOTE: <Improve> : This can be improved. -->
-				<MoveTo X="3658.93" Y="4836.998" Z="688.731" />
-				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="ExtraActionButton1:Click();" />
-				<MoveTo X="3634.189" Y="4891.154" Z="682.9647" />
-				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="ExtraActionButton1:Click();" />
-				<MoveTo X="3668.64" Y="4897.01" Z="681.988" />
-				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="ExtraActionButton1:Click();" />
-				<MoveTo X="3704.925" Y="4871.203" Z="679.8173" />
-				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="ExtraActionButton1:Click();" />
-				<MoveTo X="3724.296" Y="4846.906" Z="681.0002" />
-				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="ExtraActionButton1:Click();" />
+				<MoveTo QuestId="42104" X="3658.93" Y="4836.998" Z="688.731" />
+				<CustomBehavior File="Misc\RunLua" QuestId="42104" WaitTime="1500" Lua="ExtraActionButton1:Click();" />
+				<MoveTo QuestId="42104" X="3634.189" Y="4891.154" Z="682.9647" />
+				<CustomBehavior File="Misc\RunLua" QuestId="42104" WaitTime="1500" Lua="ExtraActionButton1:Click();" />
+				<MoveTo QuestId="42104" X="3668.64" Y="4897.01" Z="681.988" />
+				<CustomBehavior File="Misc\RunLua" QuestId="42104" WaitTime="1500" Lua="ExtraActionButton1:Click();" />
+				<MoveTo QuestId="42104" X="3704.925" Y="4871.203" Z="679.8173" />
+				<CustomBehavior File="Misc\RunLua" QuestId="42104" WaitTime="1500" Lua="ExtraActionButton1:Click();" />
+				<MoveTo QuestId="42104" X="3724.296" Y="4846.906" Z="681.0002" />
+				<CustomBehavior File="Misc\RunLua" QuestId="42104" WaitTime="1500" Lua="ExtraActionButton1:Click();" />
+				<MoveTo QuestId="42104" X="3700.379" Y="4855.821" Z="681.0949" />
+				<CustomBehavior File="Misc\RunLua" QuestId="42104" WaitTime="1500" Lua="ExtraActionButton1:Click();" />
 			</While>
 			<If Condition="QuestDone(42104)" >
 				<TurnIn QuestName="The Underking Comes" QuestId="42104" TurnInName="Spiritwalker Ebonhorn" TurnInId="93805" X="3708.767" Y="4962.487" Z="671.2761" />
@@ -286,9 +292,9 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="The Drogbar" QuestId="39026" GiverName="Spiritwalker Ebonhorn" GiverId="93805" X="3737.774" Y="4959.208" Z="670.8829" />
 
 			<While Condition="DoQuest(39025)" >
-				<CustomBehavior File="InteractWith" MobId="97648" QuestId="39025" QuestObjectiveIndex="2" X="3736.111" Y="4887.467" Z="675.6513" />
-				<CustomBehavior File="InteractWith" MobId="97648" QuestId="39025" QuestObjectiveIndex="1" X="3649.892" Y="4908.655" Z="685.0859" />
-				<CustomBehavior File="InteractWith" MobId="97648" QuestId="39025" QuestObjectiveIndex="3" X="3575.872" Y="4839.522" Z="700.2889" />
+				<CustomBehavior File="InteractWith" MobId="97648" QuestId="39025" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestObjectiveIndex="2" X="3736.111" Y="4887.467" Z="675.6513" />
+				<CustomBehavior File="InteractWith" MobId="97648" QuestId="39025" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestObjectiveIndex="1" X="3649.892" Y="4908.655" Z="685.0859" />
+				<CustomBehavior File="InteractWith" MobId="97648" QuestId="39025" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestObjectiveIndex="3" X="3575.872" Y="4839.522" Z="700.2889" />
 			</While>
 
 			<While Condition="DoQuest(39026)" >
@@ -317,7 +323,7 @@ END INITORDER COMMENT -->
 						<PursueUnit Id="98653" PursueWhen="!IsObjectiveComplete(2, 39043)" />
 						<PursueUnit Id="94261" PursueWhen="!IsObjectiveComplete(1, 39043)" />
 						<PursueUnit Id="102297" PursueWhen="!IsObjectiveComplete(1, 39043)" />
-            <PursueUnit Id="102283" PursueWhen="!IsObjectiveComplete(1, 39043)" />
+						<PursueUnit Id="102283" PursueWhen="!IsObjectiveComplete(1, 39043)" />
 					</PursuitList>
 				</CustomBehavior>
 			</While>
@@ -354,15 +360,15 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="The Story of Huln" QuestId="40167" GiverName="Spiritwalker Ebonhorn" GiverId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
 			<While Condition="DoQuest(40167)" >
-				<CustomBehavior File="InteractWith" MobId="98825" GossipOptions="1" QuestId="40167" QuestObjectiveIndex="1" X="4057.205" Y="4320.374" Z="675.4365" />
+				<CustomBehavior File="InteractWith" MobId="98825" GossipOptions="1" QuestId="40167" X="4057.205" Y="4320.374" Z="675.4365" />
 				<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 			</While>
 			<TurnIn QuestName="The Story of Huln" QuestId="40167" TurnInName="Spiritwalker Ebonhorn" TurnInId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
 
 			<PickUp QuestName="To See the Past" QuestId="40520" GiverName="Spiritwalker Ebonhorn" GiverId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
 			<While Condition="DoQuest(40520)" >
-				<CustomBehavior File="InteractWith" MobId="100437" InteractByBuyingItemId="132247" QuestId="40520" QuestObjectiveIndex="1" X="4252.739" Y="4470.258" Z="671.394" />
-				<CustomBehavior File="InteractWith" MobId="100418" QuestId="40520" QuestObjectiveIndex="3" X="4444.325" Y="4497.946" Z="704.1635" />
+				<CustomBehavior File="InteractWith" MobId="100437" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" InteractByBuyingItemId="132247" QuestId="40520" QuestObjectiveIndex="1" X="4252.739" Y="4470.258" Z="671.394" />
+				<CustomBehavior File="InteractWith" MobId="100418" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="40520" QuestObjectiveIndex="3" X="4438.527" Y="4496.714" Z="707.2569" />
 				<!-- NOTE: <TechnicalIssue> : Water pushes player down stream, MoveTo is to make player stand out of the water before intearct takes place. -->
 				<MoveTo QuestId="40520" QuestObjectiveIndex="2" X="4330.602" Y="4262.781" Z="656.9888" />
 				<CustomBehavior File="InteractWith" MobId="245620" Range="8" QuestId="40520" QuestObjectiveIndex="2" X="4335.485" Y="4260.884" Z="656.0594" />
@@ -372,42 +378,190 @@ END INITORDER COMMENT -->
 
 
 		<!-- Story: Huln's War -->
-			<PickUp QuestName="Huln's War - The Arrival" QuestId="39983" GiverName="Spiritwalker Ebonhorn" GiverId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
-			<While Condition="DoQuest(39983)" >
-				<CustomBehavior File="InteractWith" MobId="98825" GossipOptions="1" QuestId="39983" QuestObjectiveIndex="1" X="4057.205" Y="4320.374" Z="675.4365" />
-				<!-- NOTE: <AddSupport> : From this point on, the player will be inside of a vehicle.  Need to push 1 2 and 3 buttons. Look for comment below for ending.
-									Button 1 is primary attack, it is all that needs to be used.
-									Mobs don't auto-aggro. Only questId 39983 needs to kill NPCs -->
-				<CustomBehavior File="RunCode" Code="Logging.Write(&quot;[ADD SUPPORT HERE]: Check profile comments for details.  Line 337&quot;);" />
-				<CustomBehavior File="Halt" />
-			</While>
-			<TurnIn QuestName="Huln's War - The Arrival" QuestId="39983" TurnInName="Unng Ak" TurnInId="97891" X="3935.031" Y="-4996.425" Z="147.5277" />
+			<If Condition="!IsQuestCompleted(39992)" > <!-- Last quest in this chain -->
+				<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+						async Task VehicleMove(WoWPoint moveTo)
+						{
+							while (Me.Location.Distance(moveTo) >= 5)
+							{
+								Navigator.MoveTo(moveTo);
+								await CombatAwareness();
+								await Coroutine.Yield();
+							}
+						}
 
-			<PickUp QuestName="Huln's War - Malorne's Favored" QuestId="40112" GiverName="Unng Ak" GiverId="97891" X="3935.031" Y="-4996.425" Z="147.5277" />
-			<TurnIn QuestName="Huln's War - Malorne's Favored" QuestId="40112" TurnInName="Eche'ro" TurnInId="98794" X="3640.411" Y="-4914.465" Z="127.2173" />
+						async Task VehicleKill(uint unitId)
+						{
+							WoWUnit killMe = Unit(unitId, u => u.IsAlive);
+							if (killMe == null || Blacklist.Contains(killMe, BlacklistFlags.Combat)) return;
 
-			<PickUp QuestName="Huln's War - Stormrage" QuestId="39988" GiverName="Eche'ro" GiverId="98794" X="3640.411" Y="-4914.465" Z="127.2173" />
-			<TurnIn QuestName="Huln's War - Stormrage" QuestId="39988" TurnInName="Malfurion Stormrage" TurnInId="97892" X="3477.784" Y="-4911.186" Z="145.7449" />
+							while (killMe != null && killMe.IsAlive)
+							{
+								if (Me.Location.Distance(killMe.Location) >= 5)
+								{
+									Navigator.MoveTo(killMe.Location);
+									await CombatAwareness();
+									await Coroutine.Yield();
+								}
 
-			<PickUp QuestName="Huln's War - Reinforcements" QuestId="39990" GiverName="Malfurion Stormrage" GiverId="97892" X="3477.784" Y="-4911.186" Z="145.7449" />
-			<While Condition="DoQuest(39990)" >
-				<MoveTo X="3476.682" Y="-4893.174" Z="140.0279" />
-				<CustomBehavior File="WaitTimer" WaitTime="180000" QuestId="39990" />
-			</While>
-			<TurnIn QuestName="Huln's War - Reinforcements" QuestId="39990" TurnInName="Malfurion Stormrage" TurnInId="97892" X="3477.784" Y="-4911.186" Z="145.7449" />
+								if (killMe.IsAlive)
+								{
+									await VehicleCombat(killMe);
+									await Coroutine.Yield();
+								}
+								await Coroutine.Yield();
+							}
+						}
 
-			<PickUp QuestName="Huln's War - Shadowsong" QuestId="40388" GiverName="Malfurion Stormrage" GiverId="97892" X="3477.784" Y="-4911.186" Z="145.7449" />
-			<TurnIn QuestName="Huln's War - Shadowsong" QuestId="40388" TurnInName="Jarod Shadowsong" TurnInId="97903" X="3451.221" Y="-5101.295" Z="85.30394" />
+						async Task VehicleCombat(WoWUnit vehicleKill)
+						{
+							if (Me.CurrentTarget != vehicleKill)
+							{
+								vehicleKill.Target();
+							}
+							while (Me.Location.Distance(vehicleKill.Location) >= 5)
+							{
+								Navigator.MoveTo(vehicleKill.Location);
+								await Coroutine.Yield();
+							}
+							StyxWoW.Me.SetFacing(vehicleKill.Location);
+							await Coroutine.Sleep(150);
+							Styx.Helpers.KeyboardManager.KeyUpDown((char)System.Windows.Forms.Keys.D1);
+							await Coroutine.Sleep(1050);
+						}
 
-			<PickUp QuestName="Huln's War - The Nathrezim" QuestId="39992" GiverName="Jarod Shadowsong" GiverId="97903" X="3451.221" Y="-5101.295" Z="85.30394" />
-			<While Condition="DoQuest(39992)" >
-				<!-- NOTE: <AddFunctionality> : Need to kill this mob using the vehicle abilities.
-						Name="Tichondrius" Entry="97956" X="3545.834" Y="-5259.268" Z="99.5213"
-				-->
-				<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Me.MapId != 1515" /> <!-- NOTE: <CheckID> -->
-				<!-- NOTE: <AddSupport> : FRom this point up, the player will be inside of a vehicle.  Need to push 1 2 and 3 buttons. Look for comment above for start. -->
-			</While>
-			<TurnIn QuestName="Huln's War - The Nathrezim" QuestId="39992" TurnInName="Spiritwalker Ebonhorn" TurnInId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
+						async Task CombatAwareness()
+						{
+							WoWUnit vehicleId = ObjectManager.GetObjectsOfType<WoWUnit>().FirstOrDefault(u => u.Entry == 97817 && u.Distance <= 1);
+							var killArray = ObjectManager.GetObjectsOfType<WoWUnit>().Where(u => u.CurrentTarget == vehicleId);
+
+							if (killArray == null) return;
+
+							foreach (WoWUnit killMe in killArray)
+							{
+								await VehicleCombat(killMe);
+								await Coroutine.Yield();
+							}
+						}
+
+						async Task VehiclePickUp(uint questId, uint unitId, WoWPoint giverSpot)
+						{
+							if (!NeedsQuest(questId)) return;
+							Logging.Write(System.Windows.Media.Colors.Yellow, $"[ProfileBase]: Moving to PickUp questId {questId}");
+							while (Me.Location.Distance(giverSpot) >= 10)
+							{
+								Navigator.MoveTo(giverSpot);
+								await CombatAwareness();
+								await Coroutine.Yield();
+							}
+
+							var unitPoi = Unit(unitId);
+							if (unitPoi == null) return;
+
+							while (!HasQuest(questId))
+							{
+								while (Me.Location.Distance(unitPoi.Location) >= 5)
+								{
+									Navigator.MoveTo(unitPoi.Location);
+									await Coroutine.Yield();
+								}
+
+								if (Me.Location.Distance(unitPoi.Location) < 5)
+								{
+									unitPoi.Interact();
+									await Coroutine.Sleep(500);
+									Lua.DoString("QuestFrameAcceptButton:Click();");
+								}
+								await Coroutine.Yield();
+							}
+						}
+
+						async Task VehicleTurnIn(uint questId, uint unitId, WoWPoint giverSpot)
+						{
+							if (!QuestDone(questId)) return;
+							Logging.Write(System.Windows.Media.Colors.Yellow, $"[ProfileBase]: Moving to TurnIn questId {questId}");
+							while (Me.Location.Distance(giverSpot) >= 10)
+							{
+								Navigator.MoveTo(giverSpot);
+								await CombatAwareness();
+								await Coroutine.Yield();
+							}
+
+							var unitPoi = Unit(unitId);
+							if (unitPoi == null) return;
+
+							while (HasQuest(questId))
+							{
+								while (Me.Location.Distance(unitPoi.Location) >= 5)
+								{
+									Navigator.MoveTo(unitPoi.Location);
+									await Coroutine.Yield();
+								}
+
+								if (Me.Location.Distance(unitPoi.Location) < 5)
+								{
+									unitPoi.Interact();
+									await Coroutine.Sleep(500);
+									Lua.DoString("QuestInfoRewardsFrameQuestInfoItem1:Click();");
+									await Coroutine.Sleep(300);
+									Lua.DoString("QuestFrameCompleteQuestButton:Click();");
+								}
+								await Coroutine.Yield();
+							}
+						}
+					]]>
+				</CustomBehavior>
+
+				<DisableBehavior Name="All" />
+
+				<PickUp QuestName="Huln's War - The Arrival" QuestId="39983" GiverName="Spiritwalker Ebonhorn" GiverId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
+				<CustomBehavior File="InteractWith" MobId="98825" GossipOptions="1" X="4057.205" Y="4320.374" Z="675.4365" TerminateWhen="Me.InVehicle" /> <!-- Get into vehicle -->
+				<While Condition="!IsObjectiveComplete(2, 39983)" >
+					<CustomBehavior File="RunCode" Code="
+						await VehicleMove(new WoWPoint(3879.25, -4900.002, 147.643));
+						await VehicleKill(97796);
+						await VehicleKill(109386);
+						await VehicleKill(97803);" />	
+				</While>
+				<CustomBehavior File="RunCode" Code="await VehicleTurnIn(questId: 39983, unitId: 97891, giverSpot: new WoWPoint(3935.409, -4995.921, 148.4869));" />
+
+				<CustomBehavior File="RunCode" Code="await VehiclePickUp(questId: 40112, unitId: 97891, giverSpot: new WoWPoint(3935.409, -4995.921, 148.4869));" />
+				<CustomBehavior File="RunCode" Code="await VehicleTurnIn(questId: 40112, unitId: 98794, giverSpot: new WoWPoint(3640.411, -4914.465, 127.2173));" />
+
+				<CustomBehavior File="RunCode" Code="await VehiclePickUp(questId: 39988, unitId: 98794, giverSpot: new WoWPoint(3640.411, -4914.465, 127.2173));" />
+				<If Condition="HasQuest(39988)" >
+					<!-- Used so the bot won't get stuck on the portal -->
+					<MoveTo X="3471.365" Y="-4872.167" Z="139.2624" />
+					<MoveTo X="3472.438" Y="-4902.313" Z="140.8259" />
+				</If>
+				<CustomBehavior File="RunCode" Code="await VehicleTurnIn(questId: 39988, unitId: 97892, giverSpot: new WoWPoint(3478.842, -4909.076, 144.3305));" />
+
+				<CustomBehavior File="RunCode" Code="await VehiclePickUp(questId: 39990, unitId: 97892, giverSpot: new WoWPoint(3478.842, -4909.076, 144.3305));" />
+				<While Condition="!IsQuestCompleted(39990)" >
+					<CustomBehavior File="RunCode" Code="
+						await VehicleMove(new WoWPoint(3479.334, -4854.102, 134.7919));
+						await VehicleKill(97940);
+					" />	
+				</While>
+				<CustomBehavior File="RunCode" Code="await VehicleTurnIn(questId: 39990, unitId: 97892, giverSpot: new WoWPoint(3478.842, -4909.076, 144.3305));" />
+
+				<CustomBehavior File="RunCode" Code="await VehiclePickUp(questId: 40388, unitId: 97892, giverSpot: new WoWPoint(3478.842, -4909.076, 144.3305));" />
+				<CustomBehavior File="RunCode" Code="await VehicleTurnIn(questId: 40388, unitId: 97903, giverSpot: new WoWPoint(3451.221, -5101.295, 85.30394));" />
+
+				<CustomBehavior File="RunCode" Code="await VehiclePickUp(questId: 39992, unitId: 97903, giverSpot: new WoWPoint(3451.221, -5101.295, 85.30394));" />
+				<While Condition="DoQuest(39992)" >
+					<CustomBehavior File="RunCode" Code="
+						if (!QuestDone(39992))
+						{
+							await VehicleMove(new WoWPoint(3513.153, -5184.868, 85.54453));
+						}
+						await Coroutine.Wait(20000, () =&gt; Unit(97956) != null);
+						await VehicleKill(97956);
+						await Coroutine.Wait(20000, () =&gt; Me.MapId != 1515);
+					" />
+				</While>
+				<TurnIn QuestName="Huln's War - The Nathrezim" QuestId="39992" TurnInName="Spiritwalker Ebonhorn" TurnInId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
+			</If>
 		<!-- END Story: Huln's War -->
 
 		<!-- Story: Secrets of Highmountain -->
@@ -464,8 +618,8 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="In Defiance of Deathwing" QuestId="40219" GiverName="Spiritwalker Ebonhorn" GiverId="99153" X="3652.255" Y="4340.963" Z="664.8455" />
 			<While Condition="DoQuest(40219)" >
 				<CustomBehavior File="InteractWith" MobId="250916" QuestId="40219" QuestObjectiveIndex="1" X="3551.038" Y="4376.373" Z="663.0094" />
-				<CustomBehavior File="InteractWith" MobId="250978" QuestId="40219" QuestObjectiveIndex="1" X="3639.228" Y="4276.268" Z="665.6868" />
-				<CustomBehavior File="InteractWith" MobId="250979" QuestId="40219" QuestObjectiveIndex="1" X="3512.604" Y="4292.382" Z="680.8919" />
+				<CustomBehavior File="InteractWith" MobId="250978" QuestId="40219" QuestObjectiveIndex="2" X="3639.228" Y="4276.268" Z="665.6868" />
+				<CustomBehavior File="InteractWith" MobId="250979" QuestId="40219" QuestObjectiveIndex="3" X="3512.604" Y="4292.382" Z="680.8919" />
 			</While>
 			<TurnIn QuestName="In Defiance of Deathwing" QuestId="40219" TurnInName="Spiritwalker Ebonhorn" TurnInId="94571" X="3510.827" Y="4287.72" Z="680.5923" />
 
@@ -473,6 +627,7 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="Titanic Showdown" QuestId="39578" GiverName="Spiritwalker Ebonhorn" GiverId="94571" X="3517.177" Y="4286.464" Z="680.1006" />
 			<While Condition="DoQuest(39578)" >
 				<CustomBehavior File="InteractWith" MobId="250994" QuestId="39578" QuestObjectiveIndex="1" X="3429.875" Y="4303.342" Z="704.294" />
+				<!-- NOTE <AddAvoid> Might need avoid here. -->
 				<CustomBehavior File="KillUntilComplete" MobId="97056" QuestId="39578" QuestObjectiveIndex="2" X="3417.842" Y="4264.483" Z="704.6413" />
 			</While>
 			<TurnIn QuestName="Titanic Showdown" QuestId="39578" TurnInName="Spiritwalker Ebonhorn" TurnInId="99190" X="3420.367" Y="4294.182" Z="703.812" />
@@ -496,11 +651,12 @@ END INITORDER COMMENT -->
 				This is where it needs to be. -->
 
 			<PickUp QuestName="The High Chieftain" QuestId="39580" GiverName="Mayla Highmountain" GiverId="108305" X="2969.533" Y="4332.866" Z="651.5734" />
-			<While Condition="DoQuest(39580)" >
+			<If Condition="HasQuest(39580)" >
 				<If Condition="Unit(96565) != null" >
-					<CustomBehavior File="TaxiRide" MobId="96565" DestName="Thunder Totem, Highmountain" />
+					<CustomBehavior File="InteractWith" MobId="96565" NonCompeteDistance="0" X="-863.934" Y="4298.434" Z="745.3467" />
+					<CustomBehavior File="Misc\RunLua" Lua="TakeTaxiNode(7);" />
 				</If>
-			</While>
+			</If>
 			<TurnIn QuestName="The High Chieftain" QuestId="39580" TurnInName="Mayla Highmountain" TurnInId="108434" X="4083.142" Y="4385.414" Z="670.626" />
 		<!-- END Story: Secrets of Highmountain -->
 
