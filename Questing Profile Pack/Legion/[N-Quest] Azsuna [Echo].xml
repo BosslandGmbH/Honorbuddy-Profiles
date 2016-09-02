@@ -98,7 +98,6 @@ END INITORDER COMMENT -->
 						}
 						return false;
 					}
-
 					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
 					{
 				// Add detection of cutscene here.
@@ -110,7 +109,6 @@ END INITORDER COMMENT -->
 				]]>
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
-<DisableBehavior Name="FlightPath" />
 		<If Condition="QuestDone(39718)" >
 			<TurnIn QuestName="Paradise Lost" QuestId="39718" TurnInName="Archmage Khadgar" TurnInId="86563" X="-833.8698" Y="4276.531" Z="746.255" /> <!-- Breadcrumb from Class Hall -->
 		</If>
@@ -1330,22 +1328,25 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="UseItem" ItemId="133549" />
 				</If>
 			</If>
-
 			<If Condition="Me.ZoneId == 7334" >
 				<CustomBehavior File="RunCode"><![CDATA[
 					Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Using Dalaran Hearthstone");
 					await CommonCoroutines.StopMoving(); 
 					WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
-					if (dalaranHearth.Cooldown != 0) {
-						Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
-						await Coroutine.Wait(1200000, () => dalaranHearth.Cooldown == 0);
+					if (dalaranHearth.CooldownTimeLeft < TimeSpan.FromMinutes(5))
+					{
+						if (dalaranHearth.Cooldown != 0) {
+							Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
+							await Coroutine.Wait(1200000, () => dalaranHearth.Cooldown == 0);
+						}
+						dalaranHearth.Interact();
+						var currentLoc = StyxWoW.Me.ZoneId;
+						await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
+						await Coroutine.Sleep(1500);
 					}
-					dalaranHearth.Interact();
-					var currentLoc = StyxWoW.Me.ZoneId;
-					await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
-					await Coroutine.Sleep(1500);
 				]]>
 				</CustomBehavior>
+				<MoveTo X="-853.9257" Y="4293.149" Z="746.2816" />
 			</If>
 
 			<If Condition="QuestDone(40794)" >
