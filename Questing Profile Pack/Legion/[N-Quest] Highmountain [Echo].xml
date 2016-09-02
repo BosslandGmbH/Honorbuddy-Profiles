@@ -111,6 +111,142 @@ END INITORDER COMMENT -->
 					}
 				]]>
 			</CustomBehavior>
+
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					async Task VehicleMove(WoWPoint moveTo)
+					{
+						while (Me.Location.Distance(moveTo) >= 5)
+						{
+							Navigator.MoveTo(moveTo);
+							await CombatAwareness();
+							await Coroutine.Yield();
+						}
+					}
+
+					async Task VehicleKill(uint unitId)
+					{
+						WoWUnit killMe = Unit(unitId, u => u.IsAlive);
+						if (killMe == null || Blacklist.Contains(killMe, BlacklistFlags.Combat)) return;
+
+						while (killMe != null && killMe.IsAlive)
+						{
+							if (Me.Location.Distance(killMe.Location) >= 5)
+							{
+								Navigator.MoveTo(killMe.Location);
+								await CombatAwareness();
+								await Coroutine.Yield();
+							}
+
+							if (killMe.IsAlive)
+							{
+								await VehicleCombat(killMe);
+								await Coroutine.Yield();
+							}
+							await Coroutine.Yield();
+						}
+					}
+
+					async Task VehicleCombat(WoWUnit vehicleKill)
+					{
+						if (vehicleKill.Distance > 5) return;
+						if (Me.CurrentTarget != vehicleKill)
+						{
+							vehicleKill.Target();
+						}
+						Me.SetFacing(vehicleKill.Location);
+						if (Me.ZoneId == 7503)
+						{
+							Styx.Helpers.KeyboardManager.KeyUpDown((char)System.Windows.Forms.Keys.D2); // For murloc quest mostly.
+							SpellManager.ClickRemoteLocation(vehicleKill.Location);
+						}
+						Styx.Helpers.KeyboardManager.KeyUpDown((char)System.Windows.Forms.Keys.D1);
+						await Coroutine.Sleep(1050);
+					}
+
+					async Task CombatAwareness()
+					{
+						var killArray = ObjectManager.GetObjectsOfType<WoWUnit>().Where(u => u.IsTargetingMeOrPet && u.Distance < 6);
+						if (killArray == null) return;
+
+						foreach (WoWUnit killMe in killArray)
+						{
+							while (killMe != null && killMe.IsTargetingMeOrPet && killMe.Distance < 6)
+							{
+								await CommonCoroutines.StopMoving();
+								StyxWoW.Me.SetFacing(killMe.Location);
+								await VehicleCombat(killMe);
+								await Coroutine.Yield();
+							}
+						}
+					}
+
+					async Task VehiclePickUp(uint questId, uint unitId, WoWPoint giverSpot)
+					{
+						if (!NeedsQuest(questId)) return;
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[ProfileBase]: Moving to PickUp questId {questId}");
+						while (Me.Location.Distance(giverSpot) >= 10)
+						{
+							Navigator.MoveTo(giverSpot);
+							await CombatAwareness();
+							await Coroutine.Yield();
+						}
+
+						var unitPoi = Unit(unitId);
+						if (unitPoi == null) return;
+
+						while (!HasQuest(questId))
+						{
+							while (Me.Location.Distance(unitPoi.Location) >= 5)
+							{
+								Navigator.MoveTo(unitPoi.Location);
+								await Coroutine.Yield();
+							}
+
+							if (Me.Location.Distance(unitPoi.Location) < 5)
+							{
+								unitPoi.Interact();
+								await Coroutine.Sleep(500);
+								Lua.DoString("QuestFrameAcceptButton:Click();");
+							}
+							await Coroutine.Yield();
+						}
+					}
+
+					async Task VehicleTurnIn(uint questId, uint unitId, WoWPoint giverSpot)
+					{
+						if (!QuestDone(questId)) return;
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[ProfileBase]: Moving to TurnIn questId {questId}");
+						while (Me.Location.Distance(giverSpot) >= 10)
+						{
+							Navigator.MoveTo(giverSpot);
+							await CombatAwareness();
+							await Coroutine.Yield();
+						}
+
+						var unitPoi = Unit(unitId);
+						if (unitPoi == null) return;
+
+						while (HasQuest(questId))
+						{
+							while (Me.Location.Distance(unitPoi.Location) >= 5)
+							{
+								Navigator.MoveTo(unitPoi.Location);
+								await Coroutine.Yield();
+							}
+
+							if (Me.Location.Distance(unitPoi.Location) < 5)
+							{
+								unitPoi.Interact();
+								await Coroutine.Sleep(500);
+								Lua.DoString("QuestInfoRewardsFrameQuestInfoItem1:Click();");
+								await Coroutine.Sleep(300);
+								Lua.DoString("QuestFrameCompleteQuestButton:Click();");
+							}
+							await Coroutine.Yield();
+						}
+					}
+				]]>
+			</CustomBehavior>			
 		<!-- END RunCode Methods -->
 
 		<!-- Zone Introductory Quests -->
@@ -379,139 +515,6 @@ END INITORDER COMMENT -->
 
 		<!-- Story: Huln's War -->
 			<If Condition="!IsQuestCompleted(39992)" > <!-- Last quest in this chain -->
-				<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
-						async Task VehicleMove(WoWPoint moveTo)
-						{
-							while (Me.Location.Distance(moveTo) >= 5)
-							{
-								Navigator.MoveTo(moveTo);
-								await CombatAwareness();
-								await Coroutine.Yield();
-							}
-						}
-
-						async Task VehicleKill(uint unitId)
-						{
-							WoWUnit killMe = Unit(unitId, u => u.IsAlive);
-							if (killMe == null || Blacklist.Contains(killMe, BlacklistFlags.Combat)) return;
-
-							while (killMe != null && killMe.IsAlive)
-							{
-								if (Me.Location.Distance(killMe.Location) >= 5)
-								{
-									Navigator.MoveTo(killMe.Location);
-									await CombatAwareness();
-									await Coroutine.Yield();
-								}
-
-								if (killMe.IsAlive)
-								{
-									await VehicleCombat(killMe);
-									await Coroutine.Yield();
-								}
-								await Coroutine.Yield();
-							}
-						}
-
-						async Task VehicleCombat(WoWUnit vehicleKill)
-						{
-							if (Me.CurrentTarget != vehicleKill)
-							{
-								vehicleKill.Target();
-							}
-							while (Me.Location.Distance(vehicleKill.Location) >= 5)
-							{
-								Navigator.MoveTo(vehicleKill.Location);
-								await Coroutine.Yield();
-							}
-							StyxWoW.Me.SetFacing(vehicleKill.Location);
-							await Coroutine.Sleep(150);
-							Styx.Helpers.KeyboardManager.KeyUpDown((char)System.Windows.Forms.Keys.D1);
-							await Coroutine.Sleep(1050);
-						}
-
-						async Task CombatAwareness()
-						{
-							WoWUnit vehicleId = ObjectManager.GetObjectsOfType<WoWUnit>().FirstOrDefault(u => u.Entry == 97817 && u.Distance <= 1);
-							var killArray = ObjectManager.GetObjectsOfType<WoWUnit>().Where(u => u.CurrentTarget == vehicleId);
-
-							if (killArray == null) return;
-
-							foreach (WoWUnit killMe in killArray)
-							{
-								await VehicleCombat(killMe);
-								await Coroutine.Yield();
-							}
-						}
-
-						async Task VehiclePickUp(uint questId, uint unitId, WoWPoint giverSpot)
-						{
-							if (!NeedsQuest(questId)) return;
-							Logging.Write(System.Windows.Media.Colors.Yellow, $"[ProfileBase]: Moving to PickUp questId {questId}");
-							while (Me.Location.Distance(giverSpot) >= 10)
-							{
-								Navigator.MoveTo(giverSpot);
-								await CombatAwareness();
-								await Coroutine.Yield();
-							}
-
-							var unitPoi = Unit(unitId);
-							if (unitPoi == null) return;
-
-							while (!HasQuest(questId))
-							{
-								while (Me.Location.Distance(unitPoi.Location) >= 5)
-								{
-									Navigator.MoveTo(unitPoi.Location);
-									await Coroutine.Yield();
-								}
-
-								if (Me.Location.Distance(unitPoi.Location) < 5)
-								{
-									unitPoi.Interact();
-									await Coroutine.Sleep(500);
-									Lua.DoString("QuestFrameAcceptButton:Click();");
-								}
-								await Coroutine.Yield();
-							}
-						}
-
-						async Task VehicleTurnIn(uint questId, uint unitId, WoWPoint giverSpot)
-						{
-							if (!QuestDone(questId)) return;
-							Logging.Write(System.Windows.Media.Colors.Yellow, $"[ProfileBase]: Moving to TurnIn questId {questId}");
-							while (Me.Location.Distance(giverSpot) >= 10)
-							{
-								Navigator.MoveTo(giverSpot);
-								await CombatAwareness();
-								await Coroutine.Yield();
-							}
-
-							var unitPoi = Unit(unitId);
-							if (unitPoi == null) return;
-
-							while (HasQuest(questId))
-							{
-								while (Me.Location.Distance(unitPoi.Location) >= 5)
-								{
-									Navigator.MoveTo(unitPoi.Location);
-									await Coroutine.Yield();
-								}
-
-								if (Me.Location.Distance(unitPoi.Location) < 5)
-								{
-									unitPoi.Interact();
-									await Coroutine.Sleep(500);
-									Lua.DoString("QuestInfoRewardsFrameQuestInfoItem1:Click();");
-									await Coroutine.Sleep(300);
-									Lua.DoString("QuestFrameCompleteQuestButton:Click();");
-								}
-								await Coroutine.Yield();
-							}
-						}
-					]]>
-				</CustomBehavior>
-
 				<DisableBehavior Name="All" />
 
 				<PickUp QuestName="Huln's War - The Arrival" QuestId="39983" GiverName="Spiritwalker Ebonhorn" GiverId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
@@ -670,7 +673,7 @@ END INITORDER COMMENT -->
 					<!-- NOTE: <Improve> : Improve this.  Can make it a lot better. -->
 					<MoveTo QuestId="39318" X="4676.615" Y="3877.472" Z="830.101" />
 					<CustomBehavior File="RunCode" QuestId="39318" ><![CDATA[
-							while (Unit(95261, u => u.Distance <= 19) != null)
+							while (Unit(95261, u => u.Distance <= 29) != null)
 							{
 								WoWUnit firePoi = Unit(95261);
 								StyxWoW.Me.SetFacing(firePoi);
@@ -678,14 +681,13 @@ END INITORDER COMMENT -->
 								Lua.DoString("ExtraActionButton1:Click();");
 								await Coroutine.Sleep(750);
 								SpellManager.ClickRemoteLocation(firePoi.Location);
-								await Coroutine.Sleep(1000);
 							}
 						]]>
 					</CustomBehavior>
 
 					<MoveTo QuestId="39318" X="4777.842" Y="3896.039" Z="817.3372" />
 					<CustomBehavior File="RunCode" QuestId="39318" ><![CDATA[
-							while (Unit(95261, u => u.Distance <= 19) != null)
+							while (Unit(95261, u => u.Distance <= 29) != null)
 							{
 								WoWUnit firePoi = Unit(95261);
 								StyxWoW.Me.SetFacing(firePoi);
@@ -693,14 +695,13 @@ END INITORDER COMMENT -->
 								Lua.DoString("ExtraActionButton1:Click();");
 								await Coroutine.Sleep(750);
 								SpellManager.ClickRemoteLocation(firePoi.Location);
-								await Coroutine.Sleep(1000);
 							}
 						]]>
 					</CustomBehavior>
 
 					<MoveTo QuestId="39318" X="4800.041" Y="3927.792" Z="829.0881" />
 					<CustomBehavior File="RunCode" QuestId="39318" ><![CDATA[
-							while (Unit(95261, u => u.Distance <= 19) != null)
+							while (Unit(95261, u => u.Distance <= 29) != null)
 							{
 								WoWUnit firePoi = Unit(95261);
 								StyxWoW.Me.SetFacing(firePoi);
@@ -708,7 +709,6 @@ END INITORDER COMMENT -->
 								Lua.DoString("ExtraActionButton1:Click();");
 								await Coroutine.Sleep(750);
 								SpellManager.ClickRemoteLocation(firePoi.Location);
-								await Coroutine.Sleep(1000);
 							}
 						]]>
 					</CustomBehavior>
@@ -718,7 +718,7 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="Rocs vs Eagles" QuestId="38910" GiverName="Lasan Skyhorn" GiverId="93841" X="4855.699" Y="3979.478" Z="832.1546" />
 			<While Condition="DoQuest(38910)" >
-				<CustomBehavior File="InteractWith" MobId="94991" NumOfTimes="7" QuestId="38910" QuestObjectiveIndex="1" >
+				<CustomBehavior File="InteractWith" MobId="94991" Range="5" NonCompeteDistance="0" QuestId="38910" QuestObjectiveIndex="1" >
 					<HuntingGrounds>
 						<Hotspot X="4952.185" Y="4152.331" Z="821.8495" />
 						<Hotspot X="4882.544" Y="4119.929" Z="836.452" />
@@ -743,7 +743,8 @@ END INITORDER COMMENT -->
 						<PursueGameObject Id="1234" />
 						<PursueUnit Id="94984" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
 						<PursueUnit Id="94983" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
-						<PursueUnit Id="94986" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.IsFlying &amp;&amp; !UNIT.TaggedByOther" />
+						<!-- IsFlying doesn't work for these mobs.  
+							<PursueUnit Id="94986" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.IsFlying &amp;&amp; !UNIT.TaggedByOther" /> -->
 					</PursuitList>
 				</CustomBehavior>
 			</While>
@@ -772,7 +773,7 @@ END INITORDER COMMENT -->
 					<PursuitList>
 						<PursueUnit Id="95265" PursueWhen="!IsObjectiveComplete(1, 39429)" />
 						<PursueUnit Id="95266" PursueWhen="!IsObjectiveComplete(1, 39429)" />
-						<PursueUnit Id="94688" PursueWhen="!IsObjectiveComplete(2, 39429)" />
+						<PursueUnit Id="95277" PursueWhen="!IsObjectiveComplete(2, 39429)" />
 					</PursuitList>
 				</CustomBehavior>
 			</While>
@@ -788,24 +789,16 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="The Bloodtotem Tribe" QuestId="38912" GiverName="Lasan Skyhorn" GiverId="95410" X="5117.721" Y="4458.951" Z="1022.652" />
 			<PickUp QuestName="The Skies of Highmountain" QuestId="39387" GiverName="Lasan Skyhorn" GiverId="95410" X="5117.721" Y="4458.951" Z="1022.652" />
-			<While Condition="DoQuest(38912)" >
+			<While Condition="DoQuest(39387)" >
 				<If Condition="Unit(98777) != null" >
 					<CustomBehavior File="InteractWith" MobId="98777" X="5121.456" Y="4461.573" Z="1021.617" />
 					<!-- NOTE: <AddTermination> : This wait timer can be terminatable once the player gets off the "vehicle" -->
 					<CustomBehavior File="WaitTimer" WaitTime="40000" />
 				</If>
-				<CustomBehavior File="InteractWith" MobId="98773" GossipOptions="1" QuestId="38912" QuestObjectiveIndex="2" X="4192.526" Y="4406.968" Z="659.2631" />
-				<MoveTo QuestId="38912" QuestObjectiveIndex="2" X="4085.01" Y="4385.548" Z="670.6269" />
-				<CustomBehavior File="WaitTimer" QuestId="38912" QuestObjectiveIndex="2" WaitTime="60000" />
+				<CustomBehavior File="InteractWith" MobId="98773" WaitForNpcs="false" GossipOptions="1" QuestId="39387" X="4192.526" Y="4406.968" Z="659.2631" />
+				<MoveTo QuestId="39387" QuestObjectiveIndex="2" X="4085.01" Y="4385.548" Z="670.6269" />
+				<CustomBehavior File="WaitTimer" QuestId="39387" QuestObjectiveIndex="2" WaitTime="60000" />
 			</While>
-			
-			<While Condition="!IsQuestCompleted(39387)" >
-			<CustomBehavior File="InteractWith" MobId="98773" InteractByGossipOptions="1" X="4192.526" Y="4406.968" Z="659.2629" />
-			<MoveTo DestName="Witness the Ritual" X="4088.297" Y="4387.72" Z="670.6269" WaitTime="1000" />
-			<CustomBehavior File="WaitTimer" WaitTime="65000" />
-			</While>
-
-			
 			<TurnIn QuestName="The Skies of Highmountain" QuestId="39387" TurnInName="Mayla Highmountain" TurnInId="108434" X="4083.142" Y="4385.414" Z="670.6261" />
 		<!-- END Story: Skyhorn Tribe -->
 
@@ -817,7 +810,7 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="I Have a Bad Feeling About This" QuestId="39873" GiverName="Navarrogg" GiverId="97667" X="5202.087" Y="4935.929" Z="710.6815" />
 			<While Condition="DoQuest(39873)" >
-				<CustomBehavior File="InteractWith" MobId="244625" QuestId="39873" QuestObjectiveIndex="1" X="5320.737" Y="4933.171" Z="693.3184" />
+				<CustomBehavior File="InteractWith" MobId="244625" NonCompeteDistance="0" QuestId="39873" QuestObjectiveIndex="1" X="5320.737" Y="4933.171" Z="693.3184" />
 			</While>
 			<TurnIn QuestName="I Have a Bad Feeling About This" QuestId="39873" TurnInName="Navarrogg's Cage" TurnInId="243402" X="5201.837" Y="4936.044" Z="710.4338" />
 
@@ -871,8 +864,8 @@ END INITORDER COMMENT -->
 			<While Condition="DoQuest(39455)" >
 				<MoveTo X="5394.246" Y="5034.519" Z="651.3091" /> <!-- So the bot doesn't get confused while trying to enter the cave, can remove if needed. -->
 				<MoveTo X="5310.635" Y="4994.739" Z="627.2947" />
-				<CustomBehavior File="InteractWith" MobId="244564" QuestId="39455" QuestObjectiveIndex="1" X="5307.563" Y="4997.418" Z="627.4985" /> <!-- Both MoveTos above can be removed if there's no navigation issues. -->
-				<CustomBehavior File="KillUntilComplete" MobId="97544" QuestId="39455" QuestObjectiveIndex="2" X="5309.822" Y="4978.952" Z="626.4682" />
+				<CustomBehavior File="InteractWith" MobId="244564" NonCompleteDistance="0" QuestId="39455" QuestObjectiveIndex="1" X="5307.563" Y="4997.418" Z="627.4985" /> <!-- Both MoveTos above can be removed if there's no navigation issues. -->
+				<CustomBehavior File="KillUntilComplete" MobId="97544" NonCompleteDistance="0" QuestId="39455" QuestObjectiveIndex="2" X="5309.822" Y="4978.952" Z="626.4682" />
 			</While>
 			<TurnIn QuestName="Cave of the Blood Trial" QuestId="39455" TurnInName="Torok Bloodtotem" TurnInId="93836" X="5293.963" Y="4965.946" Z="626.6917" />
 
@@ -940,23 +933,21 @@ END INITORDER COMMENT -->
 			</While>	
 		<!-- END Story: The Bloodtotem Tribe -->
 
-			<PickUp QuestName="Step into the Dark" QuestId="40229" GiverName="EMPTY" GiverId="95392" X="5821.911" Y="4201.273" Z="709.0323" />
-			<TurnIn QuestName="Step into the Dark" QuestId="40229" TurnInName="Navarrogg" TurnInId="95392" X="5870.035" Y="4577.615" Z="629.2573" />
+			<PickUp QuestName="Step into the Dark" QuestId="40229" GiverName="Navarrogg" GiverId="95392" X="5821.911" Y="4201.273" Z="709.0323" />
+			<If Condition="QuestDone(40229)" >
+				<MoveTo X="5866.382" Y="4582.85" Z="629.8276" />
+			</If>
+			<TurnIn QuestName="Step into the Dark" QuestId="40229" TurnInName="Navarrogg" TurnInId="95392" X="5870.035" Y="4577.615" Z="629.2578" />
 
 			<PickUp QuestName="Unexpected Allies" QuestId="39456" GiverName="Navarrogg" GiverId="95392" X="5870.035" Y="4577.615" Z="629.2573" />
-			<!-- NOTE: <QuestOpportunity> : Can add "You Lift, Brul?" quest here. 
+			<!-- NOTE: <QuestOpportunity> : Can add "You Lift, Brul?" quest here. -->
+
+			<!-- NOTE: <AddQuest> : Demon Hunters can get quests from this npc: Name="Apprentice Rosalyn" Entry="97094" X="4817.446" Y="4786.297" Z="704.7228" -->
 			<While Condition="DoQuest(39456)" >
-				<CustomBehavior File="InteractWith" MobId="99619" InteractByGossipOptions="1" QuestId="39456" QuestObjectiveIndex="1" X="4123.887" Y="4475.311" Z="660.1113" />
+				<CustomBehavior File="InteractWith" MobId="99619" InteractByGossipOptions="1" QuestId="39456" X="4123.887" Y="4475.311" Z="660.1113" />
 				<MoveTo QuestId="39456" QuestObjectiveIndex="2" X="4084.514" Y="4386.992" Z="670.6257" />
 				<CustomBehavior File="WaitTimer" QuestId="39456" QuestObjectiveIndex="2" WaitTime="23000" />
-			</While> |||| Was this written slightly incorrectly? Below !IsQuestCompleted(39456) completes this quest correctly-->
-			
-			<While Condition="!IsQuestCompleted(39456)" >
-			<CustomBehavior File="InteractWith" MobId="99619" InteractByGossipOptions="1" X="4123.887" Y="4475.311" Z="660.1113" />
-			<MoveTo DestName="Witness the Ritual" X="4088.297" Y="4387.72" Z="670.6269" WaitTime="1000" />
-			<CustomBehavior File="WaitTimer" WaitTime="25000" />
-			</While>
-						
+			</While>						
 			<TurnIn QuestName="Unexpected Allies" QuestId="39456" TurnInName="Mayla Highmountain" TurnInId="108434" X="4083.142" Y="4385.414" Z="670.6258" />
 
 			<PickUp QuestName="Battle of Snowblind Mesa" QuestId="38915" GiverName="Mayla Highmountain" GiverId="108434" X="4083.142" Y="4385.414" Z="670.6258" /> <!-- Breadcrumb for Battle of Snowblind Mesa -->
@@ -969,15 +960,19 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="Buy Us Time" QuestId="39777" GiverName="Jale Rivermane" GiverId="97344" X="3946.407" Y="3916.945" Z="905.1759" />
 			<PickUp QuestName="The Siegebrul" QuestId="39862" GiverName="Navarrogg" GiverId="97301" X="3941.136" Y="3915.171" Z="905.1761" />
 
-			<While Condition="DoQuest(39776, 39862)" >
-				<!-- NOTE: <AddFunctionality> : Bot needs to push ExtraActionButton1 when engaging the mobs for quest 39776.  Only push once per engagement. 
-												Button only appears when you get close to the mob.
-				-->
-				<CustomBehavior File="KillUntilComplete" MobId="99217" QuestId="39776" QuestObjectiveIndex="1" X="4206.714" Y="3944.478" Z="915.8086" />
-				<CustomBehavior File="KillUntilComplete" MobId="97546" QuestId="39862" QuestObjectiveIndex="1" X="4266.639" Y="3962.442" Z="939.8129" />
-				<CustomBehavior File="KillUntilComplete" MobId="97013" QuestId="39776" QuestObjectiveIndex="3" X="4282.72" Y="3877.282" Z="941.5201" />
-				<CustomBehavior File="KillUntilComplete" MobId="99216" QuestId="39776" QuestObjectiveIndex="2" X="4184.425" Y="3827.324" Z="912.4977" />
-			</While>
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="SummonHelpers" AllowUseDuringCombat="true" LogExecution="false" UseAtInterval="5000" >
+				<If Condition="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.IsAlive &amp;&amp; (Me.CurrentTarget.Entry == 99217 || Me.CurrentTarget.Entry == 99216 || Me.CurrentTarget.Entry == 97013)" >
+					<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+				</If>
+			</CustomBehavior>
+
+			<CustomBehavior File="KillUntilComplete" MobId="99217" QuestId="39776" QuestObjectiveIndex="1" X="4206.714" Y="3944.478" Z="915.8086" />
+			<CustomBehavior File="KillUntilComplete" MobId="97546" QuestId="39862" QuestObjectiveIndex="1" X="4266.639" Y="3962.442" Z="939.8129" />
+			<CustomBehavior File="KillUntilComplete" MobId="97013" QuestId="39776" QuestObjectiveIndex="3" X="4282.72" Y="3877.282" Z="941.5201" />
+			<CustomBehavior File="KillUntilComplete" MobId="99216" QuestId="39776" QuestObjectiveIndex="2" X="4184.425" Y="3827.324" Z="912.4977" />
+
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="SummonHelpers" Command="Remove" />
+
 
 			<While Condition="DoQuest(39777)" >
 				<CustomBehavior File="KillUntilComplete" MobIds="96690, 96691" QuestId="39777" QuestObjectiveIndex="1" >
@@ -991,9 +986,11 @@ END INITORDER COMMENT -->
 				</CustomBehavior>
 			</While>
 
+			<DisableBehavior Name="Pull" />
 			<TurnIn QuestName="The Siegebrul" QuestId="39862" TurnInName="Navarrogg" TurnInId="97301" X="3941.136" Y="3915.171" Z="905.176" />
 			<TurnIn QuestName="Buy Us Time" QuestId="39777" TurnInName="Jale Rivermane" TurnInId="97344" X="3946.407" Y="3916.945" Z="905.176" />
 			<TurnIn QuestName="Battle Worms" QuestId="39776" TurnInName="Mayla Highmountain" TurnInId="93846" X="3944.177" Y="3922.587" Z="905.1754" />
+			<EnableBehavior Name="Pull" />
 
 			<PickUp QuestName="Evacuate Snowmane" QuestId="42088" GiverName="Mayla Highmountain" GiverId="93846" X="3944.177" Y="3922.587" Z="905.1754" />
 			<While Condition="DoQuest(42088)" >
@@ -1046,21 +1043,25 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="Amateur Hour" QuestId="40170" GiverName="Hemet Nesingwary" GiverId="94409" X="4500.406" Y="4858.703" Z="661.8898" />
 			<PickUp QuestName="Note-Eating Goats" QuestId="39859" GiverName="Addie Fizzlebog" GiverId="94434" X="4501.019" Y="4866.559" Z="662.0485" />
 
-			<While Condition="DoQuest(40170, 39859)" >
-				<CustomBehavior File="InteractWith" InteractByGossipOptions="1" TerminateWhen="!DoQuest(40170, 39859)" >
-					<HuntingGrounds>
-						<Hotspot X="4473.76" Y="4797.701" Z="658.9086" />
-						<Hotspot X="4411.5" Y="4773.652" Z="654.4877" /> 
-						<Hotspot X="4551.579" Y="4794.254" Z="669.1888" />
-						<Hotspot X="4458.153" Y="4708.652" Z="649.8495" />
-					</HuntingGrounds>
-					<PursuitList>
-						<PursueUnit Id="96591" PursueWhen="!IsObjectiveComplete(1, 40170)" />
-						<PursueUnit Id="98804" PursueWhen="!IsObjectiveComplete(1, 40170)" />
-						<PursueUnit Id="98808" ConvertWhen="!IsObjectiveComplete(1, 39859)" PursueWhen="!IsObjectiveComplete(1, 39859)" ConvertBy="Killing" />  
-					</PursuitList>
-				</CustomBehavior>
-			</While>
+			<CustomBehavior File="InteractWith" MobIds="96591, 98808" QuestId="40170" InteractByGossipOptions="1" >
+				<HuntingGrounds>
+					<Hotspot X="4473.76" Y="4797.701" Z="658.9086" />
+					<Hotspot X="4411.5" Y="4773.652" Z="654.4877" /> 
+					<Hotspot X="4551.579" Y="4794.254" Z="669.1888" />
+					<Hotspot X="4458.153" Y="4708.652" Z="649.8495" />
+				</HuntingGrounds>
+			</CustomBehavior>
+
+			<CustomBehavior File="KillUntilComplete" MobId="98808" QuestId="39859" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="4473.76" Y="4797.701" Z="658.9086" />
+					<Hotspot X="4411.5" Y="4773.652" Z="654.4877" /> 
+					<Hotspot X="4551.579" Y="4794.254" Z="669.1888" />
+					<Hotspot X="4458.153" Y="4708.652" Z="649.8495" />
+				</HuntingGrounds>
+			</CustomBehavior>
+
+
 
 			<TurnIn QuestName="Amateur Hour" QuestId="40170" TurnInName="Hemet Nesingwary" TurnInId="94409" X="4500.406" Y="4858.703" Z="661.8903" />
 			<TurnIn QuestName="Note-Eating Goats" QuestId="39859" TurnInName="Hemet Nesingwary" TurnInId="94409" X="4500.406" Y="4858.703" Z="661.8903" />
@@ -1071,7 +1072,9 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="Bear Huntin'" QuestId="39392" GiverName="Hemet Nesingwary" GiverId="94409" X="4500.406" Y="4858.703" Z="661.8903" />
 
 			<While Condition="DoQuest(40216, 39123, 39124, 39392)" >
-				<!-- NOTE: <AddFailsafe> : Can detect if Addie is nearby by checking the HasAura.  May need to use this interactwith if she disapears. -->
+				<!-- NOTE: <AddFailsafe> : Can detect if Addie is nearby by checking the HasAura.  May need to use this interactwith if she disapears. 
+							194963
+				-->
 				<CustomBehavior File="InteractWith" MobId="94434" GossipOptions="1" QuestId="40216" QuestObjectiveIndex="1" X="4501.019" Y="4866.559" Z="662.0496" />
 
 				<CustomBehavior File="KillUntilComplete" MobId="94151" QuestId="39124" QuestObjectiveIndex="1" >
@@ -1179,7 +1182,7 @@ END INITORDER COMMENT -->
 			</While>
 
 			<While Condition="DoQuest(40049)" >
-				<CustomBehavior File="InteractWith" MobIds="99173" GossipOptions="1" NumOfTimes="6" MinRange="1" QuestId="40049" QuestObjectiveIndex="1" >
+				<CustomBehavior File="InteractWith" MobIds="99173" Range="1" QuestId="40049" QuestObjectiveIndex="1" >
 					<HuntingGrounds>
 						<Hotspot X="6601.702" Y="4506.358" Z="-0.05986659"/>
 						<Hotspot X="6542.439" Y="4527.12" Z="0.07956004" />
@@ -1225,21 +1228,34 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="Oh, the Clawdacity!" QuestId="40230" GiverName="King Mrgl-Mrgl" GiverId="98067" X="6447.201" Y="4667.913" Z="13.13795" />
 
 			<While Condition="DoQuest(40102, 40230)" >
-				<CustomBehavior File="InteractWith" MobId="89630" QuestId="40102" QuestObjectiveIndex="1" X="6448.142" Y="4665.566" Z="13.05069" WaitTime="5000" />
-				
-				<CustomBehavior File="UserDialog" AllowBotStop="true" SoundCue="Exclamation"
-                            SoundCueInterval="1" Text="Murlocs: The Next Generation and Oh, the Clawdacity! are currently not scripted. Please do these quests manually and continue." />
-							
-				<!-- NOTE: <AddSupport> : From this point on, the player will be inside of a vehicle.
-									Button 1+4 = Attacks.
-									Button 2   = ClickRemoteLocation attack.
-									Button 3   = Invunerable + heal, can't attack while using.
-					Mobs don't auto-aggro. Only questId 39983 needs to kill NPCs
+				<CustomBehavior File="InteractWith" MobId="89630" X="6448.142" Y="4665.566" Z="13.05069" TerminateWhen="Me.InVehicle" />
+				<DisableBehavior Name="All" />
 
-					Bot must kill 10: Name="Cavemoss Clacker" Entry="98194" X="6399.344" Y="4366.635" Z="27.64305"
-										X="6383.071" Y="4342.565" Z="38.00792"
-								  1 :  Name="Clawdayshus" Entry="98809" X="6210.485" Y="4184.985" Z="70.7027"
-					Bot can kill the 10 Clackers while going to kill Clawdashus -->
+				<While Condition="!IsQuestCompleted(40230)">
+					<CustomBehavior File="RunCode" Code="
+						await VehicleMove(new WoWPoint(6218.297, 4186.135, 70.21992)); 
+						await VehicleKill(98194);
+					"/>
+				</While>
+
+				<While Condition="!IsQuestCompleted(40102)">
+					<CustomBehavior File="RunCode" Code="
+						await VehicleMove(new WoWPoint(6221.889, 4184.008, 70.0354));
+						await VehicleKill(98809);
+						await VehicleMove(new WoWPoint(6322.653, 4166.996, 63.89966));
+						await VehicleKill(98809);
+						await VehicleMove(new WoWPoint(6313.804, 4131.534, 75.48457));
+						await VehicleKill(98809);
+						await VehicleMove(new WoWPoint(6382.318, 4181.017, 55.30469));
+						await VehicleKill(98809);
+						await VehicleMove(new WoWPoint(6380.356, 4283.081, 53.94374));
+						await VehicleKill(98809);
+					"/>
+				</While>
+
+				<CustomBehavior File="RunCode" Code="await VehicleMove(new WoWPoint(6218.297, 4186.135, 70.21992)); "/>
+				<CustomBehavior File="EjectVeh" />
+				<EnableBehavior Name="All" />
 			</While>
 			<TurnIn QuestName="Murlocs: The Next Generation" QuestId="40102" TurnInName="King Mrgl-Mrgl" TurnInId="98067" X="6210.309" Y="4184.444" Z="70.66591" />
 			<TurnIn QuestName="Oh, the Clawdacity!" QuestId="40230" TurnInName="King Mrgl-Mrgl" TurnInId="98067" X="6210.309" Y="4184.444" Z="70.66591" />
