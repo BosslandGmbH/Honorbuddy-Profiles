@@ -80,6 +80,23 @@ END INITORDER COMMENT -->
 						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
 						await Coroutine.Sleep(postWait);
 					}
+					async Task DalaranHearth()
+					{
+						Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Using Dalaran Hearthstone");
+						await CommonCoroutines.StopMoving(); 
+						WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+						if (dalaranHearth.CooldownTimeLeft < TimeSpan.FromMinutes(5))
+						{
+							if (dalaranHearth.Cooldown != 0) {
+								Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
+								await Coroutine.Wait(1200000, () => dalaranHearth.Cooldown == 0);
+							}
+							dalaranHearth.Interact();
+							var currentLoc = StyxWoW.Me.ZoneId;
+							await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
+							await Coroutine.Sleep(1500);
+						}
+					}
 				]]>
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
@@ -272,6 +289,11 @@ END INITORDER COMMENT -->
 		<!-- Azsuna -->
 			<If Condition="!IsAchievementCompleted(10763, false)" > 
 				<If Condition="NeedsQuest(39718)" >
+					<If Condition="!Me.HasAura(213170)" >
+						<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+						<MoveTo X="-798.684" Y="4577.701" Z="700.5798" />
+						<CustomBehavior File="InteractWith" MobId="251302" NonCompeteDistance="0" X="-795.9913" Y="4582.382" Z="700.575" />
+					</If>
 					<CustomBehavior File="InteractWith" MobId="101979" NonCompeteDistance="0" WaitTime="1500" X="1335.118" Y="1344.29" Z="177.1373" />
 					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
 					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
@@ -288,6 +310,11 @@ END INITORDER COMMENT -->
 		<!-- Val'sharah -->
 			<If Condition="!IsAchievementCompleted(10698, false)" >
 				<If Condition="NeedsQuest(39731)" >
+					<If Condition="!Me.HasAura(213170)" >
+						<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+						<MoveTo X="-798.684" Y="4577.701" Z="700.5798" />
+						<CustomBehavior File="InteractWith" MobId="251302" NonCompeteDistance="0" X="-795.9913" Y="4582.382" Z="700.575" />
+					</If>
 					<CustomBehavior File="InteractWith" MobId="101979" NonCompeteDistance="0" WaitTime="1500" X="1335.118" Y="1344.29" Z="177.1373" />
 					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39731);" WaitTime="1500" />
 					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
@@ -304,6 +331,11 @@ END INITORDER COMMENT -->
 		<!-- Highmountain -->
 			<If Condition="!IsAchievementCompleted(10059, false)" >
 				<If Condition="NeedsQuest(39733)" >
+					<If Condition="!Me.HasAura(213170)" >
+						<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+						<MoveTo X="-798.684" Y="4577.701" Z="700.5798" />
+						<CustomBehavior File="InteractWith" MobId="251302" NonCompeteDistance="0" X="-795.9913" Y="4582.382" Z="700.575" />
+					</If>
 					<CustomBehavior File="InteractWith" MobId="101979" NonCompeteDistance="0" WaitTime="1500" X="1335.118" Y="1344.29" Z="177.1373" />
 					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39733);" WaitTime="1500" />
 					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
@@ -320,6 +352,11 @@ END INITORDER COMMENT -->
 		<!-- Stormheim -->
 			<If Condition="!IsAchievementCompleted(10790, false)" >
 				<If Condition="NeedsQuest(39735)" >
+					<If Condition="!Me.HasAura(213170)" >
+						<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+						<MoveTo X="-798.684" Y="4577.701" Z="700.5798" />
+						<CustomBehavior File="InteractWith" MobId="251302" NonCompeteDistance="0" X="-795.9913" Y="4582.382" Z="700.575" />
+					</If>
 					<CustomBehavior File="InteractWith" MobId="101979" NonCompeteDistance="0" WaitTime="1500" X="1335.118" Y="1344.29" Z="177.1373" />
 					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.StartQuest(39735);" WaitTime="1500" />
 					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />

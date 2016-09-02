@@ -80,6 +80,23 @@ END INITORDER COMMENT -->
 						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
 						await Coroutine.Sleep(postWait);
 					}
+					async Task DalaranHearth()
+					{
+						Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Using Dalaran Hearthstone");
+						await CommonCoroutines.StopMoving(); 
+						WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+						if (dalaranHearth.CooldownTimeLeft < TimeSpan.FromMinutes(5))
+						{
+							if (dalaranHearth.Cooldown != 0) {
+								Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
+								await Coroutine.Wait(1200000, () => dalaranHearth.Cooldown == 0);
+							}
+							dalaranHearth.Interact();
+							var currentLoc = StyxWoW.Me.ZoneId;
+							await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
+							await Coroutine.Sleep(1500);
+						}
+					}
 				]]>
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
