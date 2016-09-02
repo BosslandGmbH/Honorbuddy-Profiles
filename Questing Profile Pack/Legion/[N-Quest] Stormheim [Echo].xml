@@ -616,24 +616,22 @@ END INITORDER COMMENT -->
 
 				<While Condition="DoQuest(38410)" >
 					<!-- NOTE: <CheckThis> : This is a very fragile section of code. Need to imrpove or add failsafes. -->
-					<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="6000" X="2544.906" Y="2487.497" Z="254.7319" />
-					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="2" QuestId="38410" QuestObjectiveIndex="1" X="2549.886" Y="2466.156" Z="254.7651" />
-
+					<!-- NOTE: <CheckThis> : Changed which objects this section interacts with. Oddly it will end up interacting with objects not below when nav fails. -->
 					<CustomBehavior File="InteractWith" MobId="91983" Range="49" WaitTime="6000" X="2529.949" Y="2530.865" Z="262.96" />
-					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38410" QuestObjectiveIndex="1" X="2530.71" Y="2534.549" Z="263.0449" />
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1000" QuestId="38410" QuestObjectiveIndex="1" X="2530.71" Y="2534.549" Z="263.0449" />
 
-					<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="6000" X="2544.906" Y="2487.497" Z="254.7319" />
-					<CustomBehavior File="InteractWith" MobId="92072" Range="49" WaitTime="6000" X="2545.717" Y="2445.174" Z="260.7524" />
+					<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="6000" X="2544.906" Y="2487.497" Z="254.7319"  />
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1000" QuestId="38410" QuestObjectiveIndex="1" X="2543.292" Y="2510.19" Z="254.8515" />
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1000" QuestId="38410" QuestObjectiveIndex="1" X="2549.886" Y="2466.156" Z="254.7651" />
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1000" QuestId="38410" QuestObjectiveIndex="1" X="2524.704" Y="2385.554" Z="263.4633" />
 
-					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38410" QuestObjectiveIndex="1" X="2543.905" Y="2423.978" Z="262.0621" />
-					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38410" QuestObjectiveIndex="1" X="2524.704" Y="2385.554" Z="263.4633" />
+					<CustomBehavior File="InteractWith" MobId="92072" Range="49" WaitTime="6000" X="2544.906" Y="2487.497" Z="254.7319" />
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1000" QuestId="38410" QuestObjectiveIndex="1" X="2490.207" Y="2361.314" Z="270.5206" />
 
-					<MoveTo QuestId="38410" QuestObjectiveIndex="1" X="2508.864" Y="2373.998" Z="264.0553" />
-					<CustomBehavior File="InteractWith" MobId="92072" Range="49" WaitTime="6000" X="2491.849" Y="2364.745" Z="270.4663" />
-					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38410" QuestObjectiveIndex="1" X="2490.207" Y="2361.314" Z="270.5206" />
-					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38410" QuestObjectiveIndex="1" X="2428.023" Y="2356.345" Z="273.3925" />
+					<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="6000" X="2449.207" Y="2357.403" Z="271.7252" />
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1000" QuestId="38410" QuestObjectiveIndex="1" X="2428.023" Y="2356.345" Z="273.3925" />
 
-					<CustomBehavior File="MyCTM" X="2423.832" Y="2379.894" Z="256.4818" />
+					<CustomBehavior File="MyCTM" X="2418.247" Y="2367.154" Z="256.2015"  />
 				</While>
 			</If>
 
@@ -690,8 +688,8 @@ END INITORDER COMMENT -->
 
 			<!-- NOTE: <BonusObjective>: <PickUp QuestName="Assault the Drekirjar" QuestId="38374" GiverName="Hati" GiverId="106551" XXXX /> -->
 
-			<While Condition="(NeedsQuest(38337) || DoQuest(38337) &amp;&amp; Me.IsAlliance) || (NeedsQuest(38616) || DoQuest(38616) &amp;&amp; Me.IsHorde)" >
-				<CustomBehavior File="KillUntilComplete" MobId="91202" TerminateWhen="(!NeedsQuest(38337) &amp;&amp; !DoQuest(38337) &amp;&amp; Me.IsAlliance) || (!NeedsQuest(38616) &amp;&amp; !DoQuest(38616) &amp;&amp; Me.IsHorde)" >
+			<While Condition="(!IsQuestCompleted(38337) &amp;&amp; Me.IsAlliance) || (!IsQuestCompleted(38616) &amp;&amp; Me.IsHorde)" >
+				<CustomBehavior File="KillUntilComplete" MobId="91202" TerminateWhen="(IsQuestCompleted(38337) &amp;&amp; Me.IsAlliance) || (IsQuestCompleted(38616) &amp;&amp; Me.IsHorde)" >
 					<HuntingGrounds>
 						<Hotspot X="2437.832" Y="2373.323" Z="256.6084" />
 						<Hotspot X="2428.545" Y="2434.163" Z="257.4063" />
@@ -709,7 +707,8 @@ END INITORDER COMMENT -->
 				<PickUp QuestName="Another Way" QuestId="38342" GiverName="Commander Lorna Crowley" GiverId="91553" X="2454.358" Y="2350.451" Z="256.1143" />
 				<While Condition="DoQuest(38342)" >
 					<CustomBehavior File="KillUntilComplete" MobId="91240" QuestId="38342" QuestObjectiveIndex="1" X="2377.939" Y="2348.658" Z="267.7591" />
-					<MoveTo QuestId="39342" QuestObjectiveIndex="2" X="2352.402" Y="2389.049" Z="316.4349" />
+					<MoveTo X="2352.402" Y="2389.049" Z="316.4349" />
+					<CustomBehavior File="WaitTimer" WaitTime="5000" />
 				</While>
 				<TurnIn QuestName="Another Way" QuestId="38342" TurnInName="Commander Lorna Crowley" TurnInId="91558" X="2349.302" Y="2387.768" Z="316.435" />
 
