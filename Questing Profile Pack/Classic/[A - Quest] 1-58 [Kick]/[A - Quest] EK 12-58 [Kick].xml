@@ -3934,7 +3934,7 @@
 
 			<CustomBehavior File="KillUntilComplete" QuestId="26232" TerminateWhen="IsQuestCompleted(26232)" ImmediatelySwitchToHighestPriorityTarget="True" >
                 <PursuitList>
-					  <PursueUnit Id="42387" PursueWhen="Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp; UNIT.Attackable" ConvertBy="Killing" />  
+					  <PursueUnit Id="42387" PursueWhen="UNIT.Attackable" ConvertBy="Killing" /> <!-- Navigator.CanNavigateFully(Me.Location, UNIT.Location) &amp;&amp;  -->
                 </PursuitList>
 					 <HuntingGrounds WaypointVisitStrategy="PickOneAtRandom">
 						<Hotspot X="-9861.528" Y="1336.118" Z="41.90211" />
@@ -6583,17 +6583,16 @@
 					</Hotspots>
 				</GrindArea>
 			</SetGrindArea>
-			<!-- CJ: Use rope to swing across to pirate boat -->
-			<If Condition="Navigator.CanNavigateFully(Me.Location, new WoWPoint(-14441.81, 469.915, 15.32084))">
+			<!-- CJ: Use rope to swing across to pirate boat 
+			<If Condition="Navigator.CanNavigateFully(Me.Location, new WoWPoint(-14441.81, 469.915, 15.32084))">-->
 				<CustomBehavior File="InteractWith" QuestId="26700" MobId="204585" CollectionDistance="50"
 								X="-14437.92" Y="472.2964" Z="15.32849" />
-			</If>
-			<!-- CJ: Grind until quest complete, or we fall off of boat (due to stuck handler, etc) -->
-			<GrindUntil Condition="IsQuestCompleted(26700) || !Navigator.CanNavigateFully(Me.Location, new WoWPoint(-14380.39, 481.0799, 13.11036))"
-					 GoalText="Grinding to complete &quot;The Damsel's (Bad) Luck&quot;" />
+			<!--</If>
+			CJ: Grind until quest complete, or we fall off of boat (due to stuck handler, etc) -->
+			<GrindUntil Condition="IsQuestCompleted(26700)" GoalText="Grinding to complete &quot;The Damsel's (Bad) Luck&quot;" /> <!--  || !Navigator.CanNavigateFully(Me.Location, new WoWPoint(-14380.39, 481.0799, 13.11036)) -->
 		</While>
 		<!-- CJ: If we're on boat, use rope to swing back -->
-		<If Condition="HasQuest(26700) &amp;&amp; IsQuestCompleted(26700) &amp;&amp; Navigator.CanNavigateFully(Me.Location, new WoWPoint(-14380.39, 481.0799, 13.11036))">
+		<If Condition="HasQuest(26700) &amp;&amp; IsQuestCompleted(26700)"> <!--  &amp;&amp; Navigator.CanNavigateFully(Me.Location, new WoWPoint(-14380.39, 481.0799, 13.11036)) -->
 			<MoveTo X="-14383.84" Y="487.1568" Z="12.94241" />
 			<CustomBehavior File="InteractWith" MobId="204586" CollectionDistance="50"
 							X="-14383.84" Y="487.1568" Z="12.94241" />
