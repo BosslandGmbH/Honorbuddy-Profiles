@@ -82,19 +82,21 @@ END INITORDER COMMENT -->
 					}
 					async Task DalaranHearth()
 					{
-						Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Using Dalaran Hearthstone");
-						await CommonCoroutines.StopMoving(); 
-						WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
-						if (dalaranHearth.CooldownTimeLeft < TimeSpan.FromMinutes(5))
-						{
-							if (dalaranHearth.Cooldown != 0) {
-								Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
-								await Coroutine.Wait(1200000, () => dalaranHearth.Cooldown == 0);
+						if (Me.ZoneId != 7502 || Me.ZoneId != 8392)
+							Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Using Dalaran Hearthstone");
+							await CommonCoroutines.StopMoving(); 
+							WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+							if (dalaranHearth.CooldownTimeLeft < TimeSpan.FromMinutes(5))
+							{
+								if (dalaranHearth.Cooldown != 0) {
+									Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
+									await Coroutine.Wait(1200000, () => dalaranHearth.Cooldown == 0);
+								}
+								dalaranHearth.Interact();
+								var currentLoc = StyxWoW.Me.ZoneId;
+								await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
+								await Coroutine.Sleep(1500);
 							}
-							dalaranHearth.Interact();
-							var currentLoc = StyxWoW.Me.ZoneId;
-							await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
-							await Coroutine.Sleep(1500);
 						}
 					}
 				]]>
@@ -366,7 +368,7 @@ END INITORDER COMMENT -->
 					<MoveTo X="3088.475" Y="838.9525" Z="243.8864" />
 					<CustomBehavior File="MyCTM" X="3084.979" Y="819.9088" Z="243.6615" TerminateWhen="Me.ZoneId == 8392" />
 				</If>
-				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Stormehim [Echo].xml" />
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Stormheim [Echo].xml" />
 			</If>
 		<!-- END Stormheim -->
 
