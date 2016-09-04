@@ -107,7 +107,7 @@ END INITORDER COMMENT -->
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
 
-		<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Currently the bot does not support the Mesh for the battleship\n\nYou must manually complete the quests up until after you shoot the bats down with the gun cannon.\n\nClick Continue Profile after you're off the flying ship to continue the bot." TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber &gt; 2" /> <!-- ALliance -->
+		<CustomBehavior File="UserDialog" QuestId="39800" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Currently the bot does not support the Mesh for the battleship\n\nYou must manually complete the quests up until after you shoot the bats down with the gun cannon.\n\nClick Continue Profile after you're off the flying ship to continue the bot." TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber &gt; 2" /> <!-- ALliance -->
 
 		<!-- [A] Alliance Quest Section -->
 			<!-- [A] Zone Introductory Quests -->
@@ -182,9 +182,9 @@ END Commented due to airship mesh. -->
 							<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 						</While>
 					</While>
-					<TurnIn QuestName="Greymane's Gambit" QuestId="39800" TurnInName="Sky Admiral Rogers" TurnInId="90749" X="3203.195" Y="3077.215" Z="440.2122" />
 END Commented due to airship mesh. -->
 					</While>
+					<TurnIn QuestName="Greymane's Gambit" QuestId="39800" TurnInName="Sky Admiral Rogers" TurnInId="90749" X="3203.195" Y="3077.215" Z="440.2122" />
 					<UseMount Value="true" />
 				</If>
 			<!-- [A] END Story: Greymane's Gambit -->
@@ -235,7 +235,7 @@ END Commented due to airship mesh. -->
 					<PickUp QuestName="Pins and Needles" QuestId="38059" GiverName="Knight-Captain Rhodes" GiverId="92414" X="2934.813" Y="3224.209" Z="529.3346" />
 					
 					<While Condition="DoQuest(38059)" >
-						<CustomBehavior File="InteractWith" ModId="90948" FactionId="1733" TerminateWhen="!DoQuest(38059)">
+						<CustomBehavior File="InteractWith" TerminateWhen="!DoQuest(38059)">
 							<HuntingGrounds>
 								<Hotspot X="2903.743" Y="3257.384" Z="536.3052" />
 								<Hotspot X="2897.153" Y="3418.166" Z="514.3953" />
@@ -246,6 +246,9 @@ END Commented due to airship mesh. -->
 								<Hotspot X="3129.231" Y="3396.511" Z="547.2512" />
 								<Hotspot X="3126.571" Y="3277.3" Z="547.6675" />
 							</HuntingGrounds>	
+							<PursuitList>
+								<PursueUnit Id="90948" PursueWhen="UNIT.CanInteract" />
+							</PursuitList>
 						</CustomBehavior>
 					</While>
 					
@@ -266,11 +269,16 @@ END Commented due to airship mesh. -->
 					<TurnIn QuestName="Pins and Needles" QuestId="38059" TurnInName="Mishka" TurnInId="90783" X="3213.321" Y="3074.431" Z="440.2125" />
 
 					<PickUp QuestName="Signal Boost" QuestId="38060" GiverName="Tinkmaster Overspark" GiverId="90866" X="3210.996" Y="3083.518" Z="440.2929" />
+					<!-- NOTE: <AddAvoid> : <WoWUnit Name="Crackling Tempest" Entry="110716" X="3238.598" Y="3194.655" Z="527.2969" /> -->
+					<CustomBehavior File="Hooks\Avoid" AvoidName="CracklingTempest" Command="Add" ObjectType="Npc" ObjectId="110716" Radius="8" />
 					<While Condition="DoQuest(38060)" >
 						<MoveTo QuestId="38060" X="3256.109" Y="3165.785" Z="526.7354" />
+						<CustomBehavior File="InteractWith" MobId="240235" Range="19" NonCompeteDistance="0" X="3250.077" Y="3155.221" Z="527.2654" TerminateWhen="Unit(90907) != null" />
+						<CustomBehavior File="KillUntilComplete" MobId="90907" X="3253.617" Y="3168.25" Z="526.4854" TerminateWhen="Unit(90907) == null || Unit(90907, u =&gt; u.IsDead) != null" />
 						<!-- NOTE: <AddFunction> : Not sure if mobs here auto-aggro or not. May need the bot kill any enemy that gets close in order to defend POI more efficiently. -->
 						<CustomBehavior File="WaitTimer" QuestId="38060" WaitTime="10000" />
 					</While>
+					<CustomBehavior File="Hooks\Avoid" AvoidName="CracklingTempest" Command="Remove" />
 					<TurnIn QuestName="Signal Boost" QuestId="38060" TurnInName="Sky Admiral Rogers" TurnInId="90749" X="3396.464" Y="3071.967" Z="526.5197" />
 				</If>
 			<!-- [A] END Story: The Aftermath -->
@@ -448,7 +456,7 @@ END Commented due to airship mesh. -->
 						<CustomBehavior File="Vehicles\CannonControl" VehicleId="110609" MobId="110604" QuestId="38331"
                         MaxAngle="1" MinAngle="0.1" Buttons="4" TerminateWhen="IsObjectiveComplete(3, 38331)" />
 					</If>
-					<CustomBehavior File="WaitTimer" WaitTime="10000" />
+					<CustomBehavior File="WaitTimer" QuestId="38331" WaitTime="10000" />
 				</While>
 				<TurnIn QuestName="Havi's Test" QuestId="38331" TurnInName="Havi" TurnInId="96254" X="3275.418" Y="2528.082" Z="301.0433" />
 
@@ -535,10 +543,10 @@ END Commented due to airship mesh. -->
 			
 
 			<While Condition="DoQuest(39593)" >
-				<CustomBehavior File="InteractWith" MobId="243823" QuestId="39593" QuestObjectiveIndex="3" X="3391.916" Y="2202.653" Z="277.804" />
-				<CustomBehavior File="InteractWith" MobId="243822" QuestId="39593" QuestObjectiveIndex="4" X="3567.383" Y="2210.913" Z="295.1413" />
-				<CustomBehavior File="InteractWith" MobId="243820" QuestId="39593" QuestObjectiveIndex="2" X="3412.116" Y="2176.849" Z="285.5889" />
-				<CustomBehavior File="InteractWith" MobId="243819" QuestId="39593" QuestObjectiveIndex="1" X="3339.773" Y="2245.911" Z="320.0132" />
+				<CustomBehavior File="InteractWith" MobId="243823" NonCompeteDistance="0" QuestId="39593" QuestObjectiveIndex="3" X="3391.916" Y="2202.653" Z="277.804" />
+				<CustomBehavior File="InteractWith" MobId="243822" NonCompeteDistance="0" QuestId="39593" QuestObjectiveIndex="4" X="3567.383" Y="2210.913" Z="295.1413" />
+				<CustomBehavior File="InteractWith" MobId="243820" NonCompeteDistance="0" QuestId="39593" QuestObjectiveIndex="2" X="3412.116" Y="2176.849" Z="285.5889" />
+				<CustomBehavior File="InteractWith" MobId="243819" NonCompeteDistance="0" QuestId="39593" QuestObjectiveIndex="1" X="3339.773" Y="2245.911" Z="320.0132" />
 			</While>
 
 			<While Condition="!IsQuestCompleted(39591)" >
@@ -560,7 +568,7 @@ END Commented due to airship mesh. -->
 			<PickUp QuestName="A Trial of Might" QuestId="39594" GiverName="Yotnar" GiverId="96257" X="3457.877" Y="2321.764" Z="239.3418" />
 			<While Condition="DoQuest(39594)" >
 				<!-- NOTE: <AddAvoid> : Tons of avoids needed here.  Or bot can stand near where the InteractWith XYZ is located to avoid it all. -->
-				<CustomBehavior File="InteractWith" MobId="243817" QuestId="39594" QuestObjectiveIndex="1" X="3546.825" Y="2163.418" Z="231.6469" />
+				<CustomBehavior File="InteractWith" MobId="243817" NonCompeteDistance="0" QuestId="39594" QuestObjectiveIndex="1" InteractBlacklistTimeInSeconds="1" X="3546.825" Y="2163.418" Z="231.6469" />
 				<CustomBehavior File="WaitTimer" QuestId="39594" QuestObjectiveIndex="1" WaitTime="25000" />
 				<CustomBehavior File="KillUntilComplete" MobId="96175" QuestId="39594" QuestObjectiveIndex="2" X="3520.285" Y="2164.363" Z="229.2274" />
 			</While>
@@ -613,7 +621,7 @@ END Commented due to airship mesh. -->
 
 				<While Condition="DoQuest(38318)" >
 					<!-- NOTE: <LocationLogic> : This below InteractWith gets the player into the area.  Need a way to detect if player isn't in the area, perhaps via BonusObjective trigger. -->
-					<CustomBehavior File="InteractWith" MobId="91983" Range="49" WaitTime="10000" QuestId="38318" QuestObjectiveIndex="1" X="2668.16" Y="2545.319" Z="238.6316" />
+					<CustomBehavior File="InteractWith" MobId="91983" Range="49" IgnoreLoSToTarget="true" WaitTime="10000" QuestId="38318" QuestObjectiveIndex="1" X="2668.16" Y="2545.319" Z="238.6316" />
 				</While>
 
 				<While Condition="DoQuest(38405)" >
@@ -630,19 +638,35 @@ END Commented due to airship mesh. -->
 				<While Condition="DoQuest(38410)" >
 					<!-- NOTE: <CheckThis> : This is a very fragile section of code. Need to imrpove or add failsafes. -->
 					<!-- NOTE: <CheckThis> : Changed which objects this section interacts with. Oddly it will end up interacting with objects not below when nav fails. -->
-					<CustomBehavior File="InteractWith" MobId="91983" Range="49" WaitTime="6000" X="2529.949" Y="2530.865" Z="262.96" />
-					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1000" QuestId="38410" QuestObjectiveIndex="1" X="2530.71" Y="2534.549" Z="263.0449" />
 
-					<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="6000" X="2544.906" Y="2487.497" Z="254.7319"  />
-					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1000" QuestId="38410" QuestObjectiveIndex="1" X="2543.292" Y="2510.19" Z="254.8515" />
-					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1000" QuestId="38410" QuestObjectiveIndex="1" X="2549.886" Y="2466.156" Z="254.7651" />
-					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1000" QuestId="38410" QuestObjectiveIndex="1" X="2524.704" Y="2385.554" Z="263.4633" />
+					<!-- NOTE: <AddAfterIGetSleep> : Perhaps detect and interact with hooks plus guns by GUID.  -->
+					<CustomBehavior File="InteractWith" MobId="91983" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38410" X="2529.949" Y="2530.865" Z="262.96" />
+					<CustomBehavior File="InteractWith" WaitForNpcs="false" NonCompeteDistance="0" QuestId="38410" X="2530.71" Y="2534.549" Z="263.0449" >
+						<PursuitList>
+							<PursueGameObject Id="251257" PursueWhen="Navigator.LookupPathInfo(GAMEOBJECT).Navigability == PathNavigability.Navigable" />
+						</PursuitList>
+					</CustomBehavior>
 
-					<CustomBehavior File="InteractWith" MobId="92072" Range="49" WaitTime="6000" X="2544.906" Y="2487.497" Z="254.7319" />
-					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1000" QuestId="38410" QuestObjectiveIndex="1" X="2490.207" Y="2361.314" Z="270.5206" />
+					<CustomBehavior File="InteractWith" MobId="91975" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38410" X="2544.906" Y="2487.497" Z="254.7319"  />
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="2" NonCompeteDistance="0" QuestId="38410" X="2547.972" Y="2488.184" Z="254.7321" >
+						<PursuitList>
+							<PursueGameObject Id="251257" PursueWhen="Navigator.LookupPathInfo(GAMEOBJECT).Navigability == PathNavigability.Navigable" />
+						</PursuitList>
+					</CustomBehavior>
 
-					<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="6000" X="2449.207" Y="2357.403" Z="271.7252" />
-					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1000" QuestId="38410" QuestObjectiveIndex="1" X="2428.023" Y="2356.345" Z="273.3925" />
+					<CustomBehavior File="InteractWith" MobId="92072" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38410" X="2544.906" Y="2487.497" Z="254.7319" />
+					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="2" NonCompeteDistance="0" QuestId="38410" X="2535.244" Y="2404.843" Z="262.9575" >
+						<PursuitList>
+							<PursueGameObject Id="251257" PursueWhen="Navigator.LookupPathInfo(GAMEOBJECT).Navigability == PathNavigability.Navigable" />
+						</PursuitList>
+					</CustomBehavior>
+
+					<CustomBehavior File="InteractWith" MobId="92072" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38410" X="2449.207" Y="2357.403" Z="271.7252" />
+					<CustomBehavior File="InteractWith" MobId="251257" NumOfTimes="3" WaitForNpcs="false" NonCompeteDistance="0" QuestId="38410" X="2448.293" Y="2357.442" Z="271.7252" >
+						<PursuitList>
+							<PursueGameObject Id="251257" PursueWhen="Navigator.LookupPathInfo(GAMEOBJECT).Navigability == PathNavigability.Navigable" />
+						</PursuitList>
+					</CustomBehavior>
 
 					<CustomBehavior File="MyCTM" X="2418.247" Y="2367.154" Z="256.2015"  />
 				</While>
