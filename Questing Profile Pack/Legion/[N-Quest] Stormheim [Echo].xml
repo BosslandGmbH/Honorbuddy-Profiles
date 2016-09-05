@@ -295,48 +295,60 @@ END Commented due to airship mesh. -->
 						<CustomBehavior File="UseItem" ItemId="128692" QuestId="38307" QuestObjectiveIndex="1" />
 						<CustomBehavior File="InteractWith" MobId="244571" QuestId="38307" QuestObjectiveIndex="2" X="-830.9566" Y="4655.491" Z="749.6113" />
 					</While>
+					<CustomBehavior File="UserDialog" QuestId="39800" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Currently the bot does not support the Mesh for this boat\n\nYou must manually complete the quests up until after you shoot the bats down with the gun cannon.\n\nClick Continue Profile after you're off the flying ship to continue the bot." /> <!-- Horde -->
+<!-- Commented to due boat mesh
 					<TurnIn QuestName="The Warchief Beckons" QuestId="38307" TurnInName="Nathanos Blightcaller" TurnInId="96683" X="1493.664" Y="-5206.232" Z="10.71481" />
 
 					<PickUp QuestName="Making the Rounds" QuestId="39698" GiverName="Lady Sylvanas Windrunner" GiverId="96686" X="1496.027" Y="-5207.587" Z="11.05675" />
 					<While Condition="DoQuest(39698)" >
 						<CustomBehavior File="InteractWith" MobId="247491" QuestId="39698" QuestObjectiveIndex="1" X="1458.342" Y="-5209.025" Z="13.16844" />
 						<MoveTo QuestId="39698" QuestObjectiveIndex="2" X="1481.318" Y="-5206.711" Z="5.265435" />
-						<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Lua.GetReturnVal&lt;bool&gt;(&quot;return ExtraActionButton1:IsVisible()&quot;, 0)" /> <!-- NOTE: <TechnicalCheck> : ExtraActionButton1 needs to appear before this timer ends. -->
+						<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Lua.GetReturnVal&lt;bool&gt;(&quot;return ExtraActionButton1:IsVisible()&quot;, 0)" /> NOTE: <TechnicalCheck> : ExtraActionButton1 needs to appear before this timer ends.
 						<CustomBehavior File="Misc\RunLua" QuestId="39698" QuestObjectiveIndex="2" Lua="ExtraActionButton1:Click();" />
 						<MoveTo QuestId="39698" QuestObjectiveIndex="3" X="1500.211" Y="-5211.048" Z="11.59994" />
 						<CustomBehavior File="WaitTimer" QuestId="39698" QuestObjectiveIndex="3" WaitTime="50000" />
 					</While>
-					<TurnIn QuestName="Making the Rounds" QuestId="39698" TurnInName="Lady Sylvanas Windrunner" TurnInId="96686" X="1499.171" Y="-5213.979" Z="11.37206" /> 
+					<TurnIn QuestName="Making the Rounds" QuestId="39698" TurnInName="Lady Sylvanas Windrunner" TurnInId="96686" X="1499.171" Y="-5213.979" Z="11.37206" />
+Commented due to boat mesh -->
 				</If>
 			<!-- [H] END Zone Introductory Quests -->
 
 			<!-- [H] Greymane's Gambit -->
 				<If Condition="Me.IsHorde" >
-					<PickUp QuestName="The Splintered Fleet" QuestId="39801" GiverName="Lady Sylvanas Windrunner" GiverId="96686" X="1499.171" Y="-5213.979" Z="11.37206" />
+<!-- Commented due to baot mesh	
+					<PickUp QuestName="The Splintered Fleet" QuestId="39801" GiverName="Lady Sylvanas Windrunner" GiverId="96686" X="1499.171" Y="-5213.979" Z="11.37206" /> -->
 					<While Condition="DoQuest(39801)" >
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
 							<CustomBehavior File="InteractWith" MobId="94419" X="4623.434" Y="2853.851" Z="7.856867" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
 							<CustomBehavior File="WaitTimer" WaitTime="32000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
 						</While>
+						<CustomBehavior File="Hooks\Avoid" AvoidName="CometStorm" Command="Add" ObjectType="AreaTrigger" ObjectId="9370" Radius="10" />
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
 							<CustomBehavior File="InteractWith" MobId="94436" WaitTime="21000" WaitForNpcs="false" MinRange="4" X="4623.411" Y="2873.97" Z="9.060152" TerminateWhen="Unit(94436) == null" />
 
 							<If Condition="Unit(94550, u =&gt; u.Distance &lt; 65) != null" >
 								<!-- NOTE: <AddAvoid> : May need to avoid the mage's attacks.  Mage casts two different AOEs that can be avoided. -->
-								<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="94576" AttackButton="1" OftenToUse="1000" VehicleId="94550" MaxRange="300" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2 || !Me.InVehicle" /> <!-- X="4820.018" Y="2998.036" Z="16.44233" -->
+								<CustomBehavior File="InteractWith" MobId="94550" X="4820.018" Y="2998.036" Z="16.44233" TerminateWhen="Unit(94550, u =&gt; u.HasAura(187776)) != null" />
+								<CustomBehavior File="Vehicles\CannonControl" VehicleId="94550" MaxAngle="1" MinAngle="0.17" Buttons="1" TerminateWhen="!Me.InVehicle" />
+
 								<CustomBehavior File="KillUntilComplete" MobId="94737" X="4836.879" Y="3013.312" Z="7.854728" TerminateWhen="Unit(94737, u =&gt; !u.IsAlive) != null || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
 							</If>
 						</While>
+						<CustomBehavior File="Hooks\Avoid" AvoidName="CometStorm" Command="Remove" />
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
-							<CustomBehavior File="InteractWith" MobId="95316" WaitTime="11000" X="4846.247" Y="3026.302" Z="13.71893" TerminateWhen="Unit(95316) == null" />
-							<CustomBehavior File="KillUntilComplete" MobId="94809" X="4709.772" Y="3012.469" Z="7.857271" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" /> <!-- NOTE: <AddIds> : There's other mobs here that needs to be killed. -->
+							<CustomBehavior File="InteractWith" MobId="95316" WaitTime="11000" X="4846.247" Y="3026.302" Z="13.71893" TerminateWhen="Unit(95316, u =&gt; !u.CanInteract) != null" />
+							<CustomBehavior File="KillUntilComplete" MobIds="94812, 94809" X="4714.416" Y="3009.359" Z="7.847031" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" /> <!-- NOTE: <AddIds> : There's other mobs here that needs to be killed. -->
 						</While>
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
-							<CustomBehavior File="InteractWith" MobId="95316" WaitTime="6000" X="4728.907" Y="3013.009" Z="13.87013" TerminateWhen="Unit(95316) == null" />
+							<CustomBehavior File="InteractWith" MobId="95316" WaitTime="6000" X="4728.907" Y="3013.009" Z="13.87013" TerminateWhen="Unit(95316, u =&gt; !u.CanInteract) != null" />
 							<CustomBehavior File="KillUntilComplete" MobIds="94820, 94822" X="4726.273" Y="2935.89" Z="7.857867" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
 						</While>
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
-							<CustomBehavior File="InteractWith" MobId="95316" WaitTime="16000" X="4729.154" Y="2929.965" Z="7.847277" TerminateWhen="Unit(95316) == null" />
+							<CustomBehavior File="InteractWith" MobId="95316" WaitTime="16000" X="4729.154" Y="2929.965" Z="7.847277" TerminateWhen="Unit(95316, u =&gt; !u.CanInteract) != null || Me.Z &gt; 50" />
+
+							<CustomBehavior File="UserDialog" QuestId="39801" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Currently the bot does not support the Mesh for this boat\n\nYou must manually complete the quests up until after you shoot the bats down with the gun cannon.\n\nClick Continue Profile after you're off the flying ship to continue the bot." /> <!-- Horde -->
+
+<!-- Commented due to zeppelin mesh	
 							<CustomBehavior File="InteractWith" MobId="243244" NumOfTimes="7" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" >
 								<HuntingGrounds>
 									<Hotspot X="4572.109" Y="2657.29" Z="138.8272" />
@@ -352,6 +364,8 @@ END Commented due to airship mesh. -->
 							<MoveTo QuestId="39801" X="4538.623" Y="2677.645" Z="164.41" />
 							<CustomBehavior File="KillUntilComplete" MobId="95451" QuestId="39801" X="4500.429" Y="2685.104" Z="167.2789" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
 							<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+						</While>
+EMD commented due to zeppelin nmesh -->
 						</While>
 					</While>
 					<TurnIn QuestName="The Splintered Fleet" QuestId="39801" TurnInName="Dread-Rider Cullen" TurnInId="91473" X="4110.878" Y="2940.145" Z="27.33373" />
@@ -468,7 +482,7 @@ END Commented due to airship mesh. -->
 				<PickUp QuestName="The Ancient Trials" QuestId="38459" GiverName="Huginn" GiverId="97305" X="3976.914" Y="2898.343" Z="241.5873" />
 
 				<While Condition="!IsQuestCompleted(39775)" >
-					<CustomBehavior File="InteractWith" MobId="107840" QuestId="39775" X="3945.718" Y="2888.738" Z="241.7468" />
+					<CustomBehavior File="InteractWith" MobId="107840" WaitForNpcs="false" X="3945.718" Y="2888.738" Z="241.7468" />
 					<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
 				</While>
 
@@ -492,18 +506,18 @@ END Commented due to airship mesh. -->
 				<PickUp QuestName="Havi's Test" QuestId="38331" GiverName="Havi" GiverId="96254" X="3510.713" Y="2605.906" Z="318.9" />
 				<While Condition="DoQuest(38331)" >
 					<If Condition="!IsObjectiveComplete(1, 38331)" >
-						<CustomBehavior File="InteractWith" MobId="252074" QuestId="38331" QuestObjectiveIndex="1" X="3518.058" Y="2618.411" Z="321.147" />
-						<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="244480" AttackButton="4" OftenToUse="1000" VehicleId="252074" MaxRange="50" TerminateWhen="IsObjectiveComplete(1, 38331)" />
+						<CustomBehavior File="InteractWith" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" MobId="252074" QuestId="38331" X="3518.058" Y="2618.411" Z="321.147" />
+						<CustomBehavior File="Vehicles\CannonControl" VehicleId="252074" MobId="110604" Buttons="4" TerminateWhen="IsObjectiveComplete(1, 38331)" />
 						<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarLeaveFrameLeaveButton:Click();" />
 					</If>
 					<If Condition="!IsObjectiveComplete(2, 38331)" >
-						<CustomBehavior File="InteractWith" MobId="252076" QuestId="38331" QuestObjectiveIndex="2" X="3528.491" Y="2620.874" Z="318.0343" />
-						<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="244480" AttackButton="4" OftenToUse="1000" VehicleId="252076" MaxRange="50" TerminateWhen="IsObjectiveComplete(2, 38331)" />
+						<CustomBehavior File="InteractWith" NonCompeteDistance="0" Range="6" InteractBlacklistTimeInSeconds="1" MobId="252076" QuestId="38331" X="3524.2" Y="2621.564" Z="318.6579" />
+						<CustomBehavior File="Vehicles\CannonControl" VehicleId="252076" MobId="110604" Buttons="4" Gravity="80" TerminateWhen="IsObjectiveComplete(2, 38331)" />
 						<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarLeaveFrameLeaveButton:Click();" />
 					</If>
 					<If Condition="!IsObjectiveComplete(3, 38331)" >
-						<CustomBehavior File="InteractWith" MobId="252080" QuestId="38331" QuestObjectiveIndex="3" X="3523.836" Y="2606.339" Z="320.3575" />
-						<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="244480" AttackButton="4" OftenToUse="1000" VehicleId="252080" MaxRange="50" TerminateWhen="IsObjectiveComplete(3, 38331)" />
+						<CustomBehavior File="InteractWith" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" MobId="252080" QuestId="38331" X="3523.836" Y="2606.339" Z="320.3575" />
+						<CustomBehavior File="Vehicles\CannonControl" VehicleId="252080" MobId="110604" Buttons="4" TerminateWhen="IsObjectiveComplete(3, 38331)" />
 						<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarLeaveFrameLeaveButton:Click();" />
 					</If>
 				</While>
