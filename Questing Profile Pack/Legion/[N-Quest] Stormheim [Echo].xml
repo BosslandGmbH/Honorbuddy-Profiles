@@ -1105,7 +1105,7 @@ EMD commented due to zeppelin nmesh -->
 		<!-- Story: To Helheim and Back -->
 			<PickUp QuestName="An Unworthy Task" QuestId="39837" GiverName="Ashildir" GiverId="97319" X="341.7656" Y="356.9219" Z="30.293" />
 			<While Condition="DoQuest(39837)" >
-				<CustomBehavior File="InteractWith" MobId="241778" Range="5" IgnoreLoSToTarget="true" QuestId="39837" QuestObjectiveIndex="1" X="364.6076" Y="414.724" Z="18.72917" />
+				<CustomBehavior File="InteractWith" MobId="241778" NonCompeteDistance="0" Range="5" IgnoreLoSToTarget="true" QuestId="39837" QuestObjectiveIndex="1" X="363.6193" Y="409.2457" Z="20.14446" />
 			</While>
 			<TurnIn QuestName="An Unworthy Task" QuestId="39837" TurnInName="Colborn the Unworthy" TurnInId="91531" X="366.4219" Y="369.7465" Z="27.5088" />
 
@@ -1174,7 +1174,7 @@ EMD commented due to zeppelin nmesh -->
 			<PickUp QuestName="Allies in Death" QuestId="39851" GiverName="Ashildir" GiverId="97480" X="327.8507" Y="574.3993" Z="6.265927" />
 
 			<While Condition="DoQuest(39851)" >
-				<CustomBehavior File="InteractWith" MobId="97469" NumOfTimes="8" QuestId="39851" QuestObjectiveIndex="1" >
+				<CustomBehavior File="InteractWith" MobId="97469" NonCompeteDistance="0" NumOfTimes="8" QuestId="39851" QuestObjectiveIndex="1" >
 					<HuntingGrounds>
 						<Hotspot X="319.0163" Y="492.7758" Z="2.860995" />
 						<Hotspot X="196.5518" Y="452.5547" Z="0.67696" />
@@ -1202,7 +1202,7 @@ EMD commented due to zeppelin nmesh -->
 
 			<PickUp QuestName="Paid in Lifeblood" QuestId="39855" GiverName="Ashildir" GiverId="97558" X="210.9591" Y="600.8348" Z="-3.927668" />
 			<While Condition="DoQuest(39855)" >
-				<CustomBehavior File="InteractWith" MobId="244559" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" GossipOptions="1" QuestId="39855" QuestObjectiveIndex="1" X="490.4288" Y="721.3958" Z="22.35966" />
+				<CustomBehavior File="InteractWith" MobId="244559" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" GossipOptions="1" QuestId="39855" QuestObjectiveIndex="1" X="488.2415" Y="719.3737" Z="23.25191" />
 				<CustomBehavior File="WaitTimer" QuestId="39855" WaitTime="60000" />
 			</While>
 
@@ -1281,12 +1281,12 @@ EMD commented due to zeppelin nmesh -->
 			<PickUp QuestName="Stormheim's Salvation" QuestId="40005" GiverName="Vethir" GiverId="97986" X="2488.99" Y="959.9774" Z="241.4456" />
 			<While Condition="DoQuest(40005)" >
 				<CustomBehavior File="InteractWith" MobId="97986" GossipOptions="1" QuestId="40005" X="2488.99" Y="959.9774" Z="241.4456" />
-				<CustomBehavior File="WaitTimer" WaitTime="45000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <ConditionalCheck> : Make sure this vehicle is considered as flying -->
+				<CustomBehavior File="WaitTimer" WaitTime="45000" TerminateWhen="!Me.InVehicle" /> <!-- NOTE: <ConditionalCheck> : Make sure this vehicle is considered as flying -->
 				<!-- NOTE: <AddAvoid> : Add avoid Name="Fel Orb" Entry="96091" X="2453.87" Y="921.71" Z="596.3068"
 										Little ball that moves around slowly, does AoE damage if player is within range. 
 										I'm guessing range is about 8.
 				-->
-				<CustomBehavior File="KillUntilComplete" QuestId="40005" QuestObjectiveIndex="1" X="2449.323" Y="907.8177" Z="596.1414" >
+				<CustomBehavior File="KillUntilComplete" QuestId="40005" QuestObjectiveIndex="1" X="2455.637" Y="913.7571" Z="596.142" >
 					<PursuitList>
 						<PursueUnit Id="96489" Priority="500" />
 						<PursueUnit Id="92224" Priority="300" />
@@ -1443,18 +1443,24 @@ EMD commented due to zeppelin nmesh -->
 				<PickUp QuestName="Dreadwake's Dilemma" QuestId="39153" GiverName="Nathanos Blightcaller" GiverId="93603" X="2370.986" Y="1838.804" Z="30.56491" />
 
 				<While Condition="DoQuest(38873, 39153)" >
-					<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(38873) &amp;&amp; IsQuestCompleted(39153)" >
+					<CustomBehavior File="InteractWith" NonCompeteDistance="0" QuestId="38873" >
 						<HuntingGrounds>
 							<Hotspot X="2301.066" Y="1784.929" Z="26.00799" />
 							<Hotspot X="2376.917" Y="1745.059" Z="8.921089" />
 							<Hotspot X="2339.01" Y="1685.128" Z="8.580379" />
 						</HuntingGrounds>
 						<PursuitList>
-							<PursueGameObject Id="95212" PursueWhen="!IsQuestCompleted(38873)" />
-							<PursueUnit Id="94825" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !IsQuestCompleted(39153) &amp;&amp; !UNIT.TaggedByOther" />
-							<PursueUnit Id="109635" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !IsQuestCompleted(39153) &amp;&amp; !UNIT.TaggedByOther" />
+							<PursueUnit Id="95212" PursueWhen="UNIT.CanInteract" />
 						</PursuitList>
-					</CustomBehavior>
+					</CustomBehavior>	
+
+					<CustomBehavior File="KillUntilComplete" MobIds="94825, 109635" QuestId="39153" >
+						<HuntingGrounds>
+							<Hotspot X="2301.066" Y="1784.929" Z="26.00799" />
+							<Hotspot X="2376.917" Y="1745.059" Z="8.921089" />
+							<Hotspot X="2339.01" Y="1685.128" Z="8.580379" />
+						</HuntingGrounds>
+					</CustomBehavior>				
 				</While>
 
 				<PickUp QuestName="A Gift for Greymane" QuestId="39385" GiverName="Gilnean Heavy Explosive" GiverType="GameObject" GiverId="243454" X="2396.32" Y="1688.252" Z="1.669256" />
@@ -1483,9 +1489,9 @@ EMD commented due to zeppelin nmesh -->
 				<PickUp QuestName="Shielded Secrets" QuestId="38878" GiverName="Lady Sylvanas Windrunner" GiverId="94227" X="2612.204" Y="1740.139" Z="15.55205" />
 				<PickUp QuestName="Stories of Battle" QuestId="39405" GiverName="Ashilvara, Verse 1" GiverId="251571" X="2693.041" Y="1635.915" Z="14.69267" />
 
-				<While Condition="DoQuest(39063)" > <!-- Same as Alliance's variant. -->
+				<While Condition="DoQuest(38878)" > <!-- Same as Alliance's variant. -->
 					<!-- NOTE: <GameClientIssue?> : Objects must be interacted with twice for credit.  First interaction does nothing. -->
-					<CustomBehavior File="InteractWith" Range="6" NonCompeteDistance="0" QuestId="39063" >
+					<CustomBehavior File="InteractWith" Range="6" NonCompeteDistance="0" QuestId="38878" >
 						<HuntingGrounds>
 							<Hotspot X="2676.834" Y="1354" Z="42.38579" />
 							<Hotspot X="2662.72" Y="1424.462" Z="27.68061" />
@@ -1514,8 +1520,8 @@ EMD commented due to zeppelin nmesh -->
 					</CustomBehavior>
 				</While>
 
-				<TurnIn QuestName="Shielded Secrets" QuestId="38878" TurnInName="Lady Sylvanas Windrunner" TurnInId="95611" X="2650.9" Y="1499" Z="18.93942" />
 				<TurnIn QuestName="Stories of Battle" QuestId="39405" X="2650.9" Y="1499" Z="18.93942" />
+				<TurnIn QuestName="Shielded Secrets" QuestId="38878" TurnInName="Lady Sylvanas Windrunner" TurnInId="95611" X="2650.9" Y="1499" Z="18.93942" />
 
 				<PickUp QuestName="Becoming the Ascendant" QuestId="39155" GiverName="Lady Sylvanas Windrunner" GiverId="95611" X="2650.9" Y="1499" Z="18.93942" />
 				<While Condition="DoQuest(39155)" >
