@@ -42,7 +42,7 @@
 		<Vendor Name="Quartermaster Ricard" Type="Repair" Entry="91535" X="3974.075" Y="2892.368" Z="241.747" /> 
 		<Vendor Name="Julietta Smythe" Type="Repair" Entry="92839" X="2403.472" Y="1842.389" Z="18.8205" /> 
 		
-		<Vendor Name="Kah'chu" Type="Repair" Entry="27188" X="373.0156" Y="358.8663" Z="28.41259" /> <!-- UseWhen="Me.MapId == XXX" Need the MapId for Helheim -->
+		<Vendor Name="Kah'chu" Type="Repair" Entry="27188" X="373.0156" Y="358.8663" Z="28.41259" UsableWhen="Me.ZoneId == 7588" /> <!-- Helheim -->
 	</Vendors>
 
 <!-- INITORDER COMMENT 
@@ -993,11 +993,11 @@ END Commented due to airship mesh. -->
 
 
 			<While Condition="DoQuest(38817) || DoQuest(38823)" >
-				<CustomBehavior File="InteractWith" NumOfTimes="11" >
+				<CustomBehavior File="InteractWith" Range="6.9" >
 					<HuntingGrounds>
 						<Hotspot X="3406.175" Y="980.4618" Z="102.8668" />
 						<Hotspot X="3460.495" Y="1010.033" Z="102.0813" />
-						<Hotspot X="3467.455" Y="903.7917" Z="89.52195" />
+						<Hotspot X="3470.766" Y="905.9964" Z="85.02664" />
 						<Hotspot X="3430.835" Y="890.2578" Z="88.94816" />
 						<Hotspot X="3504.018" Y="842.4554" Z="76.76763" />
 						<Hotspot X="3472.59" Y="808.0851" Z="77.83247" />
@@ -1010,9 +1010,9 @@ END Commented due to airship mesh. -->
 						<PursueGameObject Id="241873" PursueWhen="!IsObjectiveComplete(1, 38817)" />
 						<PursueGameObject Id="241872" PursueWhen="!IsObjectiveComplete(1, 38817)" />
 
-						<PursueGameObject Id="251413" PursueWhen="!IsObjectiveComplete(1, 38823)" />
-						<PursueGameObject Id="251412" PursueWhen="!IsObjectiveComplete(1, 38823)" />
-						<PursueGameObject Id="241849" PursueWhen="!IsObjectiveComplete(1, 38823)" />
+						<PursueGameObject Id="251413" PursueWhen="!IsObjectiveComplete(1, 38823) &amp;&amp; GAMEOBJECT.DynamicFlags == -65278" />
+						<PursueGameObject Id="251412" PursueWhen="!IsObjectiveComplete(1, 38823) &amp;&amp; GAMEOBJECT.DynamicFlags == -65278" />
+						<PursueGameObject Id="241849" PursueWhen="!IsObjectiveComplete(1, 38823) &amp;&amp; GAMEOBJECT.DynamicFlags == -65278" />
 					</PursuitList>
 				</CustomBehavior>
 			</While>
@@ -1022,7 +1022,7 @@ END Commented due to airship mesh. -->
 					<HuntingGrounds>
 						<Hotspot X="3406.175" Y="980.4618" Z="102.8668" />
 						<Hotspot X="3460.495" Y="1010.033" Z="102.0813" />
-						<Hotspot X="3467.455" Y="903.7917" Z="89.52195" />
+						<Hotspot X="3470.766" Y="905.9964" Z="85.02664" />
 						<Hotspot X="3430.835" Y="890.2578" Z="88.94816" />
 						<Hotspot X="3504.018" Y="842.4554" Z="76.76763" />
 						<Hotspot X="3472.59" Y="808.0851" Z="77.83247" />
@@ -1043,7 +1043,7 @@ END Commented due to airship mesh. -->
 			<PickUp QuestName="The Final Judgment" QuestId="38818" GiverName="Ashildir" GiverId="93234" X="3532.885" Y="887.5938" Z="57.4282" />
 			<While Condition="DoQuest(38818)" >
 				<MoveTo X="3629.735" Y="798.7022" Z="38.94371" />
-				<CustomBehavior File="KillUntilComplete" MobId="93093" X="3626.518" Y="791.3125" Z="38.72163" TerminateWhen="Me.HasAura(209393)" >
+				<CustomBehavior File="KillUntilComplete" MobId="93093" QuestId="38818" X="3626.518" Y="791.3125" Z="38.72163" >
 					<PursuitList>
 						<PursueUnit Id="93093" Priority="500" PursueWhen="!IsObjectiveComplete(1, 38052)" />
 						<!-- NOTE: <CheckId> : The HasAura on this priority needs to be checked.  There's several versions of the same spell on WoWhead and LegionBuddy can't pull aura Ids yet. -->
@@ -1059,7 +1059,7 @@ END Commented due to airship mesh. -->
 		<!-- Story: To Helheim and Back -->
 			<PickUp QuestName="An Unworthy Task" QuestId="39837" GiverName="Ashildir" GiverId="97319" X="341.7656" Y="356.9219" Z="30.293" />
 			<While Condition="DoQuest(39837)" >
-				<CustomBehavior File="InteractWith" MobId="241778" QuestId="39837" QuestObjectiveIndex="1" X="364.6076" Y="414.724" Z="18.72917" />
+				<CustomBehavior File="InteractWith" MobId="241778" Range="4" QuestId="39837" QuestObjectiveIndex="1" X="364.6076" Y="414.724" Z="18.72917" />
 			</While>
 			<TurnIn QuestName="An Unworthy Task" QuestId="39837" TurnInName="Colborn the Unworthy" TurnInId="91531" X="366.4219" Y="369.7465" Z="27.5088" />
 
@@ -1110,7 +1110,7 @@ END Commented due to airship mesh. -->
 			<PickUp QuestName="A Desperate Bargain" QuestId="39848" GiverName="Ashildir" GiverId="97419" X="453.019" Y="587.0473" Z="-0.7856194" />
 			<While Condition="DoQuest(39848)" >
 				<MoveTo X="488.7597" Y="720.4839" Z="23.25475" />
-				<CustomBehavior File="InteractWith" MobId="244559" GossipOptions="1" X="490.4288" Y="721.3958" Z="22.35966" />
+				<CustomBehavior File="InteractWith" MobId="244559" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" GossipOptions="1" X="490.4288" Y="721.3958" Z="22.35966" />
 				<CustomBehavior File="WaitTimer" QuestId="39848" WaitTime="600000" />
 			</While>
 			<TurnIn QuestName="A Desperate Bargain" QuestId="39848" TurnInName="Helya's Altar" TurnInType="GameObject" TurnInId="244559" X="490.4288" Y="721.3958" Z="22.35966" />
@@ -1156,7 +1156,7 @@ END Commented due to airship mesh. -->
 
 			<PickUp QuestName="Paid in Lifeblood" QuestId="39855" GiverName="Ashildir" GiverId="97558" X="210.9591" Y="600.8348" Z="-3.927668" />
 			<While Condition="DoQuest(39855)" >
-				<CustomBehavior File="InteractWith" MobId="244559" GossipOptions="1" QuestId="39855" QuestObjectiveIndex="1" X="490.4288" Y="721.3958" Z="22.35966" />
+				<CustomBehavior File="InteractWith" MobId="244559" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" GossipOptions="1" QuestId="39855" QuestObjectiveIndex="1" X="490.4288" Y="721.3958" Z="22.35966" />
 				<CustomBehavior File="WaitTimer" QuestId="39855" WaitTime="60000" />
 			</While>
 
@@ -1195,7 +1195,7 @@ END Commented due to airship mesh. -->
 			<While Condition="DoQuest(40078)" >
 				<CustomBehavior File="InteractWith" MobId="244867" QuestId="40078" QuestObjectiveIndex="1" X="3219.631" Y="1555.299" Z="180.4717" TerminateWhen="Me.HasAura(193563)" />
 				<CustomBehavior File="MyCTM" X="3196.399" Y="1523.409" Z="180.5488" /> <!-- NOTE: <TechnicalIssue> : Using CTM because MoveTo may get mad. -->
-				<CustomBehavior File="InteractWith" MobId="244872" QuestId="40078" QuestObjectiveIndex="1" NonCompeteDistance="0" X="3194.478" Y="1519.95" Z="183.2737" />
+				<CustomBehavior File="InteractWith" MobId="244872" Range="4" IgnoreLoSToTarget="true" IgnoreMobsInBlackspots="false" QuestId="40078" NonCompeteDistance="0" X="3196.467" Y="1522.065" Z="180.5026" />
 			</While>
 			<TurnIn QuestName="A Heavy Burden" QuestId="40078" TurnInName="Havi" TurnInId="92539" X="3214.377" Y="1543.611" Z="180.6394" />
 
@@ -1204,6 +1204,7 @@ END Commented due to airship mesh. -->
 
 			<PickUp QuestName="A Familiar Fate" QuestId="40002" GiverName="Vethir" GiverId="97979" X="2875.261" Y="1208.984" Z="188.6805" />
 			<While Condition="DoQuest(40002)" >
+				<!-- NOTE: <AddAvoid> Mob drops green spots everywhere that may need to be avoided.  -->
 				<CustomBehavior File="KillUntilComplete" MobId="97890" QuestId="40002" X="2946.896" Y="1239.424" Z="185.3323" TerminateWhen="HasItem(129106)" />
 				<CustomBehavior File="InteractWith" MobId="91743" GossipOptions="1" QuestId="40002" QuestObjectiveIndex="2" X="2873.212" Y="1207.078" Z="188.68" />
 			</While>
@@ -1212,16 +1213,20 @@ END Commented due to airship mesh. -->
 			<PickUp QuestName="Stem the Tide" QuestId="40003" GiverName="Vethir" GiverId="97979" X="2875.261" Y="1208.984" Z="188.6802" />
 			<PickUp QuestName="Break the Spine" QuestId="40004" GiverName="Vethir" GiverId="97979" X="2875.261" Y="1208.984" Z="188.6802" />
 
-			<!-- NOTE: <AddDoWhen> #1 : Need to use extra action button - it changes when used. -->
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="UseSpecial" LogExecution="false" AllowUseDuringCombat="true" UseAtInterval="5000" >
+				<If Condition="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.Aggro" >
+					<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+				</If>
+			</CustomBehavior>
 
 			<While Condition="DoQuest(40003) || DoQuest(40004)" >
 				<CustomBehavior File="KillUntilComplete" MobId="97944" QuestId="40004" QuestObjectiveIndex="3" X="2555.114" Y="1163.288" Z="205.8028" />
 				<CustomBehavior File="KillUntilComplete" MobId="97859" QuestId="40004" QuestObjectiveIndex="2" X="2512.513" Y="1073.33" Z="216.6867" />
-				<CustomBehavior File="InteractWith" MobId="244681" InteractByUsingItemId="129161" QuestId="40003" QuestObjectiveIndex="3" X="2469.833" Y="1058.2" Z="216.179" />
-				<CustomBehavior File="KillUntilComplete" MobId="97822" QuestId="40004" QuestObjectiveIndex="1" X="2634.317" Y="1021.606" Z="218.5453" />
-				<CustomBehavior File="InteractWith" MobId="244681" InteractByUsingItemId="129161" QuestId="40003" QuestObjectiveIndex="2" X="2601.84" Y="981.4288" Z="215.86" />
+				<CustomBehavior File="InteractWith" MobId="244681" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" InteractByUsingItemId="129161" QuestId="40003" QuestObjectiveIndex="3" X="2469.833" Y="1058.2" Z="216.179" />
+				<CustomBehavior File="KillUntilComplete" MobId="97822" QuestId="40004" QuestObjectiveIndex="1" X="2626.266" Y="1017.318" Z="216.9467" />
+				<CustomBehavior File="InteractWith" MobId="244681" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" InteractByUsingItemId="129161" QuestId="40003" QuestObjectiveIndex="2" X="2601.84" Y="981.4288" Z="215.86" />
 				<CustomBehavior File="KillUntilComplete" MobId="97942" QuestId="40004" QuestObjectiveIndex="4" X="2673.397" Y="891.9393" Z="206.0122" />
-				<CustomBehavior File="InteractWith" MobId="244681" InteractByUsingItemId="129161" QuestId="40003" QuestObjectiveIndex="1" X="2714.29" Y="969.3021" Z="205.2874" />
+				<CustomBehavior File="InteractWith" MobId="244681" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" InteractByUsingItemId="129161" QuestId="40003" QuestObjectiveIndex="1" X="2714.29" Y="969.3021" Z="205.2874" />
 			</While>
 
 			<TurnIn QuestName="Stem the Tide" QuestId="40003" TurnInName="Vethir" TurnInId="97986" X="2488.99" Y="959.9774" Z="241.4456" />
@@ -1271,7 +1276,7 @@ END Commented due to airship mesh. -->
 				</CustomBehavior>
 			</While>
 
-			<!-- NOTE: <RemoveDoWhen> #1 : Remove use of extra action button. -->
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="UseSpecial" Command="Remove" />
 		<!-- END Story: The Champion of Stormheim -->
 
 		<!-- [A] Story: Secrets of the Shieldmaidens -->
