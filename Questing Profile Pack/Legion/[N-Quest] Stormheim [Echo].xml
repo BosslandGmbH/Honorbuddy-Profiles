@@ -583,7 +583,7 @@ EMD commented due to zeppelin nmesh -->
 			<PickUp QuestName="A Trial of Might" QuestId="39594" GiverName="Yotnar" GiverId="96257" X="3457.877" Y="2321.764" Z="239.3418" />
 			<While Condition="DoQuest(39594)" >
 				<!-- NOTE: <AddAvoid> : Tons of avoids needed here.  Or bot can stand near where the InteractWith XYZ is located to avoid it all. -->
-				<CustomBehavior File="InteractWith" MobId="243817" NonCompeteDistance="0" QuestId="39594" QuestObjectiveIndex="1" InteractBlacklistTimeInSeconds="1" X="3546.825" Y="2163.418" Z="231.6469" />
+				<CustomBehavior File="InteractWith" MobId="243817" NonCompeteDistance="0" QuestId="39594" QuestObjectiveIndex="1" InteractBlacklistTimeInSeconds="10" X="3546.825" Y="2163.418" Z="231.6469" />
 				<CustomBehavior File="WaitTimer" QuestId="39594" QuestObjectiveIndex="1" WaitTime="25000" />
 				<CustomBehavior File="KillUntilComplete" MobId="96175" QuestId="39594" QuestObjectiveIndex="2" X="3520.285" Y="2164.363" Z="229.2274" />
 			</While>
@@ -744,27 +744,71 @@ EMD commented due to zeppelin nmesh -->
 				<TurnIn QuestName="To Weather the Storm" QuestId="38614" TurnInName="Dread-Rider Cullen" TurnInId="92567" X="2551.336" Y="2497.698" Z="247.3913" />
 
 				<PickUp QuestName="Impalement Insurance" QuestId="38615" GiverName="Dread-Rider Cullen" GiverId="92567" X="2551.336" Y="2497.698" Z="247.3913" />
-
 				<While Condition="DoQuest(38615)" >
 					<!-- NOTE: <CheckThis> : This is a very fragile section of code. Need to imrpove or add failsafes. -->
-					<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="6000" X="2544.906" Y="2487.497" Z="254.7319" />
-					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="2" QuestId="38615" QuestObjectiveIndex="1" X="2549.886" Y="2466.156" Z="254.7651" />
+					<!-- NOTE: <CheckThis> : Changed which objects this section interacts with. Oddly it will end up interacting with objects not below when nav fails. -->
 
-					<CustomBehavior File="InteractWith" MobId="91983" Range="49" WaitTime="6000" X="2529.949" Y="2530.865" Z="262.96" />
-					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38615" QuestObjectiveIndex="1" X="2530.71" Y="2534.549" Z="263.0449" />
+					<!-- NOTE: <AddAfterIGetSleep> : Perhaps detect and interact with hooks plus guns by GUID.  -->
+					<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38615" X="2544.906" Y="2487.497" Z="254.7319" >
+						<PursuitList>
+							<PursueUnit Id="91975" PursueWhen="UNIT.Guid.ToString() == &quot;203C98988059D1C0007E70000B4CB7A3&quot;" />
+						</PursuitList>
+					</CustomBehavior>
+					<CustomBehavior File="InteractWith" WaitForNpcs="false" NumOfTimes="2" NonCompeteDistance="0" QuestId="38615" X="2547.972" Y="2488.184" Z="254.7321" >
+						<PursuitList>
+							<PursueGameObject Id="251257" PursueWhen="GAMEOBJECT.Guid.ToString() == &quot;2C3C989880F55E40007E700001CCB7A2&quot; ||
+																		GAMEOBJECT.Guid.ToString() == &quot;2C3C989880F55E40007E7000004CB7A2&quot;
+							" />
+						</PursuitList>
+					</CustomBehavior>
 
-					<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="6000" X="2544.906" Y="2487.497" Z="254.7319" />
-					<CustomBehavior File="InteractWith" MobId="92072" Range="49" WaitTime="6000" X="2545.717" Y="2445.174" Z="260.7524" />
 
-					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38615" QuestObjectiveIndex="1" X="2543.905" Y="2423.978" Z="262.0621" />
-					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38615" QuestObjectiveIndex="1" X="2524.704" Y="2385.554" Z="263.4633" />
+					<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38615" X="2529.949" Y="2530.865" Z="262.96" >
+						<PursuitList>
+							<PursueUnit Id="91983" PursueWhen="UNIT.Guid.ToString() == &quot;203C98988059D3C0007E70000ACCB7A2&quot;" />
+						</PursuitList>
+					</CustomBehavior>
+					<CustomBehavior File="InteractWith" WaitForNpcs="false" NonCompeteDistance="0" QuestId="38615" X="2530.71" Y="2534.549" Z="263.0449" >
+						<PursuitList>
+							<PursueGameObject Id="251257" PursueWhen="GAMEOBJECT.Guid.ToString() == &quot;2C3C989880F55E40007E7000044CB7A2&quot;" />
+						</PursuitList>
+					</CustomBehavior>
+					<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38615" X="2544.906" Y="2487.497" Z="254.7319" >
+						<PursuitList>
+							<PursueUnit Id="91975" PursueWhen="UNIT.Guid.ToString() == &quot;203C98988059D1C0007E70000B4CB7A3&quot;" />
+						</PursuitList>
+					</CustomBehavior>
 
-					<MoveTo QuestId="38615" QuestObjectiveIndex="1" X="2508.864" Y="2373.998" Z="264.0553" />
-					<CustomBehavior File="InteractWith" MobId="92072" Range="49" WaitTime="6000" X="2491.849" Y="2364.745" Z="270.4663" />
-					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38615" QuestObjectiveIndex="1" X="2490.207" Y="2361.314" Z="270.5206" />
-					<CustomBehavior File="InteractWith" MobId="251257" WaitForNpcs="false" NumOfTimes="1" QuestId="38615" QuestObjectiveIndex="1" X="2428.023" Y="2356.345" Z="273.3925" />
 
-					<CustomBehavior File="MyCTM" X="2423.832" Y="2379.894" Z="256.4818" />
+					<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38615" X="2544.906" Y="2487.497" Z="254.7319" >
+						<PursuitList>
+							<PursueUnit Id="92072" PursueWhen="UNIT.Guid.ToString() == &quot;203C98988059EA00007E70000B4CB7A2&quot;" />
+						</PursuitList>
+					</CustomBehavior>
+					<CustomBehavior File="InteractWith" WaitForNpcs="false" NumOfTimes="2" NonCompeteDistance="0" QuestId="38615" X="2535.244" Y="2404.843" Z="262.9575" >
+						<PursuitList>
+							<PursueGameObject Id="251257" PursueWhen="GAMEOBJECT.Guid.ToString() == &quot;2C3C989880F55E40007E7000034CB7A2&quot; ||
+																		GAMEOBJECT.Guid.ToString() == &quot;2C3C989880F55E40007E7000054CB7A2&quot;
+							" />
+						</PursuitList>
+					</CustomBehavior>
+
+
+
+					<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38615" X="2449.207" Y="2357.403" Z="271.7252" >
+						<PursuitList>
+							<PursueUnit Id="92072" PursueWhen="UNIT.Guid.ToString() == &quot;203C98988059EA00007E7000034CB7A2&quot;" />
+						</PursuitList>
+					</CustomBehavior>
+					<CustomBehavior File="InteractWith" NumOfTimes="3" WaitForNpcs="false" NonCompeteDistance="0" QuestId="38615" X="2448.293" Y="2357.442" Z="271.7252" >
+						<PursuitList>
+							<PursueGameObject Id="251257" PursueWhen="GAMEOBJECT.Guid.ToString() == &quot;2C3C989880F55E40007E7000084CB7A2&quot; ||
+																		GAMEOBJECT.Guid.ToString() == &quot;2C3C989880F55E40007E700007CCB7A2&quot;
+							" />
+						</PursuitList>
+					</CustomBehavior>
+
+					<CustomBehavior File="MyCTM" X="2418.247" Y="2367.154" Z="256.2015"  />
 				</While>
 			</If>
 
