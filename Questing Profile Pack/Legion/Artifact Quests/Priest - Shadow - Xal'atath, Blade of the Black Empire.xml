@@ -27,6 +27,7 @@
 	</Blackspots>
 
 	<Blacklist>
+		<Mob Name="Shadow Image" Id="102989" Flags="Combat" />
 	</Blacklist>
 
 	<Mailboxes> 
@@ -129,12 +130,15 @@ END INITORDER COMMENT -->
 
 												This logic is also used in Warrior-Arms artifact stage 4. -->
 						<MoveTo X="2137.83" Y="2395.69" Z="118.3069" />
-						<CustomBehavior File="MyCTM" X="2148.117" Y="2335.397" Z="100.6413" />
-						<CustomBehavior File="MyCTM" X="2145.281" Y="2336.206" Z="84.55514" />
-						<CustomBehavior File="MyCTM" X="2128.243" Y="2341.831" Z="67.68755" />
-						<CustomBehavior File="MyCTM" X="2109.654" Y="2353.573" Z="61.65699" />
-						<CustomBehavior File="MyCTM" X="2090.664" Y="2358.6" Z="65.91748" />
-						<CustomBehavior File="MyCTM" X="2052.529" Y="2343.071" Z="65.91656" />
+						<If Condition="Me.Z &gt; 70" >
+							<CustomBehavior File="MyCTM" X="2148.117" Y="2335.397" Z="100.6413" />
+							<CustomBehavior File="MyCTM" X="2145.281" Y="2336.206" Z="84.55514" />
+							<CustomBehavior File="MyCTM" X="2128.243" Y="2341.831" Z="67.68755" />
+							<CustomBehavior File="MyCTM" X="2109.654" Y="2353.573" Z="61.65699" />
+							<CustomBehavior File="MyCTM" X="2090.664" Y="2358.6" Z="65.91748" />
+							<CustomBehavior File="MyCTM" X="2052.529" Y="2343.071" Z="65.91656" />
+						</If>
+						<CustomBehavior File="KillUntilComplete" MobIds="101127, 101122" X="2024.489" Y="2338.211" Z="75.20863" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
 						<MoveTo X="1995.469" Y="2337.511" Z="75.41196" />
 					</If>
 
@@ -170,13 +174,13 @@ END INITORDER COMMENT -->
 						<!-- NOTE: <AddAvoid>?? Two mobs that engage before the boss.  They hit pretty hard and do AoE, may need to avoid this. 
 						Name="Faceless Corrupter" Entry="101118" X="1891.957" Y="2191.505" Z="37.35418"
 						Name="Faceless Guardian" Entry="102015" X="1857.493" Y="2184.668" Z="37.66719" -->
-						<CustomBehavior File="KillUntilComplete" MobId="101148" X="1875.26" Y="2197.955" Z="37.88557" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 8" />
+						<CustomBehavior File="KillUntilComplete" MobIds="101148, 101118, 102015" X="1875.26" Y="2197.955" Z="37.88557" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 8" />
 						<!-- NOTE: <AddDoWhen> :  Boss buffs himself with dispellable abilitiy that increases his damage by 20%. -->
 					</If>
 
 					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 9" >
-						<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Object(247690, o =&gt; o.ToGameObject().CanUse()) != null" /> <!-- NOTE: <OptimizeMe> : There's a short time before the player can actually retreive the artifact.  10seconds is a rough estimate of that time.  Need to get it more perfect. -->
-						<CustomBehavior File="InteractWith" MobId="247690" InteractByLooting="true" WaitTime="1500" X="1868.87" Y="2198.75" Z="37.37975" />
+						<CustomBehavior File="WaitTimer" WaitTime="12000" TerminateWhen="Object(247690, o =&gt; o.ToGameObject().CanUse()) != null" />
+						<CustomBehavior File="InteractWith" MobIds="247690" InteractByLooting="true" WaitTime="1500" X="1868.87" Y="2198.75" Z="37.37975" />
 						<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
 						<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
 					</If>
@@ -195,8 +199,9 @@ END INITORDER COMMENT -->
 				</If>
 
 				<If Condition="!IsObjectiveComplete(3, 40710) &amp;&amp; HasItem(128827)" >
-					<CustomBehavior File="InteractWith" MobId="247351" QuestId="40710" QuestObjectiveIndex="3" X="1883.158" Y="2206.844" Z="38.29892" /> <!-- NOTE: Can terminate if we're already in Dalaran -->
+					<CustomBehavior File="InteractWith" MobId="247351" QuestId="40710" InteractBlacklistTimeInSeconds="1" X="1883.158" Y="2206.844" Z="38.29892" TerminateWhen="Me.MapId == 1220" />
 					<MoveTo X="-702.8652" Y="4489.302" Z="729.4102" />
+					<CustomBehavior File="WaitTimer" WaitTime="5000" QuestId="40710" />
 				</If>
 			</While>
 			<TurnIn QuestName="Blade in Twilight" QuestId="40710" TurnInName="Moira Thaurissan" TurnInId="101310" X="-700.3559" Y="4493.385" Z="728.5856" />
