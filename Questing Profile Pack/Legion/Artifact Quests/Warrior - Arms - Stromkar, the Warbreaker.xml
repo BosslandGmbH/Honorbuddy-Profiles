@@ -177,17 +177,18 @@ END INITORDER COMMENT -->
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
-					<CustomBehavior File="KillUntilComplete" MobId="103339" X="1815.318" Y="2291.549" Z="45.37322" TerminateWhen="Unit(10339) == null" />
+					<CustomBehavior File="KillUntilComplete" MobId="103339" X="1815.318" Y="2291.549" Z="45.37322" TerminateWhen="Unit(103339, u =&gt; u.IsDead) != null || Unit(103339) == null" />
 					<MoveTo X="1874.504" Y="2268.625" Z="36.40125" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8" >
-					<CustomBehavior File="InteractWith" MobId="103398" X="1882.179" Y="2163.353" Z="35.8414" />
+					<MoveTo X="1875.148" Y="2188.221" Z="36.62224" />
+					<CustomBehavior File="InteractWith" MobId="103398" Range="25" X="1875.148" Y="2188.221" Z="36.62224" />
 					<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 8" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 9" >
-					<CustomBehavior File="KillUntilComplete" MobId="104276" X="1877.2" Y="2171.95" Z="35.84133" TerminateWhen="Unit(104276, u =&gt; u.IsDead) != null" />
+					<CustomBehavior File="KillUntilComplete" MobId="104276" X="1877.2" Y="2171.95" Z="35.84133" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 9" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 10" >
@@ -199,8 +200,10 @@ END INITORDER COMMENT -->
 
 				<If Condition="HasItem(128910)" >
 					<MoveTo X="1880.228" Y="2204.396" Z="38.15258" />
+					<CustomBehavior File="MyCTM" X="1880.228" Y="2204.396" Z="38.15258" /> <!-- Ensure we're on the spot -->
+					<CustomBehavior File="WaitTimer" WaitTime="2000" />
 					<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
-					<CustomBehavior File="WaitTimer" WaitTime="8500" />
+					<CustomBehavior File="WaitTimer" WaitTime="8500" TerminateWhen="Me.MapId == 1479" />
 				</If>
 			</While>
 			<TurnIn QuestName="The Sword of Kings" QuestId="41105" TurnInName="Odyn" TurnInId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
