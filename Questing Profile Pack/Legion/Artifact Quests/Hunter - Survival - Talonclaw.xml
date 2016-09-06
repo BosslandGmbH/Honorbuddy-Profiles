@@ -137,6 +137,7 @@ END INITORDER COMMENT -->
 					<PickUp QuestName="Preparation for the Hunt" QuestId="41542" GiverName="Emmarel Shadewarden" GiverId="102478" X="-876.658" Y="4379.09" Z="739.1406" /> <!-- Dalaran Phase -->
 				</Else>
 			</If>
+			<TurnIn Nav="Fly" QuestName="Preparation for the Hunt" QuestId="41542" TurnInName="Apata Highmountain" TurnInId="104382" X="-876.658" Y="4379.09" Z="739.1406" /> 
 
 			<!-- Story: Artifact Weapon - Talonclaw -->
 				<PickUp QuestName="The Eagle Spirit's Blessing" QuestId="39427" GiverName="Apata Highmountain" GiverId="104382" X="-858.3577" Y="4287.647" Z="746.2834" />
@@ -147,15 +148,18 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="KillUntilComplete" MobId="110685" QuestId="39427" QuestObjectiveIndex="3" X="3139.728" Y="3530.74" Z="771.322" />
 					<MoveTo QuestId="39427" QuestObjectiveIndex="4" X="3152.996" Y="3392.207" Z="773.7906" />
 					<!-- NOTE: <Check> : May need to wait a little bit for the NPC to catch up. -->
+					<CustomBehavior File="WaitTimer" WaitTime="5000" />
 					<CustomBehavior File="InteractWith" MobId="110901" QuestId="39427" QuestObjectiveIndex="4" X="3154.5" Y="3380.82" Z="774.186" />
 				</While>
 				<TurnIn QuestName="The Eagle Spirit's Blessing" QuestId="39427" TurnInName="Apata Highmountain" TurnInId="110821" X="3148.192" Y="3391.234" Z="773.7953" />
 
 				<PickUp QuestName="The Spear in the Shadow" QuestId="40385" GiverName="Apata Highmountain" GiverId="110986" X="3148.169" Y="3391.162" Z="773.7974" />
 				<While Condition="DoQuest(40385)" >
+					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0 &amp;&amp; !HasItem(128808)" >
+						<CustomBehavior File="InteractWith" MobId="110985" QuestId="40385" X="3154.497" Y="3380.818" Z="774.2692" />
+						<CustomBehavior File="WaitTimer" QuestId="40385" WaitTime="30000" TerminateWhen="!Me.InVehicle" />
+					</If>
 					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
-						<CustomBehavior File="InteractWith" MobId="110985" QuestId="40385" QuestObjectiveIndex="1" X="3154.497" Y="3380.818" Z="774.2692" />
-						<CustomBehavior File="WaitTimer" QuestId="40385" QuestObjectiveIndex="1" WaitTime="60000" />
 						<CustomBehavior File="InteractWith" MobId="99374" GossipOptions="1" QuestId="40385" QuestObjectiveIndex="2" X="3371.664" Y="1915.839" Z="1.61386" />
 						<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
 					</If>
@@ -163,7 +167,7 @@ END INITORDER COMMENT -->
 						<MoveTo X="3371.443" Y="1723.903" Z="-0.2859921" />
 					</If>
 					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
-						<CustomBehavior File="KillUntilComplete" MobId="100173" X="3379.159" Y="1696.113" Z="0.202059" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+						<CustomBehavior File="InteractWith" MobId="100173" X="3379.159" Y="1696.113" Z="0.202059" TerminateWhen="IsScenarioCriteriaComplete(1)" />
 						<!-- Defeat with Freezing Trap, but it should complete without using Freezing Trap. -->
 					</If>
 					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
@@ -200,6 +204,7 @@ END INITORDER COMMENT -->
 						<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 10" />
 					</If>
 					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 11" >
+						<MoveTo X="3734.792" Y="1704.929" Z="0.8333333" />
 						<CustomBehavior File="InteractWith" MobId="100367" X="3734.792" Y="1704.929" Z="0.8333333" />
 						<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 11" />
 					</If>
