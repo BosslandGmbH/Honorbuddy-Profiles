@@ -133,8 +133,8 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="The End of the Saga" QuestId="42005" GiverName="Orik Trueheart" GiverId="105724" X="-55.00695" Y="-4837.172" Z="292.2279" />
 			<While Condition="DoQuest(42005)" >
-				<CustomBehavior File="InteractWith" MobId="105727" GossipOptions="1,1" QuestId="42005" QuestObjectiveIndex="1" X="-57.26563" Y="-4837.151" Z="292.2101" />
-				<CustomBehavior File="InteractWith" MobId="251288" QuestId="42005" QuestObjectiveIndex="2" X="-194.5191" Y="-5163.198" Z="315.2801" />
+				<CustomBehavior File="InteractWith" MobId="105727" NonCompeteDistance="0" GossipOptions="1,1" QuestId="42005" QuestObjectiveIndex="1" X="-57.26563" Y="-4837.151" Z="292.2101" />
+				<CustomBehavior File="InteractWith" MobId="251288" NonCompeteDistance="0" QuestId="42005" QuestObjectiveIndex="2" X="-194.5191" Y="-5163.198" Z="315.2801" />
 				<CustomBehavior File="WaitTimer" QuestId="42005" WaitTime="90000" />
 			</While>
 			<If Condition="QuestDone(42005) &amp;&amp; Me.MapId == 571" >
@@ -166,23 +166,44 @@ END INITORDER COMMENT -->
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
 					<CustomBehavior File="Hooks\DoWhen" ActivityName="UseArrow" AllowUseDuringCombat="true" UseWhen="Object(106230) != null" >
-						<CustomBehavior File="InteractWith" MobId="106230" WaitTime="2500" />
-						<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="ExtraActionButton1:Click();" />
+						<CustomBehavior File="InteractWith" MobId="106230" WaitForNpcs="false" IgnoreCombat="true" />
+						<CustomBehavior File="RunCode"><![CDATA[
+							var innaPoi = Unit(106245);
+							var dragonPoi = Unit(106246);
+
+							if (innaPoi == null && dragonPoi == null) return;
+
+							if (dragonPoi.IsAlive)
+							{
+								dragonPoi.Target();
+							}
+							else
+							{
+								innaPoi.Target();
+							}
+
+							await Coroutine.Sleep(350);
+							Lua.DoString("ExtraActionButton1:Click()");
+						]]>
+						</CustomBehavior>
 					</CustomBehavior>
-					<CustomBehavior File="KillUntilComplete" MobIds="106246, 106245" X="4803.691" Y="134.5391" Z="-8.520174" TerminateWhen="Unit(106245, u =&gt; u.IsDead) != null" />
+					<CustomBehavior File="KillUntilComplete" MobIds="106246, 106245" X="4803.691" Y="134.5391" Z="-8.520174" TerminateWhen="Unit(106245, u =&gt; u.IsDead) != null || Unit(106245) == null" />
 					<CustomBehavior File="Hooks\DoWhen" ActivityName="UseArrow" Command="Remove" />
 
-					<CustomBehavior File="KillUntilComplete" MobId="106347" X="4817.392" Y="215.5844" Z="-21.70571" TerminateWhen="Unit(106347, u =&gt; u.IsDead) != null" />
+					<CustomBehavior File="KillUntilComplete" MobId="106347" X="4817.392" Y="215.5844" Z="-21.70571" TerminateWhen="Unit(106347, u =&gt; u.IsDead) != null || Unit(106245) == null" />
 
 					<MoveTo X="4826.14" Y="255.641" Z="-27.46888" />
-					<CustomBehavior File="Hooks\Avoid" AvoidName="FierceWinds" Command="Add" ObjectId="106432" Radius="5" />
-					<CustomBehavior File="KillUntilComplete" MobId="105968" X="4841.721" Y="335.9896" Z="-28.97781" TerminateWhen="Unit(105968, u =&gt; u.IsDead) != null" />
+					<!-- Avoid's not working here.
+					<CustomBehavior File="Hooks\Avoid" AvoidName="FierceWinds" Command="Add" ObjectId="106432" Radius="20" ObjectType="Npc" /> -->
+					<CustomBehavior File="MyCTM" X="4812.681" Y="261.8603" Z="-28.59943" />
+					<CustomBehavior File="MyCTM" X="4827.769" Y="342.7148" Z="-28.46252" />
+					<CustomBehavior File="KillUntilComplete" MobId="105968" X="4841.721" Y="335.9896" Z="-28.97781" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
 
 					<CustomBehavior File="WaitTimer" WaitTime="45000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
-					<CustomBehavior File="InteractWith" MobId="249458" X="4843.399" Y="344.5972" Z="-27.97954" />
+					<CustomBehavior File="InteractWith" MobId="249458" Range="6" X="4842.353" Y="339.2732" Z="-28.97799" />
 					<CustomBehavior File="RunCode" Code="SpellManager.Cast(642);" />
 					<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
 				</If>
