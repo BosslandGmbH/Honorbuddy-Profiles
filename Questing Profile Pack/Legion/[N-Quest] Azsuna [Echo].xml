@@ -1394,7 +1394,8 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="The Right Weapon for the Job" QuestId="37565" GiverName="Okuna Longtusk's Pack" GiverId="239120" X="-482.0625" Y="6676.999" Z="-2.054145" />
 			<!-- NOTE: <AddAvoidNPC> Need to keep the bot away from <Mob Name="Cove Skrog" Entry="89097" /> -->
 			<While Condition="DoQuest(37565)" >
-				<CustomBehavior File="InteractWith" MobIds="89104, 89113, 89110, 89111, 89112" InteractByUsingItemId="118330" QuestId="37565" QuestObjectiveIndex="1" >
+				<CustomBehavior File="InteractWith" MobIds="89104, 89113, 89110, 89111, 89112" ObjectType="Npc" InteractByUsingItemId="118330" QuestId="37565" QuestObjectiveIndex="1" >
+					<!-- ObjectType is legitimately needed here as npc:89112 shares the same ID as Mote of Harmony, and there could be a chance the player has this item in their bags. --> 
 					<HuntingGrounds>
 						<Hotspot X="-536.6754" Y="6738.65" Z="-2.794719" />
 						<Hotspot X="-681.6241" Y="6636.557" Z="-1.385778" />
@@ -1460,8 +1461,33 @@ END INITORDER COMMENT -->
 				<If Condition="!IsObjectiveComplete(2, 37657)" >
 					<!-- Get in cave -->
 					<MoveTo X="-904.0345" Y="5729.954" Z="1.235318" />
+					<MoveTo X="-874.127" Y="5709.781" Z="-1.426562" />
 					<CustomBehavior File="MyCTM" X="-895.646" Y="5694.116" Z="-12.60572" />
 					<CustomBehavior File="MyCTM" X="-961.7546" Y="5633.25" Z="3.230609" />
+
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="TargetSwitcher" LogExecution="false" AllowUseDuringCombat="true" UseAtInterval="3000" >
+						<!-- Using these hooks as a temporarily forced target switch since for whatever reason KUC isn't switching targets anymore...
+							Also doing it as interval because having two hooks to blacklist+whitelist was bugging out.. -->
+						<CustomBehavior File="RunCode"><![CDATA[
+							var unitPoi = Unit(89350);
+							if (unitPoi == null)
+								return;
+
+							if (unitPoi.HasAura(178902) && !Blacklist.Contains(unitPoi, BlacklistFlags.Combat))
+								Blacklist.Add(Unit(89350), BlacklistFlags.Combat, TimeSpan.FromMinutes(1));
+						]]>
+						</CustomBehavior>
+
+						<CustomBehavior File="RunCode"><![CDATA[
+							var unitPoi = Unit(89350);
+							if (unitPoi == null)
+								return;
+
+							if (!unitPoi.HasAura(178902) && Blacklist.Contains(unitPoi, BlacklistFlags.Combat))
+								Blacklist.Clear(u => u.Entry == 89350);
+						]]>
+						</CustomBehavior>
+					</CustomBehavior>
 
 					<!-- NOTE: <ChangeTarget> : Attack Oublion <89350> to start fight.  Once he turns immune shield on, switch target to  <89287> to kill, then switch back to 89350. -->
 					<!-- MOTE: <AddAvoid> : Mob 89287 spits water on the ground, need to dodge it. -->
@@ -1472,6 +1498,7 @@ END INITORDER COMMENT -->
 						</PursuitList>
 					</CustomBehavior>
 
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="TargetSwitcher" Command="Remove" />
 
 					<!-- Get out of cave -->
 					<MoveTo X="-975.3384" Y="5626.203" Z="4.710858" />
