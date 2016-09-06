@@ -240,8 +240,8 @@ END INITORDER COMMENT -->
 
 
 		<!-- Tutorial Class Hall Quests - Starts in Dalaran -->
-			<PickUp QuestName="Growing Power" QuestId="42516" GiverName="Archdruid Hamuul Runetotem" GiverId="101061" X="-829.8788" Y="4392.954" Z="737.7523" />
-			<While Condition="HasQuest(42516)" > <!--  &amp;&amp; IN-DALARAN -->
+			<PickUp QuestName="Growing Power" QuestId="42516" GiverName="Archdruid Hamuul Runetotem" GiverId="53854" X="-829.8788" Y="4392.954" Z="737.7523" />
+			<While Condition="HasQuest(42516) &amp;&amp; Me.ZoneId == 7502" > <!--  &amp;&amp; IN-DALARAN -->
 				<!-- NOTE: <ConditionalCheck> : Could use a If in Dalaran check here for this.  Set conditions accordingly. -->
 				<CustomBehavior File="RunCode" Code="SpellManager.Cast(193753)" />
 				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsCasting" />
@@ -253,7 +253,7 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="Rise, Champions" QuestId="42583" GiverName="Rensar Greathoof" GiverId="101195" X="3969.634" Y="7393.945" Z="23.93905" />
 			<While Condition="DoQuest(42583)" >
 				<If Condition="!IsObjectiveComplete(2, 42583)" >
-					<CustomBehavior File="InteractWith" MobId="103778" QuestId="42583" QuestObjectiveIndex="2" X="3829.911" Y="7193.92" Z="15.76513" />
+					<CustomBehavior File="InteractWith" MobId="103778" QuestId="42583" X="3829.911" Y="7193.92" Z="15.76513" />
 					<CustomBehavior File="RunCode"><![CDATA[
 							await Coroutine.Sleep(1234);
 							Lua.DoString("QuestFrameCompleteQuestButton:Click();");
@@ -262,7 +262,7 @@ END INITORDER COMMENT -->
 					</CustomBehavior>
 				</If>
 				<If Condition="!IsObjectiveComplete(1, 42583)" >
-					<CustomBehavior File="InteractWith" MobId="98013" QuestId="42583" QuestObjectiveIndex="1" X="4230.835" Y="7371.042" Z="-5.959337" />
+					<CustomBehavior File="InteractWith" MobId="98013" QuestId="42583" X="4230.835" Y="7371.042" Z="-5.959337" />
 					<CustomBehavior File="RunCode"><![CDATA[
 							await Coroutine.Sleep(1275);
 							Lua.DoString("QuestFrameCompleteQuestButton:Click();");
@@ -273,10 +273,11 @@ END INITORDER COMMENT -->
 			</While>
 			<TurnIn QuestName="Rise, Champions" QuestId="42583" TurnInName="Skylord Omnuron" TurnInId="98002" X="3972.861" Y="7324.135" Z="29.10639" />
 
+			<!-- Add later
 			<PickUp QuestName="Sister Lilith" QuestId="42584" GiverName="Skylord Omnuron" GiverId="98002" X="3972.861" Y="7324.135" Z="29.10639" />
 			<While Condition="DoQuest(42584)" >
-				<CustomBehavior File="InteractWith" MobId="98000" WaitTime="1500" QuestId="42584" QuestObjectiveIndex="1" X="3976.515" Y="7324.84" Z="29.02647" />
-				<!-- Do Mission ; Mission is 923,  garrFollowerId is 640,  GetMouseFocus().info.missionID -->
+				<CustomBehavior File="InteractWith" MobId="98000" NonCompeteDistance="0" WaitTime="1500" QuestId="42584" X="3976.515" Y="7324.84" Z="29.02647" />
+				Do Mission ; Mission is 923,  garrFollowerId is 640,  GetMouseFocus().info.missionID
 				<CustomBehavior File="RunCode" ><![CDATA[
 						Lua.DoString("OrderHallMissionFrameTab1:Click();");
 						await Coroutine.Sleep(1000);
@@ -314,17 +315,20 @@ END INITORDER COMMENT -->
 				<CustomBehavior File="Misc\RunLua" WaitTime="6000" Lua="GarrisonCapacitiveDisplayFrame.StartWorkOrderButton:Click();" />
 				<CustomBehavior File="InteractWith" MobId="250872" QuestId="42585" X="4129.044" Y="7466.447" Z="48.87521" />
 			</While>
-			<TurnIn QuestName="Recruiting the Troops" QuestId="42585" TurnInName="Skylord Omnuron" TurnInId="98002" X="3972.861" Y="7324.135" Z="29.10549" />
+			<TurnIn QuestName="Recruiting the Troops" QuestId="42585" TurnInName="Skylord Omnuron" TurnInId="98002" X="3972.861" Y="7324.135" Z="29.10549" /> 
 
-			<!-- Skipping this.
+
 			<PickUp QuestName="A Glade Defense" QuestId="42586" GiverName="Skylord Omnuron" GiverId="98002" X="3972.861" Y="7324.135" Z="29.10549" />
 			<While Condition="DoQuest(42586)" >
 				<CustomBehavior File="InteractWith" MobId="98000" WaitTime="1500" QuestId="42586" QuestObjectiveIndex="1" X="3976.515" Y="7324.84" Z="29.02647" />
 			</While> -->
 
 			<While Condition="!IsQuestCompleted(41413)" >
-				<CustomBehavior File="InteractWith" MobId="98784" X="3962.504" Y="7264.522" Z="28.87087" />
+				<MoveTo X="3963.146" Y="7265.613" Z="28.86813" />
+				<CustomBehavior File="WaitTimer" WaitTime="30000" QuestId="41413" />
+				<CustomBehavior File="InteractWith" MobId="98784" QuestId="41413" X="3962.504" Y="7264.522" Z="28.87087" />
 				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+				<CustomBehavior File="WaitTimer" WaitTime="5000" QuestId="41413" />
 			</While>
 		<!-- END Tutorial Class Hall Quests -->
 
