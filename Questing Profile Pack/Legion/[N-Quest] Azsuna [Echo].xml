@@ -514,9 +514,11 @@ END INITORDER COMMENT -->
 			<TurnIn QuestName="Hunger's End" QuestId="42756" TurnInName="Senegos" TurnInId="100482" X="664.2726" Y="6673.743" Z="55.7644" />
 		<!-- END Story: Defending Azurewing Repose -->
 
-		<!-- Side Quests Breadcrumbs -->
+		<!--
+		Side Quests Breadcrumbs - Since they are breadcrumbs, we don't really need to pick them up.  Leaving them in can cause issues for people who manually quest.
+								If added back in, use NeedsBreadcrumbQuest or something along those lines to prevent it from running
 			<PickUp QuestName="Felblaze Ingress" QuestId="42372" GiverName="Marius Felbane" GiverId="106915" X="455.8542" Y="6505.95" Z="40.30322" />
-			<PickUp QuestName="Missing Demon" QuestId="42238" GiverName="Tehd Shoemaker" GiverId="106914" X="453.4601" Y="6509.208" Z="40.25872" />
+			<PickUp QuestName="Missing Demon" QuestId="42238" GiverName="Tehd Shoemaker" GiverId="106914" X="453.4601" Y="6509.208" Z="40.25872" />-->
 		<!-- END Side Quests Breadcrumbs -->
 
 		<!-- Story: Azsuna versus Azshara -->
@@ -1296,7 +1298,8 @@ END INITORDER COMMENT -->
 			<!-- END Farondale -->
 
 			<!-- Olivian Veil -->
-				<TurnIn QuestName="Missing Demon" QuestId="42238" TurnInName="Daglop" TurnInId="91166" X="-447.5054" Y="5736.651" Z="35.47715" />
+				<!-- Breadcrumb quest, uncomment if pickup is uncommented.
+				<TurnIn QuestName="Missing Demon" QuestId="42238" TurnInName="Daglop" TurnInId="91166" X="-447.5054" Y="5736.651" Z="35.47715" />-->
 
 				<PickUp QuestName="Let's Make A Deal" QuestId="38460" GiverName="Daglop" GiverId="91166" X="-451.318" Y="5718.224" Z="33.95066" />
 				<While Condition="DoQuest(38460)" >
@@ -1393,6 +1396,7 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="The Right Weapon for the Job" QuestId="37565" GiverName="Okuna Longtusk's Pack" GiverId="239120" X="-482.0625" Y="6676.999" Z="-2.054145" />
 			<!-- NOTE: <AddAvoidNPC> Need to keep the bot away from <Mob Name="Cove Skrog" Entry="89097" /> -->
+			<CustomBehavior File="Hooks\Avoid" AvoidName="AvoidSkrog" Command="Add" ObjectId="89097" Radius="15" AvoidWhen="!UNIT.Aggro" />
 			<While Condition="DoQuest(37565)" >
 				<CustomBehavior File="InteractWith" MobIds="89104, 89113, 89110, 89111, 89112" ObjectType="Npc" MobState="AliveNotInCombat" InteractByUsingItemId="118330" QuestId="37565" QuestObjectiveIndex="1" >
 					<!-- ObjectType is legitimately needed here as npc:89112 shares the same ID as Mote of Harmony, and there could be a chance the player has this item in their bags. --> 
@@ -1418,6 +1422,8 @@ END INITORDER COMMENT -->
 			<!-- NOTE: <AddBonusObjective> : <PickUp QuestName="Plunder the Cove" QuestId="37495" GiverName="EMPTY" GiverId="EMPTY" X="XXX" Y="YYY" Z="ZZZ" /> -->
 
 			<TurnIn QuestName="The Right Weapon for the Job" QuestId="37565" TurnInName="Okuna Longtusk" TurnInId="89051" X="-957.2118" Y="6309.153" Z="29.77965" />
+
+			<CustomBehavior File="Hooks\Avoid" AvoidName="AvoidSkrog" Command="Remove" />
 
 			<PickUp QuestName="The Prince is Going Down" QuestId="37566" GiverName="Okuna Longtusk" GiverId="89051" X="-957.2118" Y="6309.153" Z="29.77965" />
 			<While Condition="DoQuest(37566)" >
