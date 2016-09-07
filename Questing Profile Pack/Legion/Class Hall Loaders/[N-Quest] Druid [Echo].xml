@@ -83,15 +83,22 @@ END INITORDER COMMENT -->
 		<!-- END RunCode Methods -->
 
 		<!-- Introductory Class Hall Quests -->
-			<PickUp QuestName="A Summons From Moonglade" QuestId="40643" GiverName="Archdruid Hamuul Runetotem" GiverId="101061" X="-836.509" Y="4392.921" Z="737.6797" /> <!-- May be a bit slow to spawn after first entering Dalaran. -->
+			<If Condition="NeedsQuest(40643)" >
+				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Unit(101061) != null || Unit(53845) != null" />
+				<If Condition="Unit(101061) != null" >
+					<PickUp QuestName="A Summons From Moonglade" QuestId="40643" GiverName="Archdruid Hamuul Runetotem" GiverId="101061" X="-836.509" Y="4392.921" Z="737.6797" />
+				</If>
+				<If Condition="Unit(53845) != null" >
+					<PickUp QuestName="A Summons From Moonglade" QuestId="40643" GiverName="Stormcrow" GiverId="53845" X="-836.509" Y="4392.921" Z="737.6797" />
+				</If>
+			</If>
 			<!-- Seems to have id 53854 if player abandoned the quest -->
-			<While Condition="DoQuest(40643)" > <!-- NOTE ~> Add ID check &amp;&amp; ME IS IN DALARAN -->
+			<If Condition="HasQuest(40643) &amp;&amp; Me.ZoneId == 7502" > <!-- NOTE ~> Add ID check &amp;&amp; ME IS IN DALARAN -->
 				<CustomBehavior File="RunCode" Code="
-					if (Me.ZoneId != 493)
-						SpellManager.Cast(18960);
+					SpellManager.Cast(18960);
 				" />
 				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Me.ZoneId == 493 || !Me.IsCasting" />
-			</While>
+			</If>
 			<TurnIn QuestName="A Summons From Moonglade" QuestId="40643" TurnInName="Archdruid Hamuul Runetotem" TurnInId="101064" X="8001.76" Y="-2680.266" Z="512.0837" />
 
 			<PickUp QuestName="Call of the Wilds" QuestId="41106" GiverName="Archdruid Hamuul Runetotem" GiverId="101064" X="8001.76" Y="-2680.266" Z="512.0837" />
