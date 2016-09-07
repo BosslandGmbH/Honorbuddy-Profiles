@@ -35,6 +35,8 @@
 	<Vendors>
 	</Vendors>
 
+	<DefaultNavType>Fly</DefaultNavType>
+
 <!-- INITORDER COMMENT 
 	<InitOrder>
 		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
@@ -147,12 +149,14 @@ END INITORDER COMMENT -->
 		<!-- Story: Artifact Weapon - Scythe of Elune -->
 				<PickUp QuestName="The Scythe of Elune" QuestId="40783" GiverName="Naralex" GiverId="103778" X="3972.796" Y="7395.127" Z="23.94474" />
 				<While Condition="DoQuest(40783)" >
-					<!-- NOTE: <AddCheck> : We could use a ZoneId check here.  Player leaves class hall to go to Dreamgrove -->
-					<MoveTo QuestId="40783" QuestObjectiveIndex="1" X="4126.203" Y="7309.566" Z="22.08073" />
-					<CustomBehavior File="MyCTM" QuestId="40783" QuestObjectiveIndex="1" X="4153.008" Y="7288.954" Z="23.26673" /> <!-- TerminateWhen="NOT IN CLASS HALL SPOT" -->
-					<!-- NOTE: <AddCheck> : We could use a ZoneId check here.  Player leaves Dreamgrove to go to Duskwood -->
-					<MoveTo QuestId="40783" QuestObjectiveIndex="1" X="1559.297" Y="1551.772" Z="19.10375" />
-					<CustomBehavior File="MyCTM" QuestId="40783" QuestObjectiveIndex="1" X="1548.042" Y="1545.701" Z="21.27557" />
+					<If Condition="Me.ZoneId != 7979" >
+						<MoveTo QuestId="40783" QuestObjectiveIndex="1" X="4126.203" Y="7309.566" Z="22.08073" />
+						<CustomBehavior File="MyCTM" QuestId="40783" QuestObjectiveIndex="1" X="4153.008" Y="7288.954" Z="23.26673" TerminateWhen="Me.ZoneId == 7979" /> <!-- TerminateWhen="NOT IN CLASS HALL SPOT" -->
+					</If>
+					<If Condition="Me.ZoneId == 7979" >
+						<MoveTo QuestId="40783" QuestObjectiveIndex="1" X="1559.297" Y="1551.772" Z="19.10375" />
+						<CustomBehavior File="MyCTM" QuestId="40783" QuestObjectiveIndex="1" X="1548.042" Y="1545.701" Z="21.27557" />
+					</If>
 
 					<MoveTo X="-10335.85" Y="-486.7315" Z="49.85195" />
 					<CustomBehavior File="WaitTimer" QuestId="40783" WaitTime="30000" />
@@ -183,7 +187,7 @@ END INITORDER COMMENT -->
 
 				<PickUp QuestName="Disturbing the Past" QuestId="40835" GiverName="Revil Kost" GiverId="100729" X="-10440.19" Y="-2143.814" Z="90.77973" />
 				<While Condition="DoQuest(40835)" >
-					<CustomBehavior File="InteractWith" MobId="245793" QuestId="40835" QuestObjectiveIndex="1" X="-10436.61" Y="-2142.387" Z="90.77908" />
+					<CustomBehavior File="InteractWith" MobId="245789" NonCompeteDistance="0" QuestId="40835" QuestObjectiveIndex="1" X="-10436.61" Y="-2142.387" Z="90.77908" />
 				</While>
 				<TurnIn QuestName="Disturbing the Past" QuestId="40835" TurnInType="Object" TurnInName="Battered Journal" TurnInId="245793" X="-10429.92" Y="-2141.151" Z="91.85447" />
 
@@ -198,21 +202,22 @@ END INITORDER COMMENT -->
 
 				<PickUp QuestName="The Dark Riders" QuestId="40838" GiverName="Revil Kost" GiverId="100812" X="-11024.64" Y="-2006.069" Z="25.09432" />
 				<While Condition="DoQuest(40838)" >
-					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0" > 
+					<If Condition="(Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0 || Me.Z &gt;= 20) &amp;&amp; !HasItem(128858)" > 
 						<MoveTo X="-11017.52" Y="-1993.153" Z="24.90709" />
-						<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != null" />
 						<CustomBehavior File="InteractWith" MobId="247322" X="-11018.1" Y="-1988.818" Z="24.90163" />
+						<CustomBehavior File="MyCTM" X="-11018.28" Y="-1977.945" Z="18.51779" />
 					</If>
 
 					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
-						<MoveTo X="-10992.48" Y="-1973.47" Z="-48.74293" />
-						<MoveTo X="-10962.58" Y="-1973.511" Z="-49.81652" />
+						<MoveTo Nav="Run" X="-10992.48" Y="-1973.47" Z="-48.74293" />
+						<MoveTo Nav="Run" X="-10962.58" Y="-1973.511" Z="-49.81652" />
 					</If>
 
 					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-						<MoveTo X="-10964.68" Y="-1967.501" Z="-49.81814" />
+						<MoveTo Nav="Run" X="-10964.68" Y="-1967.501" Z="-49.81814" />
 						<CustomBehavior File="RunCode"><![CDATA[
 								var aridenPoi = Unit(100850);
+								aridenPoi.Target();
 								StyxWoW.Me.SetFacing(aridenPoi.Location);
 								await Coroutine.Sleep(750);
 								SpellManager.Cast(78675);
@@ -231,7 +236,7 @@ END INITORDER COMMENT -->
 					</If>
 
 					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
-						<MoveTo X="-10885.38" Y="-1962.469" Z="-41.20673" />
+						<MoveTo Nav="Run" X="-10885.38" Y="-1962.469" Z="-41.20673" />
 					</If>
 
 					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
@@ -248,12 +253,16 @@ END INITORDER COMMENT -->
 				<TurnIn QuestName="The Dark Riders" QuestId="40838" TurnInName="Revil Kost" TurnInId="101282" X="-10871.4" Y="-1961.52" Z="-41.03615" />
 
 				<PickUp QuestName="The Burden Borne" QuestId="40900" GiverName="Revil Kost" GiverId="101282" X="-10871.4" Y="-1961.52" Z="-41.03615" />
-				<While Condition="HasQuest(40900)" > <!--  &amp;&amp; IN KARAZHAN CATACOMBS -->
-					<!-- NOTE: <ConditionalCheck> : Could use a If in Dalaran check here for this.  Set conditions accordingly. -->
-					<CustomBehavior File="RunCode" Code="SpellManager.Cast(193753);" />
-					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsCasting" />
-					<MoveTo X="1769.227" Y="1507.436" Z="7.572013" />
-					<CustomBehavior File="MyCTM" X="1784.787" Y="1504.025" Z="9.896443" /> <!-- TerminateWhen="ME IS IN DRUID PLACE"  -->
+				<While Condition="HasQuest(40900) &amp;&amp; !Me.HasAura(213170)" >
+					<If Condition="Me.ZoneId != 7979" >
+						<CustomBehavior File="RunCode" Code="SpellManager.Cast(193753);" />
+						<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsCasting" />
+					</If>
+					<If Condition="Me.ZoneId == 7979" >
+						<MoveTo X="1769.227" Y="1507.436" Z="7.572013" />
+						<CustomBehavior File="MyCTM" X="1784.787" Y="1504.025" Z="9.896443" TerminateWhen="Me.HasAura(213170)" />
+						<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Me.HasAura(213170)" />
+					</If>
 				</While>
 				<TurnIn QuestName="The Burden Borne" QuestId="40900" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.93885" />
 		<!-- END Story: Artifact Weapon - Scythe of Elune -->

@@ -35,6 +35,8 @@
 	<Vendors>
 	</Vendors>
 
+	<DefaultNavType>Fly</DefaultNavType>
+
 <!-- INITORDER COMMENT 
 	<InitOrder>
 		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
@@ -126,7 +128,7 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsFalling" />
 				</If>
 
-				<MoveTo X="270.4472" Y="453.7347" Z="56.45567" />
+				<MoveTo Nav="Fly" X="270.4472" Y="453.7347" Z="56.45567" />
 			</While>
 			<TurnIn QuestName="An Unexpected Message" QuestId="40267" TurnInName="Archmage Modera" TurnInId="99398" X="271.2101" Y="452.5" Z="56.94685" />
 
@@ -138,10 +140,13 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="The Frozen Flame" QuestId="11997" GiverName="Aethas Sunreaver" GiverId="99415" X="275.4454" Y="452.9391" Z="56.89916" />
 			<While Condition="DoQuest(11997)" >
-				<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Object(99418) != null" />
-				<CustomBehavior File="InteractWith" MobId="99418" QuestId="11997" QuestObjectiveIndex="1" X="273.3785" Y="451.5833" Z="57.29637" />
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0" >
+					<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Object(99418) != null" />
+					<CustomBehavior File="InteractWith" MobId="99418" X="273.3785" Y="451.5833" Z="57.29637" />
+				</If>
 			
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<DisableBehavior Name="Pull" />
 					<CustomBehavior File="Hooks\Avoid" AvoidName="FrostBlock" Command="Add" ObjectType="Npc" ObjectId="99605" Radius="9.5" />
 					<!-- NOTE: <AddAvoid> : Mobs use "razors edge", need to avoid it.  Low priority. -->
 					<MoveTo X="4151.716" Y="2539.918" Z="364.8733" />
@@ -152,6 +157,10 @@ END INITORDER COMMENT -->
 					<MoveTo X="4246.797" Y="2537.477" Z="364.8358" />
 					<!-- Add spellId detection here as well. -->
 					<!-- NOTE: <AddAvoid> : We can use a avoid here for this mob's Blizzard ground AoE -->
+					<MoveTo X="4254.109" Y="2524.368" Z="364.8636" />
+					<CustomBehavior File="MyCTM" X="4255.084" Y="2523.21" Z="364.8657" />
+					<CustomBehavior File="RunCode" Code="SpellManager.Cast(1953);" />
+					<EnableBehavior Name="Pull" />
 					<CustomBehavior File="KillUntilComplete" MobId="98760" X="4280.021" Y="2484.34" Z="365.5589" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
 					<!-- Turn all avoids and DoWhens off -->
 				</If>
@@ -159,6 +168,8 @@ END INITORDER COMMENT -->
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
 					<CustomBehavior File="KillUntilComplete" MobId="102105" X="4291.065" Y="2483.146" Z="365.0472" TerminateWhen="Unit(102105) == null" />
 					<!-- NOTE: <AddAvoid> : May need avoid here.  Ice falling from ceiling which causes knockback and decent damage. -->
+					<MoveTo X="4351.601" Y="2486.511" Z="358.4408" />
+					<MoveTo X="4355.472" Y="2503.209" Z="358.4413" />
 					<MoveTo X="4341.354" Y="2508.521" Z="358.4436" />
 					<CustomBehavior File="KillUntilComplete" MobId="105377" X="4359.234" Y="2520.515" Z="358.4319" TerminateWhen="Unit(105377) == null" />
 					<!-- NOTE: <AddAvoid> : May need avoid here.  Ice falling from ceiling which causes knockback and decent damage AND Frost Blocks... -->
@@ -175,12 +186,14 @@ END INITORDER COMMENT -->
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
 					<!-- NOTE: <AddAvoid> : Avoid the big guys spin attack - FATAL Priority. -->
-					<CustomBehavior File="KillUntilComplete" MobId="99615" X="4635.413" Y="2769.503" Z="361.171" />
-					<!-- NOTE: <CheckFunction> : KillUntilComplete may need to switch targets to the bone monster when mobId 99615 has aura 194360. -->
+					<CustomBehavior File="Hooks\Avoid" AvoidName="FlameWhirl_Avoid" ObjectId="98686" Radius="15" AvoidWhen="UNIT.IsCasting" />
+					<MoveTo X="4628.903" Y="2803.909" Z="361.1649" /> <!-- To prevent avoid from walking us out of the room. -->
+					<CustomBehavior File="KillUntilComplete" MobId="99615" X="4635.413" Y="2769.503" Z="361.171" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="FlameWhirl_Avoid" Command="Remove" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
-					<!-- Other ID: Name="Felo'melorn" Entry="103696" X="4641.807" Y="2769.265" Z="361.1771" -->
+					<CustomBehavior File="WaitTimer" WaitTime="5000" />
 					<CustomBehavior File="InteractWith" MobId="247494" InteractByLooting="true" WaitTime="1500" X="4641.81" Y="2769.26" Z="362.6401" />
 					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
 					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->

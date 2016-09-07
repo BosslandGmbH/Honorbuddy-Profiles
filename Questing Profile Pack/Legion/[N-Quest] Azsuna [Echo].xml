@@ -47,6 +47,10 @@
 		<Blackspot X="-376.3742" Y="6675.382" Z="4.599216" Radius="23.31855" /> <!-- Bad navigation spot. -->
 	</Blackspots>
 
+	<Blacklist>
+		<Mob Name="Cove Skrog" Id="89097" Flags="Pull" />
+	</Blacklist>
+
 <!-- INITORDER COMMENT 
 	<InitOrder>
 		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
@@ -1418,7 +1422,7 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="The Right Weapon for the Job" QuestId="37565" GiverName="Okuna Longtusk's Pack" GiverId="239120" X="-482.0625" Y="6676.999" Z="-2.054145" />
 			<!-- NOTE: <AddAvoidNPC> Need to keep the bot away from <Mob Name="Cove Skrog" Entry="89097" /> -->
-			<CustomBehavior File="Hooks\Avoid" AvoidName="AvoidSkrog" IgnoreLootInAvoid="true" Command="Add" ObjectId="89097" Radius="25" AvoidWhen="!UNIT.Aggro" />
+			<CustomBehavior File="Hooks\Avoid" AvoidName="AvoidSkrog" IgnoreLootInAvoid="true" Command="Add" ObjectId="89097" Radius="20" AvoidWhen="!UNIT.Aggro" />
 			<While Condition="DoQuest(37565)" >
 				<CustomBehavior File="InteractWith" MobIds="89104, 89113, 89110, 89111, 89112" ObjectType="Npc" MobState="AliveNotInCombat" InteractByUsingItemId="118330" QuestId="37565" QuestObjectiveIndex="1" >
 					<!-- ObjectType is legitimately needed here as npc:89112 shares the same ID as Mote of Harmony, and there could be a chance the player has this item in their bags. --> 
@@ -1516,6 +1520,7 @@ END INITORDER COMMENT -->
 						]]>
 						</CustomBehavior>
 					</CustomBehavior>
+					<CustomBehavior File="Hooks\Avoid" AvoidName="MassiveCrush_Avoid" ObjectId="89287" Radius="10" AvoidLocationProducer="UNIT.Location.RayCast(UNIT.Rotation, 8)" AvoidWhen="UNIT.IsCasting" />
 
 					<!-- NOTE: <ChangeTarget> : Attack Oublion <89350> to start fight.  Once he turns immune shield on, switch target to  <89287> to kill, then switch back to 89350. -->
 					<!-- MOTE: <AddAvoid> : Mob 89287 spits water on the ground, need to dodge it. -->
