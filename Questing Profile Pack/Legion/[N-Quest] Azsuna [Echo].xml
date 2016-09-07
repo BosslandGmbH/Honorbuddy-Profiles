@@ -639,6 +639,8 @@ END INITORDER COMMENT -->
 			<TurnIn QuestName="Children of Nar'thalas" QuestId="42692" TurnInName="Kallistia Starlance" TurnInId="89326" X="-184.7049" Y="6320.589" Z="21.63328" />
 			<TurnIn QuestName="You Never Know Until You Scry" QuestId="42693" TurnInName="Olothil Starlance" TurnInId="108328" X="-189.7396" Y="6313.207" Z="20.58771" />
 
+			<CustomBehavior File="Hooks\Avoid" AvoidName="SeaSkrog" IgnoreLootInAvoid="true" ObjectId="88094" Radius="25" />
+
 			<PickUp QuestName="Back from the Dead" QuestId="42694" GiverName="Olothil Starlance" GiverId="108328" X="-189.7396" Y="6313.207" Z="20.58716" />
 			<While Condition="DoQuest(42694)" >
 				<CustomBehavior File="InteractWith" MobId="251182" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="42694" QuestObjectiveIndex="1" X="-189.3819" Y="6311.526" Z="20.58729" /> 
@@ -650,6 +652,8 @@ END INITORDER COMMENT -->
 			<TurnIn QuestName="Back from the Dead" QuestId="42694" TurnInName="Olothil Starlance" TurnInId="108328" X="-188.7205" Y="6317.007" Z="20.58788" />
 
 			<TurnIn QuestName="Nar'thalas Still Suffers" QuestId="37486" TurnInName="Prince Farondis" TurnInId="88867" X="-139.941" Y="6418.818" Z="27.39911" />
+
+			<CustomBehavior File="Hooks\Avoid" AvoidName="SeaSkrog" Command="Remove" />
 
 			<PickUp QuestName="The Walk of Shame" QuestId="37467" GiverName="Prince Farondis" GiverId="88867" X="-139.941" Y="6418.818" Z="27.39959" />
 			<While Condition="DoQuest(37467)" >
@@ -675,7 +679,8 @@ END INITORDER COMMENT -->
 						<PursueGameObject Id="91449" />
 						<PursueUnit Id="88086" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
 						<PursueUnit Id="88087" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
-						<PursueUnit Id="91459" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<!-- Naga Brute,  commented because it leads players towards Skrogs 
+						<PursueUnit Id="91459" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" /> -->
 						<PursueUnit Id="107447" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
 					</PursuitList>
 				</CustomBehavior>
@@ -728,7 +733,7 @@ END INITORDER COMMENT -->
 							blacklistTarget = wandTarget.Guid;
 
 							wandTarget.Face();
-							await Coroutine.Sleep(878);
+							await Coroutine.Sleep(778);
 							Lua.DoString("ExtraActionButton1:Click();");
 						}
 					]]>
@@ -1413,7 +1418,7 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="The Right Weapon for the Job" QuestId="37565" GiverName="Okuna Longtusk's Pack" GiverId="239120" X="-482.0625" Y="6676.999" Z="-2.054145" />
 			<!-- NOTE: <AddAvoidNPC> Need to keep the bot away from <Mob Name="Cove Skrog" Entry="89097" /> -->
-			<CustomBehavior File="Hooks\Avoid" AvoidName="AvoidSkrog" Command="Add" ObjectId="89097" Radius="15" AvoidWhen="!UNIT.Aggro" />
+			<CustomBehavior File="Hooks\Avoid" AvoidName="AvoidSkrog" IgnoreLootInAvoid="true" Command="Add" ObjectId="89097" Radius="25" AvoidWhen="!UNIT.Aggro" />
 			<While Condition="DoQuest(37565)" >
 				<CustomBehavior File="InteractWith" MobIds="89104, 89113, 89110, 89111, 89112" ObjectType="Npc" MobState="AliveNotInCombat" InteractByUsingItemId="118330" QuestId="37565" QuestObjectiveIndex="1" >
 					<!-- ObjectType is legitimately needed here as npc:89112 shares the same ID as Mote of Harmony, and there could be a chance the player has this item in their bags. --> 
@@ -1431,9 +1436,9 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="A Favor for Mr. Shackle" QuestId="38857" GiverName="Seska Seafang" GiverId="88863" X="-874.5886" Y="6514.014" Z="3.660576" /> <!-- Mak'rana and the Fate of the Queen's Reprisal breadcrumb. -->
 			<While Condition="DoQuest(38857)" >
-				<CustomBehavior File="InteractWith" MobId="241905" QuestId="38857" QuestObjectiveIndex="3" X="-873.283" Y="6444.548" Z="2.733908" />
-				<CustomBehavior File="InteractWith" MobId="241901" QuestId="38857" QuestObjectiveIndex="1" X="-959.1094" Y="6608.879" Z="0.1156936" />
-				<CustomBehavior File="InteractWith" MobId="241902" QuestId="38857" QuestObjectiveIndex="2" X="-787.2604" Y="6783.058" Z="5.482642" />
+				<CustomBehavior File="InteractWith" MobId="241905" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" Range="6" QuestId="38857" QuestObjectiveIndex="3" X="-873.283" Y="6444.548" Z="2.733908" />
+				<CustomBehavior File="InteractWith" MobId="241901" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" Range="6" QuestId="38857" QuestObjectiveIndex="1" X="-959.1094" Y="6608.879" Z="0.1156936" />
+				<CustomBehavior File="InteractWith" MobId="241902" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" Range="6" QuestId="38857" QuestObjectiveIndex="2" X="-787.2604" Y="6783.058" Z="5.482642" />
 			</While>
 
 			<!-- NOTE: <AddBonusObjective> : <PickUp QuestName="Plunder the Cove" QuestId="37495" GiverName="EMPTY" GiverId="EMPTY" X="XXX" Y="YYY" Z="ZZZ" /> -->
