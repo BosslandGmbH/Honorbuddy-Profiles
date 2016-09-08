@@ -653,17 +653,25 @@ END INITORDER COMMENT -->
 			<TurnIn QuestName="For the Corn!" QuestId="38647" TurnInName="Granny Marl" TurnInId="92618" X="2707.609" Y="7462.568" Z="5.314145" />
 
 			<If Condition="DoQuest(38644)" > <!-- Using if here because we need to pick up a quest during this. -->
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="OpenCellar" UseWhen="ObjectManager.GetObjectsOfType&lt;WoWGameObject&gt;().FirstOrDefault(x =&gt; x.SubType == WoWGameObjectType.Door &amp;&amp; x.Distance &lt; 5 &amp;&amp; x.State == WoWGameObjectState.Ready) != null" >
+					<CustomBehavior File="RunCode" Code="
+							var gatePoi = ObjectManager.GetObjectsOfType&lt;WoWGameObject&gt;().FirstOrDefault(x =&gt; x.SubType == WoWGameObjectType.Door &amp;&amp; x.Distance &lt; 5 &amp;&amp; x.State == WoWGameObjectState.Ready);
+
+							while (gatePoi.State == WoWGameObjectState.Ready) 
+							{
+								gatePoi.Interact();
+								await Coroutine.Sleep(1500);
+							}
+						" />
+				</CustomBehavior>
 				<If Condition="!IsObjectiveComplete(1, 38644)" >
-					<MoveTo X="2568.631" Y="7487.165" Z="28.05258" />
-					<CustomBehavior File="WaitTimer" WaitTime="1000" /> <!-- Wait for aggro -->
-					<CustomBehavior File="InteractWith" MobId="243007" QuestId="38644" X="2565.066" Y="7486.539" Z="29.5022" /> <!-- NOTE: <Door> : This interacts with an object required to enter the next location. -->
-					<CustomBehavior File="InteractWith" MobId="92734" GossipOptions="1" QuestId="38644" QuestObjectiveIndex="1" X="2571.091" Y="7506.483" Z="19.94402" />
-					<CustomBehavior File="InteractWith" MobId="243007" QuestId="38644" X="2565.066" Y="7486.539" Z="29.5022" /> <!-- NOTE: <Door> : This interacts with an object required to enter the next location. -->
+					<CustomBehavior File="InteractWith" MobIds="92734" GossipOptions="1" QuestId="38644" QuestObjectiveIndex="1" X="2571.091" Y="7506.483" Z="19.94402" />
 				</If>
 				<CustomBehavior File="InteractWith" MobId="92618" NonCompeteDistance="0" QuestId="38644" QuestObjectiveIndex="2" X="2707.609" Y="7462.568" Z="5.313876" />
 				<If Condition="!IsObjectiveComplete(3, 38644)" >
 					<MoveTo X="2817.782" Y="7561.732" Z="4.199298" />
 				</If>
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="OpenCellar" Command="Remove" />
 			</If>
 
 			<PickUp QuestName="Shriek No More" QuestId="39117" GiverName="Cecily Radcliffe" GiverId="94117" X="2816.49" Y="7564.252" Z="4.321269" />

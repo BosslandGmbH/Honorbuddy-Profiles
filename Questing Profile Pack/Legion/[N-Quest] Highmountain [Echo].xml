@@ -165,12 +165,12 @@ END INITORDER COMMENT -->
 
 					async Task CombatAwareness()
 					{
-						var killArray = ObjectManager.GetObjectsOfType<WoWUnit>().Where(u => u.IsTargetingMeOrPet && u.Distance < 6);
+						var killArray = ObjectManager.GetObjectsOfType<WoWUnit>().Where(u => u.IsTargetingMeOrPet && u.Distance <= 5);
 						if (killArray == null) return;
 
 						foreach (WoWUnit killMe in killArray)
 						{
-							while (killMe != null && killMe.IsTargetingMeOrPet && killMe.Distance < 6)
+							while (killMe != null && killMe.IsTargetingMeOrPet && killMe.Distance <= 5)
 							{
 								await CommonCoroutines.StopMoving();
 								StyxWoW.Me.SetFacing(killMe.Location);
@@ -824,7 +824,7 @@ END INITORDER COMMENT -->
 									Name="Gornoth the Lost" Entry="103656" X="5591.57" Y="4684.78" Z="663.5714"
 				See NOTE1 for where to remove.
 			-->
-			<CustomBehavior File="Hooks\Avoid" AvoidName="GornothTheLost" Command="Add" IgnoreLootInAvoid="true" ObjectId="103656" Radius="25" />
+			<CustomBehavior File="Hooks\Avoid" AvoidName="GornothTheLost" Command="Add" IgnoreLootInAvoid="true" ObjectId="103656" Radius="40" />
 
 			<While Condition="DoQuest(39372)" >
 				<CustomBehavior File="KillUntilComplete" MobId="95311" QuestId="39372" QuestObjectiveIndex="1" X="5649.847" Y="4774.805" Z="676.5629" />
