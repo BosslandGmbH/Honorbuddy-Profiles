@@ -127,6 +127,26 @@ END INITORDER COMMENT -->
 						Lua.DoString("OrderHallMissionFrame.CloseButton:Click();");
 					}
 
+					bool MissionComplete(int missionID)
+					{
+						string luaString = $@"
+							local missionNum = {missionID};
+							local allMissions = C_Garrison.GetInProgressMissions(LE_FOLLOWER_TYPE_GARRISON_7_0);
+							for i=1,#allMissions do
+								if (allMissions[i].missionID == missionNum)  then  
+									return allMissions[i].timeLeftSeconds
+								end
+							end
+						";
+						
+						int timeLeft = Lua.GetReturnVal<int>(luaString, 0);
+
+						if (timeLeft == 0)
+							return true;
+						else
+							return false;
+					}
+
 					bool MissionInProgress(int missionID)
 					{
 						string luaString = $@"
@@ -325,7 +345,7 @@ END INITORDER COMMENT -->
 
 
 		<!-- Class Hall Tutorials -->
-			<If Condition="NeedsQuest(426120)" >
+			<If Condition="NeedsQuest(42610)" >
 				<If Condition="!Me.HasAura(213170)" > <!-- Go to class hall if not already -->
 					<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
 					<MoveTo Precision="1" X="-842.1536" Y="4253.124" Z="746.4725" />
@@ -360,11 +380,15 @@ END INITORDER COMMENT -->
 				<While Condition="DoQuest(42607)" >
 					<CustomBehavior File="InteractWith" MobId="97389" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
 					<CustomBehavior File="RunCode"><![CDATA[
-							await DoMission(missionID: 926, followerList: 708);
-							Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Waiting for class hall mission to complete!");
+							if (!MissionInProgress(926))
+							{
+								await DoMission(missionID: 926, followerList: 708);
+								Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Waiting for class hall mission to complete!");
+								await Coroutine.Wait(5000, () => MissionInProgress(926));
+							}
 						]]>
 					</CustomBehavior>
-					<CustomBehavior File="WaitTimer" WaitTime="130000" />
+					<CustomBehavior File="WaitTimer" WaitTime="130000" TerminateWhen="MissionComplete(926)" />
 					<CustomBehavior File="InteractWith" MobId="97389" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
 					<CustomBehavior File="RunCode" ><![CDATA[
 						Lua.DoString("OrderHallMissionFrameMissions.CompleteDialog.BorderFrame.ViewButton:Click();");
@@ -382,7 +406,7 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="InteractWith" MobId="106459" WaitTime="2000" QuestId="42609" X="1130.396" Y="7200.417" Z="99.71574" />
 					<CustomBehavior File="Misc\RunLua" WaitTime="6000" Lua="GarrisonCapacitiveDisplayFrame.StartWorkOrderButton:Click();" />
 					<CustomBehavior File="WaitTimer" WaitTime="6000" />
-					<CustomBehavior File="InteractWith" MobId="250878" QuestId="42609" X="1127.615" Y="7196.929" Z="99.71751" />
+					<CustomBehavior File="InteractWith" MobId="250878" NonCompeteDistance="0" QuestId="42609" X="1127.615" Y="7196.929" Z="99.71751" />
 				</While>
 				<TurnIn Nav="Fly" QuestName="Recruiting the Troops" QuestId="42609" TurnInName="Skyseer Ghrent" TurnInId="100635" X="1138.405" Y="7219.138" Z="101.817" />
 
@@ -391,7 +415,7 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="InteractWith" MobId="97389" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
 					<CustomBehavior File="RunCode" Code="await DoMission(927, new int[]{708, 858, 709});" />
 				</While>
-				<If Condition="QuestDone(426120)" >
+				<If Condition="HasQuest(42610) &amp;&amp; MissionComplete(927)" >
 					<TurnIn Nav="Fly" QuestName="Troops in the Field" QuestId="42610" TurnInName="Skyseer Ghrent" TurnInId="100635" X="1138.405" Y="7219.138" Z="101.817" />
 				</If>
 			</If>

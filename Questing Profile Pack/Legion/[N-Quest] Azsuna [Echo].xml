@@ -1465,30 +1465,64 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="Maritime Law" QuestId="37654" GiverName="Mr. Shackle" GiverId="91419" X="-812.4496" Y="6101.11" Z="7.006913" />
 			<PickUp QuestName="Making the World Safe for Profit" QuestId="37657" GiverName="Mr. Shackle" GiverId="91419" X="-812.4496" Y="6101.11" Z="7.006913" />
 
-			<If Condition="NeedsQuest(42220)" >
+			<If Condition="(Me.IsAlliance &amp;&amp; NeedsQuest(42220)) || (Me.IsHorde &amp;&amp; NeedsQuest(42268))" >
 				<MoveTo X="-730.9786" Y="6006.806" Z="-0.4108924" /> <!-- Auto accept pickup.  QuestName="Shipwrecked Sailors" QuestId="42220" -->
 			</If>
 
-			<While Condition="DoQuest(37657) || DoQuest(42220)" >
-				<CustomBehavior File="KillUntilComplete" TerminateWhen="IsObjectiveComplete(1, 37657) &amp;&amp; IsQuestCompleted(42220)" >
-					<HuntingGrounds>
-						<Hotspot X="-810.4394" Y="5925.933" Z="-0.2683554" />
-						<Hotspot X="-903.2585" Y="5860.665" Z="0.4750468" />
-						<Hotspot X="-770.2274" Y="5694.72" Z="2.059582" />
-						<Hotspot X="-975.3858" Y="5667.039" Z="37.65124" />
-						<Hotspot X="-867.7207" Y="5613.289" Z="30.04423" />
-					</HuntingGrounds>
-					<PursuitList>
-						<PursueUnit Id="89284" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
-						<PursueUnit Id="89283" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
-						<PursueUnit Id="89286" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
-						<PursueUnit Id="89053" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
+			<While Condition="DoQuest(37657) || DoQuest(42220) || DoQuest(42268)" >
+				<If Condition="Me.IsAlliance" >
+					<CustomBehavior File="KillUntilComplete" TerminateWhen="IsObjectiveComplete(1, 37657) &amp;&amp; IsQuestCompleted(42220)" >
+						<HuntingGrounds>
+							<Hotspot X="-810.4394" Y="5925.933" Z="-0.2683554" />
+							<Hotspot X="-903.2585" Y="5860.665" Z="0.4750468" />
+							<Hotspot X="-770.2274" Y="5694.72" Z="2.059582" />
+							<Hotspot X="-975.3858" Y="5667.039" Z="37.65124" />
+							<Hotspot X="-867.7207" Y="5613.289" Z="30.04423" />
+						</HuntingGrounds>
+						<PursuitList>
+							<PursueUnit Id="89284" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
+							<PursueUnit Id="89283" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
+							<PursueUnit Id="89286" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
+							<PursueUnit Id="89053" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
 
-						<PursueUnit Id="89289" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsQuestCompleted(42220)" /> <!-- Shipwrecked Sailors quest -->
-					</PursuitList>
-				</CustomBehavior>
+							<PursueUnit Id="89289" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsQuestCompleted(42220)" /> <!-- Shipwrecked Sailors quest -->
+						</PursuitList>
+					</CustomBehavior>
+				</If>
+				<If Condition="Me.IsHorde" >
+					<CustomBehavior File="KillUntilComplete" TerminateWhen="IsObjectiveComplete(1, 37657)" >
+						<HuntingGrounds>
+							<Hotspot X="-810.4394" Y="5925.933" Z="-0.2683554" />
+							<Hotspot X="-903.2585" Y="5860.665" Z="0.4750468" />
+							<Hotspot X="-770.2274" Y="5694.72" Z="2.059582" />
+							<Hotspot X="-975.3858" Y="5667.039" Z="37.65124" />
+							<Hotspot X="-867.7207" Y="5613.289" Z="30.04423" />
+						</HuntingGrounds>
+						<PursuitList>
+							<PursueUnit Id="89284" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
+							<PursueUnit Id="89283" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
+							<PursueUnit Id="89286" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
+							<PursueUnit Id="89053" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
 
-				<TurnIn QuestName="Shipwrecked Sailors" QuestId="42220" /> <!-- Turn in Shipwrecked Sailors -->
+						</PursuitList>
+					</CustomBehavior>
+					<CustomBehavior File="InteractWith" MobId="89289" QuestId="42268" QuestObjectiveIndex="1" >
+						<HuntingGrounds>
+							<Hotspot X="-810.4394" Y="5925.933" Z="-0.2683554" />
+							<Hotspot X="-903.2585" Y="5860.665" Z="0.4750468" />
+							<Hotspot X="-770.2274" Y="5694.72" Z="2.059582" />
+							<Hotspot X="-975.3858" Y="5667.039" Z="37.65124" />
+							<Hotspot X="-867.7207" Y="5613.289" Z="30.04423" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</If>
+
+				<If Condition="Me.IsAlliance" >
+					<TurnIn QuestName="Shipwrecked Sailors" QuestId="42220" /> <!-- Turn in Shipwrecked Sailors -->
+				</If>
+				<If Condition="Me.IsHorde" >
+					<TurnIn QuestName="Shipwrecked Sailors" QuestId="42268" /> <!-- Turn in Shipwrecked Sailors -->
+				</If>
 
 				<If Condition="!IsObjectiveComplete(2, 37657)" >
 					<!-- Get in cave -->
