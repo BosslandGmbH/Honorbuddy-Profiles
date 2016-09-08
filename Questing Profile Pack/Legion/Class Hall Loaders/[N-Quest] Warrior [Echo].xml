@@ -100,6 +100,46 @@ END INITORDER COMMENT -->
 							}
 						}
 					}
+					async Task DoMission(int missionID, params int[] followerList)
+					{
+
+						foreach (int follower in followerList)
+						{
+							string luaString = $@"
+								local missionID = {missionID};
+								local followerID = {follower};
+								local allFollowers = C_Garrison.GetFollowers();
+								for i=1,#allFollowers do
+									if (allFollowers[i].garrFollowerID == followerID)  then  
+										C_Garrison.AddFollowerToMission(missionID, allFollowers[i].followerID);
+										break;
+									end
+								end
+							";
+							Lua.DoString(luaString);
+							await Coroutine.Sleep(750);
+						}
+
+						await Coroutine.Sleep(1000);
+						Lua.DoString($"C_Garrison.StartMission({missionID});");
+
+						await Coroutine.Sleep(2500);
+						Lua.DoString("OrderHallMissionFrame.CloseButton:Click();");
+					}
+
+					bool MissionInProgress(int missionID)
+					{
+						string luaString = $@"
+							local missionNum = {missionID};
+							local allMissions = C_Garrison.GetInProgressMissions(LE_FOLLOWER_TYPE_GARRISON_7_0);
+							for i=1,#allMissions do
+								if (allMissions[i].missionID == missionNum)  then  
+									return allMissions[i].inProgress
+								end
+							end
+						";
+						return Lua.GetReturnVal<bool>(luaString, 0);
+					}
 				]]>
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
@@ -282,6 +322,81 @@ END INITORDER COMMENT -->
 				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />
 			</If>
 		<!-- END Azsuna -->
+
+
+		<!-- Class Hall Tutorials -->
+			<If Condition="NeedsQuest(426120)" >
+				<If Condition="!Me.HasAura(213170)" > <!-- Go to class hall if not already -->
+					<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+					<MoveTo Precision="1" X="-842.1536" Y="4253.124" Z="746.4725" />
+					<CustomBehavior File="WaitTimer" WaitTime="1000" />
+					<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+				</If>
+
+				<PickUp Nav="Fly" QuestName="Champions of Skyhold" QuestId="42598" GiverName="Odyn" GiverId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
+				<While Condition="DoQuest(42598)" >
+					<If Condition="!IsObjectiveComplete(1, 42598)" >
+						<CustomBehavior File="InteractWith" MobId="107984" QuestId="42598" X="1040.37" Y="7208.338" Z="97.72228" />
+						<CustomBehavior File="RunCode"><![CDATA[
+								await Coroutine.Sleep(1234);
+								Lua.DoString("QuestFrameCompleteQuestButton:Click();");
+								await Coroutine.Sleep(875);
+							]]>
+						</CustomBehavior>
+					</If>
+					<If Condition="!IsObjectiveComplete(2, 42598)" >
+						<CustomBehavior File="InteractWith" MobId="107985" QuestId="42598" X="1037.212" Y="7206.892" Z="97.72254" />
+						<CustomBehavior File="RunCode"><![CDATA[
+								await Coroutine.Sleep(1275);
+								Lua.DoString("QuestFrameCompleteQuestButton:Click();");
+								await Coroutine.Sleep(875);
+							]]>
+						</CustomBehavior>
+					</If>
+				</While>
+				<TurnIn Nav="Fly" QuestName="Champions of Skyhold" QuestId="42598" TurnInName="Skyseer Ghrent" TurnInId="100635" X="1138.405" Y="7219.138" Z="101.817" />
+
+				<PickUp Nav="Fly" QuestName="Captain Stahlstrom" QuestId="42607" GiverName="Skyseer Ghrent" GiverId="100635" X="1138.405" Y="7219.138" Z="101.817" />
+				<While Condition="DoQuest(42607)" >
+					<CustomBehavior File="InteractWith" MobId="97389" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							await DoMission(missionID: 926, followerList: 708);
+							Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Waiting for class hall mission to complete!");
+						]]>
+					</CustomBehavior>
+					<CustomBehavior File="WaitTimer" WaitTime="130000" />
+					<CustomBehavior File="InteractWith" MobId="97389" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+					<CustomBehavior File="RunCode" ><![CDATA[
+						Lua.DoString("OrderHallMissionFrameMissions.CompleteDialog.BorderFrame.ViewButton:Click();");
+						await Coroutine.Sleep(1000);
+						Lua.DoString("C_Garrison.MissionBonusRoll(926);");
+						await Coroutine.Sleep(1000);
+						Lua.DoString("OrderHallMissionFrame.CloseButton:Click();");
+						]]>
+					</CustomBehavior>
+				</While>
+				<TurnIn Nav="Fly" QuestName="Captain Stahlstrom" QuestId="42607" TurnInName="Skyseer Ghrent" TurnInId="100635" X="1138.405" Y="7219.138" Z="101.817" />
+
+				<PickUp Nav="Fly" QuestName="Recruiting the Troops" QuestId="42609" GiverName="Skyseer Ghrent" GiverId="100635" X="1138.405" Y="7219.138" Z="101.817" />
+				<While Condition="DoQuest(42609)" >
+					<CustomBehavior File="InteractWith" MobId="106459" WaitTime="2000" QuestId="42609" X="1130.396" Y="7200.417" Z="99.71574" />
+					<CustomBehavior File="Misc\RunLua" WaitTime="6000" Lua="GarrisonCapacitiveDisplayFrame.StartWorkOrderButton:Click();" />
+					<CustomBehavior File="WaitTimer" WaitTime="6000" />
+					<CustomBehavior File="InteractWith" MobId="250878" QuestId="42609" X="1127.615" Y="7196.929" Z="99.71751" />
+				</While>
+				<TurnIn Nav="Fly" QuestName="Recruiting the Troops" QuestId="42609" TurnInName="Skyseer Ghrent" TurnInId="100635" X="1138.405" Y="7219.138" Z="101.817" />
+
+				<PickUp Nav="Fly" QuestName="Troops in the Field" QuestId="42610" GiverName="Skyseer Ghrent" GiverId="100635" X="1138.405" Y="7219.138" Z="101.817" />
+				<While Condition="DoQuest(42610) &amp;&amp; !MissionInProgress(927)" >
+					<CustomBehavior File="InteractWith" MobId="97389" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+					<CustomBehavior File="RunCode" Code="await DoMission(927, new int[]{708, 858, 709});" />
+				</While>
+				<If Condition="QuestDone(426120)" >
+					<TurnIn Nav="Fly" QuestName="Troops in the Field" QuestId="42610" TurnInName="Skyseer Ghrent" TurnInId="100635" X="1138.405" Y="7219.138" Z="101.817" />
+				</If>
+			</If>
+		<!-- END Class Hall Tutorials -->
+
 
 		<!-- Val'sharah -->
 			<If Condition="!IsAchievementCompleted(10698, false)" >
