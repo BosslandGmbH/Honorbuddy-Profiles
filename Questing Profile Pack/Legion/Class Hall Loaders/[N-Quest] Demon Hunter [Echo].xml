@@ -473,6 +473,32 @@ END INITORDER COMMENT -->
 						</If>
 					</While>
 					<TurnIn Nav="Fly" QuestName="Rise, Champions" QuestId="42670" TurnInName="Kor'vas Bloodthorn" TurnInId="103761" X="1551.464" Y="1410.891" Z="237.1088" />
+
+					<PickUp Nav="Fly" QuestName="Things Gaardoun Needs" QuestId="44161" GiverName="Kor'vas Bloodthorn" GiverId="103761" X="1551.464" Y="1410.891" Z="237.1088" />
+					<While Condition="DoQuest(44161)" >
+						<CustomBehavior File="InteractWith" MobId="98613" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+						<CustomBehavior File="RunCode"><![CDATA[
+							if (!MissionInProgress(1389))
+							{
+								await DoMission(missionID: 1389, followerList: 498);
+
+								Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Waiting for class hall mission to complete!");
+								await Coroutine.Wait(5000, () => MissionInProgress(1389));
+							}
+							]]>
+						</CustomBehavior>
+						<CustomBehavior File="WaitTimer" WaitTime="130000" TerminateWhen="MissionComplete(1389)" />
+						<CustomBehavior File="InteractWith" MobId="98613" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+						<CustomBehavior File="RunCode" ><![CDATA[
+							Lua.DoString("OrderHallMissionFrameMissions.CompleteDialog.BorderFrame.ViewButton:Click();");
+							await Coroutine.Sleep(1000);
+							Lua.DoString("C_Garrison.MissionBonusRoll(1389);");
+							await Coroutine.Sleep(1000);
+							Lua.DoString("OrderHallMissionFrame.CloseButton:Click();");
+							]]>
+						</CustomBehavior>
+					</While>
+					<TurnIn Nav="Fly" QuestName="Things Gaardoun Needs" QuestId="44161" TurnInName="Kor'vas Bloodthorn" TurnInId="103761" />
 				</If>
 				<If Condition="Unit(108572) != null" > <!-- Kayne -->
 					<PickUp Nav="Fly" QuestName="Rise, Champions" QuestId="42671" GiverName="Battlelord Gaardoun" GiverId="103025" X="1561.05" Y="1424.009" Z="237.109" />
@@ -499,38 +525,33 @@ END INITORDER COMMENT -->
 						</If>
 					</While>
 					<TurnIn Nav="Fly" QuestName="Rise, Champions" QuestId="42671" TurnInName="Kor'vas Bloodthorn" TurnInId="103761" X="1551.464" Y="1410.891" Z="237.1088" />
+
+					<PickUp Nav="Fly" QuestName="Things Gaardoun Needs" QuestId="42677" GiverName="Kor'vas Bloodthorn" GiverId="103761" X="1551.464" Y="1410.891" Z="237.1088" />
+					<While Condition="DoQuest(42677)" >
+						<CustomBehavior File="InteractWith" MobId="98613" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+						<CustomBehavior File="RunCode"><![CDATA[
+							if (!MissionInProgress(1389))
+							{
+								await DoMission(missionID: 953, followerList: 595);
+
+								Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Waiting for class hall mission to complete!");
+								await Coroutine.Wait(5000, () => MissionInProgress(953));
+							}
+							]]>
+						</CustomBehavior>
+						<CustomBehavior File="WaitTimer" WaitTime="130000" TerminateWhen="MissionComplete(953)" />
+						<CustomBehavior File="InteractWith" MobId="98613" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+						<CustomBehavior File="RunCode" ><![CDATA[
+							Lua.DoString("OrderHallMissionFrameMissions.CompleteDialog.BorderFrame.ViewButton:Click();");
+							await Coroutine.Sleep(1000);
+							Lua.DoString("C_Garrison.MissionBonusRoll(953);");
+							await Coroutine.Sleep(1000);
+							Lua.DoString("OrderHallMissionFrame.CloseButton:Click();");
+							]]>
+						</CustomBehavior>
+					</While>
+					<TurnIn Nav="Fly" QuestName="Things Gaardoun Needs" QuestId="42677" TurnInName="Kor'vas Bloodthorn" TurnInId="103761" />
 				</If>
-
-
-				<PickUp Nav="Fly" QuestName="Things Gaardoun Needs" QuestId="44161" GiverName="Kor'vas Bloodthorn" GiverId="103761" X="1551.464" Y="1410.891" Z="237.1088" />
-				<While Condition="DoQuest(44161)" >
-					<CustomBehavior File="InteractWith" MobId="98613" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
-					<CustomBehavior File="RunCode"><![CDATA[
-						if (!MissionInProgress(1389))
-						{
-							if (Unit(108571) != null)
-								await DoMission(missionID: 1389, followerList: 498);
-							if (Unit(108572) != null)
-								await DoMission(missionID: 1389, followerList: 595);
-
-							Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Waiting for class hall mission to complete!");
-							await Coroutine.Wait(5000, () => MissionInProgress(1389));
-						}
-						]]>
-					</CustomBehavior>
-					<CustomBehavior File="WaitTimer" WaitTime="130000" TerminateWhen="MissionComplete(1389)" />
-					<CustomBehavior File="InteractWith" MobId="98613" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
-					<CustomBehavior File="RunCode" ><![CDATA[
-						Lua.DoString("OrderHallMissionFrameMissions.CompleteDialog.BorderFrame.ViewButton:Click();");
-						await Coroutine.Sleep(1000);
-						Lua.DoString("C_Garrison.MissionBonusRoll(1389);");
-						await Coroutine.Sleep(1000);
-						Lua.DoString("OrderHallMissionFrame.CloseButton:Click();");
-						]]>
-					</CustomBehavior>
-				</While>
-				<TurnIn Nav="Fly" QuestName="Things Gaardoun Needs" QuestId="44161" TurnInName="Kor'vas Bloodthorn" TurnInId="103761" />
-
 
 				<PickUp Nav="Fly" QuestName="Broken Warriors" QuestId="42679" GiverName="Kor'vas Bloodthorn" GiverId="103761" X="1551.464" Y="1410.891" Z="237.1088" />
 				<While Condition="DoQuest(42679)" >

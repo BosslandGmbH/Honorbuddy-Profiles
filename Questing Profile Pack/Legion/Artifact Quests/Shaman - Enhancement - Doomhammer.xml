@@ -107,10 +107,9 @@ END INITORDER COMMENT -->
 		<!-- END Third Artifact -->
 
 		<!-- Story: Artifact Weapon - Doomhammer -->
-			<PickUp QuestName="Where the Hammer Falls" QuestId="42931" GiverName="Stormbeak" GiverId="98383" X="824.2899" Y="1032.901" Z="48.26459" />
+			<PickUp QuestName="Where the Hammer Falls" QuestId="42931" GiverName="Stormcaller Mylra" GiverId="96539" X="824.2899" Y="1032.901" Z="48.26438" />
 			<While Condition="DoQuest(42931)" >
 				<CustomBehavior File="InteractWith" MobId="98383" QuestId="42931" QuestObjectiveIndex="1" X="824.4809" Y="1036.075" Z="48.2606" />
-				<CustomBehavior File="WaitTimer" WaitTime="21000" />
 				<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 			</While>
 			<TurnIn QuestName="Where the Hammer Falls" QuestId="42931" TurnInName="Thrall" TurnInId="96527" X="1027.806" Y="650.0677" Z="156.6722" />
@@ -123,7 +122,8 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="Clutch Play" QuestId="42936" GiverName="Therazane" GiverId="42465" X="2382.325" Y="178.2153" Z="182.2379" />
 
 			<While Condition="DoQuest(42933, 42935)" >
-				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" CollectionDistance="200" TerminateWhen="IsQuestCompleted(42933) &amp;&amp; IsQuestCompleted(42935)" >
+				<!-- Using navigator only because the bot is having troubles flying here. -->
+				<CustomBehavior File="InteractWith" MobState="DontCare" MovementBy="NavigatorOnly" NumOfTimes="100" CollectionDistance="200" TerminateWhen="IsQuestCompleted(42933) &amp;&amp; IsQuestCompleted(42935)" >
 					<HuntingGrounds>
 						<Hotspot X="2334.989" Y="705.6506" Z="146.538" />
 						<Hotspot X="2278.323" Y="768.6853" Z="134.8703" />
@@ -131,7 +131,7 @@ END INITORDER COMMENT -->
 						<Hotspot X="2362.462" Y="1010.226" Z="173.9269" />
 					</HuntingGrounds>
 					<PursuitList>
-						<PursueGameObject Id="109365" PursueWhen="!IsObjectiveComplete(1, 42936)" /> <!-- Clutch Play ; Getting some to follow us for now for optimization purposes. -->
+						<PursueUnit Id="109365" PursueWhen="!IsObjectiveComplete(1, 42936)" /> <!-- Clutch Play ; Getting some to follow us for now for optimization purposes. -->
 						<PursueUnit Id="109301" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsQuestCompleted(42933)" />
 						<!-- NOTE: <CheckFunction> : UNIT.IsCasting is used to make the bot only engage troggs that are subduing the drakes.  Make sure IsCasting is flagged for these units. -->
 						<PursueUnit Id="109302" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsQuestCompleted(42935) &amp;&amp; UNIT.IsCasting" />
@@ -141,7 +141,7 @@ END INITORDER COMMENT -->
 			</While>
 
 			<While Condition="DoQuest(42936)" >
-				<CustomBehavior File="InteractWith" MobState="Dead" MobId="109365" CollectionDistance="200" TerminateWhen="IsQuestCompleted(42936)" >
+				<CustomBehavior File="InteractWith" MobState="DontCare" MovementBy="NavigatorOnly" MobId="109365" CollectionDistance="200" TerminateWhen="Me.Minions.Count(x =&gt; x.Entry == 109348) &gt;= 5" >
 					<HuntingGrounds>
 						<Hotspot X="2334.989" Y="705.6506" Z="146.538" />
 						<Hotspot X="2278.323" Y="768.6853" Z="134.8703" />
@@ -207,7 +207,8 @@ END INITORDER COMMENT -->
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
 					<MoveTo X="2528.737" Y="-191.7762" Z="-177.397" />
-					<CustomBehavior File="InteractWith" MobId="98168" WaitTime="10000" X="2536.821" Y="-189.6719" Z="-175.3775" /> <!-- NOTE: <CheckMe> : This object shown up strangely in-game, and didn't really show up right on the object browser.  Make sure this ID is correct. -->
+					<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="You must interact with these rocks manually.\n\nCurrently Honorbuddy is not able to interact with them.\n\nAfter you interact, click continue on this box to make the profile finish the rest." />
+					<!--<CustomBehavior File="InteractWith" MobId="98168" Range="8" InteractByCastingSpellId="193730" IgnoreLoSToTarget="true" X="2536.821" Y="-189.6719" Z="-175.3775" />  NOTE: <CheckMe> : This object shown up strangely in-game, and didn't really show up right on the object browser.  Make sure this ID is correct. -->
 
 					<CustomBehavior File="InteractWith" MobId="256905" InteractByLooting="true" MinRange="3.8" WaitTime="1500" X="2536.864" Y="-189.934" Z="-175.88" />
 					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
@@ -223,7 +224,7 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="InteractWith" MobId="113709" X="2540.493" Y="-175.0397" Z="-176.5709" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 8" />
 				</If>
 
-				<CustomBehavior File="InteractWith" QuestId="40224" QuestObjectiveIndex="2" MobId="98383" X="2528.823" Y="-179.0243" Z="-177.1788" />
+				<CustomBehavior File="InteractWith" QuestId="40224" QuestObjectiveIndex="3" MobId="98383" X="2528.823" Y="-179.0243" Z="-177.1788" />
 				<CustomBehavior File="WaitTimer" WaitTime="16000" />
 			</While>
 			<TurnIn QuestName="The Hammer in the Deep" QuestId="40224" TurnInName="Stormcaller Mylra" TurnInId="96539" X="829.4097" Y="1050.967" Z="48.45255" />
