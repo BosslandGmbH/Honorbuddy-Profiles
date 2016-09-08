@@ -603,6 +603,7 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="The Path of Huln" QuestId="39575" GiverName="Spiritwalker Ebonhorn" GiverId="94571" X="3865.907" Y="4516.458" Z="776.5803" />
 			<While Condition="DoQuest(39575)" >
 				<!-- NOTE: <AddAvoid> : Need to add avoids here to avoid the Ettin's attacks. -->
+				<CustomBehavior File="Hooks\Avoid" AvoidName="EttinAvoid" ObjectId="95937" Radius="15" />
 				<MoveTo X="3868.524" Y="4515.501" Z="776.5807" />
 				<CustomBehavior File="EscortGroup" QuestId="39575" EscortCompleteWhen="QuestObjectiveComplete" QuestObjectiveIndex="1" EscortCountMax="1"
 				EscortNpcId="96164" EscortMaxFightDistance="15" SearchForNpcsRadius="30" >
@@ -621,6 +622,7 @@ END INITORDER COMMENT -->
 					-->
 					<EnableBehavior Name="Combat" />
 				</If>
+				<CustomBehavior File="Hooks\Avoid" AvoidName="EttinAvoid" Command="Remove" />
 			</While>
 			<TurnIn QuestName="The Path of Huln" QuestId="39575" TurnInName="Spiritwalker Ebonhorn" TurnInId="99153" X="3652.255" Y="4340.963" Z="664.8455" />
 
@@ -643,13 +645,9 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="An Ancient Secret" QuestId="39577" GiverName="Spiritwalker Ebonhorn" GiverId="99190" X="3420.367" Y="4294.182" Z="703.812" />
 			<While Condition="DoQuest(39577)" >
-				<CustomBehavior File="InteractWith" MobId="251031" QuestId="39577" QuestObjectiveIndex="2" X="3399.019" Y="4208.474" Z="720.011" />
-				<CustomBehavior File="EscortGroup" QuestId="39577" EscortCompleteWhen="QuestObjectiveComplete" QuestObjectiveIndex="1" EscortCountMax="1"
-				EscortNpcId="96387" EscortMaxFightDistance="15" SearchForNpcsRadius="30" >
-					<SearchPath>
-						<Hotspot X="3402.059" Y="4188.73" Z="722.0405" />
-					</SearchPath>
-				</CustomBehavior>
+				<CustomBehavior File="InteractWith" MobId="251031" QuestId="39577" X="3399.019" Y="4208.474" Z="720.011" TerminateWhen="Unit(96387) != null" />
+				<CustomBehavior File="KillUntilComplete" MobIds="96242" QuestId="39577" QuestObjectiveIndex="2" X="3409.205" Y="4189.848" Z="721.3736" />
+				<CustomBehavior File="WaitTimer" WaitTime="20000" QuestId="39577" QuestObjectiveIndex="3" />
 			</While>
 			<TurnIn QuestName="An Ancient Secret" QuestId="39577" TurnInName="Ebyssian" TurnInId="96270" X="3419.826" Y="4198.662" Z="721.3149" />
 
