@@ -113,10 +113,14 @@ END INITORDER COMMENT -->
 		<!-- Story: Artifact Weapon - Scale of the Earth-Warder -->
 			<PickUp QuestName="Legacy of the Icebreaker" QuestId="39191" GiverName="Odyn" GiverId="96469" X="796.1858" Y="7228.977" Z="106.7501" />
 			<While Condition="DoQuest(39191)" >
-				<CustomBehavior File="InteractWith" MobId="96660" GossipOptions="1" WaitTime="17000" QuestId="39191" QuestObjectiveIndex="1" X="1076.953" Y="7222.194" Z="98.00623" />
-				<CustomBehavior File="WaitTimer" WaitTime="5000" />
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0" >
+					<CustomBehavior File="InteractWith" MobId="96660" GossipOptions="1" WaitTime="17000" QuestId="39191" X="1076.953" Y="7222.194" Z="98.00623" />
+					<CustomBehavior File="WaitTimer" WaitTime="5000" />
+				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<MoveTo X="4874.927" Y="-23.7072" Z="45.62918" />
+					<CustomBehavior File="WaitTimer" WaitTime="18000" />
 					<CustomBehavior File="KillUntilComplete" MobId="96571" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" >
 						<HuntingGrounds>
 							<Hotspot X="4864.173" Y="-30.58189" Z="47.93243" />
@@ -151,6 +155,7 @@ END INITORDER COMMENT -->
 							WoWMovement.ClickToMove(new WoWPoint(4806.102, 273.3833, -32.23232));
 						]]>
 					</CustomBehavior>
+					<EnableBehavior Name="Combat" />
 					<CustomBehavior File="KillUntilComplete" MobId="94813" X="4813.92" Y="273.7292" Z="-28.38824" TerminateWhen="Unit(94813, u =&gt; u.Distance &lt; 15 &amp;&amp; u.IsDead) != null" />
 
 					<MoveTo X="4821.347" Y="328.8257" Z="-30.49662" />
@@ -159,7 +164,7 @@ END INITORDER COMMENT -->
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
 					<MoveTo X="4755.313" Y="341.9402" Z="-37.19219" />
-					<CustomBehavior File="InteractWith" MobId="96468" GossipOptions="1" X="4753.81" Y="341.837" Z="-37.19083" />
+					<CustomBehavior File="InteractWith" MobId="96468" GossipOptions="1" X="4753.81" Y="341.837" Z="-37.19083" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
 
 					<!-- NOTE: <AddFunction> : After tanking the waves of mobs, Hruthnir jumps up to Magnar, but player can't get up there unless they leap or charge at the windshapers since they are using a pushback spell.
 												Magnar will eventually knock Hruthnir off the edge back to where the player is at, but it's not optimal to rely on this.
@@ -187,6 +192,8 @@ END INITORDER COMMENT -->
 
 				<If Condition="HasItem(128289)" >
 					<MoveTo X="4698.809" Y="352.0919" Z="-37.49355" />
+					<CustomBehavior File="MyCTM" X="4698.809" Y="352.0919" Z="-37.49355" />
+					<CustomBehavior File="WaitTimer" WaitTime="1500" />
 					<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
 					<CustomBehavior File="WaitTimer" WaitTime="8500" />
 				</If>
