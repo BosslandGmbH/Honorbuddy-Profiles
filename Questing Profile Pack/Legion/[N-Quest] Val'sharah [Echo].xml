@@ -418,18 +418,17 @@ END INITORDER COMMENT -->
 				<CustomBehavior File="InteractWith" MobId="93602" QuestId="38235" QuestObjectiveIndex="1" InteractBlacklistTimeInSeconds="1" X="2385.297" Y="7193.228" Z="71.26111" />
 			</While>
 
-			<!--<While Condition="DoQuest(38372)" >  Wretched Sisters, bonus quest.
-				NOTE : <AddSupport> : If confirmed, InteractWith should be used on all Bonus Objectives.  We can hybridize InteractWith as a Interact+Kill logic for maximum efficiency.
-				InteractByLooting="true" + MobState="Alive"
-				<CustomBehavior File="KillUntilComplete" MobIds="94207, 94208, 91598" QuestId="38372" >
+			<While Condition="DoQuest(38372)" > <!-- Bonus Objective: Wretched Sisters, bonus quest. -->
+				<CustomBehavior File="KillUntilComplete" MobIds="94207, 94208, 91598" Termination="!DoQuest(38372)" >
 				<HuntingGrounds>
-					<Hotspot X="2373.859" Y="7112.171" Z="69.56688" />
-					<Hotspot  />
-					<Hotspot  />
-					<Hotspot  />
+					<Hotspot X="2234.981" Y="7059.033" Z="67.33078" />
+					<Hotspot X="2174.476" Y="7062.504" Z="64.25062" />
+					<Hotspot X="2197.568" Y="7130.01" Z="61.03362" />
+					<Hotspot X="2136.51" Y="7135.333" Z="60.4412" />
+					<Hotspot X="2183.095" Y="7184.831" Z="60.31894" />
 				</HuntingGrounds>
 			</CustomBehavior>
-			</While> -->
+			</While>
 
 			<TurnIn QuestName="Solid as a Rock" QuestId="38235" TurnInName="Elothir" TurnInId="91066" X="2386.075" Y="6914.492" Z="110.4475" />
 			<TurnIn QuestName="Death to the Witchmother" QuestId="38225" TurnInName="Elothir" TurnInId="91066" X="2386.075" Y="6914.492" Z="110.4475" />
@@ -468,6 +467,20 @@ END INITORDER COMMENT -->
 			</While>
 
 			<!-- NOTE: <AddBonusObjective> : Defend The Temple, 39029 -->
+			<While Condition="DoQuest(39029)" >
+				<CustomBehavior File="KillUntilComplete" MobIds="92788, 93157" TerminateWhen="!DoQuest(39029)" >
+					<HuntingGrounds>
+						<Hotspot X="2936.435" Y="6460.703" Z="206.474" />
+						<Hotspot X="2958.896" Y="6376.55" Z="234.4622" />
+						<Hotspot X="2887.158" Y="6351.008" Z="215.256" />
+						<Hotspot X="2908.561" Y="6310.465" Z="209.3228" />
+						<Hotspot X="2906.548" Y="6275.415" Z="223.86" />
+						<Hotspot X="2816.624" Y="6317.343" Z="217.5627" />
+						<Hotspot X="2827.194" Y="6388.918" Z="216.153" />
+						<Hotspot X="2843.289" Y="6461.095" Z="211.0563" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
 
 
 			<TurnIn QuestName="Tears for Fears" QuestId="38662" TurnInName="Lyanis Moonfall" TurnInId="92680" X="2871.16" Y="6771.768" Z="220.1775" />
@@ -636,7 +649,7 @@ END INITORDER COMMENT -->
 			</While>
 
 			<While Condition="DoQuest(43241) &amp;&amp; Me.Level &lt; 110" > <!-- Bonus Objective: Flow of the Nightmare -->
-				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(43241)" >
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="!DoQuest(43241)" >
 					<HuntingGrounds>
 						<Hotspot X="3239.613" Y="5935.024" Z="263.8969" />
 						<Hotspot X="3248.459" Y="6066.122" Z="242.1524" />
@@ -691,6 +704,19 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 				</If>
 			</While>
+
+			<While Condition="DoQuest(38748)" >
+				<CustomBehavior File="KillUntilComplete" MobIds="113646, 112052" TerminateWhen="!DoQuest(38748)" >
+					<HuntingGrounds>
+						<Hotspot X="3658.741" Y="6156.199" Z="193.4041" />
+						<Hotspot X="3645.402" Y="6232.694" Z="183.9179" />
+						<Hotspot X="3651.868" Y="6310.275" Z="176.6736" />
+						<Hotspot X="3569.541" Y="6309.009" Z="163.7301" />
+						<Hotspot X="3520.354" Y="6333.377" Z="165.8486" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</While>
+
 			<If Condition="Me.IsAlliance" >
 				<TurnIn QuestName="Close Enough to Touch" QuestId="38687" TurnInName="Tyrande Whisperwind" TurnInId="104799" X="3547.351" Y="6420.47" Z="168.303" />
 			</If>
@@ -706,7 +732,6 @@ END INITORDER COMMENT -->
 				<CustomBehavior File="RunCode" Code="await SkipCutscene(10000);" />
 			</While>
 			<TurnIn QuestName="The Fate of Val'sharah" QuestId="38743" TurnInName="Tyrande Whisperwind" TurnInId="104921" X="2911.557" Y="6648.017" Z="215.0923" />
-			<!-- NOTE: <BonusObjective> : <PickUp QuestName="Defend The Temple" QuestId="39029" GiverName="Tyrande Whisperwind" GiverId="1234" X="XXX" Y="YYY" Z="ZZZ" /> -->
 		<!-- END Story: All Nightmare Long -->
 
 		<!-- Zone Transition Quests -->
