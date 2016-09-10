@@ -1274,13 +1274,7 @@ EMD commented due to zeppelin nmesh -->
 			</While>
 			<TurnIn QuestName="Victory is Eternal" QuestId="39853" TurnInName="Ashildir" TurnInId="97558" X="210.9591" Y="600.8348" Z="-3.927668" />
 
-			<PickUp QuestName="Paid in Lifeblood" QuestId="39855" GiverName="Ashildir" GiverId="97558" X="210.9591" Y="600.8348" Z="-3.927668" />
-			<While Condition="DoQuest(39855)" >
-				<CustomBehavior File="InteractWith" MobId="244559" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" GossipOptions="1" QuestId="39855" QuestObjectiveIndex="1" X="488.2415" Y="719.3737" Z="23.25191" />
-				<CustomBehavior File="WaitTimer" QuestId="39855" WaitTime="60000" />
-			</While>
-
-		 	<While Condition="DoQuest(38343)" > <!-- Bonus Objective: Raze Hel -->
+		 	<While Condition="DoQuest(38343)" > <!-- Bonus Objective: Raze Hel || Move to complete before "Paid in Lifeblood" so bot doesn't get stuck in loop-->
 				<CustomBehavior File="InteractWith" MobState="DontCare" NumOfTimes="100" TerminateWhen="IsQuestCompleted(38343)" >
 					<!-- NOTE: <ChangeLater> : MobState needs to be 'Dead' but currently InteractWith isn't properly killing mobs via this logic. -->
 					<HuntingGrounds>
@@ -1306,7 +1300,12 @@ EMD commented due to zeppelin nmesh -->
 					</PursuitList>
 				</CustomBehavior>
 			</While>
-
+			
+			<PickUp QuestName="Paid in Lifeblood" QuestId="39855" GiverName="Ashildir" GiverId="97558" X="210.9591" Y="600.8348" Z="-3.927668" />
+			<While Condition="DoQuest(39855)" >
+				<CustomBehavior File="InteractWith" MobId="244559" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" GossipOptions="1" QuestId="39855" QuestObjectiveIndex="1" X="488.2415" Y="719.3737" Z="23.25191" />
+				<CustomBehavior File="WaitTimer" QuestId="39855" WaitTime="60000" />
+			</While>
 			<TurnIn QuestName="Paid in Lifeblood" QuestId="39855" TurnInName="Havi" TurnInId="92539" X="3214.377" Y="1543.611" Z="180.6394" />
 		<!-- END Story: To Helheim and Back -->
 
