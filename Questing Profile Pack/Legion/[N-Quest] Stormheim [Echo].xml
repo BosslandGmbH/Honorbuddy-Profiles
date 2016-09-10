@@ -28,6 +28,7 @@
 	</Blackspots>
 
 	<Blacklist>
+		<Mob Name="Enraged Skrog" Id="105751" Flags="Pull" />
 	</Blacklist>
 
 	<Mailboxes>
@@ -1006,6 +1007,74 @@ EMD commented due to zeppelin nmesh -->
 			<PickUp QuestName="Judgment Day" QuestId="38811" GiverName="Vydhar" GiverId="93231" X="3073.089" Y="1056.875" Z="127.0211" />
 			<PickUp QuestName="Lay Them to Rest" QuestId="39791" GiverName="Vydhar" GiverId="93231" X="3073.089" Y="1056.875" Z="127.0211" />
 
+			<!-- Side quests -->
+				<PickUp Nav="Fly" QuestName="Remnants of the Past" QuestId="39984" GiverName="Watcher's Journal" GiverType="GameObject" GiverId="244708" X="3296.719" Y="1377.969" Z="97.97977" />
+				<While Condition="DoQuest(39984)" >
+					<CustomBehavior File="InteractWith" MobId="244717" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" NumOfTimes="6" QuestId="39984" QuestObjectiveIndex="1" X="3393.294" Y="1508.634" Z="60.96248" />
+					<CustomBehavior File="InteractWith" MobId="244718" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" NumOfTimes="6" QuestId="39984" QuestObjectiveIndex="2" X="3357.123" Y="1648.863" Z="7.552205" />
+					<CustomBehavior File="InteractWith" MobId="244719" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" NumOfTimes="6" QuestId="39984" QuestObjectiveIndex="3" X="3432.792" Y="1564.769" Z="9.064156" />
+					<If Condition="!IsObjectiveComplete(4, 39984)" >
+						<MoveTo X="3529.478" Y="1510.68" Z="5.113235" />
+						<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="!Me.Combat" />
+						<MoveTo Prevision="1" X="3529.478" Y="1510.68" Z="5.113235" />
+						<DisableBehavior Name="Pull" />
+						<CustomBehavior File="MyCTM" X="3531.418" Y="1524.585" Z="7.986615" />
+						<CustomBehavior File="InteractWith" MobId="244720" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" NumOfTimes="6" QuestId="39984" QuestObjectiveIndex="4" X="3515.895" Y="1526.835" Z="8.702796" />
+						<MoveTo Precision="1" X="3522.142" Y="1530.597" Z="8.343578" />
+						<CustomBehavior File="MyCTM" X="3523.439" Y="1540.506" Z="5.281436" />
+						<EnableBehavior Name="Pull" />
+					</If>
+					<MoveTo X="3521.013" Y="1614.097" Z="11.35885" />
+				</While>
+				<TurnIn Nav="Fly" QuestName="Remnants of the Past" QuestId="39984" TurnInName="Havi" TurnInId="97973" X="3521.013" Y="1614.097" Z="11.35885" />
+
+				<PickUp Nav="Fly" QuestName="Scavenging the Shallows" QuestId="40046" GiverName="Havi" GiverId="97973" X="3521.013" Y="1614.097" Z="11.35879" />
+				<PickUp Nav="Fly" QuestName="To Honor the Fallen" QuestId="43595" GiverName="Havi" GiverId="97973" X="3521.013" Y="1614.097" Z="11.35879" />
+				<PickUp Nav="Fly" QuestName="Shadows in the Mists" QuestId="40044" GiverName="Havi" GiverId="97973" X="3521.013" Y="1614.097" Z="11.35879" />
+
+				<CustomBehavior File="Hooks\Avoid" AvoidName="EnragedSkrog" Command="Add" ObjectId="105751" Radius="30" />
+				<While Condition="DoQuest(40044)" >
+					<CustomBehavior File="KillUntilComplete" MobId="98014" QuestId="40044" QuestObjectiveIndex="1" X="3362.663" Y="1808.773" Z="0.4301358" />
+					<CustomBehavior File="KillUntilComplete" MobId="98018" QuestId="40044" QuestObjectiveIndex="4" X="3547.267" Y="1911.012" Z="0.1644303" />
+					<CustomBehavior File="KillUntilComplete" MobId="98015" QuestId="40044" QuestObjectiveIndex="2" X="3819.35" Y="1873.031" Z="3.759472" />
+					<CustomBehavior File="KillUntilComplete" MobId="98016" QuestId="40044" QuestObjectiveIndex="3" X="3827.463" Y="1730.771" Z="-0.8196021" />
+				</While>
+
+				<While Condition="DoQuest(40046)" >
+					<CustomBehavior File="InteractWith" InteractByLooting="true" MobId="252239" QuestId="40046" QuestObjectiveIndex="1" >
+						<HuntingGrounds>
+							<Hotspot X="3782.412" Y="1751.082" Z="-0.7120258" />
+							<Hotspot X="3656.904" Y="1735.113" Z="-0.03174806" />
+							<Hotspot X="3619.769" Y="1679.51" Z="-1.78601" />
+							<Hotspot X="3610.714" Y="1794.241" Z="1.614887" />
+							<Hotspot X="3659.94" Y="1845.12" Z="0.5229791" />
+							<Hotspot X="3511.986" Y="1793.253" Z="1.196865" />
+							<Hotspot X="3444.761" Y="1677.632" Z="-0.2858756" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</While>
+
+				<While Condition="DoQuest(43595)" >
+					<CustomBehavior File="KillUntilComplete" MobId="105748" QuestId="43595" QuestObjectiveIndex="1" >
+						<HuntingGrounds>
+							<Hotspot X="3782.412" Y="1751.082" Z="-0.7120258" />
+							<Hotspot X="3656.904" Y="1735.113" Z="-0.03174806" />
+							<Hotspot X="3619.769" Y="1679.51" Z="-1.78601" />
+							<Hotspot X="3610.714" Y="1794.241" Z="1.614887" />
+							<Hotspot X="3659.94" Y="1845.12" Z="0.5229791" />
+							<Hotspot X="3511.986" Y="1793.253" Z="1.196865" />
+							<Hotspot X="3444.761" Y="1677.632" Z="-0.2858756" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</While>
+
+				<TurnIn Nav="Fly" QuestName="Shadows in the Mists" QuestId="40044" TurnInName="Havi" TurnInId="97973" X="3521.013" Y="1614.097" Z="11.35879" />
+				<TurnIn Nav="Fly" QuestName="To Honor the Fallen" QuestId="43595" TurnInName="Havi" TurnInId="97973" X="3521.013" Y="1614.097" Z="11.35879" />
+				<TurnIn Nav="Fly" QuestName="Scavenging the Shallows" QuestId="40046" TurnInName="Havi" TurnInId="97973" X="3521.013" Y="1614.097" Z="11.35879" />
+
+				<CustomBehavior File="Hooks\Avoid" AvoidName="EnragedSkrog" Command="Remove" />
+			<!-- END Side quests -->
+
 			<While Condition="DoQuest(38811)" >
 				<While Condition="!IsObjectiveComplete(2, 38811)" >
 					<CustomBehavior File="InteractWith" MobId="241868" NonCompeteDistance="0" QuestId="38811" QuestObjectiveIndex="2" X="3375.764" Y="1272.615" Z="126.3555" TerminateWhen="Unit(92918) != null" />
@@ -1211,9 +1280,9 @@ EMD commented due to zeppelin nmesh -->
 				<CustomBehavior File="WaitTimer" QuestId="39855" WaitTime="60000" />
 			</While>
 
-			<!-- NOTE: <AddBonusObjective> : <PickUp QuestName="Raze Hel" QuestId="38343" GiverName="Ashildir" GiverId="97319" X="XXX" Y="YYY" Z="ZZZ" /> -->
-<!--		 	<While Condition="!IsQuestCompleted(38343)" >
-				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(38343)" >
+		 	<While Condition="DoQuest(38343)" > <!-- Bonus Objective: Raze Hel -->
+				<CustomBehavior File="InteractWith" MobState="DontCare" NumOfTimes="100" TerminateWhen="IsQuestCompleted(38343)" >
+					<!-- NOTE: <ChangeLater> : MobState needs to be 'Dead' but currently InteractWith isn't properly killing mobs via this logic. -->
 					<HuntingGrounds>
 						<Hotspot X="491.6612" Y="388.845" Z="2.042655" />
 						<Hotspot X="467.4048" Y="305.7835" Z="2.389256" />
@@ -1221,23 +1290,23 @@ EMD commented due to zeppelin nmesh -->
 						<Hotspot X="382.5127" Y="415.3322" Z="18.28056" />
 					</HuntingGrounds>
 					<PursuitList>
-						<PursueGameObject Id="241832" />
-						<PursueGameObject Id="241779" />
-						<PursueGameObject Id="241693" />
-						<PursueGameObject Id="244587" />
-						<PursueGameObject Id="241729" />
-						<PursueGameObject Id="244587" />
-						<PursueGameObject Id="241782" />
-						<PursueGameObject Id="241688" />
-						<PursueGameObject Id="244587" />
-						<PursueUnit Id="91818" />
+						<PursueGameObject Id="241832" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
+						<PursueGameObject Id="241779" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
+						<PursueGameObject Id="241693" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
+						<PursueGameObject Id="244587" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
+						<PursueGameObject Id="241729" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
+						<PursueGameObject Id="244587" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
+						<PursueGameObject Id="241782" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
+						<PursueGameObject Id="241688" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
+						<PursueGameObject Id="244587" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
+						<PursueUnit Id="91818" PursueWhen="!UNIT.Combat" />
 						<PursueUnit Id="91384" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
 						<PursueUnit Id="91575" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
 						<PursueUnit Id="93377" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
 					</PursuitList>
 				</CustomBehavior>
 			</While>
--->
+
 			<TurnIn QuestName="Paid in Lifeblood" QuestId="39855" TurnInName="Havi" TurnInId="92539" X="3214.377" Y="1543.611" Z="180.6394" />
 		<!-- END Story: To Helheim and Back -->
 
