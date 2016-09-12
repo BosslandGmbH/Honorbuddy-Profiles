@@ -209,12 +209,18 @@ END INITORDER COMMENT -->
 
 			<!-- Horde Broken Shore -->
 				<If Condition="Me.IsHorde" >
+					<If Condition="Me.ZoneId == 7656" > <!-- Boosted 100 -->
+						<CustomBehavior File="UseItem" ItemId="6948" />
+						<CustomBehavior File="WaitTimer" WaitTime="12000" TerminateWhen="Me.ZoneId != 7656" />
+					</If>
+
 					<If Condition="HasItem(132119) &amp;&amp; Me.ZoneId != 14" >
 						<CustomBehavior File="UseItem" ItemId="132119" />
 					</If>
 					<If Condition="!IsQuestCompleted(43926)" >
 						<MoveTo X="1596.554" Y="-4371.372" Z="21.21093" />
 						<!-- <PickUp QuestName="The Legion Returns" QuestId="40519" />  Auto Pickup in Orgrimmar -->
+						<PickUp QuestName="The Legion Returns" QuestId="43926" GiverName="Warchief's Command Board" GiverId="206109" X="1600.99" Y="-4369.74" Z="21.0694" />
 					</If>
 					<If Condition="HasQuest(43926)" >
 						<CustomBehavior File="InteractWith" MobId="4311" X="1322.269" Y="-4395.174" Z="25.75724" />
@@ -233,8 +239,13 @@ END INITORDER COMMENT -->
 						<CustomBehavior File="InteractWith" MobId="251254" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="44281" QuestObjectiveIndex="3" X="1334.845" Y="-4478.17" Z="26.51113" />
 						<CustomBehavior File="InteractWith" MobId="251195" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="44281" QuestObjectiveIndex="1" X="1308.439" Y="-4586.25" Z="24.68729" />
 						<CustomBehavior File="InteractWith" MobId="255930" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="44281" QuestObjectiveIndex="2" X="1376.438" Y="-4672.278" Z="30.20253" />
-						<CustomBehavior File="InteractWith" MobId="113958" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" GossipOptions="1" QuestId="44281" QuestObjectiveIndex="4" X="1423.823" Y="-4736.453" Z="29.75032" /> <!-- NOTE: <Technical> May need to use multiple MobIds here for all the duelists. -->
+						<CustomBehavior File="InteractWith" MobId="113958" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" GossipOptions="1" QuestId="44281" X="1423.823" Y="-4736.453" Z="29.75032"  TerminateWhen="Unit(113958, u =&gt; u.IsHostile) != null "/>
+						<CustomBehavior File="KillUntilComplete" MobId="113958" QuestId="44281" X="1423.823" Y="-4736.453" Z="29.75032" TerminateWhen="Unit(113958, u =&gt; !u.IsHostile) != null "/>
+						<!-- NOTE: <Technical> May need to use multiple MobIds here for all the duelists. -->
 					</While>
+					<If Condition="QuestDone(44281)" >
+						<MoveTo Nav="Fly" X="1419.609" Y="-4877.256" Z="11.32718" /> <!-- Avoiding unmeshed game objects. -->
+					</If>
 					<TurnIn QuestName="To Be Prepared" QuestId="44281" TurnInName="Stone Guard Mukar" TurnInId="113547" X="1419.352" Y="-4905.071" Z="11.34251" />
 
 					<PickUp QuestName="The Battle for Broken Shore" QuestId="40518" GiverName="Stone Guard Mukar" GiverId="113547" X="1419.352" Y="-4905.071" Z="11.34223" />
@@ -244,6 +255,7 @@ END INITORDER COMMENT -->
 								<CustomBehavior File="InteractWith" MobId="113118" QuestId="40518" X="1438.67" Y="-5017.094" Z="12.0279" TerminateWhen="Me.ZoneId != 14" />
 								<CustomBehavior File="Misc\RunLua" Lua="GossipTitleButton1:Click();" />
 								<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click();" />
+								<CustomBehavior File="WaitTimer" WaitTime="5000" />
 							</While>
 							<CustomBehavior File="WaitTimer" WaitTime="300000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" />
 						</If>
@@ -254,7 +266,7 @@ END INITORDER COMMENT -->
 								<CustomBehavior File="MyCTM" X="561.9959" Y="1873.223" Z="-0.01387646" />
 							</If>
 							<MoveTo X="590.9387" Y="1863.976" Z="2.069255" />
-							<CustomBehavior File="WaitTimer" WaitTime="10000" />	
+							<CustomBehavior File="WaitTimer" WaitTime="10000" />
 						</If>
 
 						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
@@ -276,7 +288,7 @@ END INITORDER COMMENT -->
 						</If>
 
 						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
-							<CustomBehavior File="WaitTimer" WaitTime="35000" />
+							<CustomBehavior File="WaitTimer" WaitTime="38000" />
 							<CustomBehavior File="MyCTM" X="1365.94" Y="1741.576" Z="34.22528" />
 							<MoveTo X="1424.073" Y="1752.689" Z="34.22469" />
 							<CustomBehavior File="WaitTimer" WaitTime="600000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 7" />
@@ -289,9 +301,11 @@ END INITORDER COMMENT -->
 
 						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 9" >
 							<MoveTo X="1431.146" Y="1719.624" Z="34.22358" />
+							<CustomBehavior File="WaitTimer" WaitTime="10000" />
 							<CustomBehavior File="MyCTM" X="1476.651" Y="1670.422" Z="53.67537" />
 							<MoveTo X="1555.114" Y="1552.464" Z="143.8759" />
-							<CustomBehavior File="WaitTimer" WaitTime="600000" QuestId="40518" />
+							<CustomBehavior File="WaitTimer" WaitTime="600000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScriptHelpers.InCinematic" />
+							<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 						</If>
 
 					</While>
