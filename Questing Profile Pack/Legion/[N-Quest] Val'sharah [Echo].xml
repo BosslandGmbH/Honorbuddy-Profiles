@@ -961,35 +961,29 @@ END INITORDER COMMENT -->
 
 		<If Condition="DoQuest(40890)" >
 			<CustomBehavior File="RunCode"><![CDATA[
-				if (Me.ZoneId != 7502)
+				if (!(Me.ZoneId == 7502 || Me.ZoneId == 8392) && HasItem(140192))
 				{
-					Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Using Dalaran Hearthstone");
+					Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, "[Azyul Navigator]: ", System.Windows.Media.Colors.LightGreen, "Using Dalaran Hearthstone!");
 					await CommonCoroutines.LandAndDismount("Using Hearthstone to reach Dalaran (Broken Isles)");
 					await CommonCoroutines.StopMoving(); 
 					WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
-					if (dalaranHearth.CooldownTimeLeft <= TimeSpan.FromMinutes(3)) {
-						Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
-						await Coroutine.Wait(306000, () => dalaranHearth.CooldownTimeLeft == TimeSpan.Zero);
-					} else return;
-					dalaranHearth.Interact();
-					var currentLoc = StyxWoW.Me.ZoneId;
-					await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
-					await Coroutine.Sleep(1500);
+					if (dalaranHearth.CooldownTimeLeft <= TimeSpan.FromMinutes(3))
+					{
+						if (dalaranHearth.CooldownTimeLeft != TimeSpan.Zero)
+						{
+							Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
+							await Coroutine.Wait(306000, () => dalaranHearth.CooldownTimeLeft == TimeSpan.Zero);
+						}
+						dalaranHearth.Interact();
+						var currentLoc = StyxWoW.Me.ZoneId;
+						await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
+						await Coroutine.Sleep(1500);
+					}
 				}
-			]]>
+				]]>
 			</CustomBehavior>
-			<!-- NOTE: <AddJumplink> : 
-				Name="Teleport Pad" Entry="244534" X="-844.5972" Y="4467.76" Z="736.0415"
-				Name="Teleport Pad" Entry="244536" X="-844.5972" Y="4467.76" Z="736.0415"
-				Goes to trophy room in Dalaran
-			-->
 			<MoveTo QuestId="40890" QuestObjectiveIndex="1" X="-844.5972" Y="4467.76" Z="736.0415" />
 			<TurnIn QuestName="The Tears of Elune" QuestId="40890" TurnInType="Object" TurnInName="Tears of Elune" TurnInId="246466" X="-859.6979" Y="4466.074" Z="591.6784" />
-			<!-- NOTE: <AddJumplink> : 
-				Name="Teleport Pad" Entry="244560" X="-779.9583" Y="4415.289" Z="602.6288"
-				Name="Teleport Pad" Entry="244561" X="-779.9896" Y="4415.237" Z="602.6288"
-				Leaves the trophy room in Dalaran
-			-->
 			<MoveTo X="-779.9896" Y="4415.237" Z="602.6288" />
 		</If>
 

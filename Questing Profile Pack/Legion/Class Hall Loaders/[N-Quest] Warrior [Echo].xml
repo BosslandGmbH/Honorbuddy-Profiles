@@ -88,12 +88,12 @@ END INITORDER COMMENT -->
 							await CommonCoroutines.LandAndDismount("Using Hearthstone to reach Dalaran (Broken Isles)");
 							await CommonCoroutines.StopMoving();
 							WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
-							if (dalaranHearth.CooldownTimeLeft < TimeSpan.FromMinutes(5))
+							if (dalaranHearth.CooldownTimeLeft <= TimeSpan.FromMinutes(3))
 							{
-								if (dalaranHearth.CooldownTimeLeft <= TimeSpan.FromMinutes(3)) {
+								if (dalaranHearth.CooldownTimeLeft != TimeSpan.Zero) {
 									Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
 									await Coroutine.Wait(306000, () => dalaranHearth.CooldownTimeLeft == TimeSpan.Zero);
-								} else return;
+								}
 								dalaranHearth.Interact();
 								var currentLoc = StyxWoW.Me.ZoneId;
 								await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
