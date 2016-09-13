@@ -3281,8 +3281,19 @@
         <CustomBehavior File="UseItem" ItemId="31955" />
       </If>
     </While>
-    <Objective QuestName="In Need of Felblood" QuestId="9366" Type="CollectItem" ItemId="23269"
-                       CollectCount="6" />
+    <If Condition="HasQuest(9366)">
+      <SetGrindArea>
+        <GrindArea>
+          <MobIds>16901, 16951</MobIds>
+          <Hotspots>
+            <Hotspot X="505.1872" Y="3512.404" Z="67.51894" />
+            <Hotspot X="98.46709" Y="3621.882" Z="78.11909" />
+          </Hotspots>
+        </GrindArea>
+      </SetGrindArea>
+      <GrindUntil Condition="HasQuest(9366) &amp;&amp; IsQuestCompleted(9366)" GoalText="Collect 6 Felblood Sample for 'In Need of Felblood'" />
+    </If>
+
     <Objective QuestName="The Agony and the Darkness" QuestId="10389" Type="KillMob" MobId="16951"
                        KillCount="10" />
     <Objective QuestName="Cruel's Intentions" QuestId="10136" Type="KillMob" MobId="19191" KillCount="1" />
@@ -4068,10 +4079,42 @@
     </If>
     <Objective QuestName="Safeguarding the Watchers" QuestId="9894" Type="KillMob" KillCount="1"
                        MobName="Lord Klaq" MobId="18282" />
-    <Objective QuestName="Saving the Sporeloks" QuestId="10096" Type="KillMob" KillCount="10"
-                       MobName="Marsh Dredger" MobId="18137" />
-    <Objective QuestName="Saving the Sporeloks" QuestId="10096" Type="KillMob" KillCount="10"
-                       MobName="Marsh Lurker" MobId="18136" />
+
+    <If Condition="HasQuest(10096)">
+      <SetGrindArea>
+        <GrindArea>
+          <MobIds>18136, 18137</MobIds>
+          <Hotspots>
+            <Hotspot X="-1118.783" Y="5697.004" Z="57.02486" />
+            <Hotspot X="-1183.135" Y="5732.298" Z="53.14783" />
+            <Hotspot X="-1196.001" Y="5795.383" Z="49.85041" />
+            <Hotspot X="-1235.785" Y="5857.665" Z="36.51957" />
+            <Hotspot X="-1331.698" Y="5882.722" Z="10.56064" />
+            <Hotspot X="-1288.338" Y="5795.228" Z="2.995074" />
+            <Hotspot X="-1229.383" Y="5817.541" Z="2.606127" />
+          </Hotspots>
+        </GrindArea>
+      </SetGrindArea>
+      <GrindUntil Condition="HasQuest(10096) &amp;&amp; IsObjectiveComplete(2,10096)" GoalText="Saving the Sporeloks - 10 Dredgers and 10 Lurkers" />
+    </If>
+
+    <If Condition="HasQuest(10096)">
+      <SetGrindArea>
+        <GrindArea>
+          <MobIds>18136</MobIds>
+          <Hotspots>
+            <Hotspot X="-1118.783" Y="5697.004" Z="57.02486" />
+            <Hotspot X="-1183.135" Y="5732.298" Z="53.14783" />
+            <Hotspot X="-1196.001" Y="5795.383" Z="49.85041" />
+            <Hotspot X="-1235.785" Y="5857.665" Z="36.51957" />
+            <Hotspot X="-1331.698" Y="5882.722" Z="10.56064" />
+            <Hotspot X="-1288.338" Y="5795.228" Z="2.995074" />
+            <Hotspot X="-1229.383" Y="5817.541" Z="2.606127" />
+          </Hotspots>
+        </GrindArea>
+      </SetGrindArea>
+      <GrindUntil Condition="HasQuest(10096) &amp;&amp; IsQuestCompleted(10096)" GoalText="Saving the Sporeloks - 10 Lurkers" />
+    </If>
 
     <While Condition="HasQuest(9720) &amp;&amp; !IsQuestCompleted(9720)" >
       <If Condition="( Object(17841) != null ) &amp;&amp; HasQuest(10096) &amp;&amp; !Me.IsOutdoors" >
@@ -4130,19 +4173,22 @@
                                 GoalText="Waiting for quest to complete {TimeRemaining}" />
     </While>
     <If Condition="HasQuest(9731) &amp;&amp; IsQuestCompleted(9731)">
-      <MoveTo X="543.0471" Y="6925.904" Z="19.43985" />
       <CustomBehavior File="FlyTo" DestName="Cenarion Refuge Landing Spot" X="-216.1101" Y="5498.881"
                             Z="21.79396" />
       <CustomBehavior File="ForcedDismount" />
       <TurnIn QuestName="Drain Schematics" QuestId="9731" TurnInName="Ysiel Windsinger" TurnInId="17841"
                     X="-143.4519" Y="5533.816" Z="31.06601" />
-      <PickUp QuestName="Warning the Cenarion Circle" QuestId="9724" GiverName="Ysiel Windsinger"
-                    GiverId="17841" X="-143.4519" Y="5533.816" Z="31.06601" />
+    </If>
+    <If Condition="IsQuestCompleted(9731)">
+      <PickUp Nav="Fly" QuestName="Warning the Cenarion Circle" QuestId="9724" GiverName="Ysiel Windsinger"
+                GiverId="17841" X="-143.4519" Y="5533.816" Z="31.06601" />
     </If>
     <TurnIn QuestName="Balance Must Be Preserved" QuestId="9720"
                     TurnInName="Ysiel Windsinger" TurnInId="17841" X="-143.4519" Y="5533.816" Z="31.06601" />
-    <TurnIn Nav="Fly" QuestName="Warning the Cenarion Circle" QuestId="9724"
-                    TurnInName="Amythiel Mistwalker" TurnInId="16885" X="-314.8192" Y="4711.438" Z="18.33707" />
+    <If Condition="HasQuest(9724)">
+      <TurnIn Nav="Fly" QuestName="Warning the Cenarion Circle" QuestId="9724"
+                      TurnInName="Amythiel Mistwalker" TurnInId="16885" X="-314.8192" Y="4711.438" Z="18.33707" />
+    </If>
 
     <PickUp Nav="Fly" QuestName="Return to the Marsh" QuestId="9732"
                     GiverName="Amythiel Mistwalker" GiverId="16885" X="-314.8192" Y="4711.438" Z="18.33707" />
@@ -4279,6 +4325,11 @@
     <!-- Quests avail at Neutral -->
     <PickUp Nav="Fly" QuestName="Sporeggar" QuestId="9919"
                     GiverName="Fahssn" GiverId="17923" X="-195.0107" Y="8518.729" Z="22.5245" />
+
+    <CustomBehavior File="FlyTo" QuestId="9919" DestName="Sporeggar" X="210.8893" Y="8504.154" Z="24.22618" />
+
+    <MoveTo QuestId="9919" DestName="Msshi'fn" X="205.8044" Y="8500.641" Z="24.57679" />
+    <CustomBehavior QuestId="9919" File="ForcedDismount" />
     <TurnIn Nav="Fly" QuestName="Sporeggar" QuestId="9919"
                     TurnInName="Msshi'fn" TurnInId="17924" X="189.901" Y="8485.713" Z="26.94084" />
 
@@ -4286,6 +4337,9 @@
     <If Condition="!HasQuest(9808) &amp;&amp; !IsQuestCompleted(9808) &amp;&amp; !IsQuestCompleted(9901)">
       <!-- "Glowcap Mushrooms" quest is only available if your less-than-Friendly with Sporeggar(faction: 970) -->
       <If Condition="HasFaction(970) &amp;&amp; ( Me.GetReputationLevelWith(970) &lt; WoWUnitReaction.Friendly )">
+        <CustomBehavior File="FlyTo" DestName="Sporeggar" X="210.8893" Y="8504.154" Z="24.22618" />
+        <MoveTo DestName="Msshi'fn" X="205.8044" Y="8500.641" Z="24.57679" />
+        <CustomBehavior File="ForcedDismount" />
         <PickUp Nav="Fly" QuestName="Glowcap Mushrooms" QuestId="9808"
                             GiverName="Msshi'fn" GiverId="17924" X="189.901" Y="8485.713" Z="26.94084" />
       </If>
@@ -4311,6 +4365,9 @@
     <!-- CJ: This quest is not available if you are Friendly or higher with Sporeggar;
                  so, need to accommodate that. -->
     <If Condition="HasQuest(9808) &amp;&amp; IsQuestCompleted(9808) &amp;&amp; ( Me.GetReputationLevelWith(970) &lt; WoWUnitReaction.Friendly )" >
+      <CustomBehavior File="FlyTo" DestName="Sporeggar" X="210.8893" Y="8504.154" Z="24.22618" />
+      <MoveTo DestName="Msshi'fn" X="205.8044" Y="8500.641" Z="24.57679" />
+      <CustomBehavior File="ForcedDismount" />
       <TurnIn Nav="Fly" QuestName="Glowcap Mushrooms" QuestId="9808"
                         TurnInName="Msshi'fn" TurnInId="17924"
                         X="189.901" Y="8485.713" Z="26.94084" />

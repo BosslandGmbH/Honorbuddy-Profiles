@@ -2972,12 +2972,11 @@
       <If Condition="HasQuest(9424)">
         <SetGrindArea>
           <GrindArea>
-            <MobIds>16846, 16911, 16912</MobIds>
+            <MobIds>16846</MobIds>
             <Hotspots>
-              <Hotspot X="413.3635" Y="3782.006" Z="198.7645" />
-              <Hotspot X="355.4157" Y="3865.615" Z="146.0195" />
-              <Hotspot X="318.7146" Y="3671.142" Z="183.9027" />
-              <Hotspot X="562.5787" Y="3665.428" Z="197.0318" />
+              <Hotspot X="259.2993" Y="3684.861" Z="185.7282" />
+              <Hotspot X="363.054" Y="3711.732" Z="183.8734" />
+              <Hotspot X="545.0012" Y="3681.205" Z="190.077" />
             </Hotspots>
           </GrindArea>
         </SetGrindArea>
@@ -3868,7 +3867,7 @@
         </Hotspots>
       </GrindArea>
     </SetGrindArea>
-    <GrindUntil Level="62" />
+    <GrindUntil Level="61" />
     <!-- Zangarmarsh -->
     <Checkpoint Level="62" />
     <!-- CHECKPOINT BLOCK START: This code needs to be replicated after every checkpoint.
@@ -4036,10 +4035,43 @@
     </If>
     <Objective QuestName="Safeguarding the Watchers" QuestId="9894" Type="KillMob" KillCount="1"
 				   MobName="Lord Klaq" MobId="18282" />
-    <Objective QuestName="Saving the Sporeloks" QuestId="10096" Type="KillMob" KillCount="10"
-				   MobName="Marsh Dredger" MobId="18137" />
-    <Objective QuestName="Saving the Sporeloks" QuestId="10096" Type="KillMob" KillCount="10"
-				   MobName="Marsh Lurker" MobId="18136" />
+
+    <If Condition="HasQuest(10096)">
+      <SetGrindArea>
+        <GrindArea>
+          <MobIds>18136, 18137</MobIds>
+          <Hotspots>
+            <Hotspot X="-1118.783" Y="5697.004" Z="57.02486" />
+            <Hotspot X="-1183.135" Y="5732.298" Z="53.14783" />
+            <Hotspot X="-1196.001" Y="5795.383" Z="49.85041" />
+            <Hotspot X="-1235.785" Y="5857.665" Z="36.51957" />
+            <Hotspot X="-1331.698" Y="5882.722" Z="10.56064" />
+            <Hotspot X="-1288.338" Y="5795.228" Z="2.995074" />
+            <Hotspot X="-1229.383" Y="5817.541" Z="2.606127" />
+          </Hotspots>
+        </GrindArea>
+      </SetGrindArea>
+      <GrindUntil Condition="HasQuest(10096) &amp;&amp; IsObjectiveComplete(2,10096)" GoalText="Saving the Sporeloks - 10 Dredgers and 10 Lurkers" />
+    </If>
+
+    <If Condition="HasQuest(10096)">
+      <SetGrindArea>
+        <GrindArea>
+          <MobIds>18136</MobIds>
+          <Hotspots>
+            <Hotspot X="-1118.783" Y="5697.004" Z="57.02486" />
+            <Hotspot X="-1183.135" Y="5732.298" Z="53.14783" />
+            <Hotspot X="-1196.001" Y="5795.383" Z="49.85041" />
+            <Hotspot X="-1235.785" Y="5857.665" Z="36.51957" />
+            <Hotspot X="-1331.698" Y="5882.722" Z="10.56064" />
+            <Hotspot X="-1288.338" Y="5795.228" Z="2.995074" />
+            <Hotspot X="-1229.383" Y="5817.541" Z="2.606127" />
+          </Hotspots>
+        </GrindArea>
+      </SetGrindArea>
+      <GrindUntil Condition="HasQuest(10096) &amp;&amp; IsQuestCompleted(10096)" GoalText="Saving the Sporeloks - 10 Lurkers" />
+    </If>
+    
     <!-- <Objective QuestName="Plants of Zangarmarsh" QuestId="9802" Type="CollectItem" CollectCount="10"
 			 Name="Unidentified Plant Parts" ItemId="24401" /> -->
     <While Condition="HasQuest(9720) &amp;&amp; !IsQuestCompleted(9720)">
@@ -4108,9 +4140,12 @@
       <CustomBehavior File="ForcedDismount" />
       <TurnIn QuestName="Drain Schematics" QuestId="9731" TurnInName="Ysiel Windsinger" TurnInId="17841"
 					X="-143.4519" Y="5533.816" Z="31.06601" />
-      <PickUp QuestName="Warning the Cenarion Circle" QuestId="9724" GiverName="Ysiel Windsinger"
-					GiverId="17841" X="-143.4519" Y="5533.816" Z="31.06601" />
     </If>
+    <If Condition="IsQuestCompleted(9731)">
+      <PickUp Nav="Fly" QuestName="Warning the Cenarion Circle" QuestId="9724" GiverName="Ysiel Windsinger"
+                GiverId="17841" X="-143.4519" Y="5533.816" Z="31.06601" />
+    </If>
+    
     <TurnIn QuestName="Balance Must Be Preserved" QuestId="9720" TurnInName="Ysiel Windsinger" TurnInId="17841"
 				X="-143.4519" Y="5533.816" Z="31.06601" />
     <If Condition="HasQuest(9724)">
@@ -4123,7 +4158,7 @@
 					X="-314.8192" Y="4711.438" Z="18.33707" />
     </If>
     <If Condition="HasQuest(9732)">
-      <CustomBehavior File="FlyTo" X="-143.4519" Y="5533.816" Z="31.06601" />
+      <CustomBehavior File="FlyTo" DestName="Ysiel Windsinger" X="-143.4519" Y="5533.816" Z="31.06601" />
       <CustomBehavior File="ForcedDismount" />
       <TurnIn QuestName="Return to the Marsh" QuestId="9732" TurnInName="Ysiel Windsinger" TurnInId="17841"
 					X="-143.4519" Y="5533.816" Z="31.06601" />
@@ -4404,8 +4439,8 @@
     <PickUp QuestName="Sporeggar" QuestId="9919" GiverName="Fahssn" GiverId="17923" X="-195.0107" Y="8518.729"
 				Z="22.5245" />
     <If Condition="HasQuest(9919)">
-      <CustomBehavior File="FlyTo" DestName="TurnIn: Sporeggar" X="210.8893" Y="8504.154" Z="24.22618" />
-      <MoveTo X="205.8044" Y="8500.641" Z="24.57679" />
+      <CustomBehavior File="FlyTo" DestName="Sporeggar" X="210.8893" Y="8504.154" Z="24.22618" />
+      <MoveTo DestName="Msshi'fn" X="205.8044" Y="8500.641" Z="24.57679" />
       <CustomBehavior File="ForcedDismount" />
       <TurnIn QuestName="Sporeggar" QuestId="9919" TurnInName="Msshi'fn" TurnInId="17924" X="189.901"
 					Y="8485.713" Z="26.94084" />
@@ -4415,6 +4450,9 @@
     <If Condition="!HasQuest(9808) &amp;&amp; !IsQuestCompleted(9808) &amp;&amp; !IsQuestCompleted(9901)">
       <!-- "Glowcap Mushrooms" quest is only available if your less-than-Friendly with Sporeggar(faction: 970) -->
       <If Condition="HasFaction(970) &amp;&amp; ( Me.GetReputationLevelWith(970) &lt; WoWUnitReaction.Friendly )" >
+              <CustomBehavior File="FlyTo" DestName="Sporeggar" X="210.8893" Y="8504.154" Z="24.22618" />
+      <MoveTo DestName="Msshi'fn" X="205.8044" Y="8500.641" Z="24.57679" />
+      <CustomBehavior File="ForcedDismount" />
         <PickUp Nav="Fly" QuestName="Glowcap Mushrooms" QuestId="9808" GiverName="Msshi'fn" GiverId="17924"
 						X="189.901" Y="8485.713" Z="26.94084" />
       </If>
@@ -4439,6 +4477,9 @@
     <!-- CJ: This quest is not available if you are Friendly or higher with Sporeggar;
 			 so, need to accommodate that. -->
     <If Condition="HasQuest(9808) &amp;&amp; IsQuestCompleted(9808) &amp;&amp; ( Me.GetReputationLevelWith(970) &lt; WoWUnitReaction.Friendly )" >
+      <CustomBehavior File="FlyTo" DestName="Sporeggar" X="210.8893" Y="8504.154" Z="24.22618" />
+      <MoveTo DestName="Msshi'fn" X="205.8044" Y="8500.641" Z="24.57679" />
+      <CustomBehavior File="ForcedDismount" />
       <TurnIn QuestName="Glowcap Mushrooms" QuestId="9808" TurnInName="Msshi'fn" TurnInId="17924"
 					Nav="Fly" X="189.901" Y="8485.713" Z="26.94084" />
     </If>
