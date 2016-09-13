@@ -344,12 +344,14 @@ Commented due to boat mesh -->
 						</While>
 						<CustomBehavior File="Hooks\Avoid" AvoidName="CometStorm" Command="Remove" />
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Unit(95316, u =&gt; u.CanInteract) != null" /> <!-- Wait for bat to appear -->
 							<CustomBehavior File="InteractWith" MobId="95316" WaitTime="11000" X="4846.247" Y="3026.302" Z="13.71893" TerminateWhen="Unit(95316, u =&gt; !u.CanInteract) != null" />
 							<CustomBehavior File="KillUntilComplete" MobIds="94812, 94809" X="4714.416" Y="3009.359" Z="7.847031" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" /> <!-- NOTE: <AddIds> : There's other mobs here that needs to be killed. -->
 						</While>
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+							<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Unit(95316, u =&gt; u.CanInteract) != null" /> <!-- Wait for bat to appear -->
 							<CustomBehavior File="InteractWith" MobId="95316" WaitTime="6000" X="4728.907" Y="3013.009" Z="13.87013" TerminateWhen="Unit(95316, u =&gt; !u.CanInteract) != null" />
-							<CustomBehavior File="KillUntilComplete" MobIds="94820, 94822" X="4726.273" Y="2935.89" Z="7.857867" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+							<CustomBehavior File="KillUntilComplete" MobIds="94820, 94822" X="4726.273" Y="2935.89" Z="7.857867" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4 || Unit(95316, u =&gt; u.CanInteract) != null" />
 						</While>
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
 							<CustomBehavior File="InteractWith" MobId="95316" WaitTime="16000" X="4729.154" Y="2929.965" Z="7.847277" TerminateWhen="Unit(95316, u =&gt; !u.CanInteract) != null || Me.Z &gt; 50" />
@@ -446,7 +448,10 @@ EMD commented due to zeppelin nmesh -->
 					<!-- While moving between these locations, there's an elevator:  
 							Top Loc: X="4007.165" Y="2914.864" Z="241.8564"
 					-->
-					<TurnIn QuestName="A Grim Trophy" QuestId="38362" TurnInName="Nathanos Blightcaller" TurnInId="91158" X="3979.866" Y="2896.111" Z="241.5713" />
+					<If Condition="QuestDone(38362)" >
+						<MoveTo X="3979.866" Y="2896.111" Z="241.5713" />
+						<TurnIn QuestName="A Grim Trophy" QuestId="38362" TurnInName="Nathanos Blightcaller" TurnInId="91158" X="3979.866" Y="2896.111" Z="241.5713" />
+					</If>
 				</If>
 			<!-- [H] END The Aftermath -->
 		<!-- [H] END Horde Quest Section -->
