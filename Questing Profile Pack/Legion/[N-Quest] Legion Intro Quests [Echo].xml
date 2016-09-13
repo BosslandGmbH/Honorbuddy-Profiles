@@ -90,12 +90,18 @@ END INITORDER COMMENT -->
 		<If Condition="!HasQuest(44184) &amp;&amp; !IsQuestCompleted(44184) &amp;&amp; Me.Class != WoWClass.DemonHunter" > <!-- Skip Broken Shore quest -->
 			<!-- Alliance Broken Shore -->
 				<If Condition="Me.IsAlliance" >
+					<While Condition="Me.ZoneId == 7656" > <!-- Boosted 100 -->
+						<CustomBehavior File="UseItem" ItemId="6948" />
+						<CustomBehavior File="WaitTimer" WaitTime="12000" TerminateWhen="Me.ZoneId != 7656 || !Me.IsCasting" />
+					</While>
+
 					<If Condition="HasItem(132120) &amp;&amp; Me.ZoneId != 1519" >
 						<CustomBehavior File="UseItem" ItemId="132120" />
 					</If>
 					<If Condition="!IsQuestCompleted(40519)" >
-						<MoveTo X="-8495.853" Y="1083.837" Z="17.94557" />
+						<MoveTo Nav="Fly" X="-8495.853" Y="1083.837" Z="17.94557" />
 						<!-- <PickUp QuestName="The Legion Returns" QuestId="40519" />  Auto Pickup in Stormwind -->
+						<PickUp Nav="Fly" QuestName="The Legion Returns" QuestId="40519" GiverName="Hero's Call Board" GiverId="206111" X="-8823.851" Y="630.5729" Z="94.136" />
 					</If>
 					<If Condition="HasQuest(40519)" >
 						<CustomBehavior File="InteractWith" MobId="107934" WaitTime="2000" X="-8495.111" Y="1078.7" Z="17.9443" />
@@ -125,9 +131,15 @@ END INITORDER COMMENT -->
 
 						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0" >
 							<While Condition="Me.ZoneId == 1519" >
+								<If Condition="Unit(108920, u =&gt; u.Distance &gt; 27) != null" >
+									<MoveTo Precision="1" X="-8311.393" Y="1389.263" Z="5.269226" />
+									<CustomBehavior File="MyCTM" X="-8333.537" Y="1388.958" Z="9.25852" />
+									<CustomBehavior File="MyCTM" X="-8336.142" Y="1377.817" Z="9.108124" />
+								</If>
 								<CustomBehavior File="InteractWith" MobId="108920" QuestId="42740" X="-8336.216" Y="1377.066" Z="9.10171" TerminateWhen="Me.ZoneId != 1519" />
 								<CustomBehavior File="Misc\RunLua" Lua="GossipTitleButton1:Click();" />
 								<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click();" />
+								<CustomBehavior File="WaitTimer" WaitTime="5000" />
 							</While>
 							<CustomBehavior File="WaitTimer" WaitTime="300000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" />
 						</If>
@@ -159,6 +171,7 @@ END INITORDER COMMENT -->
 						</If>
 
 						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+							<MoveTo X="1412.287" Y="2138.285" Z="21.84633" />
 							<CustomBehavior File="WaitTimer" WaitTime="18000" />
 							<CustomBehavior File="MyCTM" X="1421.305" Y="2068.239" Z="36.12698" />
 							<MoveTo X="1500.745" Y="1814.474" Z="37.39889" />
@@ -172,20 +185,28 @@ END INITORDER COMMENT -->
 
 						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 9" >
 							<MoveTo X="1523.406" Y="1805.358" Z="37.32977" />
+							<CustomBehavior File="WaitTimer" WaitTime="10000" />
 							<CustomBehavior File="MyCTM" X="1551.058" Y="1749.131" Z="53.66973" />
 							<MoveTo X="1617.128" Y="1707.515" Z="77.4471" />
-							<CustomBehavior File="WaitTimer" WaitTime="600000" QuestId="42740" />
+							<CustomBehavior File="WaitTimer" WaitTime="600000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScriptHelpers.InCinematic" />
+							<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 						</If>
 
 					</While>
-					<TurnIn QuestName="The Battle for Broken Shore" QuestId="42740" TurnInName="Genn Greymane" TurnInId="100395" X="-8400.12" Y="1373.889" Z="135.1429" />
+					<If Condition="QuestDone(42740)" >
+						<CustomBehavior File="MyCTM" X="-8400.232" Y="1374.057" Z="135.1438" />
+						<TurnIn QuestName="The Battle for Broken Shore" QuestId="42740" TurnInName="Genn Greymane" TurnInId="100395" X="-8400.12" Y="1373.889" Z="135.1429" />
+					</If>
 
 
 					<PickUp QuestName="The Fallen Lion" QuestId="40517" GiverName="Genn Greymane" GiverId="100395" X="-8400.12" Y="1373.889" Z="135.1429" />
 					<While Condition="DoQuest(40517)" >
-						<!-- NOTE: <Optimization> : Detect if we're on zeppelin before doing Objective1 as Objective1 is just an optional taxi to the next location. -->
-						<CustomBehavior File="InteractWith" MobId="100696" QuestId="40517" X="-8386.337" Y="1352.832" Z="136.3427" />
-						<CustomBehavior File="InteractWith" MobId="100429" GossipOptions="1" QuestId="40517" QuestObjectiveIndex="2" X="-8361.81" Y="230.6198" Z="157.9789" />
+						<If Condition="Unit(100696) != null" >
+							<CustomBehavior File="InteractWith" MobId="100696" MovementBy="ClickToMoveOnly" QuestId="40517" X="-8386.337" Y="1352.832" Z="136.3427" />
+							<CustomBehavior File="WaitTimer" WaitTime="25000" />
+						</If>
+						<MoveTo Nav="Fly" X="-8367.111" Y="251.9434" Z="155.3466" />
+						<CustomBehavior File="InteractWith" MobId="100429" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" GossipOptions="1" QuestId="40517" X="-8361.81" Y="230.6198" Z="157.9789" />
 						<CustomBehavior File="WaitTimer" WaitTime="300000" QuestId="40517" />
 					</While>
 					<TurnIn QuestName="The Fallen Lion" QuestId="40517" TurnInName="Anduin Wrynn" TurnInId="100429" X="-8361.81" Y="230.6198" Z="157.9789" />
@@ -200,25 +221,31 @@ END INITORDER COMMENT -->
 						<CustomBehavior File="InteractWith" MobId="246706" PreInteractMountStrategy="Dismount" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" MovementBy="NavigatorOnly" QuestId="40593" QuestObjectiveIndex="3" X="-8318.188" Y="290.8993" Z="156.8331" />
 						<CustomBehavior File="InteractWith" MobId="246707" PreInteractMountStrategy="Dismount" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" MovementBy="NavigatorOnly" QuestId="40593" QuestObjectiveIndex="4" X="-8379.064" Y="322.0625" Z="147.0138" />
 					</While>
-					<TurnIn QuestName="Demons Among Us" QuestId="40593" TurnInName="Anduin Wrynn" TurnInId="100973" X="-8363.591" Y="232.7483" Z="156.9906" />
+					<If Condition="QuestDone(40593)" >
+						<MoveTo X="-8367.947" Y="250.1042" Z="155.3459" />
+						<TurnIn QuestName="Demons Among Us" QuestId="40593" TurnInName="Anduin Wrynn" TurnInId="100973" X="-8363.591" Y="232.7483" Z="156.9906" />
+					</If>
 
 					<PickUp QuestName="Illidari Allies" QuestId="44120" GiverName="Anduin Wrynn" GiverId="100973" X="-8363.591" Y="232.7483" Z="156.9906" />
-					<TurnIn QuestName="Illidari Allies" QuestId="44120" TurnInName="Elerion Bladedancer" TurnInId="101004" X="-8895.939" Y="1023.25" Z="124.4144" />
+					<If Condition="QuestDone(44120) &amp;&amp; Unit(100973) != null" >
+						<MoveTo X="-8367.947" Y="250.1042" Z="155.3459" />
+					</If>
+					<TurnIn Nav="Fly" QuestName="Illidari Allies" QuestId="44120" TurnInName="Elerion Bladedancer" TurnInId="101004" X="-8895.939" Y="1023.25" Z="124.4144" />
 				</If>
 			<!-- END Alliance Broken Shore -->
 
 			<!-- Horde Broken Shore -->
 				<If Condition="Me.IsHorde" >
-					<If Condition="Me.ZoneId == 7656" > <!-- Boosted 100 -->
+					<While Condition="Me.ZoneId == 7656" > <!-- Boosted 100 -->
 						<CustomBehavior File="UseItem" ItemId="6948" />
-						<CustomBehavior File="WaitTimer" WaitTime="12000" TerminateWhen="Me.ZoneId != 7656" />
-					</If>
+						<CustomBehavior File="WaitTimer" WaitTime="12000" TerminateWhen="Me.ZoneId != 7656 || !Me.IsCasting" />
+					</While>
 
 					<If Condition="HasItem(132119) &amp;&amp; Me.ZoneId != 14" >
 						<CustomBehavior File="UseItem" ItemId="132119" />
 					</If>
 					<If Condition="!IsQuestCompleted(43926)" >
-						<MoveTo X="1596.554" Y="-4371.372" Z="21.21093" />
+						<MoveTo Nav="Fly" X="1596.554" Y="-4371.372" Z="21.21093" />
 						<!-- <PickUp QuestName="The Legion Returns" QuestId="40519" />  Auto Pickup in Orgrimmar -->
 						<PickUp QuestName="The Legion Returns" QuestId="43926" GiverName="Warchief's Command Board" GiverId="206109" X="1600.99" Y="-4369.74" Z="21.0694" />
 					</If>
