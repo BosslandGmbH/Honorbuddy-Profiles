@@ -1471,7 +1471,26 @@
 
 				<!-- Legion -->
 					<If Condition="Me.Level &gt;= 100 &amp;&amp; Lua.GetReturnVal&lt;uint&gt;(&quot;return GetAccountExpansionLevel();&quot;, 0) &gt;= 6">
-						<!-- ADD UNI-NAV TO SW -->
+						<CustomBehavior File="RunCode"><![CDATA[
+							if (!(Me.ZoneId == 7502 || Me.ZoneId == 8392) && HasItem(140192))
+							{
+								Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, "[Azyul Navigator]: ", System.Windows.Media.Colors.LightGreen, "Using Dalaran Hearthstone!");
+								await CommonCoroutines.StopMoving(); 
+								WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+								if (dalaranHearth.CooldownTimeLeft < TimeSpan.FromMinutes(5))
+								{
+									if (dalaranHearth.Cooldown != 0) {
+										Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
+										await Coroutine.Wait(1200000, () => dalaranHearth.Cooldown == 0);
+									}
+									dalaranHearth.Interact();
+									var currentLoc = StyxWoW.Me.ZoneId;
+									await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
+									await Coroutine.Sleep(1500);
+								}
+							}
+							]]>
+						</CustomBehavior>
 						<CustomBehavior File="LoadProfile" ProfileName="Legion\Auto-Loader.xml" RememberProfile="true" />
 					</If>
 				<!-- END Legion -->
@@ -2706,7 +2725,26 @@
 
 				<!-- Legion -->
 					<If Condition="Me.Level &gt;= 100 &amp;&amp; Lua.GetReturnVal&lt;uint&gt;(&quot;return GetAccountExpansionLevel();&quot;, 0) &gt;= 6">
-						<!-- ADD UNI-NAV TO ORG -->
+						<CustomBehavior File="RunCode"><![CDATA[
+							if (!(Me.ZoneId == 7502 || Me.ZoneId == 8392) && HasItem(140192))
+							{
+								Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, "[Azyul Navigator]: ", System.Windows.Media.Colors.LightGreen, "Using Dalaran Hearthstone!");
+								await CommonCoroutines.StopMoving(); 
+								WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+								if (dalaranHearth.CooldownTimeLeft < TimeSpan.FromMinutes(5))
+								{
+									if (dalaranHearth.Cooldown != 0) {
+										Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
+										await Coroutine.Wait(1200000, () => dalaranHearth.Cooldown == 0);
+									}
+									dalaranHearth.Interact();
+									var currentLoc = StyxWoW.Me.ZoneId;
+									await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
+									await Coroutine.Sleep(1500);
+								}
+							}
+							]]>
+						</CustomBehavior>
 						<CustomBehavior File="LoadProfile" ProfileName="Legion\Auto-Loader.xml" RememberProfile="true" />
 					</If>
 				<!-- END Legion -->
