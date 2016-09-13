@@ -163,12 +163,12 @@ END INITORDER COMMENT -->
 						</HuntingGrounds>
 					</CustomBehavior>
 					<MoveTo X="288.8437" Y="1673.418" Z="-66.42319" />
-					<CustomBehavior File="WaitTimer" WaitTime="30000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+					<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
 					<UseMount Value="false" />
-					<CustomBehavior File="KillUntilComplete" MobId="102304" X="375.0486" Y="1582.425" Z="-83.69869" TerminateWhen="Object(102955) != null" />
+					<CustomBehavior File="KillUntilComplete" MobIds="102304, 102245" X="375.0486" Y="1582.425" Z="-83.69869" TerminateWhen="Object(102955) != null" />
 					<UseMount Value="true" />
 					<CustomBehavior File="InteractWith" MobId="102955" X="376.9028" Y="1587.251" Z="-82.68958" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
 				</If>
@@ -185,12 +185,20 @@ END INITORDER COMMENT -->
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
 					<MoveTo X="196.3298" Y="1523.698" Z="-32.13142" />
-					<CustomBehavior File="KillUntilComplete" MobIds="102861, 102549, 102244" X="196.3298" Y="1523.698" Z="-32.13142" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 7" />
+					<CustomBehavior File="KillUntilComplete" X="196.3298" Y="1523.698" Z="-32.13142" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 7" >
+						<PursuitList>
+							<PursueUnit Id="102861" PursueWhen="UNIT.Y &gt; 5000" />
+							<PursueUnit Id="102861" PursueWhen="UNIT.Y &gt; 5000" />
+							<PursueUnit Id="102549" PursueWhen="UNIT.Y &gt; 5000" />
+							<PursueUnit Id="102244" PursueWhen="UNIT.Y &gt; 5000" /> 
+						</PursuitList>
+					</CustomBehavior>
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8" >
 					<DisableBehavior Name="Combat" />
 					<MoveTo Precision="1" X="207.7547" Y="1486.049" Z="-31.27179" />
+					<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="SpellManager.CanCast(49576)" />
 					<CustomBehavior File="RunCode"><![CDATA[
 							var repulsionTumorPoi = Unit(104575, u => u.Location.Distance(new WoWPoint(203.5139, 1468.184, -29.90998)) <= 5);
 
