@@ -3916,7 +3916,7 @@
         <CustomBehavior File="FlyTo" DestName="Valley of Strength entrace to Cleft of Shadows"
                                 X="1707.794" Y="-4323.348" Z="31.33346" />
       </If>
-      <MoveTo DestName="Portal to Hellfire Peninsula from Cleft of Shadows" X="1789.103" Y="-4282.644" Z="7.44" />                    
+      <MoveTo DestName="Portal to Hellfire Peninsula from Cleft of Shadows" X="1789.103" Y="-4282.644" Z="7.44" />
       <CustomBehavior File="InteractWith" MobId="195142" Range="5" X="1767.845" Y="-4325.489" Z="-8.386265" />
       <CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting to port to Hellfire Peninsula {TimeRemaining}" />
       <If Condition="CanFly()  &amp;&amp; IsQuestCompleted(10120)">
@@ -4301,9 +4301,9 @@
     <PickUp Nav="Fly" QuestName="Stealing Back the Mushrooms" QuestId="9709"
                     GiverName="Watcher Leesa'oh" GiverId="17831" X="-294.1468" Y="8232.191" Z="20.88719" />
 
-    <CustomBehavior File="FlyTo" QuestId="9709"
+    <CustomBehavior File="FlyTo" Land="true" QuestId="9709"
                             DestName="Ango'rosh Stronghold for Stealing back the Mushrooms"
-                            X="1578.932" Y="8625.733" Z="-32.81897" />
+                            X="1577.414" Y="8611.152" Z="-34.74976" />
     <CustomBehavior File="ForcedDismount" QuestId= "9709" />
     <CustomBehavior File="InteractWith" MobId="182050" MovementBy="NavigatorOnly" InteractByLooting="true" NumOfTimes="100" QuestId="9709" QuestObjectiveIndex="1" >
       <HuntingGrounds>
@@ -4947,7 +4947,7 @@
         </Hotspots>
       </GrindArea>
     </SetGrindArea>
-    <GrindUntil Level="64" />
+    <GrindUntil Level="63" />
 
     <!-- Terrokar Forest -->
     <Checkpoint Level="64" />
@@ -5036,18 +5036,15 @@
       <If Condition="!Me.HasAura(22807) &amp;&amp; HasItem(25539)" >
         <CustomBehavior File="UseItem" ItemId="25539" />
       </If>
-      <CustomBehavior File="KillUntilComplete" MobIds="18750, 18461" QuestId="10037" QuestObjectiveIndex="1" >
-        <HuntingGrounds>
-          <Hotspot X="-1494.859" Y="4817.513" Z="-19.57418" />
-          <Hotspot X="-1443.307" Y="4894.747" Z="-18.65988" />
-          <Hotspot X="-1408.148" Y="4948.713" Z="-18.03591" />
-          <Hotspot X="-1363.043" Y="5016.623" Z="-27.20923" />
-          <Hotspot X="-1271.316" Y="4998.71" Z="-28.03052" />
-          <Hotspot X="-1316.887" Y="4932.523" Z="-16.8775" />
-          <Hotspot X="-1161.152" Y="5054.983" Z="-21.66958" />
-        </HuntingGrounds>
-      </CustomBehavior>
-      <CustomBehavior File="AscendInWater" />
+      <While Condition="HasQuest(10037) &amp;&amp; !IsQuestCompleted(10037)" >
+        <CustomBehavior File="InteractWith" MobIds="18750" MovementBy="NavigatorOnly" QuestId="10037" MobState="Alive" >
+          <HuntingGrounds>
+            <Hotspot Name="SouthEast" X="-1499.481" Y="4758.855" Z="-7.957464" />
+            <Hotspot Name="NorthWest" X="-1181.841" Y="5079.995" Z="-8.102483" />
+          </HuntingGrounds>
+        </CustomBehavior>
+        <CustomBehavior File="AscendInWater" />
+      </While>
     </If>
 
     <!--Force train flight path-->
