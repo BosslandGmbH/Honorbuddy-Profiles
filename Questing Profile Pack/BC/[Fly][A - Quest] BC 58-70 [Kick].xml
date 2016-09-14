@@ -2170,7 +2170,7 @@
     <If Condition="Me.MapId == 0">
       <MoveTo DestName="Portal to Hellfire Peninsula" X="-9003.102" Y="856.1383" Z="29.6207" />
       <CustomBehavior File="InteractWith" MobId="195141" NonCompeteDistance="0" Range="4" X="-9003.66" Y="855.3229" Z="29.62067" />
-      <If Condition="CanFly()  &amp;&amp; IsQuestCompleted(10140)">
+      <If Condition="CanFly()  &amp;&amp; IsQuestCompleted(10288)">
         <!-- "Journey to Honor Hold" -->
         <MoveTo Nav="Fly" Land="true" DestName="Honor Hold avoiding Elites" X="-665.8919" Y="2716.258" Z="94.78474" />
       </If>
@@ -3895,7 +3895,7 @@
     <If Condition="Me.MapId == 0">
       <MoveTo DestName="Portal to Hellfire Peninsula" X="-9003.102" Y="856.1383" Z="29.6207" />
       <CustomBehavior File="InteractWith" MobId="195141" NonCompeteDistance="0" Range="4" X="-9003.66" Y="855.3229" Z="29.62067" />
-      <If Condition="CanFly()  &amp;&amp; IsQuestCompleted(10140)">
+      <If Condition="CanFly()  &amp;&amp; IsQuestCompleted(10288)">
         <!-- "Journey to Honor Hold" -->
         <MoveTo Nav="Fly" Land="true" DestName="Honor Hold avoiding Elites" X="-665.8919" Y="2716.258" Z="94.78474" />
       </If>
@@ -4084,9 +4084,10 @@
 			 Name="Unidentified Plant Parts" ItemId="24401" /> -->
     <While Condition="HasQuest(9720) &amp;&amp; !IsQuestCompleted(9720)">
       <!--Umbrafan-->
-      <MoveTo DestName="Umbrafan" QuestId="9720" X="-817.3872" Y="5909.021" Z="22.21622" />
-      <UseItem Nav="Fly" QuestId="9720" ItemId="24355" X="-758.3021" Y="5928.698" Z="19.71701" />
-      <CustomBehavior File="WaitTimer" WaitTime="2000"/>
+      <If Condition="HasQuest(9720) &amp;&amp; !IsObjectiveComplete(1,9720)">
+        <MoveTo DestName="Umbrafan" QuestId="9720" X="-817.3872" Y="5909.021" Z="22.21622" />
+        <UseItem Nav="Fly" QuestId="9720" ItemId="24355" X="-758.3021" Y="5928.698" Z="19.71701" />
+        <CustomBehavior File="WaitTimer" WaitTime="2000"/>
       </If>
       <If Condition="HasQuest(9720) &amp;&amp; !IsObjectiveComplete(4,9720)">
         <!--Lagoon-->
@@ -4103,11 +4104,9 @@
         <UseItem Nav="Fly" QuestId="9720" ItemId="24355" X="497.1912" Y="8195.711" Z="21.21508" />
         <CustomBehavior File="WaitTimer" WaitTime="2000"/>
       </If>
-      <CustomBehavior File="WaitTimer" QuestId="9720" WaitTime="3000"
-                                GoalText="Waiting for quest to complete {TimeRemaining}" />
 
       <CustomBehavior File="WaitTimer" WaitTime="3000"
-							GoalText="Waiting for quest to complete {TimeRemaining}" />
+              GoalText="Waiting for quest to complete {TimeRemaining}" />
     </While>
     <EnableBehavior Name="Pull" />
     <CustomBehavior File="KillUntilComplete" MobIds="19946, 19947, 18087, 20088, 18086, 20089, 18340, 18088, 18089" QuestId="9728" QuestObjectiveIndex="1" >
@@ -4977,7 +4976,7 @@
     <If Condition="Me.MapId == 0">
       <MoveTo DestName="Portal to Hellfire Peninsula" X="-9003.102" Y="856.1383" Z="29.6207" />
       <CustomBehavior File="InteractWith" MobId="195141" NonCompeteDistance="0" Range="4" X="-9003.66" Y="855.3229" Z="29.62067" />
-      <If Condition="CanFly()  &amp;&amp; IsQuestCompleted(10140)">
+      <If Condition="CanFly()  &amp;&amp; IsQuestCompleted(10288)">
         <!-- "Journey to Honor Hold" -->
         <MoveTo Nav="Fly" Land="true" DestName="Honor Hold avoiding Elites" X="-665.8919" Y="2716.258" Z="94.78474" />
       </If>
@@ -5027,18 +5026,15 @@
       <If Condition="!Me.HasAura(22807) &amp;&amp; HasItem(25539)">
         <CustomBehavior File="UseItem" ItemId="25539" />
       </If>
-      <CustomBehavior File="KillUntilComplete" MobIds="18750, 18461" QuestId="10037" QuestObjectiveIndex="1" >
-        <HuntingGrounds>
-          <Hotspot X="-1494.859" Y="4817.513" Z="-19.57418" />
-          <Hotspot X="-1443.307" Y="4894.747" Z="-18.65988" />
-          <Hotspot X="-1408.148" Y="4948.713" Z="-18.03591" />
-          <Hotspot X="-1363.043" Y="5016.623" Z="-27.20923" />
-          <Hotspot X="-1271.316" Y="4998.71" Z="-28.03052" />
-          <Hotspot X="-1316.887" Y="4932.523" Z="-16.8775" />
-          <Hotspot X="-1161.152" Y="5054.983" Z="-21.66958" />
-        </HuntingGrounds>
-      </CustomBehavior>
-      <CustomBehavior File="AscendInWater" />
+      <While Condition="HasQuest(10037) &amp;&amp; !IsQuestCompleted(10037)" >
+        <CustomBehavior File="InteractWith" MobIds="18750" MovementBy="NavigatorOnly" QuestId="10037" MobState="Alive" >
+          <HuntingGrounds>
+            <Hotspot Name="SouthEast" X="-1499.481" Y="4758.855" Z="-7.957464" />
+            <Hotspot Name="NorthWest" X="-1181.841" Y="5079.995" Z="-8.102483" />
+          </HuntingGrounds>
+        </CustomBehavior>
+        <CustomBehavior File="AscendInWater" />
+      </While>
     </If>
     <If Condition="HasQuest(10037) &amp;&amp; IsQuestCompleted(10037)">
       <CustomBehavior File="FlyTo" DestName="Flying to 'Seth' (Turning in Quest = Rather Be Fishin')."
@@ -5920,7 +5916,7 @@ X="-1945.773" Y="4687.774" Z="-2.231679" />
     <If Condition="Me.MapId == 0">
       <MoveTo DestName="Portal to Hellfire Peninsula" X="-9003.102" Y="856.1383" Z="29.6207" />
       <CustomBehavior File="InteractWith" MobId="195141" NonCompeteDistance="0" Range="4" X="-9003.66" Y="855.3229" Z="29.62067" />
-      <If Condition="CanFly()  &amp;&amp; IsQuestCompleted(10140)">
+      <If Condition="CanFly()  &amp;&amp; IsQuestCompleted(10288)">
         <!-- "Journey to Honor Hold" -->
         <MoveTo Nav="Fly" Land="true" DestName="Honor Hold avoiding Elites" X="-665.8919" Y="2716.258" Z="94.78474" />
       </If>
@@ -7407,7 +7403,7 @@ X="-1945.773" Y="4687.774" Z="-2.231679" />
     <If Condition="Me.MapId == 0">
       <MoveTo DestName="Portal to Hellfire Peninsula" X="-9003.102" Y="856.1383" Z="29.6207" />
       <CustomBehavior File="InteractWith" MobId="195141" NonCompeteDistance="0" Range="4" X="-9003.66" Y="855.3229" Z="29.62067" />
-      <If Condition="CanFly()  &amp;&amp; IsQuestCompleted(10140)">
+      <If Condition="CanFly()  &amp;&amp; IsQuestCompleted(10288)">
         <!-- "Journey to Honor Hold" -->
         <MoveTo Nav="Fly" Land="true" DestName="Honor Hold avoiding Elites" X="-665.8919" Y="2716.258" Z="94.78474" />
       </If>
