@@ -936,7 +936,7 @@ EMD commented due to zeppelin nmesh -->
 			</If> -->
 			<While Condition="DoQuest(38624)" >
 				<CustomBehavior File="InteractWith" MobId="91767" QuestId="38624" X="2079.91" Y="2637.907" Z="676.0861" />
-				<CustomBehavior File="Vehicles\NoControlVehicle" QuestId="38624" TargetId1="92367" TargetId2="92359" TargetId3="92361" TargetId5="92375" AttackButton="1" OftenToUse="650" VehicleId="91767" MaxRange="200" />
+				<CustomBehavior File="Vehicles\NoControlVehicle" QuestId="38624" TargetId1="92367" TargetId2="92359" TargetId3="92361" TargetId5="92375" AttackButton="1" AttackButton2="2" OftenToUse="650" VehicleId="91767" MaxRange="200" />
 				<CustomBehavior File="WaitTimer" WaitTime="45000" QuestId="38624" />
 			</While>
 			<If Condition="QuestDone(38624)" >
@@ -1224,6 +1224,33 @@ EMD commented due to zeppelin nmesh -->
 				</CustomBehavior>
 			</While>
 
+		 	<While Condition="DoQuest(38343)" > <!-- Bonus Objective: Raze Hel || Move to complete before "Paid in Lifeblood" so bot doesn't get stuck in loop-->
+				<CustomBehavior File="InteractWith" MobState="DontCare" NumOfTimes="100" TerminateWhen="IsQuestCompleted(38343)" >
+					<!-- NOTE: <ChangeLater> : MobState needs to be 'Dead' but currently InteractWith isn't properly killing mobs via this logic. -->
+					<HuntingGrounds>
+						<Hotspot X="491.6612" Y="388.845" Z="2.042655" />
+						<Hotspot X="467.4048" Y="305.7835" Z="2.389256" />
+						<Hotspot X="506.0259" Y="240.4055" Z="1.436843" />
+						<Hotspot X="382.5127" Y="415.3322" Z="18.28056" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueGameObject Id="241832" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
+						<PursueGameObject Id="241779" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
+						<PursueGameObject Id="241693" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
+						<PursueGameObject Id="244587" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
+						<PursueGameObject Id="241729" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
+						<PursueGameObject Id="244587" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
+						<PursueGameObject Id="241782" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
+						<PursueGameObject Id="241688" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
+						<PursueGameObject Id="244587" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
+						<PursueUnit Id="91818" PursueWhen="!UNIT.Combat" />
+						<PursueUnit Id="91384" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="91575" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="93377" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					</PursuitList>
+				</CustomBehavior>
+			</While>
+
 			<TurnIn QuestName="A Little Kelp From My Foes" QuestId="38339" TurnInName="Colborn the Unworthy" TurnInId="91531" X="366.4219" Y="369.7465" Z="27.5088" />
 			<TurnIn QuestName="Accessories of the Cursed" QuestId="38324" TurnInName="Colborn the Unworthy" TurnInId="91531" X="366.4219" Y="369.7465" Z="27.5088" />
 
@@ -1281,37 +1308,6 @@ EMD commented due to zeppelin nmesh -->
 				<CustomBehavior File="KillUntilComplete" MobId="91948" QuestId="39853" QuestObjectiveIndex="1" X="209.8542" Y="587.158" Z="-4.136475" />
 			</While>
 			<TurnIn QuestName="Victory is Eternal" QuestId="39853" TurnInName="Ashildir" TurnInId="97558" X="210.9591" Y="600.8348" Z="-3.927668" />
-
-			<CustomBehavior File="Hooks\Avoid" AvoidName="AvoidGuarm" ObjectId="91386" Radius="30" />
-
-		 	<While Condition="DoQuest(38343)" > <!-- Bonus Objective: Raze Hel || Move to complete before "Paid in Lifeblood" so bot doesn't get stuck in loop-->
-				<CustomBehavior File="InteractWith" MobState="DontCare" NumOfTimes="100" TerminateWhen="IsQuestCompleted(38343)" >
-					<!-- NOTE: <ChangeLater> : MobState needs to be 'Dead' but currently InteractWith isn't properly killing mobs via this logic. -->
-					<HuntingGrounds>
-						<Hotspot X="491.6612" Y="388.845" Z="2.042655" />
-						<Hotspot X="467.4048" Y="305.7835" Z="2.389256" />
-						<Hotspot X="506.0259" Y="240.4055" Z="1.436843" />
-						<Hotspot X="382.5127" Y="415.3322" Z="18.28056" />
-					</HuntingGrounds>
-					<PursuitList>
-						<PursueGameObject Id="241832" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
-						<PursueGameObject Id="241779" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
-						<PursueGameObject Id="241693" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
-						<PursueGameObject Id="244587" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
-						<PursueGameObject Id="241729" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
-						<PursueGameObject Id="244587" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
-						<PursueGameObject Id="241782" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
-						<PursueGameObject Id="241688" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
-						<PursueGameObject Id="244587" PursueWhen="GAMEOBJECT.Location.Distance(Unit(91818).Location) &lt; 5" />
-						<PursueUnit Id="91818" PursueWhen="!UNIT.Combat" />
-						<PursueUnit Id="91384" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
-						<PursueUnit Id="91575" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
-						<PursueUnit Id="93377" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
-					</PursuitList>
-				</CustomBehavior>
-			</While>
-
-			<CustomBehavior File="Hooks\Avoid" AvoidName="AvoidGuarm" Command="Remove" />
 			
 			<PickUp QuestName="Paid in Lifeblood" QuestId="39855" GiverName="Ashildir" GiverId="97558" X="210.9591" Y="600.8348" Z="-3.927668" />
 			<While Condition="DoQuest(39855)" >
