@@ -3228,7 +3228,7 @@
       <PickUp QuestName="Report to Zurai" QuestId="10103" GiverName="Ranger Captain Venn'ren"
                         GiverId="16789" />
     </If>
-    <If Condition="Me.Z &gt;= 140" >
+    <If Condition="HasQuest(10103) &amp;&amp; Me.Z &gt;= 140" >
       <CustomBehavior File="MyCTM" X="-591.9251" Y="4072.708" Z="143.6378" />
       <CustomBehavior File="InteractWith" NonCompeteDistance="0"  MobId="184500" Range="8" WaitTime="7000"
                                 CollectionDistance="1000" X="-589.981" Y="4078.174" Z="143.2581" />
@@ -3889,7 +3889,7 @@
         </Hotspots>
       </GrindArea>
     </SetGrindArea>
-    <GrindUntil Level="62"/>
+    <GrindUntil Level="61"/>
 
     <Checkpoint Level="62"/>
     <!-- CHECKPOINT BLOCK START: This code needs to be replicated after every checkpoint.
@@ -4128,6 +4128,7 @@
 
       <If Condition="HasQuest(9720) &amp;&amp; !IsObjectiveComplete(1,9720)">
         <!--Umbrafan-->
+        <MoveTo Nav="Fly" DestName="Umbrafan" X="-758.3021" Y="5928.698" Z="19.71701" />
         <UseItem Nav="Fly" QuestId="9720" ItemId="24355" X="-758.3021" Y="5928.698" Z="19.71701" />
         <CustomBehavior File="WaitTimer" WaitTime="2000"/>
       </If>
@@ -4548,8 +4549,10 @@
     
     <TurnIn Nav="Fly" QuestName="Jyoba's Report" QuestId="9772"
                     TurnInName="Zurai" TurnInId="18011" X="106.0771" Y="5204.103" Z="21.48164" />
-    <PickUp Nav="Fly" QuestName="Stinging the Stingers" QuestId="9841"
-                    GiverName="Gambarinka" GiverId="18015" X="272.2314" Y="7848.35" Z="23.95657"   />
+    <If Condition="!HasQuest(9841) &amp;&amp; !IsQuestCompleted(9841)" >
+      <MoveTo Nav="Fly" DestName="Zabra'jin" Land="true" X="259.8556" Y="7862.432" Z="23.34749" />
+      <PickUp Nav="Fly" QuestName="Stinging the Stingers" QuestId="9841" GiverName="Gambarinka" GiverId="18015" X="272.2314" Y="7848.35" Z="23.95657"   />
+    </If>
     <TurnIn Nav="Fly" QuestName="A Job Undone" QuestId="9899"
                     TurnInName="Magasha" TurnInId="18016" X="106.0771" Y="5204.103" Z="21.48164"  />
 
