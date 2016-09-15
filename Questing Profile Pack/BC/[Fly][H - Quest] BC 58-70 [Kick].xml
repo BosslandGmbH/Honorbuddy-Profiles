@@ -5071,52 +5071,27 @@
       <TurnIn QuestName="A'dal" QuestId="10210" TurnInName="A'dal" TurnInId="18481"
                         X="-1863.683" Y="5430.042" Z="-9.703983" />
     </If>
-
-    <If Condition="!HasQuest(10211)  &amp;&amp; !IsQuestCompleted(10211)" >
-      <If Condition="Me.Location.Distance(new WoWPoint(-1863.683, 5430.042, -9.703983)) &gt; 75">
-        <UseMount Value="false"/>
-        <MoveTo Nav="Fly" X="-1786.219" Y="5469.234" Z="-12.42815" />
-        <UseMount Value="true"/>
-      </If>
-      <PickUp QuestName="City of Light" QuestId="10211" GiverName="Khadgar" GiverId="18166"
-                            X="-1863.683" Y="5430.042" Z="-9.703983" />
-      <CustomBehavior File="WaitTimer" WaitTime="3000" />
-    </If>
-    <UseMount Value="true" />
     <While Condition="!IsQuestCompleted(10211)" >
-      <If Condition="HasQuest(10211)" >
+      <If Condition="HasQuest(10211) &amp;&amp; !IsQuestCompleted(10211)" >
+        <CustomBehavior File="Message" Text="AbandonQuest: City of Light" LogColor="White" />
+        <CustomBehavior File="AbandonQuest" QuestId="10211" Type="All" />
+        <CustomBehavior File="WaitTimer" WaitTime="3000" />
+      </If>
+      <If Condition="!HasQuest(10211) &amp;&amp; !IsQuestCompleted(10211)" >
+        <MoveTo DestName="Khadgar" X="-1823.58" Y="5344.257" Z="-12.4265" />
+        <CustomBehavior File="ForcedDismount" />
         <UseMount Value="false"/>
-        <If Condition="!IsQuestCompleted(10211)" >
-          <CustomBehavior File="AbandonQuest" QuestId="10211" Type="All" />
-          <CustomBehavior File="WaitTimer" WaitTime="3000" />
-          <PickUp Nav="Fly" QuestName="City of Light" QuestId="10211" GiverName="Khadgar" GiverId="18166" X="-1863.683" Y="5430.042" Z="-9.703983" />
-          <CustomBehavior File="ForcedDismount" />
-        </If>
-        <If Condition="!HasQuest(10211)  &amp;&amp; !IsQuestCompleted(10211)" >
-          <If Condition="Me.Location.Distance(new WoWPoint(-1863.683, 5430.042, -9.703983)) &gt; 75">
-            <UseMount Value="false"/>
-            <MoveTo Nav="Fly" X="-1786.219" Y="5469.234" Z="-12.42815" />
-            <UseMount Value="true"/>
-          </If>
-          <PickUp QuestName="City of Light" QuestId="10211" GiverName="Khadgar" GiverId="18166"
-                            X="-1863.683" Y="5430.042" Z="-9.703983" />
-          <CustomBehavior File="WaitTimer" WaitTime="3000" />
-          <CustomBehavior File="ForcedDismount" />
-        </If>
-        <CustomBehavior File="EscortGroup" QuestId="10211" EscortNpcId="19685" EscortCompleteWhen="QuestCompleteOrFails" EscortMaxFollowDistance="10" TerminateWhen="Object(19685) == null" />
+        <PickUp QuestName="City of Light" QuestId="10211" GiverName="Khadgar" GiverId="18166" X="-1863.683" Y="5430.042" Z="-9.703983" />
+        <!--<CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for Khadgar's Servant to move." />-->
+        <CustomBehavior File="EscortGroup" QuestId="10211" EscortNpcId="19685" TerminateWhen="Object(19685) == null" />
         <CustomBehavior File="WaitTimer" QuestId="10211" WaitTime="30000" GoalText="Waiting for City of Light to complete: {TimeRemaining}" />
       </If>
+
       <If Condition="IsQuestCompleted(10211)" >
-        <TurnIn Nav="Fly" QuestName="City of Light" QuestId="10211" TurnInName="Khadgar" TurnInId="18166" />
+        <TurnIn QuestName="City of Light" QuestId="10211" TurnInName="Khadgar" TurnInId="18166" />
       </If>
     </While>
     <UseMount Value="true"/>
-    <!--Template for all escort quests-->
-
-    <!--Name="Khadgar's Servant" Id="19685" -->
-    <CustomBehavior File="EscortGroup" QuestId="10211" EscortNpcId="19685" />
-    <CustomBehavior File="WaitTimer" QuestId="10211" WaitTime="30000"
-                            GoalText="Waiting for City of Light to complete: {TimeRemaining}" />
 
     <If Condition="HasQuest(10211) &amp;&amp; IsQuestCompleted(10211)">
       <TurnIn Nav="Fly" QuestName="City of Light" QuestId="10211" TurnInName="Khadgar" TurnInId="18166" />
