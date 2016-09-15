@@ -98,24 +98,30 @@ END INITORDER COMMENT -->
 		<!-- END RunCode Methods -->
 
 		<!-- Get Continuation Quest -->
+			<If Condition="IsQuestCompleted(42869) &amp;&amp; !(IsQuestCompleted(41119) || IsQuestCompleted(39247)) &amp;&amp; NeedsQuest(44379, 44383)" > <!-- Using On Eternal Vigil (42869) to determine if we've already got the first artifact. -->
+				<CustomBehavior File="InteractWith" MobIds="108572, 108571" WaitTime="1250" X="1551.054" Y="1413.816" Z="237.1085" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="QuestFrameAcceptButton:Click();" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="QuestChoiceFrameOption1.OptionButton:Click();" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="StaticPopup1Button2:Click();" />
+			</If>
 		<!-- END Get Continuation Quest -->
 
 		<!-- Second Artifact -->
+			<If Condition="QuestDone(44379, 44383)" >
+				<CustomBehavior File="InteractWith" MobIds="108572, 108571" WaitTime="1250" X="1551.054" Y="1413.816" Z="237.1085" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="GossipTitleButton1:Click();" />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+			</If>
 		<!-- END Second Artifact -->
-
-		<!-- Third Artifact -->
-		<!-- END Third Artifact -->
-
-		<!-- NOTE: 
-			The NPC changes depending on what the player chose while questing in the DemonHunter starting zone.
-			We can detect which NPC was chosen by checking which finale quest was completed.  The quest being: "Between Us and Freedom"
-			QuestId 39688 = Kayn Sunfury
-			QuestId 40255 = Altruis the Sufferer
-		-->
 
 		<!-- Story: Artifact Weapon - Twinblades of the Deceiver -->
 
 		<!-- Overly complicated due to either Kayn or Altruis being here -->
+			<If Condition="(HasQuest(40819) || HasQuest(41120)) &amp;&amp; Me.HasAura(213170)" > <!-- Picked up Making Arragements for second artifact weapon. -->
+				<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" TerminateWhen="!Me.HasAura(213170)" />
+				<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.Z &lt; 746" /> <!-- Walk off ledge -->
+			</If>
+
 			<If Condition="NeedsBreadcrumbQuest(40819, 41120)" >
 				<MoveTo X="-851.9022" Y="4256.646" Z="746.2833" />
 			</If>
@@ -124,11 +130,18 @@ END INITORDER COMMENT -->
 				<MoveTo X="-951.5419" Y="4336.875" Z="740.4382" />
 			</If>
 
-			<If Condition="Unit(99247) != null || Unit(94902) != null || Unit(94902) != null" >  <!-- Kayn -->
-				<!-- NOTE: <TechnicalCheck> : These NPC locations will vary depending on if this is the player's first artifact weapon or not.
-												This current XYZ/Id is for the first artifact weapon.  Add support for other artifact quests later. -->
-				<PickUp QuestName="Making Arrangements" QuestId="40819" GiverName="Kayn Sunfury" GiverId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
-				<TurnIn QuestName="Making Arrangements" QuestId="40819" TurnInName="Kayn Sunfury" TurnInId="94902" X="-952.618" Y="4332.883" Z="740.184" />
+
+			<If Condition="Unit(99247) != null || Unit(94902) != null || Unit(94902) != null || Unit(108572) != null" >  <!-- Kayn -->
+				<If Condition="!Me.HasAura(213170)" > <!-- First artifact weapon. -->
+					<PickUp QuestName="Making Arrangements" QuestId="40819" GiverName="Kayn Sunfury" GiverId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
+					<TurnIn QuestName="Making Arrangements" QuestId="40819" TurnInName="Kayn Sunfury" TurnInId="94902" X="-952.618" Y="4332.883" Z="740.184" />
+				</If>
+				<If Condition="HasQuest(40819) || (DoQuest(40819) &amp;&amp; Me.HasAura(213170))" > <!-- Second artifact weapon, class hall -->
+					<PickUp QuestName="Making Arrangements" QuestId="40819" GiverName="Kayn Sunfury" GiverId="108572" X="1551.054" Y="1413.816" Z="237.1085" />
+					<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" TerminateWhen="!Me.HasAura(213170)" />
+					<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.Z &lt; 746" /> <!-- Walk off ledge -->
+					<TurnIn QuestName="Making Arrangements" QuestId="40819" TurnInName="Kayn Sunfury" TurnInId="94902" X="-952.618" Y="4332.883" Z="740.184" />
+				</If>
 
 				<PickUp QuestName="By Any Means" QuestId="39051" GiverName="Kayn Sunfury" GiverId="94902" X="-952.618" Y="4332.883" Z="740.184" />
 				<While Condition="DoQuest(39051)" >
@@ -158,11 +171,17 @@ END INITORDER COMMENT -->
 					</If>
 				</If>
 			</If>
-			<If Condition="Unit(99343) != null || Unit(99254) != null || Unit(103156) != null" >  <!-- Altruis -->
-				<!-- NOTE: <TechnicalCheck> : These NPC locations will vary depending on if this is the player's first artifact weapon or not.
-												This current XYZ/Id is for the first artifact weapon.  Add support for other artifact quests later. -->
-				<PickUp QuestName="Making Arrangements" QuestId="41120" GiverName="Altruis the Sufferer" GiverId="99254" X="-852.2726" Y="4256.074" Z="746.285" />
-				<TurnIn QuestName="Making Arrangements" QuestId="41120" TurnInName="Altruis the Sufferer" TurnInId="103156" X="-952.618" Y="4332.883" Z="740.1839" />
+			<If Condition="Unit(99343) != null || Unit(99254) != null || Unit(103156) != null || Unit(108571) != null" >  <!-- Altruis -->
+				<If Condition="!Me.HasAura(213170)" > <!-- First artifact weapon. -->
+					<PickUp QuestName="Making Arrangements" QuestId="41120" GiverName="Altruis the Sufferer" GiverId="99254" X="-852.2726" Y="4256.074" Z="746.285" />
+					<TurnIn QuestName="Making Arrangements" QuestId="41120" TurnInName="Altruis the Sufferer" TurnInId="103156" X="-952.618" Y="4332.883" Z="740.1839" />
+				</If>
+				<If Condition="HasQuest(41120) || (DoQuest(41120) &amp;&amp; Me.HasAura(213170))" > <!-- Second artifact weapon, class hall -->
+					<PickUp Nav="Fly" QuestName="Making Arrangements" QuestId="41120" GiverName="Altruis the Sufferer" GiverId="108571" X="1551.054" Y="1413.816" Z="237.1085" />
+					<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" TerminateWhen="!Me.HasAura(213170)" />
+					<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.Z &lt; 746" /> <!-- Walk off ledge -->
+					<TurnIn Nav="Fly" QuestName="Making Arrangements" QuestId="41120" TurnInName="Altruis the Sufferer" TurnInId="103156" X="-952.618" Y="4332.883" Z="740.1838" />
+				</If>
 
 				<PickUp QuestName="By Any Means" QuestId="41121" GiverName="Altruis the Sufferer" GiverId="103156" X="-952.618" Y="4332.883" Z="740.1839" />
 				<While Condition="DoQuest(41121)" >
@@ -208,14 +227,12 @@ END INITORDER COMMENT -->
 		<While Condition="DoQuest(39247, 41119)" >
 			<UseMount Value="false" />
 			<CustomBehavior File="Hooks\Avoid" AvoidName="ChaosBomb" Command="Add" ObjectType="Missile" ObjectId="205726" Radius="10" />
-			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0" >
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0 &amp;&amp; !HasItem(127829)" >
 				<CustomBehavior File="InteractWith" MobId="94321" WaitForNpcs="false" X="-844.6198" Y="4253.933" Z="746.2827" />
-				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.InVehicle" />
-				<!-- User gets off at X="1263.974" Y="5235.755" Z="93.53168" -->
-				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" />
+				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber &gt;= 3" />
 			</If>
 
-			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+			<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
 				<MoveTo X="1025.776" Y="5145.552" Z="58.67917" />
 				<CustomBehavior File="KillUntilComplete" MobId="95423" X="1037.984" Y="5137.779" Z="58.55843" TerminateWhen="Unit(95423) == null || Unit(95423, u =&gt; u.IsDead) != null" />
 				<CustomBehavior File="InteractWith" MobId="243428" Range="8" WaitForNpcs="false" X="1055.153" Y="5091.441" Z="53.74208" TerminateWhen="IsScenarioCriteriaComplete(1)" />
@@ -226,8 +243,8 @@ END INITORDER COMMENT -->
 				<!-- NOTE: <AddAvoid> : He seems to do a frontal attack that does about medium damage. I killed him fine with standing in it, but it got my health down low. -->
 				<CustomBehavior File="KillUntilComplete" MobId="95429" X="1003.443" Y="4931.136" Z="36.27768" TerminateWhen="Unit(95429) == null || Unit(95429, u =&gt; u.IsDead) != null" />
 				<CustomBehavior File="InteractWith" MobId="243473" WaitForNpcs="false" X="970.566" Y="4906.897" Z="36.06742" TerminateWhen="IsScenarioCriteriaComplete(1)" />
-				<CustomBehavior File="WaitTimer" WaitTime="25000" />
-			</If>
+				<CustomBehavior File="WaitTimer" WaitTime="30000" />
+			</While>
 
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
 				<MoveTo X="997.6365" Y="4895.81" Z="36.16906" />
@@ -249,10 +266,56 @@ END INITORDER COMMENT -->
 		</While>
 
 		<If Condition="HasQuest(39247)" >
-			<TurnIn QuestName="The Hunt" QuestId="39247" TurnInName="Kor'vas Bloodthorn" TurnInId="102799" X="-835.9692" Y="4265.4" Z="746.2537" />
+			<If Condition="!IsQuestCompleted(42869)" >
+				<TurnIn QuestName="The Hunt" QuestId="39247" TurnInName="Kor'vas Bloodthorn" TurnInId="102799" X="-835.9692" Y="4265.4" Z="746.2537" />
+			</If>
+			<If Condition="IsQuestCompleted(42869)" >
+				<If Condition="!Me.HasAura(213170)" >
+					<MoveTo X="-818.1966" Y="4265.469" Z="746.2773" />
+					<CustomBehavior File="ForcedDismount" />
+					<CustomBehavior File="MyCTM" X="-821.7453" Y="4236.09" Z="743.0304" />
+					<CustomBehavior File="WaitTimer" WaitTime="750" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							Me.SetFacing(4);
+							await Coroutine.Sleep(750);
+							WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+							await Coroutine.Sleep(300);
+							WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+							SpellManager.Cast(131347);
+							await Coroutine.Sleep(4000);
+						]]>
+					</CustomBehavior>
+					<CustomBehavior File="MyCTM" X="-942.347" Y="4085.248" Z="648.2783" />
+					<CustomBehavior File="InteractWith" MobId="251286" NonCompeteDistance="0" X="-963.8559" Y="4066.109" Z="648.1834" />
+				</If>
+			</If>
+			<TurnIn Nav="Fly" QuestName="The Hunt" QuestId="39247" TurnInName="Kor'vas Bloodthorn" TurnInId="103761" X="1551.464" Y="1410.891" Z="237.1088" />
 		</If>
 		<If Condition="HasQuest(41119)" >
-			<TurnIn QuestName="The Hunt" QuestId="41119" TurnInName="Kor'vas Bloodthorn" TurnInId="102799" X="-835.9692" Y="4265.4" Z="746.2537" />
+			<If Condition="!IsQuestCompleted(42869)" >
+				<TurnIn QuestName="The Hunt" QuestId="41119" TurnInName="Kor'vas Bloodthorn" TurnInId="102799" X="-835.9692" Y="4265.4" Z="746.2537" />
+			</If>
+			<If Condition="IsQuestCompleted(42869)" >
+				<If Condition="!Me.HasAura(213170)" >
+					<MoveTo X="-818.1966" Y="4265.469" Z="746.2773" />
+					<CustomBehavior File="ForcedDismount" />
+					<CustomBehavior File="MyCTM" X="-821.7453" Y="4236.09" Z="743.0304" />
+					<CustomBehavior File="WaitTimer" WaitTime="750" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							Me.SetFacing(4);
+							await Coroutine.Sleep(750);
+							WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+							await Coroutine.Sleep(300);
+							WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+							SpellManager.Cast(131347);
+							await Coroutine.Sleep(4000);
+						]]>
+					</CustomBehavior>
+					<CustomBehavior File="MyCTM" X="-942.347" Y="4085.248" Z="648.2783" />
+					<CustomBehavior File="InteractWith" MobId="251286" NonCompeteDistance="0" X="-963.8559" Y="4066.109" Z="648.1834" />
+				</If>
+			</If>
+			<TurnIn Nav="Fly" QuestName="The Hunt" QuestId="41119" TurnInName="Kor'vas Bloodthorn" TurnInId="103761" X="1551.464" Y="1410.891" Z="237.1088" />
 		</If>
 		<!-- END Story: Artifact Weapon - Twinblades of the Deceiver -->
 
