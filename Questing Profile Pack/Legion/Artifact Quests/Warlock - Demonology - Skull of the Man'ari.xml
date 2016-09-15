@@ -24,6 +24,7 @@
 	</AvoidMobs>
 
 	<Blackspots>
+		<Blackspot X="1249.073" Y="5233.63" Z="92.8306" Radius="10.94136" /> <!-- Huge spike right in the way of the path.. -->
 	</Blackspots>
 
 	<Blacklist>
@@ -112,9 +113,9 @@ END INITORDER COMMENT -->
 			<!-- :END1 -->
 			<While Condition="DoQuest(42128)" >
 				<CustomBehavior File="InteractWith" MobId="106581" GossipOptions="1" QuestId="42128" QuestObjectiveIndex="4" X="-795.0504" Y="4378.95" Z="740.1576" />
-				<CustomBehavior File="InteractWith" MobId="249748" InteractByLooting="true" QuestId="42128" QuestObjectiveIndex="3" X="-791.8264" Y="4474.007" Z="736.1099" />
-				<CustomBehavior File="InteractWith" MobId="249744" InteractByLooting="true" QuestId="42128" QuestObjectiveIndex="2" X="-717.3055" Y="4554.67" Z="730.3762" />
-				<CustomBehavior File="InteractWith" MobId="249742" InteractByLooting="true" QuestId="42128" QuestObjectiveIndex="1" X="-799.9531" Y="4598.588" Z="727.8135" />
+				<CustomBehavior File="InteractWith" MobId="249748" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" InteractByLooting="true" QuestId="42128" QuestObjectiveIndex="3" X="-791.8264" Y="4474.007" Z="736.1099" />
+				<CustomBehavior File="InteractWith" MobId="249744" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" InteractByLooting="true" QuestId="42128" QuestObjectiveIndex="2" X="-717.3055" Y="4554.67" Z="730.3762" />
+				<CustomBehavior File="InteractWith" MobId="249742" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" InteractByLooting="true" QuestId="42128" QuestObjectiveIndex="1" X="-799.9531" Y="4598.588" Z="727.8135" />
 			</While>
 			<TurnIn QuestName="Ritual Reagents" QuestId="42128" TurnInName="Calydus" TurnInId="106610" X="-839.5903" Y="4425.784" Z="741.6765" />
 
@@ -132,24 +133,27 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="Dark Whispers" QuestId="42125" GiverName="Calydus" GiverId="106610" X="-839.5903" Y="4425.784" Z="741.6765" />
 			<While Condition="DoQuest(42125)" >
-				<If Condition="Me.MapId != 1107" > <!-- NOTE: <CheckID> : There's two of this zone on the area table.  Assuming 1107 because it's near the scenario ids. -->
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0 &amp;&amp; !HasItem(128943)" >
 					<CustomBehavior File="InteractWith" MobId="249813" X="-842.875" Y="4431.096" Z="742.5369" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
-					<CustomBehavior File="KillUntilComplete" MobId="106698" X="1069.512" Y="5127.466" Z="57.30164" TermianteWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+					<MoveTo X="1249.173" Y="5252.332" Z="92.60342" />
+					<CustomBehavior File="KillUntilComplete" MobId="106698" X="1069.512" Y="5127.466" Z="57.30164" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-					<CustomBehavior File="KillUntilComplete" MobId="106644" X="1062.331" Y="5131.072" Z="57.09336" TermianteWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+					<CustomBehavior File="KillUntilComplete" MobId="106644" X="1062.331" Y="5131.072" Z="57.09336" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
 				</If>
  
  				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
  					<MoveTo X="1153.517" Y="5062.131" Z="57.71943" />
 					<CustomBehavior File="RunCode"><![CDATA[
+							await CommonCoroutines.LandAndDismount();
+							await CommonCoroutines.StopMoving();
 							await Coroutine.Sleep(750);
 							SpellManager.Cast(111771);
-							SpellManager.ClickRemoteLocation(new WoWPoint(1152.666, 5063.345, 57.8553));
+							SpellManager.ClickRemoteLocation(new Vector3(1172.283f, 5040.883f, 55.79492f));
 							await Coroutine.Sleep(3500);
 						]]> 
 					</CustomBehavior>

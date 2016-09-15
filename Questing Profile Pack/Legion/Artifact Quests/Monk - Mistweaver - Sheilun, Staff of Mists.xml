@@ -99,13 +99,21 @@ END INITORDER COMMENT -->
 		<!-- END RunCode Methods -->
 
 		<!-- Get Continuation Quest -->
+			<If Condition="IsQuestCompleted(40698) &amp;&amp; NeedsQuest(43973, 44424)" > <!-- Using Purity of Form (40698) to determine if we've already got the first artifact. -->
+				<CustomBehavior File="InteractWith" MobId="100438" WaitTime="1250" X="924.4167" Y="3606.167" Z="196.3306" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="QuestFrameAcceptButton:Click();" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="QuestChoiceFrameOption1.OptionButton:Click();" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="StaticPopup1Button1:Click();" />
+			</If>
 		<!-- END Get Continuation Quest -->
 
-		<!-- Second Artifact -->
-		<!-- END Second Artifact -->
-
-		<!-- Third Artifact -->
-		<!-- END Third Artifact -->
+		<!-- Second+Third Artifact -->
+			<If Condition="QuestDone(43973, 44424)" >
+				<CustomBehavior File="InteractWith" MobId="100438" WaitTime="1250" X="924.4167" Y="3606.167" Z="196.3306" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="GossipTitleButton1:Click();" />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+			</If>
+		<!-- END Second+Third Artifact -->
 
 		<!-- Heal Routine -->
 			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
@@ -133,8 +141,6 @@ END INITORDER COMMENT -->
 							await Coroutine.Yield();
 						}
 
-						await CommonCoroutines.StopMoving(); 
-
 						if (CleansePriority() != null && SpellManager.CanCast(115450))
 						{
 							WoWUnit cleanseMe = CleansePriority();
@@ -145,6 +151,8 @@ END INITORDER COMMENT -->
 							SpellManager.Cast(115450);
 							return;
 						}
+
+						await CommonCoroutines.StopMoving(); 
 
 						StyxWoW.Me.SetFacing(healMe.Location);
 						await Coroutine.Sleep(385);
@@ -176,8 +184,10 @@ END INITORDER COMMENT -->
 		<!-- Story: Artifact Weapon - Sheilun, Staff of Mists -->
 			<PickUp QuestName="The Emperor's Gift" QuestId="41003" GiverName="Iron-Body Ponshu" GiverId="100438" X="924.4167" Y="3606.167" Z="196.3309" />
 			<While Condition="DoQuest(41003)" >
-				<CustomBehavior File="InteractWith" MobId="101880" GossipOptions="1" QuestId="41003" QuestObjectiveIndex="1" X="935.7847" Y="3719.753" Z="189.0626" />
-				<CustomBehavior File="WaitTimer" WaitTime="70000" />
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0 &amp;&amp; !HasItem(128937)" >
+					<CustomBehavior File="InteractWith" MobId="101880" GossipOptions="1" QuestId="41003" QuestObjectiveIndex="1" X="935.7847" Y="3719.753" Z="189.0626" />
+					<CustomBehavior File="WaitTimer" WaitTime="70000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 0" />
+				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
 					<MoveTo X="-1065.364" Y="-3145.273" Z="28.10291" />
@@ -200,6 +210,8 @@ END INITORDER COMMENT -->
 								await Coroutine.Wait(2000, ()=> !StyxWoW.Me.IsCasting);
 
 								await Coroutine.Wait(10000, ()=> taranPoi.HealthPercent == 100 || StyxWoW.Me.HasAura(197206)); 
+
+								await Coroutine.Yield();
 							}
 						]]>
 					</CustomBehavior>
@@ -208,7 +220,7 @@ END INITORDER COMMENT -->
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
 					<DisableBehavior Name="Combat" />
 					<While Condition="Object(246351) != null" >
-						<CustomBehavior File="InteractWith" MobId="246351" IgnoreCombat="true" NumOfTimes="4" >
+						<CustomBehavior File="InteractWith" MobId="246351" NumOfTimes="4" TerminateWhen="Object(246351) == null" >
 							<HuntingGrounds>
 								<Hotspot X="-1002.262" Y="-3021.649" Z="12.16141" />
 								<Hotspot X="-1032.573" Y="-3022.531" Z="12.27288" />
@@ -234,8 +246,8 @@ END INITORDER COMMENT -->
 					<MoveTo X="-1017.929" Y="-2926.409" Z="19.62303" />
 					<CustomBehavior File="WaitTimer" WaitTime="8000" />
 					<CustomBehavior File="InteractWith" MobId="101882" GossipOptions="2" X="-1030.835" Y="-2913.491" Z="19.623" TerminateWhen="IsScenarioCriteriaComplete(1)" />
-					<CustomBehavior File="InteractWith" MobId="101885" GossipOptions="2" X="-1017.729" Y="-2910.943" Z="19.81835" TerminateWhen="IsScenarioCriteriaComplete(2)"/>
-					<CustomBehavior File="InteractWith" MobId="101883" GossipOptions="2" X="-1003.257" Y="-2912.16" Z="19.62295" TerminateWhen="IsScenarioCriteriaComplete(3)"/>
+					<CustomBehavior File="InteractWith" MobId="101885" GossipOptions="2" X="-1017.729" Y="-2910.943" Z="19.81835" TerminateWhen="IsScenarioCriteriaComplete(3)"/>
+					<CustomBehavior File="InteractWith" MobId="101883" GossipOptions="2" X="-1003.257" Y="-2912.16" Z="19.62295" TerminateWhen="IsScenarioCriteriaComplete(2)"/>
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >

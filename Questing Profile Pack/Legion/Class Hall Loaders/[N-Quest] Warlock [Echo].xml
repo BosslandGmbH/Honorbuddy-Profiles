@@ -126,9 +126,11 @@ END INITORDER COMMENT -->
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-					<DisableBehavior Name="Combat" />
-					<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
-					<CustomBehavior File="WaitTimer" WaitTime="15000" />
+					<While Condition="Unit(98836, u =&gt; !u.HasAura(204831) &amp;&amp; !u.Combat) != null" >
+						<DisableBehavior Name="Combat" />
+						<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+						<CustomBehavior File="WaitTimer" WaitTime="15000" />
+					</While>
 					<CustomBehavior File="MyCTM" X="2966.855" Y="1130.815" Z="206.5542" />
 					<EnableBEhavior Name="Combat" />
 					<CustomBehavior File="KillUntilComplete" MobId="98836" X="2971.992" Y="1127.061" Z="207.5549" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
@@ -247,7 +249,7 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="Power Overwhelming" QuestId="40821" GiverName="Calydus" GiverId="101097" X="3121.295" Y="1106.274" Z="286.4948" />
 			<While Condition="DoQuest(40821)" >
 				<!-- /dump GetMouseFocus():GetPowerID(); C_ArtifactUI.AddPower(powerId); -->
-				<CustomBehavior File="InteractWith" MobId="245004" WaitTime="2000" QuestId="40821" X="3132.802" Y="1131.156" Z="286.7309" />
+				<CustomBehavior File="InteractWith" MobId="245004" NonCompeteDistance="0" WaitTime="2000" QuestId="40821" X="3129.542" Y="1128.942" Z="286.677" />
 				<If Condition="HasItem(128942)" > <!-- Ulthalesh, the Deadwind Harvester -->
 					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1353);" />
 				</If>
