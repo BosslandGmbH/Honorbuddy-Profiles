@@ -35,6 +35,8 @@
 	<Vendors>
 	</Vendors>
 
+	<DefaultNavType>Fly</DefaultNavType>
+
 <!-- INITORDER COMMENT 
 	<InitOrder>
 		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
@@ -98,9 +100,20 @@ END INITORDER COMMENT -->
 		<!-- END RunCode Methods -->
 
 		<!-- Get Continuation Quest -->
+			<If Condition="IsQuestCompleted(40698) &amp;&amp; NeedsQuest(43973)" > <!-- Using Purity of Form (40698) to determine if we've already got the first artifact. -->
+				<CustomBehavior File="InteractWith" MobId="100438" WaitTime="1250" X="924.4167" Y="3606.167" Z="196.3306" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="QuestFrameAcceptButton:Click();" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="QuestChoiceFrameOption1.OptionButton:Click();" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="StaticPopup1Button1:Click();" />
+			</If>
 		<!-- END Get Continuation Quest -->
 
 		<!-- Second Artifact -->
+			<If Condition="QuestDone(43973)" >
+				<CustomBehavior File="InteractWith" MobId="100438" WaitTime="1250" X="924.4167" Y="3606.167" Z="196.3306" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="GossipTitleButton1:Click();" />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+			</If>
 		<!-- END Second Artifact -->
 
 		<!-- Third Artifact -->
@@ -110,7 +123,7 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="The Wanderer's Companion" QuestId="42762" GiverName="Iron-Body Ponshu" GiverId="100438" X="924.4167" Y="3606.167" Z="196.3307" />
 			<While Condition="DoQuest(42762)" >
 				<CustomBehavior File="InteractWith" MobId="101880" GossipOptions="1" QuestId="42762" QuestObjectiveIndex="1" X="935.7847" Y="3719.753" Z="189.0626" />
-				<CustomBehavior File="WaitTimer" WaitTime="20000" />
+				<CustomBehavior File="WaitTimer" WaitTime="25000" />
 			</While>
 			<TurnIn QuestName="The Wanderer's Companion" QuestId="42762" TurnInName="The Monkey King" TurnInId="108700" X="2374.316" Y="-1457.705" Z="353.987" />
 
@@ -152,26 +165,27 @@ END INITORDER COMMENT -->
 			<While Condition="DoQuest(42868)" >
 				<CustomBehavior File="InteractWith" MobId="251490" WaitTime="3000" QuestId="42868" QuestObjectiveIndex="1" X="924.4496" Y="-2409.514" Z="168.5977" />
 				<While Condition="Lua.GetReturnVal&lt;bool&gt;(&quot;return PlayerPowerBarAlt:IsShown();&quot;, 0)" >
-					<CustomBehavior File="WaitTimer" WaitTime="8000" TerminateWhen="ObjectManager.GetObjectsOfType&lt;WoWGameObject&gt;().FirstOrDefault(x =&gt; new[]{251512, 251508, 251501, 251503}.Contains((int)x.Entry) &amp;&amp; x.CanUse()) != null" />
-					<CustomBehavior File="InteractWith" MobId="251512" QuestId="42868" QuestObjectiveIndex="1" X="931.3143" Y="-2416.205" Z="170.2567" TerminateWhen="Object(251512, u =&gt; !u.ToGameObject().CanUse()) != null" />
-					<CustomBehavior File="InteractWith" MobId="251508" QuestId="42868" QuestObjectiveIndex="1" X="926.8906" Y="-2414.422" Z="168.7792" TerminateWhen="Object(251508, u =&gt; !u.ToGameObject().CanUse()) != null" />
-					<CustomBehavior File="InteractWith" MobId="251501" QuestId="42868" QuestObjectiveIndex="1" X="927.5399" Y="-2405.583" Z="168.5977" TerminateWhen="Object(251501, u =&gt; !u.ToGameObject().CanUse()) != null" />
-					<CustomBehavior File="InteractWith" MobId="251503" QuestId="42868" QuestObjectiveIndex="1" X="932.0278" Y="-2402.153" Z="170.2213" TerminateWhen="Object(251503, u =&gt; !u.ToGameObject().CanUse()) != null" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="ObjectManager.GetObjectsOfType&lt;WoWGameObject&gt;().FirstOrDefault(x =&gt; new[]{251510, 251511, 251508, 251501, 251503}.Contains((int)x.Entry) &amp;&amp; x.CanUse()) != null" />
+					<CustomBehavior File="InteractWith" MobId="251510" QuestId="42868" QuestObjectiveIndex="2" X="931.3143" Y="-2416.205" Z="170.2567" TerminateWhen="Object(251510, u =&gt; !u.ToGameObject().CanUse()) != null" />
+					<CustomBehavior File="InteractWith" MobId="251508" QuestId="42868" QuestObjectiveIndex="2" X="926.8906" Y="-2414.422" Z="168.7792" TerminateWhen="Object(251508, u =&gt; !u.ToGameObject().CanUse()) != null" />
+					<CustomBehavior File="InteractWith" MobId="251501" QuestId="42868" QuestObjectiveIndex="2" X="927.5399" Y="-2405.583" Z="168.5977" TerminateWhen="Object(251501, u =&gt; !u.ToGameObject().CanUse()) != null" />
+					<CustomBehavior File="InteractWith" MobId="251503" QuestId="42868" QuestObjectiveIndex="2" X="932.0278" Y="-2402.153" Z="170.2213" TerminateWhen="Object(251503, u =&gt; !u.ToGameObject().CanUse()) != null" />
+					<CustomBehavior File="InteractWith" MobId="251505" QuestId="42868" QuestObjectiveIndex="2" X="932.0278" Y="-2402.153" Z="170.2213" TerminateWhen="Object(251505, u =&gt; !u.ToGameObject().CanUse()) != null" />	
 				</While>
 			</While>
 			<TurnIn QuestName="The Monkey King's Challenge" QuestId="42868" TurnInName="The Monkey King" TurnInId="109187" X="935.5245" Y="-2418.598" Z="168.5976" />
 
 			<PickUp QuestName="The Trial at the Temple" QuestId="42765" GiverName="The Monkey King" GiverId="109187" X="935.5245" Y="-2418.598" Z="168.5976" />
 			<While Condition="DoQuest(42765)" >
-				<If Condition="Me.MapId != 960" > <!-- NOTE: <CheckID> : Check id for Temple of the Jade Serpent -->
+				<If Condition="Me.MapId != 1625" > <!-- NOTE: <CheckID> : Check id for Temple of the Jade Serpent -->
 					<MoveTo X="960.0986" Y="-2469.125" Z="180.234" />
-					<CustomBehavior File="MyCTM" X="958.3696" Y="-2476.02" Z="180.5053" TerminateWhen="Me.MapId == 960" /> <!-- TerminateWhen inside temple. -->
-					<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Me.MapId == 960" />
+					<CustomBehavior File="MyCTM" X="958.3696" Y="-2476.02" Z="180.5053" TerminateWhen="Me.MapId == 1625" /> <!-- TerminateWhen inside temple. -->
+					<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Me.MapId == 1625" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
 					<MoveTo X="952.6828" Y="-2519.703" Z="180.3754" />
-					<CustomBehavior File="WaitTimer" WaitTime="36000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+					<CustomBehavior File="WaitTimer" WaitTime="40000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
