@@ -4349,13 +4349,13 @@
 				</GrindArea>
 			</SetGrindArea>
 			<GrindUntil Condition="HasItem(25459)" GoalText="Count Ungula's DropQuest" />
-		</If>
-		<If Condition="HasItem(25459)">
-			<PickUp QuestName="The Count of the Marshes" QuestId="9911" GiverType="Item" GiverId="25459" />
-			<CustomBehavior File="FlyTo" DestName="Watcher Leesa'oh" X="-294.1468" Y="8232.191" Z="20.88719" />
-			<TurnIn QuestName="The Count of the Marshes" QuestId="9911" TurnInName="Watcher Leesa'oh"
-					TurnInId="17831" X="-294.1468" Y="8232.191" Z="20.88719" />
 		</If> -->
+    <If Condition="HasItem(25459)">
+      <PickUp QuestName="The Count of the Marshes" QuestId="9911" GiverType="Item" GiverId="25459" />
+      <CustomBehavior File="FlyTo" DestName="Watcher Leesa'oh" X="-294.1468" Y="8232.191" Z="20.88719" />
+      <TurnIn QuestName="The Count of the Marshes" QuestId="9911" TurnInName="Watcher Leesa'oh"
+					TurnInId="17831" X="-294.1468" Y="8232.191" Z="20.88719" />
+    </If>
 
     <TurnIn QuestName="Familiar Fungi" QuestId="9708" TurnInName="Watcher Leesa'oh" TurnInId="17831"
 				X="-294.1468" Y="8232.191" Z="20.88719" />
@@ -4917,6 +4917,11 @@
       <TurnIn QuestName="Umbrafen Eel Filets" QuestId="9780" TurnInName="Noraani" TurnInId="18006" />
     </If>
 
+    <If Condition="HasQuest(9780) &amp;&amp; IsQuestCompleted(9780)">
+      <TurnIn QuestName="The Count of the Marshes" QuestId="9911" TurnInName="Watcher Leesa'oh"
+        TurnInId="17831" X="-294.1468" Y="8232.191" Z="20.88719" />
+    </If>
+
     <SetGrindArea>
       <GrindArea>
         <Factions>1706 14</Factions>
@@ -5063,25 +5068,14 @@
     </If>
     <TurnIn Nav="Fly" QuestName="A'dal" QuestId="10210" TurnInName="A'dal" TurnInId="18481"
 				X="-1863.683" Y="5430.042" Z="-9.703983" />
-    <If Condition="!HasQuest(10211)  &amp;&amp; !IsQuestCompleted(10211)" >
-      <If Condition="Me.Location.Distance(new WoWPoint(-1863.683, 5430.042, -9.703983)) &gt; 75">
-        <UseMount Value="false"/>
-        <MoveTo Nav="Fly" X="-1786.219" Y="5469.234" Z="-12.42815" />
-        <UseMount Value="true"/>
-      </If>
-      <PickUp QuestName="City of Light" QuestId="10211" GiverName="Khadgar" GiverId="18166"
-							X="-1863.683" Y="5430.042" Z="-9.703983" />
-      <CustomBehavior File="WaitTimer" WaitTime="3000" />
-    </If>
-
     <While Condition="!IsQuestCompleted(10211)" >
       <If Condition="HasQuest(10211)" >
         <UseMount Value="false"/>
-        <If Condition="HasQuest(10211) &amp;&amp; !IsQuestCompleted(10211)" >
-          <CustomBehavior File="AbandonQuest" QuestId="10211" Type="Failed" />
+        <If Condition="!IsQuestCompleted(10211)" >
+          <CustomBehavior File="AbandonQuest" QuestId="10211" Type="All" />
           <CustomBehavior File="WaitTimer" WaitTime="3000" />
-          <PickUp Nav="Fly" QuestName="City of Light" QuestId="10211"
-							GiverName="Khadgar" GiverId="18166" X="-1863.683" Y="5430.042" Z="-9.703983" />
+          <PickUp Nav="Fly" QuestName="City of Light" QuestId="10211" GiverName="Khadgar" GiverId="18166" X="-1863.683" Y="5430.042" Z="-9.703983" />
+          <CustomBehavior File="ForcedDismount" />
         </If>
         <If Condition="!HasQuest(10211)  &amp;&amp; !IsQuestCompleted(10211)" >
           <If Condition="Me.Location.Distance(new WoWPoint(-1863.683, 5430.042, -9.703983)) &gt; 75">
@@ -5090,20 +5084,20 @@
             <UseMount Value="true"/>
           </If>
           <PickUp QuestName="City of Light" QuestId="10211" GiverName="Khadgar" GiverId="18166"
-							X="-1863.683" Y="5430.042" Z="-9.703983" />
+                            X="-1863.683" Y="5430.042" Z="-9.703983" />
           <CustomBehavior File="WaitTimer" WaitTime="3000" />
+          <CustomBehavior File="ForcedDismount" />
         </If>
-        <CustomBehavior File="EscortGroup" QuestId="10211" EscortNpcId="19685"
-									EscortCompleteWhen="QuestCompleteOrFails" EscortMaxFollowDistance="10" />
-        <CustomBehavior File="WaitTimer" QuestId="10211" WaitTime="30000"
-									GoalText="Waiting for City of Light to complete: {TimeRemaining}" />
+        <CustomBehavior File="EscortGroup" QuestId="10211" EscortNpcId="19685" EscortCompleteWhen="QuestCompleteOrFails" EscortMaxFollowDistance="10" TerminateWhen="Object(19685) == null" />
+        <CustomBehavior File="WaitTimer" QuestId="10211" WaitTime="30000" GoalText="Waiting for City of Light to complete: {TimeRemaining}" />
       </If>
       <If Condition="IsQuestCompleted(10211)" >
+        <UseMount Value="true"/>
         <TurnIn Nav="Fly" QuestName="City of Light" QuestId="10211" TurnInName="Khadgar" TurnInId="18166" />
       </If>
     </While>
-    <UseMount Value="true" />
-    <!-- Template for all escort quests -->
+    <UseMount Value="true"/>
+    <!--Template for all escort quests-->
 
 
     <If Condition="HasQuest(10211)">
@@ -5131,8 +5125,7 @@
       <CustomBehavior File="InteractWith" QuestId="9971" MobId="183789"
 							CollectionDistance="20" X="-1783.499" Y="4646.27" Z="14.76669" />
     </If>
-    <PickUp QuestName="It's Watching You!" QuestId="9951" GiverName="Warden Treelos" GiverId="18424"
-				X="-1815.031" Y="4691.909" Z="10.76543" />
+    <PickUp QuestName="It's Watching You!" QuestId="9951" GiverName="Warden Treelos" GiverId="18424" X="-1808.163" Y="4735.417" Z="27.18861" />
     <If Condition="HasQuest(9951) &amp;&amp; !IsQuestCompleted(9951)">
       <MoveTo X="-1795.275" Y="4730.683" Z="66.83118" />
       <Objective QuestName="It's Watching You!" QuestId="9951" Type="KillMob" MobId="18438" KillCount="1" />

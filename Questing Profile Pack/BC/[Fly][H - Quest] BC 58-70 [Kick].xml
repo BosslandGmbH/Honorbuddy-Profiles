@@ -4585,7 +4585,7 @@
       <RunTo X="228.9375" Y="7931.1" Z="41.11261" />
       <TurnIn QuestName="Report to Shadow Hunter Denjai"
 	                    QuestId="9775" TurnInName="Shadow Hunter Denjai" TurnInId="18013"
-	                    X="276.875" Y="7849.026" Z="23.77924"  />
+	                    X="229.6873" Y="7929.756" Z="41.11321" />
     </If>
 
     <PickUp Nav="Fly" QuestName="Spirits of the Feralfen" QuestId="9846"
@@ -4709,9 +4709,9 @@
     <TurnIn Nav="Fly" QuestName="Impending Attack" QuestId="9822"
                     TurnInName="Shadow Hunter Denjai" TurnInId="18013" X="276.875" Y="7849.026" Z="23.77924"  />
     <PickUp Nav="Fly" QuestName="Us or Them" QuestId="9823"
-                    GiverName="Shadow Hunter Denjai" GiverId="18013" X="276.875" Y="7849.026" Z="23.77924"  />
+                    GiverName="Shadow Hunter Denjai" GiverId="18013" X="229.6873" Y="7929.756" Z="41.11321" />
     <PickUp Nav="Fly" QuestName="Message to the Daggerfen" QuestId="10118"
-                    GiverName="Shadow Hunter Denjai" GiverId="18013" X="276.875" Y="7849.026" Z="23.77924"  />
+                    GiverName="Shadow Hunter Denjai" GiverId="18013" X="229.6873" Y="7929.756" Z="41.11321" />
     <Objective QuestName="Wanted: Chieftain Mummaki" QuestId="10117"
                        Type="CollectItem" ItemId="27943" CollectCount="1" X="1038.903" Y="8279.625" Z="57.65332" />
     <Objective QuestName="Message to the Daggerfen" QuestId="10118"
@@ -4768,11 +4768,11 @@
                     TurnInName="Witch Doctor Tor'gash" TurnInId="18014" X="276.875" Y="7849.026" Z="23.77924" />
 
     <TurnIn Nav="Fly" QuestName="Us or Them" QuestId="9823"
-                    TurnInName="Shadow Hunter Denjai" TurnInId="18013" X="276.875" Y="7849.026" Z="23.77924"  />
+                    TurnInName="Shadow Hunter Denjai" TurnInId="18013" X="229.6873" Y="7929.756" Z="41.11321" />
     <TurnIn Nav="Fly" QuestName="Message to the Daggerfen" QuestId="10118"
-                    TurnInName="Shadow Hunter Denjai" TurnInId="18013" X="276.875" Y="7849.026" Z="23.77924"  />
+                    TurnInName="Shadow Hunter Denjai" TurnInId="18013" X="229.6873" Y="7929.756" Z="41.11321" />
     <TurnIn Nav="Fly" QuestName="Wanted: Chieftain Mummaki" QuestId="10117"
-                    TurnInName="Shadow Hunter Denjai" TurnInId="18013" X="276.875" Y="7849.026" Z="23.77924"  />
+                    TurnInName="Shadow Hunter Denjai" TurnInId="18013" X="229.6873" Y="7929.756" Z="41.11321" />
 
     <SetGrindArea>
       <GrindArea>
@@ -4791,7 +4791,7 @@
     <GrindUntil Level="64" />
 
     <PickUp Nav="Fly" QuestName="The Ogre Threat" QuestId="9795"
-                    GiverName="Shadow Hunter Denjai" GiverId="18013" X="276.875" Y="7849.026" Z="23.77924"  />
+                    GiverName="Shadow Hunter Denjai" GiverId="18013" X="229.6873" Y="7929.756" Z="41.11321" />
 
     <!--Force train flight path-->
     <If Condition="HasQuest(9795) &amp;&amp; IsQuestCompleted(9795)" >
@@ -5086,11 +5086,11 @@
     <While Condition="!IsQuestCompleted(10211)" >
       <If Condition="HasQuest(10211)" >
         <UseMount Value="false"/>
-        <If Condition="HasQuest(10211) &amp;&amp; !IsQuestCompleted(10211)" >
-          <CustomBehavior File="AbandonQuest" QuestId="10211" Type="Failed" />
+        <If Condition="!IsQuestCompleted(10211)" >
+          <CustomBehavior File="AbandonQuest" QuestId="10211" Type="All" />
           <CustomBehavior File="WaitTimer" WaitTime="3000" />
-          <PickUp Nav="Fly" QuestName="City of Light" QuestId="10211"
-                            GiverName="Khadgar" GiverId="18166" X="-1863.683" Y="5430.042" Z="-9.703983" />
+          <PickUp Nav="Fly" QuestName="City of Light" QuestId="10211" GiverName="Khadgar" GiverId="18166" X="-1863.683" Y="5430.042" Z="-9.703983" />
+          <CustomBehavior File="ForcedDismount" />
         </If>
         <If Condition="!HasQuest(10211)  &amp;&amp; !IsQuestCompleted(10211)" >
           <If Condition="Me.Location.Distance(new WoWPoint(-1863.683, 5430.042, -9.703983)) &gt; 75">
@@ -5101,11 +5101,10 @@
           <PickUp QuestName="City of Light" QuestId="10211" GiverName="Khadgar" GiverId="18166"
                             X="-1863.683" Y="5430.042" Z="-9.703983" />
           <CustomBehavior File="WaitTimer" WaitTime="3000" />
+          <CustomBehavior File="ForcedDismount" />
         </If>
-        <CustomBehavior File="EscortGroup" QuestId="10211" EscortNpcId="19685"
-                                    EscortCompleteWhen="QuestCompleteOrFails" EscortMaxFollowDistance="10" />
-        <CustomBehavior File="WaitTimer" QuestId="10211" WaitTime="30000"
-                                    GoalText="Waiting for City of Light to complete: {TimeRemaining}" />
+        <CustomBehavior File="EscortGroup" QuestId="10211" EscortNpcId="19685" EscortCompleteWhen="QuestCompleteOrFails" EscortMaxFollowDistance="10" TerminateWhen="Object(19685) == null" />
+        <CustomBehavior File="WaitTimer" QuestId="10211" WaitTime="30000" GoalText="Waiting for City of Light to complete: {TimeRemaining}" />
       </If>
       <If Condition="IsQuestCompleted(10211)" >
         <TurnIn Nav="Fly" QuestName="City of Light" QuestId="10211" TurnInName="Khadgar" TurnInId="18166" />
@@ -5144,7 +5143,7 @@
     <PickUp Nav="Fly" QuestName="Clues in the Thicket" QuestId="9971" GiverName="Earthbinder Tavgren"
                     GiverId="18446" X="-1947.286" Y="4686.039" Z="-2.221095" />
     <PickUp Nav="Fly" QuestName="It's Watching You!" QuestId="9951" GiverName="Warden Treelos"
-                    GiverId="18424" />
+                    GiverId="18424" X="-1808.163" Y="4735.417" Z="27.18861" />
     <Objective QuestName="Clues in the Thicket" QuestId="9971" Type="UseObject"
                        ObjectId="183789" UseCount="1" />
     <If Condition="HasQuest(9951) &amp;&amp; !IsQuestCompleted(9951)">
@@ -5322,13 +5321,17 @@
     <TurnIn Nav="Fly" QuestName="Before Darkness Falls" QuestId="10878"
                     TurnInName="Mekeda" TurnInId="22370" />
 
-    <CustomBehavior File="FlyTo" DestName="The Shadow Tomb 0" QuestId="10881" X="-2878.997" Y="5354.362" Z="-10.50846" />
-    <MoveTo DestName="The Shadow Tomb 1" QuestId="10881"  X="-2895.695" Y="5396.078" Z="-8.816689" />
-    <MoveTo DestName="The Shadow Tomb 2" QuestId="10881"  X="-2871.646" Y="5413.484" Z="-28.26074" />
+    <If Condition="Me.Z &gt; -15">
+      <CustomBehavior File="FlyTo" DestName="The Shadow Tomb 0" QuestId="10881" X="-2878.997" Y="5354.362" Z="-10.50846" />
 
-    <CustomBehavior File="InteractWith" QuestId="10881" MobIds="185224" NonCompeteDistance="0" NumOfTimes="10" TerminateWhen="IsObjectiveComplete(1, 10881)" X="-2842.873" Y="5350.557" Z="-30.45361" />
-    <CustomBehavior File="InteractWith" QuestId="10881" MobIds="185225" NonCompeteDistance="0" NumOfTimes="10" TerminateWhen="IsObjectiveComplete(2, 10881)" X="-2860.68" Y="5481.125" Z="-30.18786" />
-    <CustomBehavior File="InteractWith" QuestId="10881" MobIds="185226" NonCompeteDistance="0" NumOfTimes="10" TerminateWhen="IsObjectiveComplete(3, 10881)" X="-2680.831" Y="5400.52" Z="-36.46922" />
+
+      <MoveTo DestName="The Shadow Tomb 1" QuestId="10881"  X="-2895.695" Y="5396.078" Z="-8.816689" />
+      <MoveTo DestName="The Shadow Tomb 2" QuestId="10881"  X="-2871.646" Y="5413.484" Z="-28.26074" />
+    </If>
+
+    <CustomBehavior File="InteractWith" QuestId="10881" MobIds="185224" NonCompeteDistance="0" MovementBy="NavigatorPreferred" NumOfTimes="10" TerminateWhen="IsObjectiveComplete(1, 10881)" X="-2842.873" Y="5350.557" Z="-30.45361" />
+    <CustomBehavior File="InteractWith" QuestId="10881" MobIds="185225" NonCompeteDistance="0" MovementBy="NavigatorPreferred" NumOfTimes="10" TerminateWhen="IsObjectiveComplete(2, 10881)" X="-2860.68" Y="5481.125" Z="-30.18786" />
+    <CustomBehavior File="InteractWith" QuestId="10881" MobIds="185226" NonCompeteDistance="0" MovementBy="NavigatorPreferred" NumOfTimes="10" TerminateWhen="IsObjectiveComplete(3, 10881)" X="-2680.831" Y="5400.52" Z="-36.46922" />
 
     <TurnIn Nav="Fly" QuestName="The Shadow Tomb" QuestId="10881" TurnInName="Mekeda"
                     TurnInId="22370" X="-2840.072" Y="5066.998" Z="-17.54818" />
