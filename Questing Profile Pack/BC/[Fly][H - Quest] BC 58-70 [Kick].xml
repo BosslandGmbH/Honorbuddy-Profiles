@@ -5206,7 +5206,7 @@
       <LootMobs Value="false" />
       <UseMount Value="false" />
       <While Condition="!IsObjectiveComplete(1,10847)">
-        <CustomBehavior File="InteractWith" QuestId="10847" QuestObjectiveIndex="1"
+        <CustomBehavior File="InteractWith" QuestId="10847" QuestObjectiveIndex="1" MovementBy="NavigatorPreferred"
                                     MobId="185200" NonCompeteDistance="0" WaitTime="4000"
                                     InteractByLooting="true" X="-1698.389" Y="4376.254" Z="53.20021" />
       </While>
@@ -5222,7 +5222,7 @@
       <LootMobs Value="false" />
       <UseMount Value="false"/>
       <While Condition="!IsObjectiveComplete(2,10847)">
-        <CustomBehavior File="InteractWith" QuestId="10847" QuestObjectiveIndex="2" MobId="185201" WaitTime="4000"
+        <CustomBehavior File="InteractWith" QuestId="10847" QuestObjectiveIndex="2" MobId="185201" WaitTime="4000" MovementBy="NavigatorPreferred"
                                     InteractByLooting="true" X="-1698.389" Y="4376.254" Z="53.20021" />
       </While>
       <UseMount Value="true"/>
@@ -5230,6 +5230,7 @@
       <MoveTo X="-1862.208" Y="3909.992" Z="39.39718" />
     </If>
     <UseMount Value="true" />
+    <LootMobs Value="true" />
     <TurnIn Nav="Fly" QuestName="The Eyes of Skettis" QuestId="10847"
                     TurnInName="Rilak the Redeemed" TurnInId="22292" X="-1654.105" Y="5446.75" Z="-40.40615" />
     <PickUp Nav="Fly" QuestName="Seek Out Kirrik" QuestId="10849"
@@ -5321,12 +5322,8 @@
     <TurnIn Nav="Fly" QuestName="Before Darkness Falls" QuestId="10878"
                     TurnInName="Mekeda" TurnInId="22370" />
 
-    <If Condition="Me.Z &gt; -15">
-      <CustomBehavior File="FlyTo" DestName="The Shadow Tomb 0" QuestId="10881" X="-2878.997" Y="5354.362" Z="-10.50846" />
-
-
-      <MoveTo DestName="The Shadow Tomb 1" QuestId="10881"  X="-2895.695" Y="5396.078" Z="-8.816689" />
-      <MoveTo DestName="The Shadow Tomb 2" QuestId="10881"  X="-2871.646" Y="5413.484" Z="-28.26074" />
+    <If Condition="Me.ZoneId != 3519 || Me.IsSwimming">
+      <CustomBehavior File="FlyTo" DestName="The Shadow Tomb" QuestId="10881" X="-2878.997" Y="5354.362" Z="-10.50846" />
     </If>
 
     <CustomBehavior File="InteractWith" QuestId="10881" MobIds="185224" NonCompeteDistance="0" MovementBy="NavigatorPreferred" NumOfTimes="10" TerminateWhen="IsObjectiveComplete(1, 10881)" X="-2842.873" Y="5350.557" Z="-30.45361" />
@@ -5343,7 +5340,7 @@
                                 GoalText="Waiting for quest to complete {TimeRemaining}" />
     </While>
     <UseMount Value="false"/>
-    <CustomBehavior File="KillUntilComplete" MobIds="18453, 18452" QuestId="10112" QuestObjectiveIndex="1" >
+    <CustomBehavior File="KillUntilComplete" MobIds="18453, 18452" QuestId="10112" QuestObjectiveIndex="1" MovementBy="NavigatorPreferred" >
       <HuntingGrounds>
         <Hotspot X="-2528.71" Y="5474.305" Z="8.041196" />
         <Hotspot X="-2539.568" Y="5400.396" Z="0.04607589" />
@@ -5356,7 +5353,7 @@
     </CustomBehavior>
 
     <While Condition="HasQuest(10852) &amp;&amp; !IsQuestCompleted(10852)">
-      <CustomBehavior File="KillUntilComplete" MobIds="18453, 18452" QuestId="10852" TerminateWhen="GetItemCount(31655) &gt;= 4" >
+      <CustomBehavior File="KillUntilComplete" MobIds="18453, 18452" QuestId="10852" TerminateWhen="GetItemCount(31655) &gt;= 4" MovementBy="NavigatorPreferred" >
         <HuntingGrounds>
           <Hotspot X="-2528.71" Y="5474.305" Z="8.041196" />
           <Hotspot X="-2539.568" Y="5400.396" Z="0.04607589" />
@@ -5367,7 +5364,7 @@
           <Hotspot X="-2428.79" Y="5393.765" Z="1.706244" />
         </HuntingGrounds>
       </CustomBehavior>
-      <CustomBehavior File="InteractWith" MobId="185202" MobId2="185203" MobId3="185204" MobId4="185205"
+      <CustomBehavior File="InteractWith" MobId="185202" MobId2="185203" MobId3="185204" MobId4="185205" MovementBy="NavigatorPreferred"
                                 PreInteractMountStrategy="Dismount" NumOfTimes="4" NonCompeteDistance="10"
                                 TerminateWhen="!HasItem(31655)" WaitTime="1500"
                                 X="-2521.825" Y="5444.137" Z="0.0509126" />
@@ -5590,20 +5587,14 @@
       <UseMount Value="false" />
       <If Condition="HasQuest(10874) &amp;&amp; !IsObjectiveComplete(1,10874)">
         <!--Sapphire-->
-        <Objective QuestName="Veil Shalas: Signal Fires" QuestId="10874"
-                               Type="UseObject" ObjectId="185216" UseCount="1"
-                               X="-3416.785" Y="4107.211" Z="62.56548" />
-        <CustomBehavior File="WaitTimer" WaitTime="1000"
-                                    GoalText="Waiting for objective to complete and aggro to clear {TimeRemaining}" />
+        <MoveTo DestName="Sapphire Signal Fire" X="-3411.88" Y="4093.356" Z="62.61633" />
+        <CustomBehavior File="InteractWith" MobIds="185216" NonCompeteDistance="0" MovementBy="NavigatorPreferred" NumOfTimes="10" TerminateWhen="IsObjectiveComplete(1,10874)" X="-3511.699" Y="4088.579" Z="92.88254" />
       </If>
 
       <If Condition="HasQuest(10874) &amp;&amp; !IsObjectiveComplete(2,10874)">
         <!--Emerald-->
-        <Objective QuestName="Veil Shalas: Signal Fires" QuestId="10874"
-                               Type="UseObject" ObjectId="185217" UseCount="1"
-                               X="-3511.099" Y="4086.252" Z="92.93172" />
-        <CustomBehavior File="WaitTimer" WaitTime="1000"
-                                    GoalText="Waiting for objective to complete and aggro to clear {TimeRemaining}" />
+        <MoveTo DestName="Emerald Signal Fire" X="-3508.833" Y="4084.722" Z="92.95325" />
+        <CustomBehavior File="InteractWith" MobIds="185217" NonCompeteDistance="0" MovementBy="NavigatorPreferred" NumOfTimes="10" TerminateWhen="IsObjectiveComplete(2,10874)" X="-3511.699" Y="4088.579" Z="92.88254" />
       </If>
 
       <If Condition="HasQuest(10874) &amp;&amp; !IsObjectiveComplete(3,10874)">
@@ -5611,21 +5602,14 @@
                          by an unpathable mob that puts the toon in combat. The NoCombatMoveTo
                          is a band-aid around this situation.
                     -->
-        <CustomBehavior File="NoCombatMoveTo" QuestId="10874" X="-3489.826" Y="4032.026" Z="113.1205" />
-        <Objective QuestName="Veil Shalas: Signal Fires" QuestId="10874"
-                               Type="UseObject" ObjectId="185218" UseCount="1"
-                               X="-3489.826" Y="4032.026" Z="113.1205" />
-        <CustomBehavior File="WaitTimer" WaitTime="1000"
-                                    GoalText="Waiting for objective to complete and aggro to clear {TimeRemaining}" />
+        <CustomBehavior File="NoCombatMoveTo" DestName="Violet Signal Fire" QuestId="10874" X="-3511.896" Y="4038.813" Z="112.9073" />
+        <CustomBehavior File="InteractWith" MobIds="185218" NonCompeteDistance="0" MovementBy="NavigatorPreferred" NumOfTimes="10" TerminateWhen="IsObjectiveComplete(3,10874)" X="-3511.699" Y="4088.579" Z="92.88254" />
       </If>
 
       <If Condition="HasQuest(10874) &amp;&amp; !IsObjectiveComplete(4,10874)">
         <!--Bloodstone-->
-        <Objective QuestName="Veil Shalas: Signal Fires" QuestId="10874"
-                               Type="UseObject" ObjectId="185219" UseCount="1"
-                               X="-3605.015" Y="4054.175" Z="112.0037" />
-        <CustomBehavior File="WaitTimer" WaitTime="1000"
-                                    GoalText="Waiting for objective to complete and aggro to clear {TimeRemaining}" />
+        <MoveTo DestName="Bloodstone Signal Fire" X="-3590.941" Y="4036.946" Z="111.9953" />
+        <CustomBehavior File="InteractWith" MobIds="185219" NonCompeteDistance="0" MovementBy="NavigatorPreferred" NumOfTimes="10" TerminateWhen="IsObjectiveComplete(4,10874)" X="-3511.699" Y="4088.579" Z="92.88254" />
       </If>
     </While>
     <UseMount Value="true" />
@@ -5721,12 +5705,11 @@
     </CustomBehavior>
 
     <If Condition="HasQuest(9987) &amp;&amp; !IsObjectiveComplete(3,9987)">
-      <CustomBehavior File="FlyTo" X="-2486.197" Y="5383.288" Z="41.46399" />
+      <CustomBehavior File="FlyTo" DestName="Urdak" X="-2486.197" Y="5383.288" Z="41.46399" />
       <CustomBehavior File="FlyTo" DestName="Urdak" X="-2507.74" Y="5380.578" Z="27.14109" />
       <CustomBehavior File="ForcedDismount" />
-      <Objective QuestName="Stymying the Arakkoa" QuestId="9987"
-                           Type="KillMob" KillCount="1" MobName="Urdak" MobId="18541"
-                           X="-2507.74" Y="5380.578" Z="27.14109" />
+      <CustomBehavior File="KillUntilComplete" MobId="18541" QuestId="9987" QuestObjectiveIndex="3" X="-2535.34" Y="5392.107" Z="27.12254" />
+
     </If>
 
     <TurnIn Nav="Fly" QuestName="Speak with Scout Neftis" QuestId="10039" TurnInName="Scout Neftis"
@@ -5839,8 +5822,6 @@
     <Objective QuestName="Attack on Firewing Point" QuestId="9997"
                        Type="KillMob" MobId="5355" KillCount="10" />
 
-    <PickUp Nav="Fly" QuestName="Escape from Firewing Point!" QuestId="10052"
-                    GiverName="Isla Starmane" GiverId="18760" X="-2265.208" Y="3091.14" Z="13.829" />
 
     <!--Template for all escort quests-->
     <While Condition="!IsQuestCompleted(10052)" >
@@ -5853,9 +5834,16 @@
       <If Condition="HasQuest(10052) &amp;&amp; !IsQuestCompleted(10052)" >
         <CustomBehavior File="AbandonQuest" QuestId="10052" Type="Failed" />
         <CustomBehavior File="WaitTimer" WaitTime="3000" />
-        <PickUp Nav="Fly" QuestName="Escape from Firewing Point!" QuestId="10052"
-                            GiverName="Isla Starmane" GiverId="18760" X="-2265.208" Y="3091.14" Z="13.829" />
+      </If>
+      <If Condition="!HasQuest(10052)">
+        <MoveTo Nav="Fly" DestName="Isla Starmane" X="-2313.683" Y="3130.122" Z="12.07107" />
+        <CustomBehavior File="ForcedDismount" />
+        <UseMount Value="false" />
+        <MoveTo DestName="Isla Starmane" X="-2274.063" Y="3092.056" Z="13.82911" />
+        <PickUp QuestName="Escape from Firewing Point!" QuestId="10052"
+                        GiverName="Isla Starmane" GiverId="18760" X="-2265.208" Y="3091.14" Z="13.829" />
         <CustomBehavior File="WaitTimer" WaitTime="3000" />
+
       </If>
     </While>
     <UseMount Value="true"/>
