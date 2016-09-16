@@ -4987,10 +4987,17 @@
 
     <If
 			Condition="!HasQuest(10104) &amp;&amp; !IsQuestCompleted(10104) &amp;&amp; !HasQuest(9793) &amp;&amp; !IsQuestCompleted(9793)">
-      <CustomBehavior File="FlyTo" DestName="Ikuti at Orebor Haroboage" X="1007.743" Y="7367.612" Z="36.31483" />
+      <CustomBehavior File="FlyTo" DestName="Ikuti at Orebor Harborage" X="1007.743" Y="7367.612" Z="36.31483" />
       <CustomBehavior File="ForcedDismount" />
       <PickUp QuestName="Concerns About Tuurem" QuestId="10104" GiverName="Ikuti" GiverId="18008" />
       <PickUp QuestName="A Message to Telaar" QuestId="9792" GiverName="Ikuti" GiverId="18008" />
+    </If>
+
+    <If Condition="HasQuest(10104)">
+      <CustomBehavior File="FlyTo" DestName="Allerian Stronghold" X="-2935.482" Y="3954.349" Z="0.08784905" />
+      <CustomBehavior File="ForcedDismount" />
+      <TurnIn QuestName="Concerns About Tuurem" QuestId="10104" TurnInName="Andarl" TurnInId="18252"
+					X="-2928.188" Y="3922.56" Z="3.282001" />
     </If>
 
     <If Condition="HasQuest(9792)">
@@ -5079,11 +5086,8 @@
       <TurnIn QuestName="What's Wrong at Cenarion Thicket?" QuestId="9957" TurnInName="Earthbinder Tavgren"
 					TurnInId="18446" X="-1947.203" Y="4689.501" Z="-2.189576" />
     </If>
-    <If Condition="!HasQuest(9968) &amp;&amp; !IsQuestCompleted(9968)">
-      <CustomBehavior File="FlyTo" X="-1947.203" Y="4689.501" Z="-2.189576" />
-      <CustomBehavior File="ForcedDismount" />
-    </If>
-    <PickUp QuestName="Strange Energy" QuestId="9968" GiverName="Earthbinder Tavgren" GiverId="18446"
+
+    <PickUp Nav="Fly" QuestName="Strange Energy" QuestId="9968" GiverName="Earthbinder Tavgren" GiverId="18446"
 				X="-1947.203" Y="4689.501" Z="-2.189576" />
     <PickUp QuestName="Clues in the Thicket" QuestId="9971" GiverName="Earthbinder Tavgren" GiverId="18446"
 				X="-1947.203" Y="4689.501" Z="-2.189576" />
@@ -5242,12 +5246,10 @@ X="-1945.773" Y="4687.774" Z="-2.231679" />
       <TurnIn QuestName="Secrets of the Arakkoa" QuestId="10863" TurnInName="Rilak the Redeemed"
 					TurnInId="22292" TurnInType="Npc" X="-1656.826" Y="5444.883" Z="-40.40486" />
     </If>
-    <If Condition="!HasQuest(10847) &amp;&amp; !IsQuestCompleted(10847)">
-      <CustomBehavior File="FlyTo" DestName="Furnan Skysoar for flight path"
-							X="-2993.202" Y="3871.405" Z="9.39763" />
-      <PickUp QuestName="The Eyes of Skettis" QuestId="10847" GiverName="Rilak the Redeemed" GiverId="22292"
-					X="-1656.826" Y="5444.883" Z="-40.40486" />
-    </If>
+
+    <PickUp Nav="Fly" QuestName="The Eyes of Skettis" QuestId="10847" GiverName="Rilak the Redeemed" GiverId="22292"
+        X="-1656.826" Y="5444.883" Z="-40.40486" />
+
     <!--
 			<PickUp QuestName="The Outcast's Plight" QuestId="10917" GiverName="Vekax" GiverId="22429" />
  -->
@@ -5287,8 +5289,9 @@ X="-1945.773" Y="4687.774" Z="-2.231679" />
         <LootMobs Value="false" />
         <UseMount Value="false"/>
         <While Condition="!IsObjectiveComplete(2,10847)">
+          <MoveTo DestName="Eye of Veil Shienor" X="-1829.041" Y="3938.247" Z="46.54815" />
           <CustomBehavior File="InteractWith" QuestId="10847" QuestObjectiveIndex="2" MobId="185201" WaitTime="4000" MovementBy="NavigatorPreferred"
-									InteractByLooting="true" X="-1698.389" Y="4376.254" Z="53.20021" />
+									X="-1698.389" Y="4376.254" Z="53.20021" />
         </While>
         <UseMount Value="true"/>
         <LootMobs Value="true" />
@@ -5299,8 +5302,11 @@ X="-1945.773" Y="4687.774" Z="-2.231679" />
         <CustomBehavior File="FlyTo" X="-1687.967" Y="4432.479" Z="79.36324" />
         <CustomBehavior File="FlyTo" X="-1631.385" Y="4420.064" Z="54.19151" />
         <CustomBehavior File="ForcedDismount" />
-        <Objective QuestName="The Eyes of Skettis" QuestId="10847" Type="CollectItem" ItemId="25638" MovementBy="NavigatorPreferred"
-						   CollectCount="1" X="-1698.389" Y="4376.254" Z="53.20021" />
+
+        <While Condition="!IsObjectiveComplete(1,10847)">
+          <MoveTo DestName="Eye of Veil Reskk" X="-1698.662" Y="4386.634" Z="52.91504" />
+          <CustomBehavior File="InteractWith" QuestId="10847" QuestObjectiveIndex="1" MobId="185200" WaitTime="4000" MovementBy="NavigatorPreferred" />
+        </While>
         <MoveTo X="-1662.749" Y="4400.116" Z="46.4356" />
       </If>
       <Objective QuestName="Stymying the Arakkoa" QuestId="9986" Type="KillMob" KillCount="1" MobName="Ashkaz"
@@ -6784,12 +6790,12 @@ X="-1945.773" Y="4687.774" Z="-2.231679" />
       <If Condition="Me.IsAlliance" >
         <!--"Portal to Stormwind" -->
         <CustomBehavior File="InteractWith" MobIds="195139" X="-274.9913" Y="931.8889" Z="84.37974" />
-        <CustomBehavior File="LoadProfile" ProfileName="..\[Fly][A - Quest] LK 68-80 [Kick]" RememberProfile="true" />
+        <CustomBehavior File="LoadProfile" ProfileName="..\LK\[Fly][A - Quest] LK 68-80 [Kick]" RememberProfile="true" />
       </If>
 
       <!-- "Portal to Orgrimmar" -->
       <CustomBehavior File="InteractWith" MobIds="195140" X="-221.974" Y="931.4427" Z="84.37974" />
-      <CustomBehavior File="LoadProfile" ProfileName="..\[Fly][H - Quest] LK 68-80 [Kick]" RememberProfile="true" />
+      <CustomBehavior File="LoadProfile" ProfileName="..\LK\[Fly][H - Quest] LK 68-80 [Kick]" RememberProfile="true" />
     </If>
 
     <!-- Blades Edge Mountains Quests -->
@@ -7366,12 +7372,12 @@ X="-1945.773" Y="4687.774" Z="-2.231679" />
       <If Condition="Me.IsAlliance" >
         <!--"Portal to Stormwind" -->
         <CustomBehavior File="InteractWith" MobIds="195139" X="-274.9913" Y="931.8889" Z="84.37974" />
-        <CustomBehavior File="LoadProfile" ProfileName="..\[Fly][A - Quest] LK 68-80 [Kick]" RememberProfile="true" />
+        <CustomBehavior File="LoadProfile" ProfileName="..\LK\[Fly][A - Quest] LK 68-80 [Kick]" RememberProfile="true" />
       </If>
 
       <!-- "Portal to Orgrimmar" -->
       <CustomBehavior File="InteractWith" MobIds="195140" X="-221.974" Y="931.4427" Z="84.37974" />
-      <CustomBehavior File="LoadProfile" ProfileName="..\[Fly][H - Quest] LK 68-80 [Kick]" RememberProfile="true" />
+      <CustomBehavior File="LoadProfile" ProfileName="..\LK\[Fly][H - Quest] LK 68-80 [Kick]" RememberProfile="true" />
     </If>
 
     <CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
