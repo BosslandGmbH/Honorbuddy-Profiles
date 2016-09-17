@@ -392,7 +392,7 @@
             <CustomBehavior File="Misc\RunLua" Lua="if MovieFrame:IsVisible() then MovieFrame:StopMovie() else CinematicFrame_CancelCinematic() end" />
         </If>
         <If Condition="!IsQuestCompleted(14375) &amp;&amp; !IsQuestCompleted(14313)" >
-            <CustomBehavior File="WaitTimer" WaitTime="60000" />
+            <CustomBehavior File="WaitTimer" WaitTime="52000" />
             <CustomBehavior File="InteractWith" TerminateWhen="IsQuestCompleted(14375)" NonCompeteDistance="0"
                             InteractByQuestFrameDisposition="Complete" MobId="36332" Range="8"
                             X="-1821.09" Y="2292.597" Z="42.10082" />
@@ -454,7 +454,44 @@
         <PickUp QuestName="Unleash the Beast" QuestId="14369" GiverName="Lord Godfrey" GiverId="36290" />
         <PickUp QuestName="Save the Children!" QuestId="14368" GiverName="Melinda Hammond" GiverId="36291" />
         <While Condition="HasQuest(14382) &amp;&amp; !IsQuestCompleted(14382)">
-            <CustomBehavior File="SpecificQuests\14382-Gilneas-TwoBySea" />
+            <CustomBehavior File="InteractWith" MobId="36292" NumOfTimes="100" CollectionDistance="200" MobState="DontCare" TerminateWhen="Me.InVehicle" >
+                <HuntingGrounds>
+                    <Hotspot X="-2018.948" Y="2643.801" Z="-1.468046" />
+                    <Hotspot X="-2074.285" Y="2560.56" Z="1.462946" />
+                </HuntingGrounds>
+                <PursuitList>
+                    <PursueUnit Id="36283" Priority="500" PursueWhen="UNIT.CanInteract" />
+                    <PursueUnit Id="36292" Priority="1" PursueWhen="UNIT.IsAlive" />
+                </PursuitList>
+            </CustomBehavior>
+            <If Condition="!IsObjectiveComplete(1, 14382) &amp;&amp; Me.InVehicle" >
+                <DisableBehavior Name="Combat" />
+                <MoveTo Precision="1" X="-2056.638" Y="2612.483" Z="0.5991626" />
+                <CustomBehavior File="RunCode" Code="
+                    Me.SetFacing(2.487444f);
+                    await Coroutine.Sleep(1000);
+                    Lua.DoString(&quot;CastPetAction(1);&quot;);
+                    await Coroutine.Sleep(5000);
+                " />
+                <EnableBehavior Name="Combat" />
+                <CustomBehavior File="KillUntilComplete" MobId="36397" QuestId="14382" QuestObjectiveIndex="1" X="-2100.524" Y="2691.794" Z="1.313946" />
+                <MoveTo X="-2117.377" Y="2660.349" Z="8.179961" />
+                <CustomBehavior File="MyCTM" X="-2107.742" Y="2656.368" Z="0.5985863" />
+            </If>
+            <If Condition="!IsObjectiveComplete(2, 14382) &amp;&amp; Me.InVehicle" >
+                <DisableBehavior Name="Combat" />
+                <MoveTo Precision="1" X="-2127.422" Y="2559.176" Z="7.34024" />
+                <CustomBehavior File="RunCode" Code="
+                    Me.SetFacing(3.122394f);
+                    await Coroutine.Sleep(1000);
+                    Lua.DoString(&quot;CastPetAction(1);&quot;);
+                    await Coroutine.Sleep(5000);
+                " />
+                <EnableBehavior Name="Combat" />
+                <CustomBehavior File="KillUntilComplete" MobId="36399" QuestId="14382" QuestObjectiveIndex="2" X="-2197.342" Y="2594.982" Z="1.723538" />
+                <MoveTo X="-2219.336" Y="2561.437" Z="8.662561" />
+                <CustomBehavior File="MyCTM" X="-2207.892" Y="2557.509" Z="0.9501605" />
+            </If>
         </While>
         <EnableBehavior Name="Pull" />
         <While Condition="HasQuest(14368) &amp;&amp; !IsQuestCompleted(14368)">
