@@ -127,33 +127,33 @@ END INITORDER COMMENT -->
 				<MoveTo QuestId="42455" QuestObjectiveIndex="1" X="-675.4942" Y="4438.937" Z="738.13" />
 				<CustomBehavior File="InteractWith" MobId="107622" GossipOptions="1" QuestId="42455" QuestObjectiveIndex="2" X="-678.44" Y="4443.29" Z="738.13" />
 				<CustomBehavior File="WaitTimer" QuestId="42455" QuestObjectiveIndex="2" WaitTime="25000" />
-				<CustomBehavior File="InteractWith" MobId="250575" QuestId="42455" QuestObjectiveIndex="3" X="-673.4809" Y="4420.087" Z="738.1251" />
+				<CustomBehavior File="InteractWith" MobId="250575" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="42455" QuestObjectiveIndex="3" X="-673.4809" Y="4420.087" Z="738.1251" />
 				<CustomBehavior File="InteractWith" MobId="250576" NumOfTimes="3" QuestId="42455" QuestObjectiveIndex="4" X="-674.7415" Y="4439.713" Z="694.2416" /> <!-- Hoping CR hits orbs for us. -->
 				<CustomBehavior File="InteractWith" MobId="251105"  X="-689.3663" Y="4452.199" Z="695.6881" /> <!-- NOTE: <AddTermination> : Can shut off if we're out of the vault already. -->
 			</While>
 
 			<While Condition="DoQuest(42476, 42477)" >
-				<If Condition="Me.MapId != 0" >
+				<While Condition="Me.MapId != 0" >
 					<If Condition="Me.Z &gt; 605" > <!-- NOTE: <CheckFunction> : Dalaran to Dalaran Portal Room -->
 						<MoveTo X="-850.0136" Y="4460.374" Z="735.6611" />
 						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" TerminateWhen="Me.Z &lt;= 605" />
 					</If>
 					<MoveTo X="-872.7674" Y="4501.16" Z="580.1588" />
-					<CustomBehavior File="InteractWith" MobId="246009" NumOfTimes="5" NonCompeteDistance="0" WaitTime="1000" X="-869.9479" Y="4503.124" Z="580.4584" TerminateWhen="Me.ZoneId != 7502" />
-				</If>
+					<CustomBehavior File="InteractWith" MobId="246009" InteractBlacklistTimeInSeconds="1" NonCompeteDistance="0" WaitTime="1000" X="-869.9479" Y="4503.124" Z="580.4584" TerminateWhen="Me.ZoneId != 7502" />
+				</While>
 
 				<!-- Quest The Deadwind Site -->
 				<MoveTo Nav="Fly" QuestId="42476" QuestObjectiveIndex="2" X="-10946.69" Y="-1739.818" Z="146.1448" />
-				<CustomBehavior File="InteractWith" MobId="250602" InteractByLooting="true" QuestId="42476" QuestObjectiveIndex="3" X="-10934.02" Y="-1729.155" Z="145.7022" />
-				<CustomBehavior File="InteractWith" MobId="250600" InteractByLooting="true" QuestId="42476" QuestObjectiveIndex="4" X="-10908.79" Y="-1708.983" Z="149.6503" />
+				<CustomBehavior File="InteractWith" MobId="250602" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" InteractByLooting="true" QuestId="42476" QuestObjectiveIndex="3" X="-10934.02" Y="-1729.155" Z="145.7022" />
+				<CustomBehavior File="InteractWith" MobId="250600" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" InteractByLooting="true" QuestId="42476" QuestObjectiveIndex="4" X="-10908.79" Y="-1708.983" Z="149.6503" />
 				<CustomBehavior File="WaitTimer" QuestId="42476" QuestObjectiveIndex="5" WaitTime="60000" />
-				<CustomBehavior File="InteractWith" MobId="250611" MovementBy="NavigatorOnly" InteractByLooting="true" QuestId="42476" QuestObjectiveIndex="6" X="-10861.32" Y="-1686.526" Z="148.2902" />
+				<CustomBehavior File="InteractWith" MobId="250611" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" MovementBy="NavigatorOnly" InteractByLooting="true" QuestId="42476" QuestObjectiveIndex="6" X="-10861.32" Y="-1686.526" Z="148.2902" />
 
 				<!-- Quest Daio the Decrepit -->
 				<MoveTo QuestId="42477" QuestObjectiveIndex="2" X="-11689.76" Y="-2387.85" Z="-0.7187544" />
 				<CustomBehavior QuestId="42477" File="ForcedDismount" />
 				<CustomBehavior File="InteractWith" MobId="107716" GossipOptions="1, 1, 1" QuestId="42477" QuestObjectiveIndex="3" X="-11685.33" Y="-2384.259" Z="-0.1785276" />
-				<CustomBehavior File="KillUntilComplete" MobIds="107740, 107799, 107800" QuestId="42477"  />
+				<CustomBehavior File="KillUntilComplete" MobIds="107740, 107799, 107800" QuestId="42477" />
 			</While>
 
 			<If Condition="(HasQuest(42476) || HasQuest(42477) || HasQuest(42455)) &amp;&amp;(IsQuestCompleted(42476) &amp;&amp; IsQuestCompleted(42477) &amp;&amp; IsQuestCompleted(42455)) &amp;&amp; Me.MapId != 1513" > <!-- NOTE: <CheckID> : ID for class hall -->
@@ -161,24 +161,30 @@ END INITORDER COMMENT -->
 				<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsCasting" />
 			</If>
 
-			<TurnIn QuestName="Alodi's Gems" QuestId="42455" TurnInName="Alodi" TurnInId="102846" X="-817.3871" Y="4690.511" Z="939.6633" />
-			<TurnIn QuestName="The Deadwind Site" QuestId="42476" TurnInName="Meryl Felstorm" TurnInId="102700" X="-816.66" Y="4695" Z="939.6638" />
-			<TurnIn QuestName="Daio the Decrepit" QuestId="42477" TurnInName="Meryl Felstorm" TurnInId="102700" X="-816.66" Y="4695" Z="939.6638" />
+			<If Condition="QuestDone(42455, 42476, 42477)" >
+				<MoveTo X="-842.6992" Y="4699.826" Z="939.9926" /> <!-- Avoid trash on the ground -->
+				<TurnIn QuestName="Alodi's Gems" QuestId="42455" TurnInName="Alodi" TurnInId="102846" X="-817.3871" Y="4690.511" Z="939.6633" />
+				<TurnIn QuestName="The Deadwind Site" QuestId="42476" TurnInName="Meryl Felstorm" TurnInId="102700" X="-816.66" Y="4695" Z="939.6638" />
+				<TurnIn QuestName="Daio the Decrepit" QuestId="42477" TurnInName="Meryl Felstorm" TurnInId="102700" X="-816.66" Y="4695" Z="939.6638" />
+			</If>
 
 			<PickUp QuestName="The Mage Hunter" QuestId="42479" GiverName="Meryl Felstorm" GiverId="102700" X="-816.66" Y="4695" Z="939.6638" />
 			<While Condition="DoQuest(42479)" >
 				<If Condition="Me.MapId == 1513" >  <!-- NOTE: <CheckID> : Leaving Class Hall, entering Dalaran. -->
 					<CustomBehavior File="InteractWith" MobId="244510" WaitTime="3000" X="-832.6424" Y="4685.265" Z="939.9924" />
 				</If>
-				<CustomBehavior File="InteractWith" MobId="96813" NonCompeteDistance="0" GossipOptions="2" WaitTime="3000" QuestId="42479" X="-863.934" Y="4298.434" Z="745.3463" />
-				<CustomBehavior File="WaitTimer" WaitTime="180000" TerminateWhen="!Me.InVehicle" />
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0 &amp;&amp; !HasItem(128862)" >
+					<CustomBehavior File="InteractWith" MobId="96813" NonCompeteDistance="0" GossipOptions="2" WaitTime="3000" QuestId="42479" X="-863.934" Y="4298.434" Z="745.3463" />
+					<CustomBehavior File="WaitTimer" WaitTime="180000" TerminateWhen="!Me.InVehicle" />
+				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
 					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-					<CustomBehavior File="InteractWith" MobId="107939" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" >
+					<CustomBehavior File="InteractWith" MobId="107939" NumOfTimes="3" InteractBlacklistTimeInSeconds="60" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" >
 						<HuntingGrounds>
 							<Hotspot X="-317.2778" Y="7847.715" Z="98.30244" />
 							<Hotspot X="-458.2963" Y="7853.967" Z="100.279" />
@@ -195,25 +201,34 @@ END INITORDER COMMENT -->
 					</While>
 				</If>
 
-				<!-- What happened to stage 4? -->
+				<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<CustomBehavior File="InteractWith" MobId="108855" InteractBlacklistTimeInSeconds="1" X="-418.6701" Y="8009.128" Z="66.8905" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+				</While>
+
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
 					<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="Spellsteal" DoWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.HasAura(215996)" >
+						<CustomBehavior File="RunCode" Code="SpellManager.Cast(30449); await Coroutine.Sleep(550);" />
+					</CustomBehavior>
+
 					<!-- NOTE: <AddDoWhen> : Need to spellsteal Quickening off this guy. -->
 					<!-- NOTE: <AddAvoid> : Need to avoid his fel attack -->
 					<CustomBehavior File="KillUntilComplete" MobId="108168" X="-4404.424" Y="477.4653" Z="434.3867" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="Spellsteal" Command="Remove" />
 				</If>
 
-				<If Condition="HasItem(128862)" >
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
 					<CustomBehavior File="InteractWith" MobId="251049" InteractByLooting="true" WaitTime="1500" X="-4384.41" Y="471.0781" Z="436.1095" />
 					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
 					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
-
-					<CustomBehavior File="MyCTM" X="-4366.955" Y="440.7726" Z="440.7087" /> <!--  TerminateWhen="ME OUT OF AREA -->
-
-					<CustomBehavior File="InteractWith" MobId="247024" X="-404.3316" Y="8008.815" Z="66.67653" />
 				</If>
 			</While>
+			<If Condition="QuestDone(42479) &amp;&amp; HasItem(128862) &amp;&amp; Me.MapId != 1513" >
+				<CustomBehavior File="MyCTM" X="-4366.955" Y="440.7726" Z="440.7087" TerminateWhen="Me.ZoneId == 7334" /> <!--  TerminateWhen="ME OUT OF AREA -->
+				<CustomBehavior File="InteractWith" MobId="247024" X="-404.3316" Y="8008.815" Z="66.67653" />
+			</If>
 			<TurnIn QuestName="The Mage Hunter" QuestId="42479" TurnInName="Meryl Felstorm" TurnInId="102700" X="-798.9618" Y="4702.451" Z="939.9674" />
 		<!-- END Story: Artifact Weapon - Ebonchill -->
 
