@@ -4661,7 +4661,7 @@
 
       <If Condition="HasItem(35671)">
         <!-- For those noobs that like to restart and not use ball -->
-        <CustomBehavior File="UseItem" ItemId="35671" />
+        <CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:35671&quot;)" WaitTime="2000" />
       </If>
 
       <CustomBehavior File="FlyTo" QuestId="11912" DestName="Frostberry Bushes" X="3607.986" Y="6958.359" Z="170.6434" />
@@ -4816,22 +4816,27 @@
         <MoveTo X="3576.688" Y="6653.484" Z="195.2788" />
       </If>
       <PickUp QuestName="Drake Hunt" QuestId="11919" GiverName="Raelorasz" GiverId="26117" Nav="Fly" />
+      <EnableBehavior Name="Combat" />
       <While Condition="HasQuest(11919) &amp;&amp; !IsQuestCompleted(11919) &amp;&amp; !Me.HasAura(46691)">
         <MoveTo Nav="Fly" QuestId="11919" DestName="get a drake" X="3722.458" Y="7341.707" Z="218.4333" />
         <CustomBehavior File="FlyTo" QuestId="11919" DestName="get a drake" X="3751.14" Y="7277.753" Z="213.7165" />
         <CustomBehavior File="ForcedDismount" />
-        <DisableBehavior Name="Combat" />
-        <CustomBehavior File="Misc\RunLua" Lua="PetPassiveMode();" />
-        <CustomBehavior File="InteractWith" QuestId="11919" MobId="26127" InteractByUsingItemId="35506"
-								Range="80" CollectionDistance="80" TerminateWhen="Me.HasAura(46691)" MobState="Alive"
-								PreInteractMountStrategy="DismountOrCancelShapeshift" X="3751.14" Y="7277.753" Z="213.7165" />
-        <CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="!Me.Combat" />
+
+        <If Condition="Unit(26127) != null &amp;&amp; Unit(26127).Distance &lt; 80">
+          <DisableBehavior Name="Combat" />
+          <CustomBehavior File="Misc\RunLua" Lua="PetPassiveMode();" />
+          <CustomBehavior File="InteractWith" QuestId="11919" MobId="26127" InteractByUsingItemId="35506"
+                  Range="80" CollectionDistance="80" TerminateWhen="Me.HasAura(46691)" MobState="Alive"
+                  PreInteractMountStrategy="DismountOrCancelShapeshift" X="3751.14" Y="7277.753" Z="213.7165" />
+          <CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="!Me.Combat" />
+        </If>
         <EnableBehavior Name="Combat" />
         <If Condition="Me.HasAura(46691)" >
           <CustomBehavior File="FlyTo" DestName="Turnin Quest" X="3573.125" Y="6651.071" Z="195.1808" />
           <CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="IsQuestCompleted(11919)" />
         </If>
       </While>
+      <EnableBehavior Name="Combat" />
       <If Condition="HasQuest(11919) &amp;&amp; IsQuestCompleted(11919)">
         <CustomBehavior File="FlyTo" DestName="Turnin Quest" X="3578.918" Y="6655.438" Z="195.3858" />
         <CustomBehavior File="ForcedDismount" />
@@ -4919,7 +4924,7 @@
 
         <CustomBehavior File="WaitTimer" WaitTime="15000"
 								GoalText="Waiting for Keristrsza's timer! {TimeRemaining}" />
-        <CustomBehavior File="UseItem" ItemId="35671" />
+        <CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:35671&quot;)" WaitTime="2000" />
         <CustomBehavior File="WaitTimer" WaitTime="4000" GoalText="Waiting for Keristrsza {TimeRemaining}" />
         <PickUp QuestName="Keristrasza" QuestId="11946" GiverName="Keristrasza" GiverId="26206"
 						X="3578.918" Y="6655.438" Z="195.3858" Nav="Fly" />
@@ -4932,7 +4937,7 @@
         <CustomBehavior File="FlyTo" DestName="Turnin Quest" X="3578.918" Y="6655.438" Z="195.3858" />
         <CustomBehavior File="ForcedDismount" />
 
-        <CustomBehavior File="UseItem" ItemId="35671" />
+        <CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:35671&quot;)" WaitTime="2000" />
         <CustomBehavior File="WaitTimer" WaitTime="4000" GoalText="Waiting for Keristrsza {TimeRemaining}" />
         <PickUp QuestName="Keristrasza" QuestId="11946" GiverName="Keristrasza" GiverId="26206"
 						X="3578.918" Y="6655.438" Z="195.3858" Nav="Fly" />
@@ -4942,7 +4947,7 @@
 						X="3578.918" Y="6655.438" Z="195.3858" Nav="Fly" />
       </If>
       <If Condition="HasQuest(11946) &amp;&amp; IsQuestCompleted(11946)">
-        <CustomBehavior File="UseItem" ItemId="35671" />
+        <CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:35671&quot;)" WaitTime="2000" />
         <CustomBehavior File="WaitTimer" WaitTime="4000" GoalText="Waiting for Keristrsza {TimeRemaining}" />
         <TurnIn QuestName="Keristrasza" QuestId="11946" TurnInName="Keristrasza" TurnInId="26206"
 						X="3578.918" Y="6655.438" Z="195.3858" Nav="Fly" />
@@ -4951,7 +4956,7 @@
       </If>
       <If Condition="!HasQuest(11951) &amp;&amp; !IsQuestCompleted(11951)">
         <CustomBehavior File="ForcedDismount" />
-        <CustomBehavior File="UseItem" ItemId="35671" />
+        <CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:35671&quot;)" WaitTime="2000" />
         <CustomBehavior File="WaitTimer" WaitTime="4000" GoalText="Waiting for Keristrsza {TimeRemaining}" />
         <PickUp QuestName="Bait and Switch" QuestId="11951" GiverName="Keristrasza" GiverId="26206"
 						X="3578.918" Y="6655.438" Z="195.3858" Nav="Fly" />
@@ -4988,7 +4993,7 @@
         <CustomBehavior File="FlyTo" Land="true" DestName="Keristrasza for Saragosa's End" X="3614.556" Y="6970.033" Z="170.109" />
         <CustomBehavior File="ForcedDismount" />
         <CustomBehavior File="WaitTimer" WaitTime="4000" GoalText="Waiting to stop moving:{TimeRemaining}" />
-        <CustomBehavior File="UseItem" ItemId="35671" />
+        <CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:35671&quot;)" WaitTime="2000" />
         <CustomBehavior File="WaitTimer" WaitTime="4000" GoalText="Waiting for Keristrsza: {TimeRemaining}" />
         <CustomBehavior File="InteractWith" MobId="26206" InteractByGossipOptions="1" />
         <CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for teleport: {TimeRemaining}" />
@@ -5000,7 +5005,7 @@
       </While>
       <If Condition="HasQuest(11957) &amp;&amp; IsQuestCompleted(11957)">
         <CustomBehavior File="WaitTimer" WaitTime="120000" GoalText="Waiting for Keristraza's timer" />
-        <CustomBehavior File="UseItem" ItemId="35671" />
+        <CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:35671&quot;)" WaitTime="2000" />
         <CustomBehavior File="WaitTimer" WaitTime="4000" GoalText="Waiting for Keristrsza {TimeRemaining}" />
         <TurnIn QuestName="Saragosa's End" QuestId="11957" TurnInName="Keristrasza" TurnInId="26206"
 						X="4022.919" Y="7296.054" Z="635.97" Nav="Fly" />
@@ -5009,13 +5014,13 @@
       </If>
       <If Condition="!HasQuest(11967) &amp;&amp; !IsQuestCompleted(11967)">
         <CustomBehavior File="ForcedDismount" />
-        <CustomBehavior File="UseItem" ItemId="35671" />
+        <CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:35671&quot;)" WaitTime="2000" />
         <CustomBehavior File="WaitTimer" WaitTime="4000" GoalText="Waiting for Keristrsza {TimeRemaining}" />
         <PickUp QuestName="Mustering the Reds" QuestId="11967" GiverName="Keristrasza"
 						GiverId="26206" X="4022.919" Y="7296.054" Z="635.97" Nav="Fly" />
       </If>
       <If Condition="HasQuest(11967) &amp;&amp; IsQuestCompleted(11967)">
-        <CustomBehavior File="UseItem" ItemId="35671" />
+        <CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:35671&quot;)" WaitTime="2000" />
         <CustomBehavior File="WaitTimer" WaitTime="4000" GoalText="Waiting for Keristrsza {TimeRemaining}" />
         <CustomBehavior File="InteractWith" MobId="26206" InteractByGossipOptions="1,1" />
         <CustomBehavior File="WaitTimer" WaitTime="3000" GoalText="Waiting for port {TimeRemaining}" />
