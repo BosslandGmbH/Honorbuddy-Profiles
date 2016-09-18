@@ -10737,36 +10737,59 @@
 					GiverId="42349" X="-12711.44" Y="-2894.448" Z="1.392364" />
       <TurnIn QuestName="Advice from the Cenarion Circle" TurnInName="Cenarion Observer Shayana" QuestId="26185"
 					TurnInId="42352" X="-12701.84" Y="-2807.339" Z="5.820333" />
-      <PickUp QuestName="Demoniac Vessel" QuestId="26186" GiverName="Cenarion Observer Shayana" GiverId="42352"
+      <PickUp Nav="Fly" QuestName="Demoniac Vessel" QuestId="26186" GiverName="Cenarion Observer Shayana" GiverId="42352"
 					X="-12701.84" Y="-2807.339" Z="5.820333" />
-      <If Condition="HasQuest(26186) &amp;&amp; !IsQuestCompleted(26186)">
-        <CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="1000" TerminateWhen="GetItemCount(57177) &gt;=4 &amp;&amp; GetItemCount(57178) &gt;=20 &amp;&amp; GetItemCount(57179) &gt;=2" >
-          <HuntingGrounds>
-            <Hotspot X="-11897.3" Y="-2551.494" Z="-23.27049" />
-            <Hotspot X="-11875.39" Y="-2674.74" Z="0.1754021" />
-            <Hotspot X="-12039.87" Y="-2649.746" Z="-23.14241" />
-            <Hotspot X="-12084.9" Y="-2580.866" Z="-24.86729" />
-            <Hotspot X="-11975.21" Y="-2479.839" Z="-25.08699" />
-          </HuntingGrounds>
-          <PursuitList>
-            <PursueUnit Id="42336" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; GetItemCount(57177) &lt; 4" />
-            <PursueUnit Id="42337" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; GetItemCount(57178) &lt; 20" />
-            <PursueUnit Id="42338" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; GetItemCount(57179) &lt; 2" />
-          </PursuitList>
-        </CustomBehavior>
 
-        <MoveTo X="-12701.84" Y="-2807.339" Z="5.820333" />
-        <While Condition="HasQuest(26186) &amp;&amp; !IsQuestCompleted(26186)">
-          <CustomBehavior File="UseItem" ItemId="57177" NumOfTimes="1" WaitTime="1000" />
-          <CustomBehavior File="UseItem" ItemId="57178" NumOfTimes="20" WaitTime="1000" />
-          <CustomBehavior File="UseItem" ItemId="57179" NumOfTimes="2" WaitTime="1000" />
-          <CustomBehavior File="UseItem" ItemId="57182" NumOfTimes="1" WaitTime="5000" />
-          <CustomBehavior File="UseItem" ItemId="57180" NumOfTimes="1" WaitTime="7000" />
-          <CustomBehavior File="WaitTimer" WaitTime="3000" GoalText="Waiting for quest to complete {TimeRemaining}" />
+      <If Condition="HasQuest(26186) &amp;&amp; !IsQuestCompleted(26186)">
+        <If Condition="!HasItem(57180)">
+          <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" QuestId="26186" TerminateWhen="GetItemCount(57177) &gt;=4 &amp;&amp; GetItemCount(57178) &gt;=20 &amp;&amp; GetItemCount(57179) &gt;=2" >
+            <HuntingGrounds>
+              <Hotspot X="-11897.3" Y="-2551.494" Z="-23.27049" />
+              <Hotspot X="-11875.39" Y="-2674.74" Z="0.1754021" />
+              <Hotspot X="-12039.87" Y="-2649.746" Z="-23.14241" />
+              <Hotspot X="-12084.9" Y="-2580.866" Z="-24.86729" />
+              <Hotspot X="-11975.21" Y="-2479.839" Z="-25.08699" />
+            </HuntingGrounds>
+            <PursuitList>
+              <PursueUnit Id="42336" PursueWhen="GetItemCount(57177) &lt; 4" />
+              <PursueUnit Id="42337" PursueWhen="GetItemCount(57178) &lt; 20" />
+              <PursueUnit Id="42338" PursueWhen="GetItemCount(57179) &lt; 2" />
+            </PursuitList>
+          </CustomBehavior>
+        </If>
+
+        <MoveTo DestName="Surwich" QuestId="26186" X="-12701.84" Y="-2807.339" Z="5.820333" />
+
+        <While Condition="GetItemCount(57177) &gt;= 4 &amp;&amp; !HasItem(57180)">
+          <CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:57177&quot;)" WaitTime="2000" />
         </While>
+
+        <While Condition="GetItemCount(57181) &lt; 20 &amp;&amp; HasItem(57178)">
+          <CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:57178&quot;)" WaitTime="2000" />
+        </While>
+
+        <While Condition="HasItem(57179) &amp;&amp; GetItemCount(57182) &lt; 2">
+          <CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:57179&quot;)" WaitTime="2000" />
+        </While>
+
+        <If Condition="HasItem(57182)">
+          <CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:57182&quot;)" WaitTime="10000" />
+        </If>
+
+        <If Condition="HasItem(57183)">
+          <CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:57183&quot;)" WaitTime="2000" />
+        </If>
       </If>
-      <TurnIn QuestName="Demoniac Vessel" QuestId="26186" TurnInName="Mayor Charlton Connisport" TurnInId="42349" />
-      <PickUp QuestName="The Downfall of Marl Wormthorn" QuestId="26187" GiverName="Mayor Charlton Connisport" GiverId="42349" />
+
+
+      <If Condition="HasQuest(26186) &amp;&amp; IsQuestCompleted(26186)">
+        <TurnIn QuestName="Demoniac Vessel" QuestId="26186" TurnInName="Mayor Charlton Connisport" TurnInId="42349" />
+      </If>
+      
+      <If Condition="IsQuestCompleted(26186)">
+        <PickUp QuestName="The Downfall of Marl Wormthorn" QuestId="26187" GiverName="Mayor Charlton Connisport" GiverId="42349" />
+      </If>
+      
       <While Condition="HasQuest(26187) &amp;&amp; !IsQuestCompleted(26187)">
         <MoveTo X="-12248.25" Y="-2506.964" Z="34.21373" />
         <MoveTo X="-12238.83" Y="-2464.189" Z="38.91131" />
