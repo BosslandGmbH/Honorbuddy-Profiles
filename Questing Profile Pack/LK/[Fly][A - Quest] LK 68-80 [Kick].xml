@@ -6345,15 +6345,20 @@
         <Objective QuestName="Tools to Get the Job Done" QuestId="11475" Type="CollectItem" ItemId="34131"
                            CollectCount="1" />
       </If>
-      <If Condition="HasQuest(11477) &amp;&amp; !IsQuestCompleted(11477)">
-        <CustomBehavior File="FlyTo" DestName="Out of My Element?" X="1154.241" Y="-6217.739" Z="246.5917" />
-        <CustomBehavior File="ForcedDismount" />
 
-        <Objective QuestName="Out of My Element?" QuestId="11477" Type="KillMob" MobId="23676" KillCount="10" />
-        <Objective QuestName="Out of My Element?" QuestId="11477" Type="KillMob" MobId="23674" KillCount="2" />
-        <Objective QuestName="Out of My Element?" QuestId="11477" Type="KillMob" MobId="23711" KillCount="5" />
-        <CustomBehavior File="ForcedDismount" />
-      </If>
+      <CustomBehavior File="FlyTo" QuestId="11477" DestName="Out of My Element?" X="1154.241" Y="-6217.739" Z="246.5917" />
+      <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" QuestId="11477" >
+        <HuntingGrounds>
+          <Hotspot Name="Ivald's Ruin 0" X="1154.241" Y="-6217.739" Z="246.5917" />
+          <Hotspot Name="Ivald's Ruin 1" X="1180.684" Y="-6161.788" Z="221.4905" />
+        </HuntingGrounds>
+        <PursuitList>
+          <PursueUnit Id="23676" PursueWhen="!IsObjectiveComplete(1,11477)" />
+          <PursueUnit Id="23711" PursueWhen="!IsObjectiveComplete(1,11477)" />
+          <PursueUnit Id="23674" PursueWhen="!IsObjectiveComplete(1,11477)" />
+        </PursuitList>
+      </CustomBehavior>
+      
       <If Condition="HasQuest(11477) &amp;&amp; IsQuestCompleted(11477)">
         <CustomBehavior File="FlyTo" DestName="Turnin: Out of My Element?" X="1123.73" Y="-6161.873" Z="260.2917" />
         <CustomBehavior File="ForcedDismount" />
