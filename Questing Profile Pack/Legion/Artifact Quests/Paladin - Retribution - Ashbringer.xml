@@ -124,13 +124,16 @@ END INITORDER COMMENT -->
 			</While>
 			<TurnIn QuestName="Seeking Guidance" QuestId="42770" TurnInName="Lord Maxwell Tyrosus" TurnInId="108776" X="1100.592" Y="-1800.389" Z="62.01579" />
 
-			<PickUp QuestName="Sacred Ground" QuestId="42772" GiverName="High Priest Thel'danis" GiverId="108777" X="1101.53" Y="-1795.161" Z="61.77362" />
+			<If Condition="NeedsQuest(42772)" > <!-- The bot can't recognize this quest has been picked up for some reason. -->
+				<CustomBehavior File="InteractWith" MobId="108777" X="1101.53" Y="-1795.161" Z="61.77362" />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click();" />
+			</If>
 			<PickUp QuestName="Keeping the Peace" QuestId="42771" GiverName="Mehlar Dawnblade" GiverId="108778" X="1101.997" Y="-1791.12" Z="61.89447" />
 
 			<While Condition="DoQuest(42772)" >
-				<CustomBehavior File="InteractWith" MobId="251341" WaitForNpcs="false" QuestId="42772" QuestObjectiveIndex="1" X="1064.783" Y="-1747.601" Z="61.63756" />
-				<CustomBehavior File="InteractWith" MobId="251342" WaitForNpcs="false" QuestId="42772" QuestObjectiveIndex="1" X="1142.837" Y="-1725.241" Z="64.42095" />
-				<CustomBehavior File="InteractWith" MobId="251336" WaitForNpcs="false" QuestId="42772" QuestObjectiveIndex="1" X="1183.33" Y="-1777.835" Z="61.93257" />
+				<CustomBehavior File="InteractWith" MobId="251341" PreInteractMountStrategy="DismountOrCancelShapeshift" NonCompeteDistance="0" WaitForNpcs="false" QuestId="42772" QuestObjectiveIndex="1" X="1064.783" Y="-1747.601" Z="61.63756" />
+				<CustomBehavior File="InteractWith" MobId="251342" PreInteractMountStrategy="DismountOrCancelShapeshift" NonCompeteDistance="0" WaitForNpcs="false" QuestId="42772" QuestObjectiveIndex="1" X="1142.837" Y="-1725.241" Z="64.42095" />
+				<CustomBehavior File="InteractWith" MobId="251336" PreInteractMountStrategy="DismountOrCancelShapeshift" NonCompeteDistance="0" WaitForNpcs="false" QuestId="42772" QuestObjectiveIndex="1" X="1183.33" Y="-1777.835" Z="61.93257" />
 			</While>
 
 			<While Condition="DoQuest(42771)" >
@@ -147,22 +150,27 @@ END INITORDER COMMENT -->
 			<TurnIn QuestName="Sacred Ground" QuestId="42772" TurnInName="High Priest Thel'danis" TurnInId="108777" X="1101.53" Y="-1795.161" Z="61.77359" />
 			<TurnIn QuestName="Keeping the Peace" QuestId="42771" TurnInName="Mehlar Dawnblade" TurnInId="108778" X="1101.997" Y="-1791.12" Z="61.89468" />
 
-			<PickUp QuestName="The Light Reveals" QuestId="42773" GiverName="Lord Maxwell Tyrosus" GiverId="108894" X="1019.042" Y="-1802.556" Z="77.24113" />
+			<PickUp QuestName="The Light Reveals" QuestId="42773" GiverName="Lord Maxwell Tyrosus" GiverId="108776" X="1019.042" Y="-1802.556" Z="77.24113" />
 			<While Condition="DoQuest(42773)" >
 				<MoveTo X="980.5043" Y="-1821.989" Z="80.48727" />
 				<CustomBehavior File="WaitTimer" QuestId="42773" QuestObjectiveIndex="1" WaitTime="25000" />
-				<CustomBehavior File="InteractWith" MobId="251346" QuestId="42773" QuestObjectiveIndex="2" X="979.3524" Y="-1822.806" Z="80.4986" />
+				<CustomBehavior File="InteractWith" MobId="251346" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="42773" QuestObjectiveIndex="2" X="979.3524" Y="-1822.806" Z="80.4986" />
 				<CustomBehavior File="WaitTimer" QuestId="42773" QuestObjectiveIndex="2" WaitTime="90000" />
 			</While>
-			<TurnIn QuestName="The Light Reveals" QuestId="42773" TurnInName="Lord Maxwell Tyrosus" TurnInId="108776" X="981.9078" Y="-1823.849" Z="80.48733" />
+			<If Condition="QuestDone(42773)" > <!-- Player is stunned -->
+				<CustomBehavior File="InteractWith" MobId="108776" X="981.9078" Y="-1823.849" Z="80.48733" />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+			</If>
 
 			<PickUp QuestName="Hope Prevails" QuestId="42774" GiverName="Lord Maxwell Tyrosus" GiverId="108776" X="981.9078" Y="-1823.849" Z="80.48733" />
 			<TurnIn Nav="Fly" QuestName="Hope Prevails" QuestId="42774" TurnInName="Lord Maxwell Tyrosus" TurnInId="90369" X="2273.372" Y="-5282.353" Z="81.99033" />
 
 			<PickUp QuestName="The Search for the Highlord" QuestId="38376" GiverName="Lord Maxwell Tyrosus" GiverId="90369" X="2273.372" Y="-5282.353" Z="81.99033" />
 			<While Condition="DoQuest(38376)" >
-				<CustomBehavior File="InteractWith" MobId="90384" X="2278.236" Y="-5277.413" Z="82.07002" />
-				<CustomBehavior File="WaitTimer" WaitTime="23000" TerminateWhen="!Me.IsFlying" />
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0 &amp;&amp; !HasItem(120978)" >
+					<CustomBehavior File="InteractWith" MobId="90384" X="2278.236" Y="-5277.413" Z="82.07002" />
+					<CustomBehavior File="WaitTimer" WaitTime="23000" TerminateWhen="!Me.IsFlying" />
+				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
 					<CustomBehavior File="WaitTimer" WaitTime="15000" /> <!-- Wait for Maxwell's dialog -->
@@ -178,7 +186,6 @@ END INITORDER COMMENT -->
 					<MoveTo X="-2669.04" Y="-12.99833" Z="52.49359" />
 					<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Me.Combat" />
 					<CustomBehavior File="MyCTM" X="-2692.915" Y="-29.28548" Z="50.0119" />
-					<MoveTo X="-2669.04" Y="-12.99833" Z="52.49359" />
 					<!-- NOTE: <AddHook> : Check SpellId.  WowHead is showing two of the same Drain Life spells.  The other Id is: 182217 -->
 					<CustomBehavior File="Hooks\DoWhen" ActivityName="RebukeDrainLife" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.ChanneledCastingSpellId == 221309 &amp;&amp; (SpellManager.CanCast(96231) || SpellManager.CanCast(853))" >
 						<CustomBehavior File="RunCode" Code="
@@ -200,7 +207,7 @@ END INITORDER COMMENT -->
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
-					<CustomBehavior File="WaitTimer" WaitTime="7000" />
+					<CustomBehavior File="WaitTimer" WaitTime="11000" />
 					<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
 					<CustomBehavior File="WaitTimer" WaitTime="12000" />
 				</If>
@@ -211,7 +218,7 @@ END INITORDER COMMENT -->
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
 					<MoveTo X="-2747.607" Y="-79.14422" Z="46.63483" />
-					<CustomBehavior File="WaitTimer" QuestId="38376" WaitTime="30000" />
+					<CustomBehavior File="WaitTimer" WaitTime="30000" />
 				</If>
 			</While>
 			<TurnIn QuestName="The Search for the Highlord" QuestId="38376" TurnInName="Lord Maxwell Tyrosus" TurnInId="91144" X="-2753.23" Y="-86.0365" Z="46.63651" />
@@ -223,7 +230,7 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="InteractWith" MobId="91145" QuestId="42811" QuestObjectiveIndex="1" X="-2728.144" Y="-59.01439" Z="46.06541" />
 					<CustomBehavior File="WaitTimer" WaitTime="17000" TerminateWhen="!Me.IsFlying" />
 				</If>
-				<CustomBehavior File="InteractWith" MobId="245526" QuestId="38576" QuestObjectiveIndex="3" X="2300.601" Y="-5339.003" Z="90.37598" />
+				<CustomBehavior File="InteractWith" MobId="245526" NonCompeteDistance="0" IgnoreLoSToTarget="true" X="2300.601" Y="-5339.003" Z="90.37598" />
 				<MoveTo X="2296.906" Y="-5335.53" Z="90.75294" />
 				<CustomBehavior File="MyCTM" X="2321.091" Y="-5358.607" Z="71.31615" />
 			</While>
