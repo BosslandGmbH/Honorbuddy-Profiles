@@ -115,6 +115,7 @@ END INITORDER COMMENT -->
 			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
 					async Task VehicleMove(WoWPoint moveTo)
 					{
+						if (!StyxWoW.Me.InVehicle) return;
 						while (Me.Location.Distance(moveTo) >= 5)
 						{
 							Navigator.MoveTo(moveTo);
@@ -125,6 +126,7 @@ END INITORDER COMMENT -->
 
 					async Task VehicleKill(uint unitId)
 					{
+						if (!StyxWoW.Me.InVehicle) return;
 						WoWUnit killMe = Unit(unitId, u => u.IsAlive);
 						if (killMe == null || Blacklist.Contains(killMe, BlacklistFlags.Combat)) return;
 
@@ -148,6 +150,7 @@ END INITORDER COMMENT -->
 
 					async Task VehicleCombat(WoWUnit vehicleKill)
 					{
+						if (!StyxWoW.Me.InVehicle) return;
 						if (vehicleKill.Distance > 5) return;
 						if (Me.CurrentTarget != vehicleKill)
 						{
@@ -165,6 +168,7 @@ END INITORDER COMMENT -->
 
 					async Task CombatAwareness()
 					{
+						if (!StyxWoW.Me.InVehicle) return;
 						var killArray = ObjectManager.GetObjectsOfType<WoWUnit>().Where(u => u.IsTargetingMeOrPet && u.Distance <= 5);
 						if (killArray == null) return;
 
@@ -182,6 +186,7 @@ END INITORDER COMMENT -->
 
 					async Task VehiclePickUp(uint questId, uint unitId, WoWPoint giverSpot)
 					{
+						if (!StyxWoW.Me.InVehicle) return;
 						if (!NeedsQuest(questId)) return;
 						Logging.Write(System.Windows.Media.Colors.Yellow, $"[ProfileBase]: Moving to PickUp questId {questId}");
 						while (Me.Location.Distance(giverSpot) >= 10)
@@ -214,6 +219,7 @@ END INITORDER COMMENT -->
 
 					async Task VehicleTurnIn(uint questId, uint unitId, WoWPoint giverSpot)
 					{
+						if (!StyxWoW.Me.InVehicle) return;
 						if (!QuestDone(questId)) return;
 						Logging.Write(System.Windows.Media.Colors.Yellow, $"[ProfileBase]: Moving to TurnIn questId {questId}");
 						while (Me.Location.Distance(giverSpot) >= 10)
