@@ -128,17 +128,18 @@ END INITORDER COMMENT -->
 					<MoveTo Nav="Run" X="1616.658" Y="1949.044" Z="260.4965" />
 				</If>
 
-				<!-- NOTE: <ConfirmWorkingAvoids> : The Shao-Tien Spirit warriors have two ground effects they cast. 224521, 126913 -->
-				<CustomBehavior File="Hooks\Avoid" AvoidName="ThundersCall" Command="Add" ObjectId="64915" Radius="6" />
-				<CustomBehavior File="Hooks\Avoid" AvoidName="MoltenFists" Command="Add" ObjectType="AreaTrigger" ObjectId="224521" Radius="6" />
-				<!-- NOTE: <ConfirmWorkingAvoids> : Traps on the ground.  Check reaction flags/etc.  I think lightning tiles are always safe. -->
-
-
+				<CustomBehavior File="Hooks\Avoid" AvoidName="ThundersCall" Command="Add" ObjectId="12594" ObjectType="AreaTrigger" Radius="6" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="MoltenFists" Command="Add" ObjectType="AreaTrigger" ObjectId="12592" Radius="6" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="MoguCrushingSlam" ObjectId="110551" ObjectType="Npc" Radius="10" AvoidLocationProducer="UNIT.Location.RayCast(UNIT.Rotation, 10)" AvoidWhen="UNIT.CastingSpellId == 224512" />
+				
+				
 				<If Condition="!IsObjectiveComplete(4, 43338)" >
-					<CustomBehavior File="InteractWith" MobId="211664" QuestId="43338" X="1798.449" Y="1878.323" Z="260.8267" /> <!-- Can remove if navigator handles opening it -->
-					<!-- NOTE: <AddAvoid> Mob interacted with below shoots a cone attack, and does a charge-up AoE around itself.  Low priority, both attacks don't seem to do much damage. -->
+					<CustomBehavior File="Hooks\Avoid" AvoidName="LightningBreath" ObjectId="110675" ObjectType="Npc" Radius="10" AvoidLocationProducer="UNIT.Location.RayCast(UNIT.Rotation, 12)" AvoidWhen="UNIT.CastingSpellId == 224554" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="LightningAoE" ObjectId="110675" ObjectType="Npc" Radius="17" AvoidWhen="UNIT.CastingSpellId == 224549" />
+					
 					<CustomBehavior File="InteractWith" MobId="110675" MobState="Dead" InteractByLooting="true" QuestId="43338" QuestObjectiveIndex="4" X="1727.575" Y="1906.255" Z="223.2648" />
-					<CustomBehavior File="InteractWith" MobId="211664" IgnoreLoSToTarget="true" QuestId="43338" X="1798.449" Y="1878.323" Z="260.8267" /> <!-- Can remove if navigator handles opening it -->
+					<CustomBehavior File="Hooks\Avoid" AvoidName="LightningBreath" Command="Remove" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="LightningBreath" Command="Remove" />
 				</If>
 
 				<If Condition="!IsObjectiveComplete(3, 43338)" >
@@ -146,39 +147,83 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="Hooks\DoWhen" ActivityName="Cleanse_CurseOfStone" AllowUseDuringCombat="true" UseWhen="Me.HasAura(224563)" >
 						<CustomBehavior File="RunCode"><![CDATA[
 									SpellManager.StopCasting();
-									await Coroutine.Wait(3000, ()=> !StyxWoW.Me.IsCasting && !SpellManager.GlobalCooldown);
+									await Coroutine.Wait(3000, () => !StyxWoW.Me.IsCasting && !SpellManager.GlobalCooldown && SpellManager.CanCast("Cleanse Spirit"));
 									SpellManager.Cast("Cleanse Spirit");
 							]]>
 						</CustomBehavior>
-						<CustomBehavior File="WaitTimer" WaitTime="750" />
 					</CustomBehavior>
 					<!-- Devastating Slam: 224664
 						Upheaving Stomp: 224646
 					-->
-					<CustomBehavior File="Hooks\Avoid" AvoidName="DevastatingSlam" Command="Add" ObjectId="110660" Radius="6" AvoidWhen="UNIT.CastingSpellId == 224664" AvoidLocationProducer="UNIT.Location.RayCast(UNIT.Rotation, 8)" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="DevastatingSlam" Command="Add" ObjectId="110660" Radius="10" AvoidWhen="UNIT.CastingSpellId == 224664" AvoidLocationProducer="UNIT.Location.RayCast(UNIT.Rotation, 10)" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="UpheavingStomp" Command="Add" ObjectId="110660" Radius="16" AvoidWhen="UNIT.CastingSpellId == 224646" />
 					<CustomBehavior File="InteractWith" MobId="110660" WaitTime="5000" QuestId="43338" QuestObjectiveIndex="3" X="1774.629" Y="1965.28" Z="240.3492" />
-					<CustomBehavior File="InteractWith" MobId="110660" MobState="Dead" InteractByLooting="true" QuestId="43338" QuestObjectiveIndex="3" X="1774.629" Y="1965.28" Z="240.3492" />
+					<CustomBehavior File="KillUntilComplete" MobId="110660" QuestId="43338" QuestObjectiveIndex="3" X="1774.629" Y="1965.28" Z="240.3492" />
 
-					<CustomBehavior File="Hooks\DoWhen" ActivityName="DevastatingSlam" Command="Remove" />
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="Cleanse_CurseOfStone" Command="Remove" />
 					<CustomBehavior File="Hooks\Avoid" AvoidName="DevastatingSlam" Command="Remove" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="UpheavingStomp" Command="Remove" />
 				</If>
 
 				<If Condition="!IsObjectiveComplete(2, 43338)" >
-					<CustomBehavior File="Hooks\DoWhen" ActivityName="Purge_FlameWreathedWeapon" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.Entry == 110582 &amp;&amp; Me.CurrentTarget.HasAura(224567)" >
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="Purge_FlameWreathedWeapon" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.Entry == 110582 &amp;&amp; Me.CurrentTarget.HasAura(224567) &amp;&amp; SpellManager.CanCast(370)" >
 						<CustomBehavior File="RunCode"><![CDATA[
 									SpellManager.StopCasting();
 									await Coroutine.Wait(3000, ()=> !StyxWoW.Me.IsCasting && !SpellManager.GlobalCooldown);
-									SpellManager.Cast("Purge");
+									SpellManager.Cast(370);
 							]]>
 						</CustomBehavior>
-						<CustomBehavior File="WaitTimer" WaitTime="750" />
 					</CustomBehavior>
-					<CustomBehavior File="InteractWith" MobId="110582" MobState="Dead" InteractByLooting="true" QuestId="43338" QuestObjectiveIndex="2" X="1691.686" Y="1779.927" Z="253.5886" />
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="Windshear" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.IsCasting &amp;&amp; SpellManager.CanCast(57994)" >
+						<CustomBehavior File="RunCode"><![CDATA[
+									SpellManager.StopCasting();
+									await Coroutine.Wait(3000, ()=> !StyxWoW.Me.IsCasting && !SpellManager.GlobalCooldown);
+									SpellManager.Cast(57994);
+							]]>
+						</CustomBehavior>
+					</CustomBehavior>
+					<!-- <CustomBehavior File="Hooks\DoWhen" ActivityName="Cooldown" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.Entry == 110582 &amp;&amp; Me.CurrentTarget.HasAura(224588) &amp;&amp; Me.CurrentTarget.GetAuraById(224588).StackCount &gt;= 6" >
+						<CustomBehavior File="Hooks\DoWhen" ActivityName="Purge_FlameWreathedWeapon" Command="Disable" />
+						<CustomBehavior File="Hooks\DoWhen" ActivityName="Windshear" Command="Disable" />
+						<DisableBehavior Name="Combat" />
+						<MoveTo Precision="1" X="1701.188" Y="1797.004" Z="253.2005" />
+						<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Me.CurrentTarget != null &amp;&amp; !Me.CurrentTarget.HasAura(224588)" />
+						<MoveTo Precision="1" X="1703.578" Y="1806.325" Z="253.5289" />
+						<EnableBehavior Name="Combat" />
+						<CustomBehavior File="Hooks\DoWhen" ActivityName="Purge_FlameWreathedWeapon" Command="Enable" />
+						<CustomBehavior File="Hooks\DoWhen" ActivityName="Windshear" Command="Enable" />
+					</CustomBehavior> -->
+
+					<MoveTo X="1681.999" Y="1816.76" Z="255.5849" />
+					<DisableBehavior Name="Combat" />
+					<CustomBehavior File="MyCTM" X="1703.645" Y="1806.548" Z="253.5829" />
+					<CustomBehavior File="WaitTimer" WaitTime="1000" />
+					<CustomBehavior File="MyCTM" X="1703.645" Y="1806.548" Z="253.5829" />
+					<CustomBehavior File="WaitTimer" WaitTime="120000" TerminateWhen="Unit(110582, u =&gt; u.IsAlive) != null" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							WoWUnit xioliangPoi = Unit(110582);
+
+							if (xioliangPoi != null)
+							{
+								xioliangPoi.Target();
+								Me.SetFacing(xioliangPoi.Location);
+								await Coroutine.Sleep(750);
+								SpellManager.Cast(188389);
+								await Coroutine.Sleep(1000);
+							}
+						]]>
+					</CustomBehavior>
+					<EnableBehavior Name="Combat" />
+
+					<CustomBehavior File="KillUntilComplete" MobId="110582" QuestId="43338" QuestObjectiveIndex="2" X="1691.686" Y="1779.927" Z="253.5886" />
 					<CustomBehavior File="Hooks\DoWhen" ActivityName="Purge_FlameWreathedWeapon" Command="Remove" />
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="Windshear" Command="Remove" />
+					<!-- <CustomBehavior File="Hooks\DoWhen" ActivityName="Cooldown" Command="Remove" /> -->
 				</If>
 
-				<CustomBehavior File="Hooks\Avoid" AvoidName="ThundersCall" Command="Remove" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="MoguCrushingSlam" Command="Remove" />
 				<CustomBehavior File="Hooks\Avoid" AvoidName="MoltenFists" Command="Remove" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="MoguCrushingSlam" Command="Remove" />
 
 				<CustomBehavior File="KillUntilComplete" MobIds="110569, 110570" QuestId="43338" QuestObjectiveIndex="5" >
 					<HuntingGrounds>
