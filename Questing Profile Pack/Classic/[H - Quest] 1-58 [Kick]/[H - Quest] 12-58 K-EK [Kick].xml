@@ -3689,7 +3689,7 @@
         <CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for bot {TimeRemaining}" />
       </While>
       <While Condition="HasQuest(29089) &amp;&amp; !IsQuestCompleted(29089)">
-         <Moveto QuestId="29089" DestName="Sludge Beast" X="1067.719" Y="-3141.26" Z="78.63257" />
+        <Moveto QuestId="29089" DestName="Sludge Beast" X="1067.719" Y="-3141.26" Z="78.63257" />
         <CustomBehavior File="MyCTM" QuestId="29089" DestName="Sludge Beast using Click to Move" X="1067.719" Y="-3141.26" Z="78.63257" />
         <CustomBehavior File="MyCTM" QuestId="29089" DestName="Sludge Beast using Click to Move" X="1067.999" Y="-3141.488" Z="67" />
         <CustomBehavior File="InteractWith" QuestId="29089" MovementBy="ClickToMoveOnly" MobId="208343" Range="4" X="1069.279" Y="-3140.694" Z="66.86901" />
@@ -3771,10 +3771,17 @@
       <PickUp QuestName="Read the Manual" QuestId="14006" GiverName="Sputtervalve" GiverId="3442" />
       <PickUp QuestName="Miner's Fortune" QuestId="29015" GiverName="Brak Blusterpipe" GiverId="34674" />
 
-      <Objective QuestName="Read the Manual" QuestId="14006" Type="CollectItem" ItemId="11147" CollectCount="1" />
-      <Objective QuestName="Read the Manual" QuestId="14006" Type="CollectItem" ItemId="11148" CollectCount="5" />
+      <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred"  MobIds="3283, 9336" X="1348.22" Y="-3505.294" Z="93.45155" TerminateWhen="HasItem(11147)"/>
+
+      <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred"  MobIds="3283" QuestId="14006" TerminateWhen="GetItemCount(11148) &gt;= 5" >
+        <HuntingGrounds>
+          <Hotspot Name="Inside mine shaft" X="1354.369" Y="-3484.692" Z="92.84887" />
+          <Hotspot Name="Venture Co. Enforcer by entrance" X="1244.995" Y="-3645.966" Z="92.17905" />
+        </HuntingGrounds>
+      </CustomBehavior>
+      
       <If Condition="HasQuest(14006) &amp;&amp; !IsQuestCompleted(14006)">
-        <MoveTo X="1157.938" Y="-3395.032" Z="91.66805" />
+        <MoveTo DestName="Nozzlepot's Outpost" X="1157.938" Y="-3395.032" Z="91.66805" />
         <CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for agro to clear {TimeRemaining}" />
         <UseItem ItemId="11147" QuestName="Read the Manual" QuestId="14006" X="1157.938" Y="-3395.032" Z="91.66805" />
         <CustomBehavior File="WaitTimer" WaitTime="4000" GoalText="Waiting for item cd {TimeRemaining}" />
@@ -4457,7 +4464,7 @@
       <!-- disabling this quest - if you die in the water, you can't get back to your body atm
         <CustomBehavior File="CollectThings" CollectUntil="QuestComplete" QuestId="13883" ObjectId="195012" CollectItemId="46357" CollectItemCount="10" HuntingGroundRadius="200" X="3402.582" Y="1194.723" Z="-1.727643" />
         WoWUnit Name="Mystlash Hydra" Entry="3721"-->
-        
+
 
       <CustomBehavior File="InteractWith" QuestId="13890" MobIds="3721" NumOfTimes="99" MobState="Alive" CollectionDistance="50" TerminateWhen="GetItemCount(46365) &gt;= 10" >
         <HuntingGrounds>
