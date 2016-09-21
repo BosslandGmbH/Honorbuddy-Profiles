@@ -2192,31 +2192,6 @@
     </Objective>
   </Quest>
 
-  <Quest Id="11269" Name="Down to the Wire">
-    <Objective Type="CollectItem" ItemId="33348" CollectCount="10">
-      <CollectFrom>
-        <Object Name="Spotted Hippogryph Down" Id="186591" />
-      </CollectFrom>
-      <Hotspots>
-        <Hotspot X="2199.357" Y="-5209.135" Z="247.5145" />
-        <Hotspot X="2133.124" Y="-5082.19" Z="235.6528" />
-        <Hotspot X="2195.616" Y="-5043.63" Z="240.5323" />
-        <Hotspot X="2282.61" Y="-4987.751" Z="247.0559" />
-        <Hotspot X="2265.126" Y="-5067.191" Z="253.1169" />
-        <Hotspot X="2232.863" Y="-4794.92" Z="225.3988" />
-        <Hotspot X="2302.615" Y="-4771.224" Z="237.3634" />
-        <Hotspot X="2398.556" Y="-4806.771" Z="246.0558" />
-        <Hotspot X="2470.097" Y="-4841.732" Z="258.3828" />
-        <Hotspot X="2575.584" Y="-4634.68" Z="248.2333" />
-        <Hotspot X="2588.612" Y="-4527.133" Z="249.3638" />
-        <Hotspot X="2580.733" Y="-4427.089" Z="236.4534" />
-        <Hotspot X="2364.607" Y="-4465.339" Z="220.6991" />
-        <Hotspot X="2239.031" Y="-4702.687" Z="218.7378" />
-        <Hotspot X="2179.088" Y="-4863.869" Z="227.8743" />
-      </Hotspots>
-    </Objective>
-  </Quest>
-
   <Quest Id="11255" Name="Prisoners of Wyrmskull">
     <Objective Type="CollectItem" ItemId="33308" CollectCount="3">
       <CollectFrom>
@@ -5717,11 +5692,12 @@
         <PickUp QuestName="The Cell" QuestId="11943" GiverName="Raelorasz" GiverId="26117" />
         <MoveTo X="3584.175" Y="6656.849" Z="195.6142" />
       </If>
-      <If Condition="HasQuest(11943) &amp;&amp; !IsQuestCompleted(11943)">
+      <If Condition="HasQuest(11943) &amp;&amp; !IsQuestCompleted(11943) &amp;&amp; !IsObjectiveComplete(1,11943)">
         <CustomBehavior File="FlyTo" DestName="get Energy Core" X="3761.022" Y="7172.488" Z="162.2822" />
         <CustomBehavior File="ForcedDismount" />
         <Objective QuestName="The Cell" QuestId="11943" Type="CollectItem" ItemId="35669" CollectCount="1" />
-
+      </If>
+      <If Condition="HasQuest(11943) &amp;&amp; !IsQuestCompleted(11943) &amp;&amp; !IsObjectiveComplete(2,11943)">
         <CustomBehavior File="FlyTo" DestName="get Prison Casing" X="4109.922" Y="6997.61" Z="165.3072" />
         <CustomBehavior File="ForcedDismount" />
         <Objective QuestName="The Cell" QuestId="11943" Type="CollectItem" ItemId="35668" CollectCount="1" />
@@ -6280,7 +6256,7 @@
           <Hotspot Name="West" X="949.3253" Y="-5019.37" Z="5.967307" />
         </HuntingGrounds>
       </CustomBehavior>
-      
+
       <If Condition="HasQuest(11426) &amp;&amp; IsQuestCompleted(11426)">
         <CustomBehavior File="FlyTo" DestName="Turnin: 'Locating the Mechanism'" X="601.2187" Y="-5030.894"
                                 Z="5.250646" />
@@ -6359,7 +6335,7 @@
           <PursueUnit Id="23674" PursueWhen="!IsObjectiveComplete(1,11477)" />
         </PursuitList>
       </CustomBehavior>
-      
+
       <If Condition="HasQuest(11477) &amp;&amp; IsQuestCompleted(11477)">
         <CustomBehavior File="FlyTo" DestName="Turnin: Out of My Element?" X="1123.73" Y="-6161.873" Z="260.2917" />
         <CustomBehavior File="ForcedDismount" />
@@ -6833,7 +6809,7 @@
           <Hotspot Name="Frostwing Chimaera 1" X="905.6307" Y="-2944.302" Z="60.74756" />
         </HuntingGrounds>
       </CustomBehavior>
-      
+
       <If Condition="HasQuest(11457) &amp;&amp; IsQuestCompleted(11457)">
         <CustomBehavior File="FlyTo" DestName="Turnin: Arming Kamagua" X="798.9498" Y="-2926.374" Z="7.162476" />
         <CustomBehavior File="ForcedDismount" />
@@ -7011,12 +6987,17 @@
       <UseMount Value="true" />
 
 
-      <If Condition="HasQuest(11269) &amp;&amp; !IsQuestCompleted(11269)">
-        <CustomBehavior File="FlyTo" DestName="Down to the Wire" X="2249.167" Y="-5216.702" Z="251.7328" />
-        <CustomBehavior File="ForcedDismount" />
-        <Objective QuestName="Down to the Wire" QuestId="11269" Type="CollectItem" ItemId="33348"
-                           CollectCount="10" />
-      </If>
+      <MoveTo Nav="Fly" DestName="Spotted Hippogryph Down" Land="true" QuestId="11269" X="2366.307" Y="-4499.386" Z="215.2614" />
+
+      <CustomBehavior File="InteractWith" QuestId="11269" MobIds="186591" MovementBy="NavigatorOnly" NumOfTimes="100">
+        <HuntingGrounds>
+          <GameObject Name="Spotted Hippogryph Down 0" X="2366.307" Y="-4499.386" Z="215.2614" />
+          <GameObject Name="Spotted Hippogryph Down 1" X="2408.241" Y="-4586.655" Z="225.8222" />
+          <GameObject Name="Spotted Hippogryph Down 2" X="2291.465" Y="-4677.782" Z="221.3157" />
+          <GameObject Name="Spotted Hippogryph Down 3" X="2476.472" Y="-4773.055" Z="240.3742" />
+        </HuntingGrounds>
+      </CustomBehavior>
+
       <If Condition="HasQuest(11313) &amp;&amp; !IsQuestCompleted(11313)">
         <CustomBehavior File="FlyTo" DestName="Spirits of the Ice" X="2249.167" Y="-5216.702" Z="251.7328" />
         <CustomBehavior File="ForcedDismount" />
@@ -7235,7 +7216,7 @@
 
       <TurnIn Nav="Fly" QuestName="We Call Him Steelfeather" QuestId="11418" TurnInName="Gil Grisert" TurnInId="24139" X="2438.717" Y="-5182.421" Z="277.2778" />
       <TurnIn Nav="Fly" QuestName="Preying Upon the Weak" QuestId="11292" TurnInName="Trapper Jethan" TurnInId="24131" X="2438.281" Y="-5185.456" Z="284.1044" />
-      
+
       <If Condition="HasQuest(11349) &amp;&amp; !IsQuestCompleted(11349)">
         <CustomBehavior File="FlyTo" DestName="Mastering the Runes" X="2160.4" Y="-5464.971" Z="240.8082" />
         <CustomBehavior File="ForcedDismount" />
@@ -7781,16 +7762,18 @@
                         GiverId="26673" />
       </If>
       <If Condition="HasQuest(12098) &amp;&amp; IsQuestCompleted(12098)">
-        <CustomBehavior File="FlyTo" DestName="Turnin: Search Indu'le Village" X="3070.979" Y="1364.306" Z="151.8857" />
+        <CustomBehavior File="FlyTo" DestName="Turnin: Search Indu'le Village" X="3070.979" Y="1364.306" Z="175" />
         <CustomBehavior File="ForcedDismount" />
+        <CustomBehavior File="MyCTM" DestName="Mage-Commander Evenstar" X="3074.449" Y="1369.599" Z="130.0742" />
         <TurnIn QuestName="Search Indu'le Village" QuestId="12098" TurnInName="Mage-Commander Evenstar"
-                        TurnInId="26873" />
+        TurnInId="26873" X="3074.449" Y="1369.599" Z="130.0742" />
         <PickUp QuestName="The End of the Line" QuestId="12107" GiverName="Mage-Commander Evenstar"
-                        GiverId="26873" />
+        GiverId="26873" X="3074.449" Y="1369.599" Z="130.0742" />
       </If>
       <If Condition="!HasQuest(12107) &amp;&amp; !IsQuestCompleted(12107)">
         <CustomBehavior File="FlyTo" DestName="Pickup: The End of the Line" X="3070.979" Y="1364.306" Z="151.8857" />
         <CustomBehavior File="ForcedDismount" />
+        <CustomBehavior File="MyCTM" DestName="Mage-Commander Evenstar" X="3074.449" Y="1369.599" Z="130.0742" />
         <PickUp QuestName="The End of the Line" QuestId="12107" GiverName="Mage-Commander Evenstar"
                         GiverId="26873" />
       </If>
