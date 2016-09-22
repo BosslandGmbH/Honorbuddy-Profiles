@@ -94,12 +94,41 @@ END INITORDER COMMENT -->
 						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
 						await Coroutine.Sleep(postWait);
 					}
+
+					async Task DalaranHearth()
+					{
+						if (!(Me.ZoneId == 7502 || Me.ZoneId == 8392) && HasItem(140192))
+						{
+							Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, "[Azyul Navigator]: ", System.Windows.Media.Colors.LightGreen, "Using Dalaran Hearthstone!");
+							await CommonCoroutines.LandAndDismount("Using Hearthstone to reach Dalaran (Broken Isles)");
+							await CommonCoroutines.StopMoving(); 
+							WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+							if (dalaranHearth.CooldownTimeLeft <= TimeSpan.FromMinutes(3))
+							{
+								if (dalaranHearth.CooldownTimeLeft != TimeSpan.Zero)
+								{
+									Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
+									await Coroutine.Wait(306000, () => dalaranHearth.CooldownTimeLeft == TimeSpan.Zero);
+								}
+								dalaranHearth.Interact();
+								var currentLoc = StyxWoW.Me.ZoneId;
+								await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
+								await Coroutine.Sleep(1500);
+							}
+						}
+					}
+
 				]]>
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
 
 		<!-- Get Continuation Quest -->
-			<If Condition="IsQuestCompleted(40953) &amp;&amp; NeedsQuest(40953) &amp;&amp; NeedsQuest(44043, 44366)" > <!-- Using On Eagle's Wings (40953) to determine if we've already got the first artifact. -->
+			<If Condition="IsQuestCompleted(40953) &amp;&amp; NeedsQuest(40392) &amp;&amp; NeedsQuest(44043, 44366)" > <!-- Using On Eagle's Wings (40953) to determine if we've already got the first artifact. -->
+				<If Condition="!Me.HasAura(213170)" >
+					<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+					<MoveTo X="-813.4112" Y="4277.193" Z="746.2777" />
+					<CustomBehavior File="InteractWith" MobId="108868" NonCompeteDistance="0" GossipOptions="1"  X="-809.467" Y="4273.58" Z="746.2848" />
+				</If>
 				<CustomBehavior File="InteractWith" MobId="107317" WaitTime="1250" X="4642.032" Y="5285.06" Z="840.6198" />
 				<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="QuestFrameAcceptButton:Click();" />
 			</If>
