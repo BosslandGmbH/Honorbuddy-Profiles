@@ -71,7 +71,18 @@
 	</InitOrder>
 END INITORDER COMMENT -->
 
-	<QuestOrder> <!-- No checkpoints here. -->
+	<QuestOrder>
+		<!-- Init Settings -->
+			<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+			<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+			<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+			<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+			<LootMobs Value="true" />
+			<TargetingDistance Value="45" />
+		<!-- END Init Settings -->
 
 		<!-- RunCode Methods -->
 			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
@@ -1280,17 +1291,19 @@ END INITORDER COMMENT -->
 			</While>
 			<TurnIn QuestName="The Head of the Snake" QuestId="37470" TurnInName="Prince Farondis" TurnInId="91403" X="0.9027778" Y="5765.165" Z="3.281234" />
 
+			<PickUp Nav="Fly" QuestName="Wrath of Azshara" QuestId="38286" GiverName="Prince Farondis" GiverId="91403" X="0.9027778" Y="5765.165" Z="3.281137" /> <!-- Dungeon Quest -->
 
-			<!-- Quest isn't completing - user reported.  Need to check the Ids for this.
-			<CustomBehavior File="KillUntilComplete" MobIds="89024, 89025, 89811, 89025, 89808, 89803" TerminateWhen="IsQuestCompleted(37779) || IsQuestCompleted(37779)" >
-				<HuntingGrounds>
-					<Hotspot X="-142.6657" Y="5679.621" Z="9.960439" />
-					<Hotspot X="-26.14186" Y="5613.241" Z="0.3082983" />
-					<Hotspot X="123.995" Y="5702.112" Z="1.614869" />
-					<Hotspot X="99.32304" Y="5949.638" Z="7.360086" />
-					<Hotspot X="-73.44466" Y="5842.648" Z="0.4121386" />
-				</HuntingGrounds>
-			</CustomBehavior> -->
+			<If Condition="DoQuest(37779) &amp;&amp; Me.Level &lt;= 110" >
+				<CustomBehavior File="KillUntilComplete" MobIds="89024, 89025, 89811, 89025, 89808, 89803" TerminateWhen="IsQuestCompleted(37779)" >
+					<HuntingGrounds>
+						<Hotspot X="-142.6657" Y="5679.621" Z="9.960439" />
+						<Hotspot X="-26.14186" Y="5613.241" Z="0.3082983" />
+						<Hotspot X="123.995" Y="5702.112" Z="1.614869" />
+						<Hotspot X="99.32304" Y="5949.638" Z="7.360086" />
+						<Hotspot X="-73.44466" Y="5842.648" Z="0.4121386" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</If>
 
 			<!-- BO1 - Bot will need to move to the location: X="-57.18679" Y="6232.651" Z="1.533782" to trigger the bonus objective.
 			QuestId="37466"  -->

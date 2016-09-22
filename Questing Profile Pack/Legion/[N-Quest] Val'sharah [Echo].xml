@@ -61,7 +61,19 @@
 	</InitOrder>
 END INITORDER COMMENT -->
 
-	<QuestOrder> <!-- No checkpoints here. -->
+	<QuestOrder>
+		<!-- Init Settings -->
+			<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+			<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+			<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+			<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+			<LootMobs Value="true" />
+			<TargetingDistance Value="45" />
+		<!-- END Init Settings -->
+
 		<!-- RunCode Methods -->
 			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
 					bool DoQuest(params uint[] questIds)
@@ -500,7 +512,7 @@ END INITORDER COMMENT -->
 				--> 
 				<CustomBehavior File="Hooks\DoWhen" ActivityName="YseraWrath" AllowUseDuringCombat="true" LogExecution="false" UseAtInterval="5000" >
 					<CustomBehavior File="RunCode"><![CDATA[
-							if (Me.CurrentTarget != null)
+							if (Me.CurrentTarget != null && Me.CurrentTarget.IsAlive && Me.CurrentTarget.Entry != 92335)
 							{
 								SpellManager.StopCasting();
 								await Coroutine.Sleep(250);
@@ -523,12 +535,8 @@ END INITORDER COMMENT -->
 					</HuntingGrounds>
 				</CustomBehavior>
 
-				<CustomBehavior File="Hooks\DoWhen" ActivityName="YseraWrath" Command="Remove" />
-				<!-- NOTE: <DisableHook> : As the player enters this new zoneId as per the KillUntilComplete, the zone spell is removed.
-										The hook should be detecting the player's current ZoneId to prevent it from casting when it can't.
-										The spell is also disabeld after quest is complete.
-				-->
 				<CustomBehavior File="KillUntilComplete" MobId="92335" QuestId="38582" QuestObjectiveIndex="3" X="2828.71" Y="5898.744" Z="234.482" />
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="YseraWrath" Command="Remove" />
 			</While>
 			<TurnIn QuestName="To Old Friends" QuestId="38582" TurnInName="Ysera" TurnInId="92710" X="2717.447" Y="6027.452" Z="267.481" />
 
