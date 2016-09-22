@@ -122,7 +122,7 @@ END INITORDER COMMENT -->
 		<!-- END RunCode Methods -->
 
 		<!-- Zone Introductory Quests -->
-			<If Condition="NeedsQuest(44009)" >
+			<If Condition="(NeedsQuest(44009) &amp;&amp; Me.Class != WoWClass.Paladin) || (NeedsQuest(44004) &amp;&amp; Me.Class == WoWClass.Paladin)" >
 				<CustomBehavior File="RunCode"><![CDATA[
 					if (!(Me.ZoneId == 7502 || Me.ZoneId == 8392) && HasItem(140192))
 					{
@@ -146,10 +146,15 @@ END INITORDER COMMENT -->
 					]]>
 				</CustomBehavior>
 				<MoveTo X="-848.6059" Y="4635.94" Z="749.604" />
-				<PickUp Nav="Fly" QuestName="A Falling Star" QuestId="44009" GiverName="Archmage Khadgar" GiverId="90417" />
+				<If Condition="Me.Class != WoWClass.Paladin" >
+					<PickUp Nav="Fly" QuestName="A Falling Star" QuestId="44009" GiverName="Archmage Khadgar" GiverId="90417" />
+				</If>
+				<If Condition="Me.Class == WoWClass.Paladin" >
+					<PickUp Nav="Fly" QuestName="A Falling Star" QuestId="44257" GiverName="Archmage Khadgar" GiverId="90417" />
+				</If>
 			</If>
-			<While Condition="DoQuest(44009)" >
-				<CustomBehavior File="Misc\RunLua" QuestId="44009" QuestObjectiveIndex="1" Lua="FlightMapFrameCloseButton:Click();" /> <!-- -->
+			<While Condition="DoQuest(44009) || DoQuest(44257)" >
+				<CustomBehavior File="Misc\RunLua" QuestId="44009" QuestObjectiveIndex="1" Lua="FlightMapFrameCloseButton:Click();" /> <!-- In case the flight path hook leaves it open. -->
 				<CustomBehavior File="InteractWith" MobId="96813" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" GossipOptions="2" QuestId="44009" QuestObjectiveIndex="1" X="-863.934" Y="4298.434" Z="745.3467" TerminateWhen="Me.InVehicle" />
 				<CustomBehavior File="WaitTimer" WaitTime="120000" TerminateWhen="!Me.InVehicle" /> 
 				<If Condition="!IsObjectiveComplete(2, 44009)" >
@@ -209,12 +214,34 @@ END INITORDER COMMENT -->
 					<DisableBehavior Name="Pull" />
 					<MoveTo X="-4074.229" Y="-11429.63" Z="-141.4344" />
 					<CustomBehavior File="InteractWith" MobId="109143" InteractBlacklistTimeInSeconds="1" NumOfTimes="2" X="-4077.104" Y="-11426.16" Z="-141.4544" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+					<DisableBehavior Name="Combat" /> <!-- Avoid from running outside of the bubble -->
+					<MoveTo X="-4077.104" Y="-11426.16" Z="-141.4544" />
 					<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
-					<EnableBehavior Name="Pull" />
+					<EnableBehavior Name="Combat,Pull" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
 					<CustomBehavior File="Hooks\Avoid" AvoidName="StayAwayFromHukroth" ObjectId="110486" Radius="50" />
+
+					<While Condition="DoQuest(43705) || NeedsQuest(43705)" >
+						<DisableBehavior Name="Pull" />
+						<PickUp Nav="Fly" QuestName="Nobundo's Last Stand" QuestId="43705" GiverName="Farseer Nobundo" GiverId="110695" X="-3675.411" Y="-11541.09" Z="-129.458" />
+						<EnableBehavior Name="Pull" />
+						<CustomBehavior File="InteractWith" MobId="110695" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" GossipOptions="1" QuestId="43705" QuestObjectiveIndex="1" X="-3675.411" Y="-11541.09" Z="-129.458" />
+						<UseMount Value="false" />
+						<CustomBehavior File="EscortGroup" EscortCompleteWhen="QuestObjectiveComplete" QuestId="43705" QuestObjectiveIndex="5" NonCompeteDistance="0" EscortMaxFollowDistance="10" EscortCountMax="1" EscortNpcId1="110695" EscortNpcId2="110775" EscortMaxFightDistance="30" SearchForNpcsRadius="100" >
+							<SearchPath>
+								<Hotspot X="-4073.189" Y="-11432.89" Z="-141.4359" />
+							</SearchPath>
+						</CustomBehavior>
+						<CustomBehavior File="AbandonQuest" QuestId="43705" />
+						<UseMount Value="true" />
+					</While>
+					<If Condition="QuestDone(43705)" >
+						<TurnIn Nav="Fly" QuestName="Nobundo's Last Stand" QuestId="43705" TurnInName="Farseer Nobundo" TurnInId="110695" X="-3675.411" Y="-11541.09" Z="-129.4577" />
+					</If>
+
+
 					<CustomBehavior File="InteractWith" CollectionDistance="200" Range="3" NumOfTimes="50" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" >
 						<HuntingGrounds>
 							<Hotspot X="-4004.073" Y="-11378.32" Z="-122.8449" />
@@ -396,7 +423,7 @@ END INITORDER COMMENT -->
 						<CustomBehavior File="MyCTM" X="1784.506" Y="1504.145" Z="9.844843" TerminateWhen="Me.ZoneId == 7846" />
 						<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Me.HasAura(213170)" />
 					</While>
-					<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="TurnIn functionality for Light's Heart has not been implemented into this profile yet.\n\nIf you wish to help out, please dump the unit information of the Light's Heart object\n\nYou can do this by opening Developer Tools, click Objects at the top, then look under the UNITS section.\n\nRight click the Light's Heart unit and click 'Copy Info'.\nYou will see the information output into Honorbuddy's log.  Copy this and post it to the questing thread along with what class you are." />
+					<TurnIn Nav="Fly" QuestName="Light's Charge" QuestId="44153" TurnInName="Light's Heart" TurnInId="112953" X="3969.161" Y="7257.173" Z="29.84316" />
 				</If>
 				<If Condition="Me.Class == WoWClass.DemonHunter" >
 					<If Condition="!Me.HasAura(213170)" >
