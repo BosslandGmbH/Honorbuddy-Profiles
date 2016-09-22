@@ -122,52 +122,59 @@ END INITORDER COMMENT -->
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
 
-		<CustomBehavior File="UserDialog" QuestId="39800" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Currently the bot does not support the Mesh for the battleship\n\nYou must manually complete the quests up until after you shoot the bats down with the gun cannon.\n\nClick Continue Profile after you're off the flying ship to continue the bot." /> <!-- ALliance -->
 
 		<!-- [A] Alliance Quest Section -->
 			<!-- [A] Zone Introductory Quests -->
 
 				<If Condition="Me.IsAlliance" >
-					<TurnIn QuestName="Stormheim" QuestId="39735" TurnInName="Sky Admiral Rogers" TurnInId="96644" X="-840.5087" Y="4633.81" Z="749.4136" />
+					<If Condition="QuestDone(39735)" >
+						<TurnIn QuestName="Stormheim" QuestId="39735" TurnInName="Sky Admiral Rogers" TurnInId="96644" X="-840.5087" Y="4633.81" Z="749.4136" />
+					</If>
 
 					<PickUp QuestName="A Royal Summons" QuestId="38035" GiverName="Sky Admiral Rogers" GiverId="96644" X="-840.5087" Y="4633.81" Z="749.4136" />
 					<While Condition="DoQuest(38035)" >
 						<CustomBehavior File="UseItem" ItemId="128687" QuestId="38035" QuestObjectiveIndex="1" />
 						<CustomBehavior File="InteractWith" MobId="244567" NonCompeteDistance="0" QuestId="38035" QuestObjectiveIndex="2" X="-830.9566" Y="4655.491" Z="749.6113" />
 					</While>
-					<CustomBehavior File="UserDialog" QuestId="38035" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Currently the bot does not support the Mesh for the battleship\n\nYou must manually complete the quests up until after you shoot the bats down with the gun cannon.\n\nClick Continue Profile after you're off the flying ship to continue the bot." />
-<!-- Commented due to airship mesh.
 					<TurnIn QuestName="A Royal Summons" QuestId="38035" TurnInName="Sky Admiral Rogers" TurnInId="96644" X="-8491.159" Y="1394.033" Z="196.3758" />
 
-					<PickUp QuestName="Making the Rounds" QuestId="38206" GiverName="Sky Admiral Rogers" GiverId="96644" X="-8491.159" Y="1394.033" Z="196.3758" />
+					<While Condition="NeedsQuest(38206)" >
+						<CustomBehavior File="InteractWith" MobId="96644" X="-8491.159" Y="1394.033" Z="196.3758" />
+						<CustomBehavior File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click();" />
+					</While>
 					<While Condition="DoQuest(38206)" >
-						<CustomBehavior File="MyCTM" X="-8488.015" Y="1401.738" Z="196.4993" TerminateWhen="Me.X &lt; -8502.863" />
-						<CustomBehavior File="InteractWith" MobId="110898" MovementBy="ClickToMoveOnly" QuestId="38206" QuestObjectiveIndex="1" X="-8534.451" Y="1400.251" Z="198.6206" />
+						<CustomBehavior File="WaitTimer" WaitTime="12000" />
+						<CustomBehavior File="InteractWith" MobId="110898" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="38206" QuestObjectiveIndex="1" X="-8534.451" Y="1400.251" Z="198.6206" />
 						<MoveTo QuestId="38206" QuestObjectiveIndex="2" X="-8548.114" Y="1399.016" Z="193.6293" />
+						<CustomBehavior File="WaitTimer" WaitTime="20000" />
 						<CustomBehavior File="Misc\RunLua" QuestId="38206" QuestObjectiveIndex="2" Lua="ExtraActionButton1:Click();" />
 						<MoveTo QuestId="38206" QuestObjectiveIndex="3" X="-8584.947" Y="1399.771" Z="196.4226" />
 						<CustomBehavior File="WaitTimer" QuestId="38206" QuestObjectiveIndex="3" WaitTime="30000" />
 					</While>
 					<TurnIn QuestName="Making the Rounds" QuestId="38206" TurnInName="Genn Greymane" TurnInId="96663" X="-8587.822" Y="1398.612" Z="196.5768" />
 				</If>
-END Commented due to airship mesh.-->
-				</If>
 			<!-- [A] END Zone Introductory Quests -->
 
 			<!-- [A] Story: Greymane's Gambit -->
 				<If Condition="Me.IsAlliance" >
-					<PickUp QuestName="Greymane's Gambit" QuestId="39800" GiverName="Genn Greymane" GiverId="96663" X="-8587.822" Y="1398.612" Z="196.5768" />
+					<If Condition="NeedsQuest(39800)" >
+						<PickUp QuestName="Greymane's Gambit" QuestId="39800" GiverName="Genn Greymane" GiverId="96663" X="-8587.822" Y="1398.612" Z="196.5768" />
+						<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+					</If>
 					<While Condition="DoQuest(39800)" >
 						<UseMount Value="false" />
 
-<!-- Commented due to airship mesh.
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-							<CustomBehavior File="InteractWith" MobId="92957" X="5045.783" Y="3137.939" Z="369.9213" TerminateWhen="IsScenarioCriteriaComplete(1) &amp;&amp; IsScenarioCriteriaComplete(2)" />
-							<CustomBehavior File="Vehicles\NoControlVehicle" TargetId="93113" AttackButton="1" OftenToUse="2000" VehicleId="92957" MaxRange="300" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2 || !Me.InVehicle" />
+							<CustomBehavior File="InteractWith" X="5045.783" Y="3137.939" Z="369.9213" TerminateWhen="(IsScenarioCriteriaComplete(1) &amp;&amp; IsScenarioCriteriaComplete(2)) || Me.InVehicle" >
+								<PursuitList>
+									<PursueUnit Id="92957" PursueWhen="UNIT.X &gt; 140" /> <!-- Only use the one the bot can easily navigate to -->
+								</PursuitList>
+							</CustomBehavior>
+							<CustomBehavior File="Vehicles\CannonControl" MobId="93113" VehicleId="92957" MaxAngle="1" Gravity="0.01" Velocity="200" Buttons="1,2" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2 || !Me.InVehicle" />
+							<CustomBehavior File="KillUntilComplete" MobId="93173" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2 || Unit(93173) == null || Unit(93173, u =&gt; u.IsDead) != null" />
 						</While>
-END Commented due to airship mesh. -->
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
-							<CustomBehavior File="InteractWith" MobId="240210" WaitTime="18000" X="5000.963" Y="2937.803" Z="115.4159" TerminateWhen="Me.Z &lt; 25 || IsScenarioCriteriaComplete(1)" />
+							<CustomBehavior File="InteractWith" MobId="240210" WaitTime="18000" Range="1" X="5000.963" Y="2937.803" Z="115.4159" TerminateWhen="Me.Z &lt; 25 || IsScenarioCriteriaComplete(1)" />
 							<CustomBehavior File="KillUntilComplete" MobId="93560" X="4791.23" Y="2871.738" Z="7.923726" TerminateWhen="IsScenarioCriteriaComplete(1)" />
 							<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Unit(97444) == null" />
 
@@ -181,13 +188,9 @@ END Commented due to airship mesh. -->
 							<CustomBehavior File="KillUntilComplete" MobId="93486" X="4602.096" Y="2860.15" Z="16.20909" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
 							<CustomBehavior File="WaitTimer" WaitTime="7000" /> 
 						</While>
-
-						<CustomBehavior File="UserDialog" AllowBotStop="True" QuestId="39800" SoundCue="Exclamation" SoundCueInterval="1" Text="Currently the bot does not support the Mesh for the battleship\n\nYou must manually complete the quests up until quest &quot;Greymane's Gambit&quot;.\n\nAfter you complete Gretmanes Gambit -\nthis dialog box will automatically go away and the bot will continue on its own." />
-
-<!-- Commented due to airship mesh
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
-							<CustomBehavior File="InteractWith" MobId="97444" WaitTime="14000" X="4625.241" Y="2853.797" Z="7.844262" TerminateWhen="Me.Z &gt; 139 || IsScenarioCriteriaComplete(1)" />
-							<CustomBehavior File="InteractWith" MobId="242380" NumOfTimes="7" TerminateWhen="IsScenarioCriteriaComplete(1)" >
+							<CustomBehavior File="InteractWith" MobId="97444" WaitTime="14000" X="4625.241" Y="2853.797" Z="7.844262" TerminateWhen="Me.Z &gt; 120 || IsScenarioCriteriaComplete(1)" />
+							<CustomBehavior File="InteractWith" MobId="242380" NumOfTimes="7" TerminateWhen="IsScenarioCriteriaComplete(1) || Me.Z &lt;= 120" >
 								<HuntingGrounds>
 									<Hotspot X="4577.12" Y="2670.771" Z="138.8441" />
 									<Hotspot X="4539.003" Y="2656.705" Z="138.5784" />
@@ -199,8 +202,6 @@ END Commented due to airship mesh. -->
 							<CustomBehavior File="KillUntilComplete" MobId="95852" X="4534.616" Y="2672.977" Z="164.2988" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
 							<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 						</While>
-					</While>
-END Commented due to airship mesh. -->
 					</While>
 					<TurnIn QuestName="Greymane's Gambit" QuestId="39800" TurnInName="Sky Admiral Rogers" TurnInId="90749" X="3203.195" Y="3077.215" Z="440.2122" />
 					<UseMount Value="true" />
@@ -312,31 +313,24 @@ END Commented due to airship mesh. -->
 						<CustomBehavior File="UseItem" ItemId="128692" QuestId="38307" QuestObjectiveIndex="1" />
 						<CustomBehavior File="InteractWith" MobId="244571" QuestId="38307" QuestObjectiveIndex="2" X="-830.9566" Y="4655.491" Z="749.6113" />
 					</While>
-
-					<If Condition="NeedsQuest(39801)" >
-						<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Currently the bot does not support the Mesh for this boat\n\nYou must manually complete the quests up until after you pick up the quest &quot;The Splintered Fleet&quot;.\n\nClick Continue on this box you've picked this quest up." /> <!-- Horde -->
-					</If>
-<!-- Commented to due boat mesh
 					<TurnIn QuestName="The Warchief Beckons" QuestId="38307" TurnInName="Nathanos Blightcaller" TurnInId="96683" X="1493.664" Y="-5206.232" Z="10.71481" />
 
 					<PickUp QuestName="Making the Rounds" QuestId="39698" GiverName="Lady Sylvanas Windrunner" GiverId="96686" X="1496.027" Y="-5207.587" Z="11.05675" />
 					<While Condition="DoQuest(39698)" >
 						<CustomBehavior File="InteractWith" MobId="247491" QuestId="39698" QuestObjectiveIndex="1" X="1458.342" Y="-5209.025" Z="13.16844" />
 						<MoveTo QuestId="39698" QuestObjectiveIndex="2" X="1481.318" Y="-5206.711" Z="5.265435" />
-						<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Lua.GetReturnVal&lt;bool&gt;(&quot;return ExtraActionButton1:IsVisible()&quot;, 0)" /> NOTE: <TechnicalCheck> : ExtraActionButton1 needs to appear before this timer ends.
+						<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Lua.GetReturnVal&lt;bool&gt;(&quot;return ExtraActionButton1:IsVisible()&quot;, 0)" /> <!-- NOTE: <TechnicalCheck> : ExtraActionButton1 needs to appear before this timer ends. -->
 						<CustomBehavior File="Misc\RunLua" QuestId="39698" QuestObjectiveIndex="2" Lua="ExtraActionButton1:Click();" />
 						<MoveTo QuestId="39698" QuestObjectiveIndex="3" X="1500.211" Y="-5211.048" Z="11.59994" />
 						<CustomBehavior File="WaitTimer" QuestId="39698" QuestObjectiveIndex="3" WaitTime="50000" />
 					</While>
 					<TurnIn QuestName="Making the Rounds" QuestId="39698" TurnInName="Lady Sylvanas Windrunner" TurnInId="96686" X="1499.171" Y="-5213.979" Z="11.37206" />
-Commented due to boat mesh -->
 				</If>
 			<!-- [H] END Zone Introductory Quests -->
 
 			<!-- [H] Greymane's Gambit -->
 				<If Condition="Me.IsHorde" >
-<!-- Commented due to baot mesh	
-					<PickUp QuestName="The Splintered Fleet" QuestId="39801" GiverName="Lady Sylvanas Windrunner" GiverId="96686" X="1499.171" Y="-5213.979" Z="11.37206" /> -->
+					<PickUp QuestName="The Splintered Fleet" QuestId="39801" GiverName="Lady Sylvanas Windrunner" GiverId="96686" X="1499.171" Y="-5213.979" Z="11.37206" />
 					<While Condition="DoQuest(39801)" >
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
 							<CustomBehavior File="InteractWith" MobId="94419" X="4623.434" Y="2853.851" Z="7.856867" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
@@ -367,10 +361,6 @@ Commented due to boat mesh -->
 						</While>
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
 							<CustomBehavior File="InteractWith" MobId="95316" WaitTime="16000" X="4729.154" Y="2929.965" Z="7.847277" TerminateWhen="Unit(95316, u =&gt; !u.CanInteract) != null || Me.Z &gt; 50" />
-
-							<CustomBehavior File="UserDialog" QuestId="39801" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="Currently the bot does not support the Mesh for the Alliance Warship\n\nYou must manually complete the quests up until after you get off the Alliance Warship.\n\nClick Continue on this box once you're off the warship to make the bot continue questing." /> <!-- Horde -->
-
-<!-- Commented due to zeppelin mesh	
 							<CustomBehavior File="InteractWith" MobId="243244" NumOfTimes="7" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" >
 								<HuntingGrounds>
 									<Hotspot X="4572.109" Y="2657.29" Z="138.8272" />
@@ -386,8 +376,6 @@ Commented due to boat mesh -->
 							<MoveTo QuestId="39801" X="4538.623" Y="2677.645" Z="164.41" />
 							<CustomBehavior File="KillUntilComplete" MobId="95451" QuestId="39801" X="4500.429" Y="2685.104" Z="167.2789" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
 							<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
-						</While>
-EMD commented due to zeppelin nmesh -->
 						</While>
 					</While>
 					<TurnIn QuestName="The Splintered Fleet" QuestId="39801" TurnInName="Dread-Rider Cullen" TurnInId="91473" X="4110.878" Y="2940.145" Z="27.33373" />
