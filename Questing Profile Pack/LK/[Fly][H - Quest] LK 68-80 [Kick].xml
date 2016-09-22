@@ -7320,10 +7320,21 @@
         <CustomBehavior File="EscortGroup" QuestId="12261" EscortMaxFightDistance="15" SearchForNpcsRadius="15"
 								EscortNpcId="27430" EscortCompleteWhen="QuestCompleteOrFails" />
       </While>
-      <If Condition="HasQuest(12262) &amp;&amp; !IsQuestCompleted(12262)">
-        <Objective QuestName="No One to Save You" QuestId="12262" Type="KillMob" MobId="27356" KillCount="6" />
-        <Objective QuestName="No One to Save You" QuestId="12262" Type="KillMob" MobId="27360" KillCount="10" />
-      </If>
+      
+      <CustomBehavior File="FlyTo" QuestId="12262" Land="true" DestName="No One to Save You" X="4377.57" Y="1474.368" Z="123.5238" />
+      <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred"  MobIds="27356, 27360" QuestId="12262" TerminateWhen="IsObjectiveComplete(1,12262)" >
+        <HuntingGrounds>
+          <Hotspot Name="Smoldering Skeleton in cave" Entry="27360" Type="Repair" Nav="Fly" X="4411.349" Y="1657.225" Z="128.5259" />
+          <Hotspot Name="Smoldering Skeleton outside cave" Entry="27360" X="4377.57" Y="1474.368" Z="123.5238" />
+        </HuntingGrounds>
+      </CustomBehavior>
+
+      <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred"  MobIds="27360" QuestId="12262" >
+        <HuntingGrounds>
+          <Hotspot Name="Smoldering Skeleton in cave" X="4411.349" Y="1657.225" Z="128.5259" />
+          <Hotspot Name="Smoldering Skeleton outside cave" X="4377.57" Y="1474.368" Z="123.5238" />
+        </HuntingGrounds>
+      </CustomBehavior>
       <If Condition="HasQuest(12262) &amp;&amp; IsQuestCompleted(12262)">
         <CustomBehavior File="FlyTo" DestName="Turnin Quest" X="4376" Y="1492" Z="124" />
         <CustomBehavior File="ForcedDismount" />
