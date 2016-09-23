@@ -6239,9 +6239,11 @@
 
       </If>
       <If Condition="HasQuest(11260) &amp;&amp; !IsQuestCompleted(11260)">
-        <CustomBehavior File="NoCombatMoveTo" DestName="kill Thane" X="1694.629" Y="-4108.956" Z="270.6342" />
+        <DisableBehavior Name="Combat" />
+        <CustomBehavior File="NoCombatMoveTo" DestName="Thane" X="1694.629" Y="-4108.956" Z="270.6342" />
         <CustomBehavior File="ForcedDismount" />
-        <MoveTo X="1694.629" Y="-4108.956" Z="270.6342" />
+        <MoveTo DestName="Thane" X="1694.629" Y="-4108.956" Z="270.6342" />
+        <EnableBehavior Name="Combat" />
         <CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Using item {TimeRemaining}" />
         <CustomBehavior File="UseItem" ItemId="33346" />
         <CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Using item {TimeRemaining}" />
@@ -6252,7 +6254,7 @@
       </If>
       <TurnIn QuestName="Stop the Ascension!" QuestId="11260" TurnInName="Greatmother Ankha" TurnInId="24135" />
     </If>
-
+    <EnableBehavior Name="Combat" />
 
     <If Condition="Me.Level &lt; 73">
       <CustomBehavior File="FlyTo" X="3192.417" Y="3991.833" Z="28.2203" />
@@ -7320,7 +7322,7 @@
         <CustomBehavior File="EscortGroup" QuestId="12261" EscortMaxFightDistance="15" SearchForNpcsRadius="15"
 								EscortNpcId="27430" EscortCompleteWhen="QuestCompleteOrFails" />
       </While>
-      
+
       <CustomBehavior File="FlyTo" QuestId="12262" Land="true" DestName="No One to Save You" X="4377.57" Y="1474.368" Z="123.5238" />
       <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred"  MobIds="27356, 27360" QuestId="12262" TerminateWhen="IsObjectiveComplete(1,12262)" >
         <HuntingGrounds>
@@ -9294,8 +9296,7 @@
             <CustomBehavior File="UseItem" ItemId="36936" />
           </If>
           <!-- Kill Lightning Sentry! -->
-          <CustomBehavior File="InteractWith" QuestId="12198" MobId="26407" MobState="Alive"
-								 >
+          <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" QuestId="12138" MobId="26407" >
             <HuntingGrounds>
               <Hotspot Name="NE Area" X="3682.641" Y="-5177.896" Z="134.6338" />
               <Hotspot Name="SE Area" X="3516.144" Y="-5306.923" Z="160.4388" />
