@@ -767,8 +767,15 @@ END INITORDER COMMENT -->
 				<PickUp QuestName="To Weather the Storm" QuestId="38614" GiverName="Dread-Rider Cullen" GiverId="92566" X="2554.84" Y="2332.175" Z="241.2934" />
 
 				<While Condition="DoQuest(38613)" >
-					<!-- NOTE: <LocationLogic> : This below InteractWith gets the player into the area.  Need a way to detect if player isn't in the area, perhaps via BonusObjective trigger. -->
-					<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="10000" QuestId="38613" QuestObjectiveIndex="1" X="2552.577" Y="2372.651" Z="248.2684" />
+					<CustomBehavior File="RunCode" Code="
+						WoWUnit grapplePoi = Unit(91975, u =&gt; (int)u.Y == 2372);
+						if (grapplePoi != null)
+						{
+							grapplePoi.Interact();
+							await Coroutine.Sleep(10000);
+						}
+					"/>
+					<CustomBehavior File="InteractWith" MobId="91975" Range="49" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" IgnoreLoSToTarget="true" WaitTime="10000" QuestId="38613" QuestObjectiveIndex="1" X="2552.577" Y="2372.651" Z="248.2684" />
 					<CustomBehavior File="MyCTM" X="2553.494" Y="2392.489" Z="236.1131" />
 				</While>
 
