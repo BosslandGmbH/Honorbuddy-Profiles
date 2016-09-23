@@ -913,18 +913,6 @@
     </Objective>
   </Quest>
 
-  <Quest Id="12207" Name="Vordrassil's Fall">
-    <Objective Type="CollectItem" ItemId="37199" CollectCount="6">
-      <CollectFrom>
-      </CollectFrom>
-      <Hotspots>
-        <Hotspot X="3927.718" Y="-2584.966" Z="206.415" />
-        <Hotspot X="3937.567" Y="-2514.801" Z="208.2037" />
-        <Hotspot X="3886.89" Y="-2503.831" Z="193.7343" />
-      </Hotspots>
-    </Objective>
-  </Quest>
-
   <Quest Id="12195" Name="The Unexpected 'Guest'">
     <Objective Type="CollectItem" ItemId="37104" CollectCount="5">
       <CollectFrom>
@@ -6576,9 +6564,10 @@
               <Hotspot X="4091.507" Y="2279.195" Z="153.0679" />
             </HuntingGrounds>
           </CustomBehavior>
-          <MoveTo X="4081.467" Y="2162.797" Z="152.2235" />
+          <MoveTo DestName="Outside after killing Tivax" X="4082.317" Y="2163.643" Z="152.1984" />
         </While>
         <If Condition="HasQuest(12064) &amp;&amp; !IsObjectiveComplete(1,12064)">
+          <MoveTo DestName="Outside after killing Tivax" X="4082.317" Y="2163.643" Z="152.1984" />
           <CustomBehavior File="FlyTo" DestName="kill Anok'ra" X="3881.209" Y="2221.453" Z="123.1789" />
           <CustomBehavior File="ForcedDismount" />
           <CustomBehavior File="KillUntilComplete" QuestId="12064" QuestObjectiveIndex="1" MobId="26769"
@@ -6737,17 +6726,16 @@
       <PickUp QuestName="Strengthen the Ancients" QuestId="12096" GiverName="Earthwarden Grife" GiverId="26854" />
       <!-- You will run into an elite here and may die -->
       <While Condition="HasQuest(12096) &amp;&amp; !IsQuestCompleted(12096)">
-          <CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" QuestId="12096" MobId="26421" Range="4" MobState="Alive" TerminateWhen="GetItemCount(36786) &gt;= 3" >
-            <HuntingGrounds>
-              <Hotspot Name="SW Area" X="3062.218" Y="1821.743" Z="134.7145" />
-              <Hotspot Name="NW Area" X="3224.629" Y="1899.378" Z="133.0594" />
-              <Hotspot Name="NE Area" X="3163.715" Y="1702.433" Z="146.8571" />
-              <Hotspot Name="SE Area" X="3005.483" Y="1737.012" Z="132.3067" />
-            </HuntingGrounds>
-          </CustomBehavior>
-        
-        <CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" QuestId="12096" InteractByUsingItemId="36786" MobId="26321" PreInteractMountStrategy="DismountOrCancelShapeshift"
-								NumOfTimes="100" MobState="Alive" >
+        <CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" QuestId="12096" MobId="26421" Range="4" MobState="Alive" TerminateWhen="GetItemCount(36786) &gt;= 3" >
+          <HuntingGrounds>
+            <Hotspot Name="SW Area" X="3062.218" Y="1821.743" Z="134.7145" />
+            <Hotspot Name="NW Area" X="3224.629" Y="1899.378" Z="133.0594" />
+            <Hotspot Name="NE Area" X="3163.715" Y="1702.433" Z="146.8571" />
+            <Hotspot Name="SE Area" X="3005.483" Y="1737.012" Z="132.3067" />
+          </HuntingGrounds>
+        </CustomBehavior>
+
+        <CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" QuestId="12096" InteractByUsingItemId="36786" MobId="26321" NumOfTimes="100" MobState="Alive" TerminateWhen="!HasItem(36786)" >
           <HuntingGrounds>
             <Hotspot Name="SW Area" X="3062.218" Y="1821.743" Z="134.7145" />
             <Hotspot Name="NW Area" X="3224.629" Y="1899.378" Z="133.0594" />
@@ -6792,11 +6780,10 @@
       <If Condition="HasQuest(12106) &amp;&amp; IsQuestCompleted(12106)">
         <CustomBehavior File="FlyTo" DestName="Turnin: Search Indu'le Village" X="3070.979" Y="1364.306" Z="175" />
         <CustomBehavior File="ForcedDismount" />
-        <CustomBehavior File="MyCTM" DestName="Mage-Commander Evenstar" X="3074.449" Y="1369.599" Z="130.0742" />
+        <CustomBehavior File="InteractWith" MovementBy="ClickToMoveOnly" MobIds="26873" X="3074.449" Y="1369.599" Z="130.0742" />
         <TurnIn QuestName="Search Indu'le Village" QuestId="12106" TurnInName="Mage-Commander Evenstar"
         TurnInId="26873" X="3074.449" Y="1369.599" Z="130.0742" />
-        <PickUp QuestName="The End of the Line" QuestId="12110" GiverName="Mage-Commander Evenstar"
-        GiverId="26873" X="3074.449" Y="1369.599" Z="130.0742" />
+        <PickUp QuestName="The End of the Line" QuestId="12110" GiverName="Mage-Commander Evenstar" GiverId="26873" X="3074.449" Y="1369.599" Z="130.0742" />
       </If>
       <If Condition="!HasQuest(12110) &amp;&amp; !IsQuestCompleted(12110)">
         <CustomBehavior File="FlyTo" DestName="Pickup: The End of the Line" X="3070.979" Y="1364.306" Z="151.8857" />
@@ -7707,7 +7694,7 @@
       <While Condition="HasQuest(12206) &amp;&amp; !IsQuestCompleted(12206)">
         <!-- <CustomBehavior File="InteractWith" QuestId="12206" MobId="27349" InteractByUsingItemId="37129" -->
         <!--                 Range="10" X="3222.266" Y="-693.4669" Z="167.1631" /> -->
-        <MoveTo X="3220.537" Y="-693.9633" Z="167.1827" />
+        <MoveTo Nav="Fly" QuestId="12206" Land="true" DestName="Venomspite" X="3220.537" Y="-693.9633" Z="167.1827" />
         <CustomBehavior File="UseItem" QuestId="12206" ItemId="37129" />
       </While>
       <TurnIn QuestName="Blighted Last Rites" QuestId="12206" TurnInName="Apothecary Vicky Levine"
@@ -8475,12 +8462,16 @@
 						GiverId="27262" />
         <MoveTo X="3297.158" Y="-2281.423" Z="110.1548" />
       </If>
-      <If Condition="HasQuest(12207) &amp;&amp; !IsQuestCompleted(12207)">
-        <CustomBehavior File="FlyTo" X="3927.718" Y="-2584.966" Z="206.415" />
-        <CustomBehavior File="ForcedDismount" />
-        <Objective QuestName="Vordrassil's Fall" QuestId="12207" Type="CollectItem" ItemId="37199"
-						   CollectCount="6" />
-      </If>
+
+      <CustomBehavior File="FlyTo" Land="true" QuestId="12207" DestName="Vordrassil's Fall" X="3927.718" Y="-2584.966" Z="206.415" />
+      <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorOnly" MobId="26366" QuestId="12207" >
+        <HuntingGrounds>
+          <Hotspot X="3927.718" Y="-2584.966" Z="206.415" />
+          <Hotspot X="3937.567" Y="-2514.801" Z="208.2037" />
+          <Hotspot X="3886.89" Y="-2503.831" Z="193.7343" />
+        </HuntingGrounds>
+      </CustomBehavior>
+
       <If Condition="HasQuest(12213) &amp;&amp; !IsObjectiveComplete(3,12213)">
         <CustomBehavior File="FlyTo" X="3930.799" Y="-2600.958" Z="206.5849" />
         <CustomBehavior File="ForcedDismount" />
