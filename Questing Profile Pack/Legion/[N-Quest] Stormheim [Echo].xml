@@ -168,7 +168,7 @@ END INITORDER COMMENT -->
 						<UseMount Value="false" />
 
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-							<CustomBehavior File="InteractWith" X="5045.783" Y="3137.939" Z="369.9213" TerminateWhen="(IsScenarioCriteriaComplete(1) &amp;&amp; IsScenarioCriteriaComplete(2)) || Me.InVehicle" >
+							<CustomBehavior File="InteractWith" X="5045.783" Y="3137.939" Z="369.9213" PreInteractMountStrategy="DismountOrCancelShapeshift" TerminateWhen="(IsScenarioCriteriaComplete(1) &amp;&amp; IsScenarioCriteriaComplete(2)) || Me.InVehicle" >
 								<PursuitList>
 									<PursueUnit Id="92957" PursueWhen="UNIT.X &gt; 140" /> <!-- Only use the one the bot can easily navigate to -->
 								</PursuitList>
@@ -309,23 +309,40 @@ END INITORDER COMMENT -->
 		<!-- [H] Horde Quest Section -->
 			<!-- [H] Zone Introductory Quests -->
 				<If Condition="Me.IsHorde" >
-					<TurnIn QuestName="Stormheim" QuestId="39864" TurnInName="Nathanos Blightcaller" TurnInId="96683" X="-840.5087" Y="4633.81" Z="749.415" />
+					<If Condition="QuestDone(39864)" >
+						<TurnIn QuestName="Stormheim" QuestId="39864" TurnInName="Nathanos Blightcaller" TurnInId="96683" X="-840.5087" Y="4633.81" Z="749.415" />
+					</If>
 
 					<PickUp QuestName="The Warchief Beckons" QuestId="38307" GiverName="Nathanos Blightcaller" GiverId="96683" X="-840.5087" Y="4633.81" Z="749.415" />
 					<While Condition="DoQuest(38307)" >
 						<CustomBehavior File="UseItem" ItemId="128692" QuestId="38307" QuestObjectiveIndex="1" />
 						<CustomBehavior File="InteractWith" MobId="244571" QuestId="38307" QuestObjectiveIndex="2" X="-830.9566" Y="4655.491" Z="749.6113" />
 					</While>
-					<TurnIn QuestName="The Warchief Beckons" QuestId="38307" TurnInName="Nathanos Blightcaller" TurnInId="96683" X="1493.664" Y="-5206.232" Z="10.71481" />
 
-					<PickUp QuestName="Making the Rounds" QuestId="39698" GiverName="Lady Sylvanas Windrunner" GiverId="96686" X="1496.027" Y="-5207.587" Z="11.05675" />
+					<If Condition="QuestDone(38307)" >
+						<CustomBehavior File="MyCTM" X="1494.842" Y="-5207.041" Z="10.96025" />
+						<TurnIn QuestName="The Warchief Beckons" QuestId="38307" TurnInName="Nathanos Blightcaller" TurnInId="96683" X="1493.664" Y="-5206.232" Z="10.71481" />
+					</If>
+
+					<While Condition="NeedsQuest(39698)" >
+						<CustomBehavior File="InteractWith" MobId="96686" MovementBy="ClickToMoveOnly" X="1496.027" Y="-5207.587" Z="11.05675" />
+						<CustomBehavior File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click();" />
+					</While>
 					<While Condition="DoQuest(39698)" >
-						<CustomBehavior File="InteractWith" MobId="247491" QuestId="39698" QuestObjectiveIndex="1" X="1458.342" Y="-5209.025" Z="13.16844" />
-						<MoveTo QuestId="39698" QuestObjectiveIndex="2" X="1481.318" Y="-5206.711" Z="5.265435" />
-						<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Lua.GetReturnVal&lt;bool&gt;(&quot;return ExtraActionButton1:IsVisible()&quot;, 0)" /> <!-- NOTE: <TechnicalCheck> : ExtraActionButton1 needs to appear before this timer ends. -->
-						<CustomBehavior File="Misc\RunLua" QuestId="39698" QuestObjectiveIndex="2" Lua="ExtraActionButton1:Click();" />
-						<MoveTo QuestId="39698" QuestObjectiveIndex="3" X="1500.211" Y="-5211.048" Z="11.59994" />
-						<CustomBehavior File="WaitTimer" QuestId="39698" QuestObjectiveIndex="3" WaitTime="50000" />
+						<If Condition="!IsObjectiveComplete(1, 39698)" >
+							<CustomBehavior File="MyCTM" X="1492.635" Y="-5200.788" Z="10.74463" />
+							<CustomBehavior File="MyCTM" X="1462.551" Y="-5205.338" Z="11.5078" />
+							<CustomBehavior File="WaitTimer" WaitTime="21000" />
+							<CustomBehavior File="InteractWith" MobId="247491" MovementBy="ClickToMoveOnly" Range="6" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="39698" QuestObjectiveIndex="1" X="1462.551" Y="-5205.338" Z="11.5078" />
+						</If>
+						<If Condition="!IsObjectiveComplete(2, 39698)" >
+							<CustomBehavior File="MyCTM" X="1483.268" Y="-5204.423" Z="5.25391" />
+							<CustomBehavior File="WaitTimer" WaitTime="22000" TerminateWhen="Lua.GetReturnVal&lt;bool&gt;(&quot;return ExtraActionButton1:IsVisible()&quot;, 0)" />
+							<CustomBehavior File="Misc\RunLua" QuestId="39698" QuestObjectiveIndex="2" Lua="ExtraActionButton1:Click();" />
+						</If>
+						<CustomBehavior File="MyCTM" X="1484.36" Y="-5214.976" Z="5.264024" />
+						<CustomBehavior File="MyCTM" X="1499.345" Y="-5213.526" Z="11.40895" />
+						<CustomBehavior File="WaitTimer" QuestId="39698" QuestObjectiveIndex="3" WaitTime="40000" />
 					</While>
 					<TurnIn QuestName="Making the Rounds" QuestId="39698" TurnInName="Lady Sylvanas Windrunner" TurnInId="96686" X="1499.171" Y="-5213.979" Z="11.37206" />
 				</If>
@@ -333,7 +350,11 @@ END INITORDER COMMENT -->
 
 			<!-- [H] Greymane's Gambit -->
 				<If Condition="Me.IsHorde" >
-					<PickUp QuestName="The Splintered Fleet" QuestId="39801" GiverName="Lady Sylvanas Windrunner" GiverId="96686" X="1499.171" Y="-5213.979" Z="11.37206" />
+					<While Condition="NeedsQuest(39801)" >
+						<CustomBehavior File="InteractWith" MobId="96686" MovementBy="ClickToMoveOnly" X="1499.171" Y="-5213.979" Z="11.37218" />
+						<CustomBehavior File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click();" />
+						<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+					</While>
 					<While Condition="DoQuest(39801)" >
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
 							<CustomBehavior File="InteractWith" MobId="94419" X="4623.434" Y="2853.851" Z="7.856867" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
@@ -345,8 +366,8 @@ END INITORDER COMMENT -->
 
 							<If Condition="Unit(94550, u =&gt; u.Distance &lt; 65) != null" >
 								<!-- NOTE: <AddAvoid> : May need to avoid the mage's attacks.  Mage casts two different AOEs that can be avoided. -->
-								<CustomBehavior File="InteractWith" MobId="94550" X="4820.018" Y="2998.036" Z="16.44233" TerminateWhen="Unit(94550, u =&gt; u.HasAura(187776)) != null" />
-								<CustomBehavior File="Vehicles\CannonControl" VehicleId="94550" MaxAngle="1" MinAngle="0.17" Buttons="1" TerminateWhen="!Me.InVehicle" />
+								<CustomBehavior File="InteractWith" MobId="94550" PreInteractMountStrategy="DismountOrCancelShapeshift" X="4820.018" Y="2998.036" Z="16.44233" TerminateWhen="Unit(94550, u =&gt; u.HasAura(187776)) != null" />
+								<CustomBehavior File="Vehicles\CannonControl" VehicleId="94550" Gravity="0.01" Velocity="200" Buttons="1" TerminateWhen="!Me.InVehicle" />
 
 								<CustomBehavior File="KillUntilComplete" MobId="94737" X="4836.879" Y="3013.312" Z="7.854728" TerminateWhen="Unit(94737, u =&gt; !u.IsAlive) != null || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
 							</If>
@@ -363,8 +384,9 @@ END INITORDER COMMENT -->
 							<CustomBehavior File="KillUntilComplete" MobIds="94820, 94822" X="4726.273" Y="2935.89" Z="7.857867" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4 || Unit(95316, u =&gt; u.CanInteract) != null" />
 						</While>
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
-							<CustomBehavior File="InteractWith" MobId="95316" WaitTime="16000" X="4729.154" Y="2929.965" Z="7.847277" TerminateWhen="Unit(95316, u =&gt; !u.CanInteract) != null || Me.Z &gt; 50" />
-							<CustomBehavior File="InteractWith" MobId="243244" NumOfTimes="7" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" >
+							<CustomBehavior File="InteractWith" MobId="95316" WaitTime="16000" X="4728.89" Y="2931.078" Z="7.848317" TerminateWhen="Me.Z &gt; 120" />
+							<UseMount Value="false" />
+							<CustomBehavior File="InteractWith" MobId="243244" NumOfTimes="7" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5 || Me.Z &lt;= 120" >
 								<HuntingGrounds>
 									<Hotspot X="4572.109" Y="2657.29" Z="138.8272" />
 									<Hotspot X="4530.208" Y="2660.132" Z="138.5548" />
@@ -374,6 +396,7 @@ END INITORDER COMMENT -->
 									<Hotspot X="4596.64" Y="2674.568" Z="153.3974" />
 								</HuntingGrounds>
 							</CustomBehavior>
+							<UseMount Value="false" />
 						</While>
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
 							<MoveTo QuestId="39801" X="4538.623" Y="2677.645" Z="164.41" />
@@ -648,8 +671,16 @@ END INITORDER COMMENT -->
 				<PickUp QuestName="To Weather the Storm" QuestId="38405" GiverName="Commander Lorna Crowley" GiverId="91481" X="2682.455" Y="2595.35" Z="230.9537" />
 
 				<While Condition="DoQuest(38318)" >
-					<!-- NOTE: <LocationLogic> : This below InteractWith gets the player into the area.  Need a way to detect if player isn't in the area, perhaps via BonusObjective trigger. -->
-					<CustomBehavior File="InteractWith" MobId="91983" Range="49" IgnoreLoSToTarget="true" WaitTime="10000" QuestId="38318" QuestObjectiveIndex="1" X="2668.16" Y="2545.319" Z="238.6316" />
+					<MoveTo Precision="1" X="2682.441" Y="2593.392" Z="230.9288" />
+					<CustomBehavior File="RunCode" Code="
+						WoWUnit grapplePoi = Unit(91983, u =&gt; (int)u.Y == 2545);
+						if (grapplePoi != null)
+						{
+							grapplePoi.Interact();
+							await Coroutine.Sleep(10000);
+						}
+					"/>
+					<CustomBehavior File="InteractWith" MobId="91983" Range="49" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" IgnoreLoSToTarget="true" WaitTime="10000" QuestId="38318" QuestObjectiveIndex="1" X="2682.441" Y="2593.392" Z="230.9288" />
 				</While>
 
 				<While Condition="DoQuest(38405)" >
@@ -953,7 +984,9 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="Speaking of Bones" QuestId="39804" GiverName="Havi" GiverId="92539" X="3214.377" Y="1543.611" Z="180.6391" />
 			<While Condition="DoQuest(39804)" >
+				<MoveTo X="3189.107" Y="1525.586" Z="181.157" />
 				<CustomBehavior File="InteractWith" MobId="98230" WaitTime="15000" QuestId="39804" QuestObjectiveIndex="1" X="3187.721" Y="1514.281" Z="181.2459" />
+				<MoveTo X="3189.107" Y="1525.586" Z="181.157" />
 			</While>
 			<TurnIn QuestName="Speaking of Bones" QuestId="39804" TurnInName="Havi" TurnInId="92539" X="3214.397" Y="1543.604" Z="180.6413" />
 
