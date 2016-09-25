@@ -12566,6 +12566,9 @@
 					GiverId="28027" />
       <CustomBehavior File="WaitTimer" WaitTime="5000"
 							GoalText="Waiting for NPC Lafoo to Spawn {TimeRemaining}" />
+      <If Condition="!HasItem(38622)" >
+        <CustomBehavior File="InteractWith" MobId="28027" GossipOptions="1" X="5651.868" Y="4560.372" Z="-134.7812" TerminateWhen="HasItem(38622)" />
+      </If>
       <If Condition="Unit(28120) == null">
         <CustomBehavior File="RunCode" >
           <![CDATA[ 
@@ -12581,7 +12584,7 @@
       <PickUp QuestName="Gods like Shiny Things" QuestId="12572" GiverName="Lafoo" GiverId="28120" />
     </If>
 
-    <CustomBehavior File="Hooks\DoWhen" ActivityName="ItemForAura_LafoosBugBag" AllowUseWhileMounted="true" UseWhen="HasItem(38622) &amp;&amp; !Me.HasAura(51623) &amp;&amp; !Me.IsFlying" >
+    <CustomBehavior File="Hooks\DoWhen" ActivityName="ItemForAura_LafoosBugBag" AllowUseWhileMounted="true" AllowExecutionWhileNotAlive="false" UseWhen="Me.ZoneId==3711 &amp;&amp; HasItem(38622) &amp;&amp; !Me.HasAura(51623) &amp;&amp; !Me.IsFlying" >
       <CustomBehavior File="UseItem" ItemId="38622" WaitTime="850" />
     </CustomBehavior>
 
@@ -12784,7 +12787,7 @@
       <CustomBehavior File="WaitTimer" WaitTime="15000"
 								GoalText="Waiting for Tartek to 'spawn' {TimeRemaining}" TerminateWhen="Unit(28105, u =&gt; u.IsAlive) != null" />
       <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred"  MobId="28105" QuestId="12575" QuestObjectiveIndex="1" X="6707.924" Y="5130.927" Z="-19.38803" />
-      <CustomBehavior File="InteractWith" MobId="190578" PreInteractMountStrategy="Dismount" Range="8" QuestId="12575" QuestObjectiveIndex="2" X="6717.776" Y="5117.679" Z="-17.13732" />
+      <CustomBehavior File="InteractWith" MobId="190578" PreInteractMountStrategy="Dismount" Range="8" NonCompeteDistance="0" QuestId="12575" QuestObjectiveIndex="2" X="6717.776" Y="5117.679" Z="-17.13732" />
     </If>
     <If Condition="HasQuest(12576) &amp;&amp; !IsQuestCompleted(12576)">
       <CustomBehavior File="FlyTo" DestName="kill Frenzyhearts" X="6637.929" Y="5142.848" Z="-37.0036" />
@@ -13661,7 +13664,7 @@
       <CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for lag to clear {TimeRemaining}" />
       <CustomBehavior File="LoadProfile" ProfileName="..\Cata\[Fly][N - Quest] Hyjal 80-82 [Kick]" RememberProfile="true" />
     </If>
-    
+
 
     <!-- Icecrown Quests -->
     <CustomBehavior File="Message" Text="Compiling Icecrown Quests" LogColor="Green" />
@@ -14021,7 +14024,7 @@
       <CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for lag to clear {TimeRemaining}" />
       <CustomBehavior File="LoadProfile" ProfileName="..\Cata\[Fly][N - Quest] Hyjal 80-82 [Kick]" RememberProfile="true" />
     </If>
-    
+
     <!-- Storm Peaks -->
     <CustomBehavior File="Message" Text="Compiling Storm Peaks Quests" LogColor="Green" />
 
