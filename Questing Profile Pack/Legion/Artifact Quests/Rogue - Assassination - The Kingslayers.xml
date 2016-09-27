@@ -35,6 +35,8 @@
 	<Vendors>
 	</Vendors>
 
+	<DefaultNavType>Fly</DefaultNavType>
+
 <!-- INITORDER COMMENT 
 	<InitOrder>
 		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
@@ -140,8 +142,10 @@ END INITORDER COMMENT -->
 				</If>
 				<If Condition="Me.IsAlliance" >
 					<MoveTo Nav="Fly" X="-10734.95" Y="316.9702" Z="40.28419" />
+					<UseMount Value="false" />
 				</If>
 				<CustomBehavior File="KillUntilComplete" MobId="107736" QuestId="42502" QuestObjectiveIndex="4" X="-10686.38" Y="318.9931" Z="47.6298" />
+				<UseMount Value="true" />
 				<CustomBehavior File="InteractWith" MobId="107736" MobState="Dead" InteractByLooting="true" QuestId="42502" QuestObjectiveIndex="5" X="-10686.38" Y="318.9931" Z="47.6298" />
 
 				<If Condition="Me.IsAlliance" >
@@ -159,7 +163,7 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="Codebreaker" QuestId="42503" GiverName="NONE" />
 			<While Condition="DoQuest(42503)" >
-				<CustomBehavior File="UseItem" QuestId="42502" QuestObjectiveIndex="1" ItemId="138102" />
+				<CustomBehavior File="UseItem" QuestId="42503" QuestObjectiveIndex="1" ItemId="138102" />
 				<MoveTo Nav="Fly" X="-10596.08" Y="-1049.163" Z="45.47667" />
 			</While>
 			<TurnIn QuestName="Codebreaker" QuestId="42503" />
@@ -191,17 +195,17 @@ END INITORDER COMMENT -->
 					</CustomBehavior>
 				</CustomBehavior>
 				<!-- 2.5 yards seems to be the aggro point in which a StormwindGuard will attack.  They will sense your presence at about 6.5 -->
-				<CustomBehavior File="Hooks\Avoid" AvoidName="StormwindGuard" Command="Add" ObjectId="108059" Radius="4" AvoidWhen="!UNIT.Aggro" />
-				<CustomBehavior File="Hooks\Avoid" AvoidName="SuspiciousStormwindGuard" Command="Add" ObjectId="109966" Radius="4" AvoidWhen="!UNIT.Aggro" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="StormwindGuard" Command="Add" ObjectId="108059" Radius="3" AvoidWhen="!UNIT.Aggro" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="SuspiciousStormwindGuard" Command="Add" ObjectId="109966" Radius="3" AvoidWhen="!UNIT.Aggro" />
 				<!-- XXX yards seems to be the aggro point in which a StormwindGuard will attack.  They will sense your presence at about 15.5 -->
 				<CustomBehavior File="Hooks\Avoid" AvoidName="StormwindPatroller" Command="Add" ObjectId="108058" Radius="17" AvoidWhen="!UNIT.Aggro" />
-				<CustomBehavior File="Hooks\Avoid" AvoidName="OfficerJaxon" Command="Add" ObjectId="108149" Radius="4" AvoidWhen="!UNIT.Aggro" />
-				<CustomBehavior File="Hooks\Avoid" AvoidName="IronforgeRifleman" Command="Add" ObjectId="108435" Radius="4" AvoidWhen="!UNIT.Aggro" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="OfficerJaxon" Command="Add" ObjectId="108149" Radius="3" AvoidWhen="!UNIT.Aggro" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="IronforgeRifleman" Command="Add" ObjectId="108435" Radius="3" AvoidWhen="!UNIT.Aggro" />
 				<CustomBehavior File="Hooks\Avoid" AvoidName="ExplosiveTrap" Command="Add" ObjectId="251198" Radius="3" />
 
 				<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepStealth" Command="Disable" />
 
-
+				<DefaultNavType Value="Run" />
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
 					<MoveTo X="-9084.96" Y="418.6754" Z="92.41916" />
@@ -211,6 +215,7 @@ END INITORDER COMMENT -->
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
 					<DisableBehavior Name="Pull" />
 					<UseMount Value="false" />
+					<CustomBehavior File="ForcedDismount" />
 					<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepStealth" Command="Enable" />
 
 					<MoveTo X="-8857.717" Y="572.1356" Z="101.0672" />
@@ -232,6 +237,7 @@ END INITORDER COMMENT -->
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepStealth" Command="Enable" />
 					<DisableBehavior Name="Pull" />
 					<UseMount Value="false" />
 
@@ -256,7 +262,7 @@ END INITORDER COMMENT -->
 					</CustomBehavior>
 					<CustomBehavior File="MyCTM" X="-8844.807" Y="658.8715" Z="97.48805" />
 					<CustomBehavior File="MyCTM" X="-8857.374" Y="661.9294" Z="97.10667" />
-					<CustomBehavior File="InteractWith" MobId="109966" MinRange="4" NumOfTimes="50" CollectionDistance="200" InteractByCastingSpellId="921" X="-8864.846" Y="611.9828" Z="93.25418" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+					<CustomBehavior File="InteractWith" MobId="109966" MinRange="3" NumOfTimes="50" CollectionDistance="200" InteractByCastingSpellId="921" X="-8864.846" Y="611.9828" Z="93.25418" TerminateWhen="IsScenarioCriteriaComplete(1)" />
 
 					<If Condition="IsScenarioCriteriaComplete(1) &amp;&amp; !IsScenarioCriteriaComplete(2)" >
 						<MoveTo X="-8843.919" Y="676.0266" Z="98.3197" />
