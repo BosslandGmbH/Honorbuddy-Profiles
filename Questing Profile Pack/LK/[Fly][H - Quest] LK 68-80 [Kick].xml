@@ -10900,11 +10900,11 @@
 
     <!-- <If Condition="!IsQuestCompleted(12539)"> , ItemForAura is depreciated.  This is now handled by DoWhen.  ~EchoTiger
 			<CustomBehavior File="EnablePlugin" Names="Questhelper - ItemForAura" />
-		</If> -->
+		</If> 
 
     <CustomBehavior File="Hooks\DoWhen" ActivityName="ItemForAura_GoregeksShackles" AllowUseWhileMounted="true" AllowExecutionWhileNotAlive="false" UseWhen="Me.ZoneId==3711 &amp;&amp; HasItem(38619) &amp;&amp; !Me.HasAura(54178) &amp;&amp; !Me.IsFlying" >
       <CustomBehavior File="UseItem" ItemId="38619" WaitTime="850" />
-    </CustomBehavior>
+    </CustomBehavior>-->
 
 
     <If Condition="!HasQuest(12528) &amp;&amp; !IsQuestCompleted(12528)">
@@ -10920,8 +10920,10 @@
 						GiverId="28082" />
       <CustomBehavior File="InteractWith" MobId="28138" WaitTime="5000" GossipOptions="1" X="5263.772" Y="4511.331" Z="-84.79513" />
       <!-- This is a temporary patch to fix a Blizzard bug where the NPC summon item isn't given to you. -->
-      <CustomBehavior File="UseItem" ItemId="38619" />
-      <CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for npc to spawn {TimeRemaining}" TerminateWhen="Unit(28214) != null" />
+      <If Condition="Unit(28214) == null" >
+          <CustomBehavior File="UseItem" ItemId="38619" />
+          <CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for npc to spawn {TimeRemaining}" TerminateWhen="Unit(28214) != null" />
+      </If>
       <PickUp QuestName="Tormenting the Softknuckles" QuestId="12530" GiverName="Goregek the Gorilla Hunter"
 						GiverId="28214" />
     </If>
@@ -10932,17 +10934,20 @@
 						GiverId="28082" />
       <CustomBehavior File="InteractWith" MobId="28138" WaitTime="5000" GossipOptions="1" X="5263.772" Y="4511.331" Z="-84.79513" />
       <!-- This is a temporary patch to fix a Blizzard bug where the NPC summon item isn't given to you. -->
-      <CustomBehavior File="UseItem" ItemId="38619" />
-      <CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for npc to spawn {TimeRemaining}" TerminateWhen="Unit(28214) != null" />
+      <If Condition="Unit(28214) == null" >
+          <CustomBehavior File="UseItem" ItemId="38619" />
+          <CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for npc to spawn {TimeRemaining}" TerminateWhen="Unit(28214) != null" />
+      </If>
       <PickUp QuestName="Tormenting the Softknuckles" QuestId="12530" GiverName="Goregek the Gorilla Hunter"
 						GiverId="28214" />
     </If>
     <If Condition="!HasQuest(12530) &amp;&amp; !IsQuestCompleted(12530)">
       <CustomBehavior File="FlyTo" DestName="Pickup Quest" X="5277.587" Y="4529.633" Z="-81.22305" />
       <CustomBehavior File="ForcedDismount" />
-      <CustomBehavior File="UseItem" ItemId="38619" />
-      <CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Using item {TimeRemaining}" />
-      <CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for npc to spawn {TimeRemaining}" />
+      <If Condition="Unit(28214) == null" >
+          <CustomBehavior File="UseItem" ItemId="38619" />
+          <CustomBehavior File="WaitTimer" WaitTime="10000" GoalText="Waiting for npc to spawn {TimeRemaining}" TerminateWhen="Unit(28214) != null" />
+      </If>
       <PickUp QuestName="Tormenting the Softknuckles" QuestId="12530" GiverName="Goregek the Gorilla Hunter"
 						GiverId="28214" />
     </If>
@@ -10974,8 +10979,6 @@
       <TurnIn QuestName="Tormenting the Softknuckles" QuestId="12530" TurnInName="High-Shaman Rakjak"
 						TurnInId="28082" />
     </If>
-
-    <CustomBehavior File="Hooks\DoWhen" ActivityName="ItemForAura_GoregeksShackles" Command="Remove" />
 
     <If Condition="HasQuest(12529) &amp;&amp; IsQuestCompleted(12529)">
       <CustomBehavior File="FlyTo" DestName="Turnin Quest" X="5277.756" Y="4529.624" Z="-78.12341" />
