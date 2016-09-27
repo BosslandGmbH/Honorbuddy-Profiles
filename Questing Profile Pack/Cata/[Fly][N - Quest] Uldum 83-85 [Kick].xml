@@ -22,8 +22,20 @@
 
 
 	<Vendors>
+    <!-- Stormwind Vendors -->
+    <Vendor Name="Gunther Weller" Id="1289" Type="Repair" X="-8790.421" Y="607.3484" Z="96.77347" UsableWhen="Me.IsAlliance &amp;&amp; Me.MapId==0" />
+    <Vendor Name="Innkeeper Allison" Id="6740" Type="Food" X="-8867.786" Y="673.6729" Z="97.90376" UsableWhen="Me.IsAlliance &amp;&amp; Me.MapId==0" />
+    <Vendor Name="Marda Weller" Id="1287" Type="Repair" X="-8787.688" Y="609.6306" Z="96.77336" UsableWhen="Me.IsAlliance &amp;&amp; Me.MapId==0" />
+
+    <!-- Orgrimmar Vendor -->
+    <Vendor Name="Trak'gen" Id="3313" Type="Food" X="1528.89" Y="-4442.89" Z="24.02194" UsableWhen="Me.IsHorde &amp;&amp; Me.MapId==1" />
+    <Vendor Name="Urtharo" Id="3314" Type="Repair" X="1639.75" Y="-4316.71" Z="21.12019" UsableWhen="Me.IsHorde &amp;&amp; Me.MapId==1" />
+    
+    <!-- Uldum -->
 		<Vendor Nav="Fly" Name="Kazemde" Id="48886" Type="Food" X="-9389.101" Y="-944.342" Z="113.7649" />
 		<Vendor Nav="Fly" Name="&quot;Chesty&quot; Jake" Id="49409" Type="Repair" X="-8353.455" Y="759.2292" Z="151.4582" />
+    
+    <!-- Ramkahen -->
 		<Vendor Nav="Fly" Name="Blacksmith Abasi" Id="48617" Type="Repair" X="-9404.68" Y="-906.438" Z="112.5407" />
 	</Vendors>
 
@@ -368,7 +380,7 @@
 					<If Condition="Me.MapId == 0">
 						<!-- Menethil -->
 						<If Condition="CanFly()" >
-							<CustomBehavior File="FlyTo" X="-3864.665" Y="-655.3919" Z="5.436976" />
+							<CustomBehavior File="FlyTo" DestName="Menethil" X="-3864.665" Y="-655.3919" Z="5.436976" />
 						</If>
 						<MoveTo X="-3864.665" Y="-655.3919" Z="5.436976" />
 						<CustomBehavior File="ForcedDismount" />
@@ -381,7 +393,7 @@
                             GetOffX="-3996.911" GetOffY="-4722.698" GetOffZ="4.254294"  />
 					</If>
 					<If Condition="Me.MapId == 1">
-						<CustomBehavior File="FlyTo" Land="true" X="-8919.693" Y="-2264.956" Z="8.878212" />
+						<CustomBehavior File="FlyTo" Land="true" DestName="Adarrah in Tanaris" X="-8919.693" Y="-2264.956" Z="8.878212" />
 					</If>
 				</If>
 				<If Condition="HasQuest(28558)">
@@ -409,7 +421,7 @@
                             GiverId="206109" GiverType="Object" X="1600.99" Y="-4369.74" Z="21.0694" />
 				</If>
 				<If Condition="HasQuest(28557)">
-					<CustomBehavior File="FlyTo" Land="true" X="-8919.693" Y="-2264.956" Z="8.878212" />
+					<CustomBehavior File="FlyTo" Land="true" DestName="Adarrah in Tanaris" X="-8919.693" Y="-2264.956" Z="8.878212" />
 					<TurnIn QuestName="Warchief's Command: Uldum!" QuestId="28557" TurnInName="Adarrah"
                             TurnInId="44833"
                             X="-8920.7" Y="-2261.42" Z="8.878302" />
@@ -457,6 +469,8 @@
 			<MoveTo X="-10962.53" Y="-1365.425" Z="35.26873" />
 		</If>
 		<If Condition="HasQuest(27922) &amp;&amp; IsQuestCompleted(27922)">
+      <CustomBehavior File="ForcedMount" MountType="Flying" />
+      <CustomBehavior File="AscendInWater" />
 			<CustomBehavior File="FlyTo" Land="true" X="-11003.82" Y="-1248.205" Z="13.24318" />
 			<EnableBehavior Name="Pull" />
 		</If>
@@ -613,7 +627,7 @@
 			<MoveTo X="-9875.921" Y="-31.09443" Z="55.75531" />
 		</While>
 		<While Condition="HasQuest(27519) &amp;&amp; !IsQuestCompleted(27519)">
-			<CustomBehavior File="InteractWith" QuestId="27519" MobId="45715"
+			<CustomBehavior File="InteractWith" QuestId="27519" MobId="45715" MovementBy="NavigatorPreferred"
                             ProactiveCombatStrategy="ClearMobsTargetingUs"
                             NumOfTimes="10" Range="10" WaitForNpcs="false" CollectionDistance="30">
 				<HuntingGrounds>
@@ -704,17 +718,17 @@
 			</CustomBehavior>
 			<CustomBehavior File="AscendInWater" />
 		</If>
-		<While Condition="HasQuest(27836) &amp;&amp; !IsQuestCompleted(27836)">
+		<While Condition="Me.Level &lt; 86 &amp;&amp; HasQuest(27837) &amp;&amp; !IsQuestCompleted(27837)">
 			<CustomBehavior File="FlyTo" Land="true" DestName="snakes in water." X="-9712.487" Y="-1180.395"
                             Z="101.7927" />
-			<CustomBehavior File="MyCTM" X="-9663.469" Y="-947.6186" Z="62.47423" />
-			<CustomBehavior File="MyCTM" X="-9641.623" Y="-980.6541" Z="65.8779" />
-			<CustomBehavior File="MyCTM" X="-9627.183" Y="-931.1443" Z="86.1435" />
-			<CustomBehavior File="MyCTM" X="-9686.585" Y="-897.4743" Z="62.49617" />
-			<CustomBehavior File="MyCTM" X="-9721.678" Y="-804.7967" Z="77.1977" />
-			<CustomBehavior File="MyCTM" X="-9659.375" Y="-828.125" Z="70.6398" />
-			<CustomBehavior File="MyCTM" X="-9571.146" Y="-796.7645" Z="85.2894" />
-			<CustomBehavior File="MyCTM" X="-9598.507" Y="-881.228" Z="74.83436" />
+			<CustomBehavior File="MyCTM" QuestId="27837" X="-9663.469" Y="-947.6186" Z="62.47423" />
+			<CustomBehavior File="MyCTM" QuestId="27837" X="-9641.623" Y="-980.6541" Z="65.8779" />
+			<CustomBehavior File="MyCTM" QuestId="27837" X="-9627.183" Y="-931.1443" Z="86.1435" />
+			<CustomBehavior File="MyCTM" QuestId="27837" X="-9686.585" Y="-897.4743" Z="62.49617" />
+			<CustomBehavior File="MyCTM" QuestId="27837" X="-9721.678" Y="-804.7967" Z="77.1977" />
+			<CustomBehavior File="MyCTM" QuestId="27837" X="-9659.375" Y="-828.125" Z="70.6398" />
+			<CustomBehavior File="MyCTM" QuestId="27837" X="-9571.146" Y="-796.7645" Z="85.2894" />
+			<CustomBehavior File="MyCTM" QuestId="27837" X="-9598.507" Y="-881.228" Z="74.83436" />
 		</While>
 		<UseMount Value="true" />
 
@@ -743,7 +757,7 @@
 		<If Condition="HasQuest(27836) &amp;&amp; IsQuestCompleted(27836)">
 			<TurnIn QuestName="Stopping the Spread" TurnInName="High Priest Amet" QuestId="27836" TurnInId="46135" />
 			<PickUp QuestName="The Defilers' Ritual" QuestId="28611" GiverName="High Priest Amet" GiverId="46135" />
-
+      <MoveTo DestName="Outside the Viewing Chamber" X="-9937.255" Y="-809.3591" Z="104.6162" />
 			<CustomBehavior File="ForceSetVendor" DoSell="true" DoRepair="true" DoMail="true" />
 		</If>
 		<If Condition="!HasQuest(28611) &amp;&amp; !IsQuestCompleted(28611)">
@@ -807,15 +821,17 @@
 		<PickUp QuestName="Just the Tip" QuestId="27176" GiverName="Elaborate Disc" GiverId="205266" GiverType="Object"
                 X="-9250.307" Y="-1575.147" Z="67.75125" />
 		<If Condition="HasQuest(27176) &amp;&amp; !IsQuestCompleted(27176)">
-			<CustomBehavior File="FlyTo" X="-9277.324" Y="-1760.133" Z="67.87192" />
+			<CustomBehavior File="FlyTo" DestName="Just the Tip" X="-9277.324" Y="-1760.133" Z="67.87192" />
 			<CustomBehavior File="ForcedDismount" />
-			<CustomBehavior File="KillUntilComplete" MobId="45205" QuestId="27176" QuestObjectiveIndex="1" >
+			<CustomBehavior File="KillUntilComplete" MobId="45205" QuestId="27176" TerminateWhen="HasItem(60865)" >
 				<HuntingGrounds>
-					<Hotspot X="-9300.257" Y="-1779.043" Z="69.69764" />
-					<Hotspot X="-9346.56" Y="-1782.159" Z="70.30051" />
-					<Hotspot X="-9391.146" Y="-1782.919" Z="70.18357" />
+					<Hotspot Name="Just the Tip 0" X="-9300.257" Y="-1779.043" Z="69.69764" />
+					<Hotspot Name="Just the Tip 1" X="-9346.56" Y="-1782.159" Z="70.30051" />
+					<Hotspot Name="Just the Tip 2" X="-9391.146" Y="-1782.919" Z="70.18357" />
 				</HuntingGrounds>
 			</CustomBehavior>
+      <CustomBehavior File="FlyTo" Land="true" DestName="Just the Tip" X="-9277.324" Y="-1760.133" Z="67.87192" />
+      <CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:60859&quot;)" WaitTime="2000" />
 		</If>
 		<Objective Nav="Fly" QuestName="Field Work" QuestId="27179" Type="CollectItem" CollectCount="10" ItemId="60860" />
 		<If Condition="HasQuest(27187) &amp;&amp; !IsQuestCompleted(27187)">
