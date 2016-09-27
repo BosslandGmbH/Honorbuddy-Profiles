@@ -1160,8 +1160,8 @@
                 X="1781.033" Y="1983.231" Z="173.0977" />
         <PickUp QuestName="Throw It On the Ground!" QuestId="25123" GiverName="Assistant Greely" GiverId="39199"
                 X="1781.033" Y="1983.231" Z="173.0977" />
-        <If Condition="HasQuest(25122) &amp;&amp; !IsQuestCompleted(25122)" >
-            <Objective QuestName="Morale Boost" QuestId="25122" Type="CollectItem" ItemId="52484" CollectCount="20" />
+        <While Condition="HasQuest(25122) &amp;&amp; !IsQuestCompleted(25122)" >
+            <CustomBehavior File="InteractWith" MobIds="202552, 202553, 202554" CollectionDistance="200" InteractByLooting="true" NumOfTimes="9" QuestId="25122" TerminateWhen="GetItemCount(52484) &gt;= 9" X="1772.376" Y="1808.654" Z="170.3884" />
             <!-- WaitforNpcs is used to prevent unexpected loops. -->
             <While Condition="HasQuest(25122) &amp;&amp; !IsObjectiveComplete(1,25122)">
                 <CustomBehavior File="InteractWith" MobState="Alive" QuestId="25122" WaitForNpcs="false" QuestObjectiveIndex="1" InteractByUsingItemId="52484"
@@ -1175,12 +1175,12 @@
                 <CustomBehavior File="InteractWith" MobState="Alive" QuestId="25122" WaitForNpcs="false" QuestObjectiveIndex="3" InteractByUsingItemId="52484"
                                 MobId="38746" X="1913.413" Y="1807.932" Z="170.1177" />
             </While>
-            <While Condition="HasQuest(25122) &amp;&amp; !IsObjectiveComplete(4,25122)">
+            <While Condition="HasQuest(25122) &amp;&amp; !IsObjectiveComplete(4,25122) &amp;&amp; HasItem(52484)">
                 <CustomBehavior File="InteractWith" MobState="Alive" QuestId="25122" WaitForNpcs="false" QuestObjectiveIndex="4" InteractByUsingItemId="52484"
                                 Range="15" MobId="38409" MobId2="38745" NumOfTimes="50"
-                                X="1795.279" Y="1922.784" Z="172.6141" WaitTime="1100" />
+                                X="1795.279" Y="1922.784" Z="172.6141" WaitTime="1100" TerminateWhen="!HasItem(52484)" />
             </While>
-        </If>
+        </While>
         <TurnIn QuestName="Morale Boost" QuestId="25122" TurnInName="Assistant Greely" TurnInId="39199" />
         <While Condition="HasQuest(25123) &amp;&amp; !IsQuestCompleted(25123)">
             <CustomBehavior File="InteractWith" MobId="39194" Range="5" WaitForNpcs="false"
@@ -1323,10 +1323,9 @@
         <If Condition="HasQuest(25251) &amp;&amp; !IsQuestCompleted(25251)">
             <DisableBehavior Name="Pull" />
             <If Condition="!Me.HasAura(&quot;The Ultimate Footbomb Uniform&quot;)" >
-                <CustomBehavior File="InteractWith" MobId="39592" Range="10"
-                                X="2123.724" Y="2403.597" Z="45.00877" />
-                <MoveTo X="2148.154" Y="2386.472" Z="44.60568" />
-                <MoveTo X="2402.894" Y="2531.921" Z="4.459624" />
+                <CustomBehavior File="InteractWith" MobId="39592" Range="10" X="2123.724" Y="2403.597" Z="45.00877" />
+                <MoveTo X="2397.013" Y="2525.716" Z="0.8408971" />
+                <CustomBehavior File="MyCTM" X="2314.849" Y="2445.516" Z="17.20103" TerminateWhen="Unit(39582) != null" />
             </If>
             <CustomBehavior File="SpecificQuests\25251-LostIsles-FinalConfrontation"/>
             <CustomBehavior File="EjectVeh" />
