@@ -98,7 +98,7 @@ END INITORDER COMMENT -->
 		<!-- END RunCode Methods -->
 
 		<!-- Get Continuation Quest -->
-				<If Condition="IsQuestCompleted(41255) &amp;&amp; !HasQuest(43980) &amp;&amp; !HasQuest(44431) &amp;&amp; !HasQuest(44443)" > <!-- Using Sowing the Seed (41255) to determine if we've already got the first artifact. -->
+				<If Condition="IsQuestCompleted(41255) &amp;&amp; NeedsQuest(41468) &amp;&amp; !HasQuest(43980) &amp;&amp; !HasQuest(44431) &amp;&amp; !HasQuest(44443)" > <!-- Using Sowing the Seed (41255) to determine if we've already got the first artifact. -->
 					<CustomBehavior File="InteractWith" MobId="101195" WaitTime="1250" X="3969.634" Y="7393.945" Z="23.9389" />
 					<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="QuestFrameAcceptButton:Click();" />
 				</If>
@@ -150,17 +150,19 @@ END INITORDER COMMENT -->
 
 				<PickUp QuestName="To The Hills" QuestId="41782" GiverName="Lea Stonepaw" GiverId="101259" X="4277.943" Y="7442.35" Z="-18.21085" />
 				<While Condition="DoQuest(41782)" >
-					<CustomBehavior File="InteractWith" MobId="248583" InteractByLooting="true" QuestId="41782" QuestObjectiveIndex="1" X="4125.477" Y="7473.542" Z="49.89162" />
+					<CustomBehavior File="InteractWith" MobId="248583" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" InteractByLooting="true" QuestId="41782" QuestObjectiveIndex="1" X="4125.477" Y="7473.542" Z="49.89162" />
 
 					<If Condition="Me.ZoneId == 7846" >  <!-- NOTE: <CheckID> : Leaving Class Hall, entering Dreamway. -->
 						<MoveTo X="4141.608" Y="7302.58" Z="22.75611" />
-						<CustomBehavior File="MyCTM" X="4150.013" Y="7293.335" Z="22.77204" TerminateWhen="Me.MapId == 1540" /> <!-- Shut off when entered Dreamway -->
+						<CustomBehavior File="MyCTM" X="4150.013" Y="7293.335" Z="22.77204" TerminateWhen="Me.ZoneId != 7846" /> <!-- Shut off when entered Dreamway -->
+						<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Me.ZoneId != 7846" />
 					</If>
-					<If Condition="Me.MapId == 1540" >  <!-- NOTE: <CheckID> : Leaving Dreamway, entering Grizzly Hills. -->
+					<If Condition="Me.ZoneId == 7979" >  <!-- NOTE: <CheckID> : Leaving Dreamway, entering Grizzly Hills. -->
 						<MoveTo X="1760.629" Y="1606.302" Z="8.390942" />
-						<CustomBehavior File="MyCTM" X="1771.433" Y="1609.672" Z="8.922731" TerminateWhen="Me.MapId == 571" /> <!-- Shut off when entered Grizzly Hills -->
+						<CustomBehavior File="MyCTM" X="1771.433" Y="1609.672" Z="8.922731" TerminateWhen="Me.ZoneId != 7979" /> <!-- Shut off when entered Grizzly Hills -->
+						<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Me.ZoneId != 7979" />
 					</If>
-					<MoveTo Nav="Fly" X="4027.25" Y="-3766.109" Z="160.7226" />
+					<MoveTo Nav="Fly" Land="false" X="4090.349" Y="-3753.838" Z="143.4755" />
 					<CustomBehavior File="MyCTM" X="4186.68" Y="-3743.118" Z="127.2118" /> <!-- Fly into the tree-cave. -->
 					<MoveTo QuestId="41782" X="4226.831" Y="-3801.606" Z="119.2106" />
 				</While>
@@ -168,7 +170,7 @@ END INITORDER COMMENT -->
 
 				<PickUp QuestName="Fallen Offerings" QuestId="41783" GiverName="Lea Stonepaw" GiverId="104535" X="4227.627" Y="-3802.894" Z="119.1887" />
 				<While Condition="DoQuest(41783)" >
-					<CustomBehavior File="InteractWith" MobIds="104851" NumOfTimes="3" QuestId="41783" QuestObjectiveIndex="1" >
+					<CustomBehavior File="InteractWith" MobIds="104851" NumOfTimes="5" QuestId="41783" TerminateWhen="GetItemCount(136359) &gt;= 5" >
 						<HuntingGrounds>
 							<Hotspot X="3897.872" Y="-3855.336" Z="179.037" />
 							<Hotspot X="3896.734" Y="-3944.14" Z="177.8524" />
@@ -176,10 +178,10 @@ END INITORDER COMMENT -->
 							<Hotspot X="4149.784" Y="-3924.014" Z="168.0633" />
 						</HuntingGrounds>
 					</CustomBehavior>
-					<CustomBehavior File="UseItem" ItemId="136359" NumOfTimes="5" TerminateWhen="!HasItem(136359)" />
+					<CustomBehavior File="UseItem" ItemId="136359" NumOfTimes="10" TerminateWhen="!HasItem(136359)" />
 				</While>
 				<!-- NOTE: <TechnicalCheck> : Add 'Fly Into the tree-cave' logic here if needed. -->
-				<TurnIn QuestName="Fallen Offerings" QuestId="41783" TurnInName="Lea Stonepaw" TurnInId="104535" X="4227.627" Y="-3802.894" Z="119.1887" />
+				<TurnIn Nav="Run" QuestName="Fallen Offerings" QuestId="41783" TurnInName="Lea Stonepaw" TurnInId="104535" X="4227.627" Y="-3802.894" Z="119.1887" />
 
 				<PickUp QuestName="The First Trial of Ursol" QuestId="41790" GiverName="Ursol" GiverId="104385" X="4201.148" Y="-3761.943" Z="123.4492" />
 				<While Condition="DoQuest(41790)" >
@@ -195,7 +197,7 @@ END INITORDER COMMENT -->
 
 				<PickUp QuestName="The Third Trial of Ursol" QuestId="41792" GiverName="Ursol" GiverId="104385" X="4201.148" Y="-3761.943" Z="123.4492" />
 				<While Condition="DoQuest(41792)" >
-					<CustomBehavior File="InteractWith" MobId="104385" GossipOptions="1" QuestId="41792" QuestObjectiveIndex="1" X="4201.148" Y="-3761.943" Z="123.4492" />
+					<CustomBehavior File="InteractWith" MobId="104385" GossipOptions="1" QuestId="41792" X="4201.148" Y="-3761.943" Z="123.4492" />
 					<CustomBehavior File="KillUntilComplete" QuestId="41792" X="4227.019" Y="-3801.243" Z="119.2875" >
 						<PursuitList>
 							<PursueUnit Id="105110" Priority="10" />
@@ -210,9 +212,12 @@ END INITORDER COMMENT -->
 
 				<PickUp QuestName="When Dreams Become Nightmares" QuestId="40647" GiverName="Lea Stonepaw" GiverId="104535" X="4227.019" Y="-3801.243" Z="119.2875" />
 				<While Condition="DoQuest(40647)" >
-					<If Condition="Me.MapId != 1536" > <!-- NOTE: <CheckID> : Player needs to enter Ursoc's Lair. -->
-						<CustomBehavior File="UseItem" ItemId="40647" /> <!-- Use to enter dream. -->
-						<CustomBehavior File="WaitTimer" WaitTime="15000" />
+					<If Condition="Me.ZoneId != 7974" > <!-- NOTE: <CheckID> : Player needs to enter Ursoc's Lair. -->
+						<MoveTo Precision="1" X="4228.981" Y="-3802.903" Z="119.4472" />
+						<CustomBehavior File="MyCTM" X="4228.981" Y="-3802.903" Z="119.4472" />
+						<CustomBehavior File="UseItem" ItemId="136414" /> <!-- Use to enter dream. -->
+						<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Me.ZoneId == 7974" />
+						<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 					</If>
 
 					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
@@ -220,16 +225,19 @@ END INITORDER COMMENT -->
 					</If>
 
 					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-						<CustomBehavior File="KillUntilComplete" X="-12194.06" Y="-13091.46" Z="328.1698" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" >
+						<CustomBehavior File="KillUntilComplete" X="-12194.06" Y="-13091.46" Z="328.1698" ImmediatelySwitchToHighestPriorityTarget="true" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" >
 							<PursuitList>
 								<PursueUnit Id="101386" Priority="10" />
 								<PursueUnit Id="101386" Priority="1000" PursueWhen="!UNIT.Aggro" />
+
+								<PursueUnit Id="105294" Priority="10" />
+								<PursueUnit Id="105294" Priority="1000" PursueWhen="!UNIT.Aggro" />
 							</PursuitList>
 						</CustomBehavior>
 					</If>
 
 					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
-						<CustomBehavior File="KillUntilComplete" X="-12194.06" Y="-13091.46" Z="328.1698" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" >
+						<CustomBehavior File="KillUntilComplete" X="-12194.06" Y="-13091.46" Z="328.1698" ImmediatelySwitchToHighestPriorityTarget="true" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" >
 							<PursuitList>
 								<PursueUnit Id="101384" Priority="10" />
 								<PursueUnit Id="101384" Priority="1000" PursueWhen="!UNIT.Aggro" />
@@ -241,7 +249,7 @@ END INITORDER COMMENT -->
 					</If>
 
 					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
-						<CustomBehavior File="KillUntilComplete" X="-12194.06" Y="-13091.46" Z="328.1698" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" >
+						<CustomBehavior File="KillUntilComplete" X="-12194.06" Y="-13091.46" Z="328.1698" ImmediatelySwitchToHighestPriorityTarget="true" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" >
 							<PursuitList>
 								<PursueUnit Id="101388" Priority="10" />
 								<PursueUnit Id="101388" Priority="1000" PursueWhen="!UNIT.Aggro" />
@@ -253,7 +261,7 @@ END INITORDER COMMENT -->
 					</If>
 
 					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
-						<CustomBehavior File="KillUntilComplete" X="-12194.06" Y="-13091.46" Z="328.1698" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" >
+						<CustomBehavior File="KillUntilComplete" X="-12194.06" Y="-13091.46" Z="328.1698" ImmediatelySwitchToHighestPriorityTarget="true" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" >
 							<PursuitList>
 								<PursueUnit Id="101384" Priority="10" />
 								<PursueUnit Id="101384" Priority="1000" PursueWhen="!UNIT.Aggro" />
@@ -265,7 +273,7 @@ END INITORDER COMMENT -->
 					</If>
 
 					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
-						<CustomBehavior File="KillUntilComplete" X="-12194.06" Y="-13091.46" Z="328.1698" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" >
+						<CustomBehavior File="KillUntilComplete" X="-12194.06" Y="-13091.46" Z="328.1698" ImmediatelySwitchToHighestPriorityTarget="true" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" >
 							<PursuitList>
 								<PursueUnit Id="101384" Priority="10" />
 								<PursueUnit Id="101384" Priority="1000" PursueWhen="!UNIT.Aggro" />
@@ -295,12 +303,13 @@ END INITORDER COMMENT -->
 				<TurnIn QuestName="When Dreams Become Nightmares" QuestId="40647" TurnInName="Lea Stonepaw" TurnInId="104535" X="4227.019" Y="-3801.243" Z="119.2875" />
 
 				<PickUp QuestName="The Dreamer Returns" QuestId="41918" GiverName="Lea Stonepaw" GiverId="104535" X="4227.019" Y="-3801.243" Z="119.2875" />
-				<While Condition="HasQuest(41918)" > <!--  &amp;&amp; IN NORTHREND -->
-					<!-- NOTE: <ConditionalCheck> : Could use a If in Dalaran check here for this.  Set conditions accordingly. -->
-					<CustomBehavior File="RunCode" Code="SpellManager.Cast(193753);" />
-					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsCasting" />
+				<While Condition="HasQuest(41918) &amp;&amp; !Me.HasAura(213170)" > <!--  &amp;&amp; IN NORTHREND -->
+					<If Condition="Me.ZoneId != 7979" >
+						<CustomBehavior File="RunCode" Code="SpellManager.Cast(193753);" />
+						<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsCasting" />
+					</If>
 					<MoveTo X="1769.227" Y="1507.436" Z="7.572013" />
-					<CustomBehavior File="MyCTM" X="1784.787" Y="1504.025" Z="9.896443" /> <!-- TerminateWhen="ME IS IN DRUID PLACE"  -->
+					<CustomBehavior File="MyCTM" X="1784.787" Y="1504.025" Z="9.896443" TerminateWhen="Me.HasAura(213170)" /> <!-- TerminateWhen="ME IS IN DRUID PLACE"  -->
 				</While>
 				<TurnIn QuestName="The Dreamer Returns" QuestId="41918" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.93909" />
 		<!-- END Story: Artifact Weapon - Claws of Ursoc -->
