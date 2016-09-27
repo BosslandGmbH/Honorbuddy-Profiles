@@ -2908,14 +2908,14 @@
                          Z="894.0121" />
 
         <MoveTo QuestId="25308" X="4807.945" Y="-4182.254" Z="897.5319" />
-        <!-- Karr'gonn -->
-        <CustomBehavior File="InteractWith" QuestId="25308" MobId="40489" InteractByGossipOptions="1"
-                                CollectionDistance="200" X="4807.945" Y="-4182.254" Z="897.5319" />
-        <CustomBehavior File="WaitTimer" WaitTime="8000"
-                                GoalText="Waiting for Karr'gonn to leave {TimeRemaining}" />
-        <EnableBehavior Name="Combat" />
-        <!--High Cultist Azennios-->
-        <Objective QuestName="Seeds of Discord" QuestId="25308" Type="KillMob" MobId="40491" KillCount="1" />
+        <While Condition="!IsQuestCompleted(25308)" >
+          <!-- Karr'gonn -->
+          <CustomBehavior File="InteractWith" QuestId="25308" QuestObjectiveIndex="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="10" MobId="40489" InteractByGossipOptions="1"
+                                  CollectionDistance="200" X="4807.945" Y="-4182.254" Z="897.5319" TerminateWhen="Unit(40491, u =&gt; u.Attackable) != null" />
+          <EnableBehavior Name="Combat" />
+          <!--High Cultist Azennios-->
+          <CustomBehavior File="KillUntilComplete" MobId="40491" QuestId="25308" QuestObjectiveIndex="1" X="4807.945" Y="-4182.254" Z="897.5319" TerminateWhen="Unit(40491, u =&gt; u.IsFriendly) != null" />
+        </While>
       </While>
 
       <CustomBehavior File="Misc\RunLua" Lua="CancelUnitBuff('player',GetSpellInfo(75724))" />
