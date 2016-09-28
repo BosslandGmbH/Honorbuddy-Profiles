@@ -100,7 +100,7 @@ END INITORDER COMMENT -->
 		<!-- END RunCode Methods -->
 
 		<!-- Get Continuation Quest -->
-				<If Condition="IsQuestCompleted(41255) &amp;&amp; !HasQuest(43980) &amp;&amp; !HasQuest(44431) &amp;&amp; !HasQuest(44443)" > <!-- Using Sowing the Seed (41255) to determine if we've already got the first artifact. -->
+				<If Condition="IsQuestCompleted(41255) &amp;&amp; NeedsQuest(40783) &amp;&amp; !HasQuest(43980) &amp;&amp; !HasQuest(44431) &amp;&amp; !HasQuest(44443)" > <!-- Using Sowing the Seed (41255) to determine if we've already got the first artifact. -->
 					<CustomBehavior File="InteractWith" MobId="101195" WaitTime="1250" X="3969.634" Y="7393.945" Z="23.9389" />
 					<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="QuestFrameAcceptButton:Click();" />
 				</If>
@@ -149,15 +149,15 @@ END INITORDER COMMENT -->
 		<!-- Story: Artifact Weapon - Scythe of Elune -->
 				<PickUp QuestName="The Scythe of Elune" QuestId="40783" GiverName="Naralex" GiverId="103778" X="3972.796" Y="7395.127" Z="23.94474" />
 				<While Condition="DoQuest(40783)" >
-					<If Condition="Me.ZoneId != 7979" >
-						<MoveTo QuestId="40783" QuestObjectiveIndex="1" X="4126.203" Y="7309.566" Z="22.08073" />
-						<CustomBehavior File="MyCTM" QuestId="40783" QuestObjectiveIndex="1" X="4153.008" Y="7288.954" Z="23.26673" TerminateWhen="Me.ZoneId == 7979" /> <!-- TerminateWhen="NOT IN CLASS HALL SPOT" -->
+					<If Condition="Me.ZoneId == 7846" >  <!-- NOTE: <CheckID> : Leaving Class Hall, entering Dreamway. -->
+						<MoveTo X="4141.608" Y="7302.58" Z="22.75611" />
+						<CustomBehavior File="MyCTM" X="4150.013" Y="7293.335" Z="22.77204" TerminateWhen="Me.ZoneId != 7846" /> <!-- Shut off when entered Dreamway -->
+						<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Me.ZoneId != 7846" />
 					</If>
 					<If Condition="Me.ZoneId == 7979" >
 						<MoveTo QuestId="40783" QuestObjectiveIndex="1" X="1559.297" Y="1551.772" Z="19.10375" />
-						<CustomBehavior File="MyCTM" QuestId="40783" QuestObjectiveIndex="1" X="1548.042" Y="1545.701" Z="21.27557" />
+						<CustomBehavior File="MyCTM" QuestId="40783" QuestObjectiveIndex="1" X="1548.042" Y="1545.701" Z="21.27557" TerminateWhen="Me.ZoneId != 7979" />
 					</If>
-
 					<MoveTo X="-10335.85" Y="-486.7315" Z="49.85195" />
 					<CustomBehavior File="WaitTimer" QuestId="40783" WaitTime="30000" />
 				</While>
@@ -176,7 +176,7 @@ END INITORDER COMMENT -->
 
 				<PickUp QuestName="Following the Curse" QuestId="40834" GiverName="Revil Kost" GiverId="100323" X="-10370.31" Y="-1257.007" Z="35.9101" />
 				<While Condition="DoQuest(40834)" >
-					<CustomBehavior File="EscortGroup" EscortCompleteWhen="QuestObjectiveComplete" EscortCountMax="1" QuestId="40834" QuestObjectiveIndex="1"
+					<CustomBehavior File="EscortGroup" NonCompeteDistance="0" EscortCompleteWhen="QuestObjectiveComplete" EscortCountMax="1" QuestId="40834" QuestObjectiveIndex="1"
 						EscortNpcId="100578" EscortMaxFightDistance="15" SearchForNpcsRadius="60" >
 						<SearchPath>
 							<Hotspot X="-10370.31" Y="-1257.007" Z="35.9101" />
@@ -187,7 +187,7 @@ END INITORDER COMMENT -->
 
 				<PickUp QuestName="Disturbing the Past" QuestId="40835" GiverName="Revil Kost" GiverId="100729" X="-10440.19" Y="-2143.814" Z="90.77973" />
 				<While Condition="DoQuest(40835)" >
-					<CustomBehavior File="InteractWith" MobId="245789" NonCompeteDistance="0" QuestId="40835" QuestObjectiveIndex="1" X="-10436.61" Y="-2142.387" Z="90.77908" />
+					<CustomBehavior File="InteractWith" MobId="245789" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="40835" QuestObjectiveIndex="1" X="-10436.61" Y="-2142.387" Z="90.77908" />
 				</While>
 				<TurnIn QuestName="Disturbing the Past" QuestId="40835" TurnInType="Object" TurnInName="Battered Journal" TurnInId="245793" X="-10429.92" Y="-2141.151" Z="91.85447" />
 
@@ -205,7 +205,6 @@ END INITORDER COMMENT -->
 					<If Condition="(Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0 || Me.Z &gt;= 20) &amp;&amp; !HasItem(128858)" > 
 						<MoveTo X="-11017.52" Y="-1993.153" Z="24.90709" />
 						<CustomBehavior File="InteractWith" MobId="247322" X="-11018.1" Y="-1988.818" Z="24.90163" />
-						<CustomBehavior File="MyCTM" X="-11018.28" Y="-1977.945" Z="18.51779" />
 					</If>
 
 					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
@@ -215,14 +214,30 @@ END INITORDER COMMENT -->
 
 					<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
 						<MoveTo Nav="Run" X="-10964.68" Y="-1967.501" Z="-49.81814" />
-						<CustomBehavior File="RunCode"><![CDATA[
-								var aridenPoi = Unit(100850);
-								aridenPoi.Target();
-								StyxWoW.Me.SetFacing(aridenPoi.Location);
-								await Coroutine.Sleep(750);
-								SpellManager.Cast(78675);
-							]]> 
-						</CustomBehavior>
+						<If Condition="Me.Specialization == WoWSpec.DruidBalance" >
+							<CustomBehavior File="RunCode"><![CDATA[
+									var aridenPoi = Unit(100850);
+									aridenPoi.Target();
+									StyxWoW.Me.SetFacing(aridenPoi.Location);
+									await Coroutine.Sleep(750);
+									SpellManager.Cast(78675);
+								]]> 
+							</CustomBehavior>
+						</If>
+						<If Condition="Me.Specialization == WoWSpec.DruidFeral" >
+							<CustomBehavior File="RunCode"><![CDATA[
+									var aridenPoi = Unit(100850);
+									aridenPoi.Target();
+									StyxWoW.Me.SetFacing(aridenPoi.Location);
+									await Coroutine.Sleep(750);
+									SpellManager.Cast(102280);
+									SpellManager.Cast(102401);
+								]]> 
+							</CustomBehavior>
+							<CustomBehavior File="MyCTM" X="-10965.68" Y="-1922.219" Z="-49.86727" />
+							<CustomBehavior File="RunCode" Code="SpellManager.Cast(106839);" />
+						</If>
+						<CustomBehavior File="MyCTM" X="-10965.68" Y="-1922.219" Z="-49.86727" />
 						<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
 					</If>
 
