@@ -98,7 +98,7 @@ END INITORDER COMMENT -->
 		<!-- END RunCode Methods -->
 
 		<!-- Get Continuation Quest -->
-			<If Condition="IsQuestCompleted(41255) &amp;&amp; !HasQuest(43980) &amp;&amp; !HasQuest(44431) &amp;&amp; !HasQuest(44443)" > <!-- Using Sowing the Seed (41255) to determine if we've already got the first artifact. -->
+			<If Condition="IsQuestCompleted(41255) &amp;&amp; NeedsQuest(40649) &amp;&amp; !HasQuest(43980) &amp;&amp; !HasQuest(44431) &amp;&amp; !HasQuest(44443)" > <!-- Using Sowing the Seed (41255) to determine if we've already got the first artifact. -->
 				<CustomBehavior File="InteractWith" MobId="101195" WaitTime="1250" X="3969.634" Y="7393.945" Z="23.9389" />
 				<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="QuestFrameAcceptButton:Click();" />
 			</If>
@@ -146,14 +146,20 @@ END INITORDER COMMENT -->
 
 		<!-- Story: Artifact Weapon - G'Hanir, the Mother Tree -->
 			<PickUp QuestName="Meet with Mylune" QuestId="40649" GiverName="Keeper Remulos" GiverId="103832" X="3980.849" Y="7394.606" Z="23.93494" />
-			<TurnIn QuestName="Meet with Mylune" QuestId="40649" TurnInName="Mylune" TurnInId="113525" X="3964.885" Y="7326.858" Z="29.21814" />
+			<If Condition="QuestDone(40649)" >
+				<MoveTo X="3983.808" Y="7309.492" Z="29.32501" /> <!-- Avoid getting stuck on command map. -->
+				<TurnIn QuestName="Meet with Mylune" QuestId="40649" TurnInName="Mylune" TurnInId="113525" X="3964.885" Y="7326.858" Z="29.21814" />
+			</If>
 
 			<PickUp QuestName="Necessary Preparations" QuestId="41422" GiverName="Mylune" GiverId="113525" X="3964.885" Y="7326.858" Z="29.21814" />
 			<While Condition="DoQuest(41422)" >
 				<CustomBehavior File="InteractWith" MobId="247901" InteractByLooting="true" QuestId="41422" QuestObjectiveIndex="1" X="4123.917" Y="7475.272" Z="50.17471" />
 				<CustomBehavior File="InteractWith" MobId="97989" GossipOptions="1,1" WaitTime="3500" QuestId="41422" QuestObjectiveIndex="2" X="4102.716" Y="7499.057" Z="51.01068" />
 			</While>
-			<TurnIn QuestName="Necessary Preparations" QuestId="41422" TurnInName="Mylune" TurnInId="113525" X="3964.885" Y="7326.858" Z="29.21727" />
+			<If Condition="QuestDone(41422)" >
+				<MoveTo X="3983.808" Y="7309.492" Z="29.32501" /> <!-- Avoid getting stuck on command map. -->
+				<TurnIn QuestName="Necessary Preparations" QuestId="41422" TurnInName="Mylune" TurnInId="113525" X="3964.885" Y="7326.858" Z="29.21727" />
+			</If>
 
 			<PickUp QuestName="Join the Dreamer" QuestId="41449" GiverName="Mylune" GiverId="113525" X="3964.885" Y="7326.858" Z="29.21727" />
 			<TurnIn QuestName="Join the Dreamer" QuestId="41449" TurnInName="Naralex" TurnInId="104349" X="4289" Y="7426.044" Z="-17.43501" />
@@ -166,17 +172,15 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="WaitTimer" WaitTime="15000" />
 				</If>
 
-				<CustomBehavior File="Hooks\DoWhen" ActivityName="PreventCorruption" AllowUseDuringCombat="true" UseWhen="(!Me.HasAura(774) || !Me.HasAura(33763) || SpellManager.CanCast(18562))" > <!-- NOTE: <Add-CheckAura> : If have dreamwalking aura.  Same aura as mentioned in the note above. -->
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="PreventCorruption" AllowUseDuringCombat="true" UseWhen="!Me.HasAura(774) || !Me.HasAura(33763)" > <!-- NOTE: <Add-CheckAura> : If have dreamwalking aura.  Same aura as mentioned in the note above. -->
 					<!-- All that may be needed here is Lifebloom.  It's able to surpress the corruption very efficiently on its own. -->
+					<CustomBehavior File="RunCode" Code="Me.Target();" />
 					<If Condition="!Me.HasAura(774)" > <!-- Rejuvenation -->
 						<CustomBehavior File="RunCode" Code="SpellManager.Cast(774); await Coroutine.Wait(2000, ()=&gt; !SpellManager.GlobalCooldown);" />
 					</If>
 					<If Condition="!Me.HasAura(33763)" > <!-- Lifebloom -->
-						<CustomBehavior File="RunCode" Code="SpellManager.Cast(33763); await Coroutine.Wait(2000, ()=&gt; !SpellManager.GlobalCooldown);" />
+						<CustomBehavior File="RunCode" Code="SpellManager.Cast(33763);" />
 					</If>
-					<While Condition="SpellManager.CanCast(18562)" > <!-- Swiftmend, has multiple charges. -->
-						<CustomBehavior File="RunCode" Code="SpellManager.Cast(18562); await Coroutine.Wait(2000, ()=&gt; !SpellManager.GlobalCooldown);" />
-					</While>
 				</CustomBehavior>
 
 				<MoveTo X="4239.719" Y="7390.257" Z="-5.799763" />
@@ -186,17 +190,35 @@ END INITORDER COMMENT -->
 						SpellManager.Cast(88423);
 					]]>
 				</CustomBehavior>
-				<MoveTo X="4182.214" Y="7359.926" Z="-6.141152" />
-				<CustomBehavior File="WaitTimer" WaitTime="30000" /> <!-- NOTE: <Optimize> : Roots do not go null.  Need to check object state to see if they are removed. -->
+				<DisableBehavior Name="Combat" />
+				<CustomBehavior File="WaitTimer" WaitTime="25000" /> <!-- NOTE: <Optimize> : Roots do not go null.  Need to check object state to see if they are removed. -->
 
-				<CustomBehavior File="Hooks\Avoid" AvoidName="CongealedNightmare" Command="Add" ObjectType="Npc" ObjectId="104533" Radius="2" />
-				<MoveTo X="3980.535" Y="7385.4" Z="23.88143" />
+				<MoveTo X="4230.775" Y="7394.456" Z="-5.798958" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="CongealedNightmare" ObjectId="104533" Radius="2" AvoidWhen="Lua.GetReturnVal&lt;int&gt;(&quot;return UnitPower('player', ALTERNATE_POWER_INDEX)&quot;, 0) &gt;= 50" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="CongealedNightmareTrail" ObjectId="10956" ObjectType="AreaTrigger" Radius="2" AvoidWhen="Lua.GetReturnVal&lt;int&gt;(&quot;return UnitPower('player', ALTERNATE_POWER_INDEX)&quot;, 0) &gt;= 80" />
+				
+				<MoveTo X="4197.082" Y="7387.041" Z="3.418731" />
+				<CustomBehavior File="RunCode" Code="SpellManager.Cast(1850);" />
 
-				<CustomBehavior File="Hooks\Avoid" AvoidName="CongealedNightmare" Command="Remove" />
+				<MoveTo X="4102.368" Y="7374.856" Z="22.9132" />
 				<CustomBehavior File="Hooks\DoWhen" ActivityName="PreventCorruption" Command="Remove" />
+
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="RemoveRoots" AllowUseDuringCombat="true" UseWhen="Me.HasAura(186456)" >
+					<CustomBehavior File="RunCode" Code="SpellManager.Cast(783); Lua.DoString(&quot;CancelShapeshiftForm();&quot;);" />
+				</CustomBehavior>
+				<UseMount Value="false" />
+				<CustomBehavior File="RunCode" Code="SpellManager.Cast(5215);" />
+				<MoveTo X="4102.635" Y="7357.067" Z="23.05971" />
+
+				<MoveTo X="3951.587" Y="7357.427" Z="23.35148" />
+				<EnableBehavior Name="Combat" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="CongealedNightmare" Command="Remove" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="CongealedNightmareTrail" Command="Remove" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="RemoveRoots" Command="Remove" />
 
 				<CustomBehavior File="InteractWith" MobId="248098" InteractByLooting="true" QuestId="41436" QuestObjectiveIndex="2" X="3975.752" Y="7390.431" Z="25.86293" />
 				<CustomBehavior File="WaitTimer" WaitTime="12000" />
+				<UseMount Value="true" />
 			</While>
 			<TurnIn QuestName="In Deep Slumber" QuestId="41436" TurnInName="Naralex" TurnInId="104349" X="4294.677" Y="7422.983" Z="-17.58418" />
 
@@ -207,11 +229,11 @@ END INITORDER COMMENT -->
 			<While Condition="DoQuest(41689)" >
 				<If Condition="Me.ZoneId == 7846" >  <!-- NOTE: <CheckID> : Leaving Class Hall, entering Dreamway. -->
 					<MoveTo X="4141.608" Y="7302.58" Z="22.75611" />
-					<CustomBehavior File="MyCTM" X="4150.013" Y="7293.335" Z="22.77204" TerminateWhen="Me.MapId == 1540" /> <!-- Shut off when entered Dreamway -->
+					<CustomBehavior File="MyCTM" X="4150.013" Y="7293.335" Z="22.77204" TerminateWhen="Me.ZoneId == 7979" /> <!-- Shut off when entered Dreamway -->
 				</If>
 				<If Condition="Me.MapId == 1540" >  <!-- NOTE: <Add-CheckMapId> : Leaving Dreamway, entering Hyjal. -->
 					<MoveTo X="1638.552" Y="1452.757" Z="11.00389" />
-					<CustomBehavior File="MyCTM" X="1634.344" Y="1440.743" Z="11.02077" TerminateWhen="Me.MapId == 1" /> <!-- Shut off when entered Hyjal -->
+					<CustomBehavior File="MyCTM" X="1634.344" Y="1440.743" Z="11.02077" TerminateWhen="Me.ZoneId == 616" /> <!-- Shut off when entered Hyjal -->
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
@@ -224,18 +246,13 @@ END INITORDER COMMENT -->
 						<MoveTo X="5450.778" Y="-3487.522" Z="1556.124" />
 						<CustomBehavior File="RunCode"><![CDATA[
 								var celestinePoi = Unit(104657);
+								celestinePoi.Target();
 								StyxWoW.Me.SetFacing(celestinePoi.Location);
 								await Coroutine.Sleep(750);
 								while (celestinePoi != null && celestinePoi.HealthPercent < 100)
 								{
-									SpellManager.Cast(33763);
-									await Coroutine.Wait(2000, ()=> !SpellManager.GlobalCooldown);
-
-									SpellManager.Cast(774);
-									await Coroutine.Wait(2000, ()=> !SpellManager.GlobalCooldown);
-
-									SpellManager.Cast(8936);
-									await Coroutine.Wait(2000, ()=> !StyxWoW.Me.IsCasting);
+									await HealRoutine(celestinePoi);
+									await Coroutine.Yield();
 								}
 							]]>
 						</CustomBehavior>
@@ -244,18 +261,13 @@ END INITORDER COMMENT -->
 						<MoveTo X="5450.64" Y="-3531.731" Z="1556.107" />
 						<CustomBehavior File="RunCode"><![CDATA[
 								var hamuulPoi = Unit(104659);
+								hamuulPoi.Target();
 								StyxWoW.Me.SetFacing(hamuulPoi.Location);
 								await Coroutine.Sleep(750);
 								while (hamuulPoi != null && hamuulPoi.HealthPercent < 100)
 								{
-									SpellManager.Cast(33763);
-									await Coroutine.Wait(2000, ()=> !SpellManager.GlobalCooldown);
-
-									SpellManager.Cast(774);
-									await Coroutine.Wait(2000, ()=> !SpellManager.GlobalCooldown);
-
-									SpellManager.Cast(8936);
-									await Coroutine.Wait(2000, ()=> !StyxWoW.Me.IsCasting);
+									await HealRoutine(hamuulPoi);
+									await Coroutine.Yield();
 								}
 							]]>
 						</CustomBehavior>
@@ -264,6 +276,7 @@ END INITORDER COMMENT -->
 						<MoveTo X="5488.877" Y="-3513.985" Z="1555.88" />
 						<CustomBehavior File="RunCode"><![CDATA[
 								var zentabraPoi = Unit(104658);
+								zentabraPoi.Target();
 								StyxWoW.Me.SetFacing(zentabraPoi.Location);
 								await Coroutine.Sleep(750);
 								SpellManager.Cast(88423);
@@ -272,14 +285,17 @@ END INITORDER COMMENT -->
 					</If>
 				</If>
 
+				<DefaultNavType Value="Run" />
+
 				<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
 					<!-- Start event -->
-					<CustomBehavior File="InteractWith" MobId="104628" WaitTime="2000" GossipOptions="1" X="5475.65" Y="-3488.561" Z="1555.677" />
-					<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click();" />
-					<MoveTo X="5429.603" Y="-3519.069" Z="1555.979" />
-					<CustomBehavior File="WaitTimer" WaitTime="15000" />
-
 					<DisableBehavior Name="Combat, Loot" />
+					<CustomBehavior File="WaitTimer" WaitTime="30000" TerminateWhen="Unit(104628, u =&gt; u.CanInteract) != null" />
+					<CustomBehavior File="InteractWith" MobId="104628" InteractBlacklistTimeInSeconds="1" X="5475.65" Y="-3488.561" Z="1555.676" />
+					<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="GossipTitleButton1:Click();" />
+					<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click();" />
+					<CustomBehavior File="WaitTimer" WaitTime="90000" TerminateWhen="Unit(104659, u =&gt; u.Combat) != null" />
+
 					<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
 							WoWUnit HealPriority()
 							{
@@ -288,18 +304,36 @@ END INITORDER COMMENT -->
 
 							async Task HealRoutine(WoWUnit healMe)
 							{
-								if (healMe == null) return;
-								if (healMe.GetPredictedHealthPercent(true) == 100 && StyxWoW.Me.CastingSpellId == 5185)
+								if (Me.CurrentTarget != null && Me.CurrentTarget.HealthPercent >= 90 && (StyxWoW.Me.CastingSpellId == 5185 || StyxWoW.Me.CastingSpellId == 48438))
 								{
+									Logging.Write(System.Windows.Media.Colors.Goldenrod, $"[PRoutine]: Stopping spell cast.");
 									SpellManager.StopCasting();
 									return;
 								}
-								if (healMe.HealthPercent >= 95) return;
 
-								await Coroutine.Wait(3000, () => !StyxWoW.Me.IsCasting && !SpellManager.GlobalCooldown);
-								if (StyxWoW.Me.CurrentTarget != healMe) { healMe.Target(); }
-								StyxWoW.Me.SetFacing(healMe.Location);
-								await Coroutine.Sleep(385);
+								if (healMe == null) return;
+
+								if (Me.HealthPercent <= 30 && SpellManager.CanCast("Renewal"))
+								{
+									Me.Target();
+									Logging.Write(System.Windows.Media.Colors.Gold, $"[PRoutine]: Renewal on Me.");
+									SpellManager.Cast("Renewal");
+									return;
+								}
+								if (StyxWoW.Me.ManaPercent <= 10 && SpellManager.CanCast("Innervate"))
+								{
+									Me.Target();
+									Logging.Write(System.Windows.Media.Colors.Gold, $"[PRoutine]: Innervate on Me.");
+									SpellManager.Cast("Innervate");
+									return;
+								}
+
+								if (healMe.HealthPercent >= 90) return;
+
+								await Coroutine.Wait(2000, () => !StyxWoW.Me.IsCasting && !SpellManager.GlobalCooldown);
+
+								if (StyxWoW.Me.CurrentTarget != healMe) healMe.Target();
+
 
 								while (healMe.Distance >= 39)
 								{
@@ -307,62 +341,69 @@ END INITORDER COMMENT -->
 									await Coroutine.Yield();
 								}
 
+								StyxWoW.Me.SetFacing(healMe.Location);
 								await CommonCoroutines.StopMoving(); 
-
-								if (StyxWoW.Me.ManaPercent <= 10 && SpellManager.CanCast(173565))
-								{
-									SpellManager.Cast(173565);
-									return;
-								}
 
 								if (healMe.HealthPercent < 15 && SpellManager.CanCast(18562))
 								{
 									while (SpellManager.CanCast(18562))
 									{
+										Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Swiftmend on {healMe.Name}  @ {(int)healMe.HealthPercent}% HP");
 										SpellManager.Cast(18562);
 										await Coroutine.Wait(3000, () => !StyxWoW.Me.IsCasting && !SpellManager.GlobalCooldown);
+										await Coroutine.Yield();
 									}
 									return;
 								}
 
-								if (Unit(47649) == null && SpellManager.CanCast(145205))
+								if (healMe != Me && Unit(47649) == null && SpellManager.CanCast(145205))
 								{
+									Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Efflorescence on {healMe.Name}  @ {(int)healMe.HealthPercent}% HP");
 									SpellManager.Cast(145205);
 									SpellManager.ClickRemoteLocation(healMe.Location);
+									return;
 								}
 
 								if (!healMe.HasAura("Rejuvenation") || (healMe.HasAura("Rejuvenation") && healMe.GetAuraByName("Rejuvenation").TimeLeft < TimeSpan.FromSeconds(2)))
 								{
+									Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Rejuvenation on {healMe.Name}  @ {(int)healMe.HealthPercent}% HP");
 									SpellManager.Cast("Rejuvenation");
 									return;
 								}
 
 								if (!healMe.HasAura("Lifebloom") || (healMe.HasAura("Lifebloom") && healMe.GetAuraByName("Lifebloom").TimeLeft < TimeSpan.FromSeconds(2)))
 								{
+									Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Lifebloom on {healMe.Name}  @ {(int)healMe.HealthPercent}% HP");
 									SpellManager.Cast("Lifebloom");
 									return;
 								}
 
-								if (!healMe.HasAura("Regrowth") || (healMe.HasAura("Regrowth") && healMe.GetAuraByName("Regrowth").TimeLeft < TimeSpan.FromSeconds(2)))
+								if (!healMe.HasAura("Regrowth") || (healMe.HasAura("Regrowth") && healMe.GetAuraByName("Regrowth").TimeLeft < TimeSpan.FromSeconds(1)))
 								{
+									Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Regrowth on {healMe.Name}  @ {(int)healMe.HealthPercent}% HP");
 									SpellManager.Cast("Regrowth");
 									return;
 								}
 
 								if (SpellManager.CanCast("Wild Growth"))
 								{
+									Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Wild Growth on {healMe.Name}  @ {(int)healMe.HealthPercent}% HP");
 									SpellManager.Cast("Wild Growth");
 									return;
 								}
 
 								if (SpellManager.CanCast("Healing Touch"))
 								{
+									Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Healing Touch on {healMe.Name}  @ {(int)healMe.HealthPercent}% HP");
 									SpellManager.Cast("Healing Touch");
 									return;
 								}
 							}
 						]]>
 					</CustomBehavior>
+
+					<CustomBehavior File="Hooks\Avoid" AvoidName="FelFire" ObjectId="11145" ObjectType="AreaTrigger" Radius="5" />
+
 					<CustomBehavior File="RunCode"><![CDATA[
 							var destromathPoi = Unit(104619);
 							var lyessaPoi = Unit(104628);
@@ -375,8 +416,11 @@ END INITORDER COMMENT -->
 
 						]]>
 					</CustomBehavior>
-					<EnableBehavior Name="Combat, Loot" />
+
+					<CustomBehavior File="Hooks\Avoid" AvoidName="FelFire" Command="Remove" />
 				</While>
+
+				<EnableBehavior Name="Combat, Loot" />
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
 					<CustomBehavior File="InteractWith" IgnoreCombat="true" MobId="104628" X="5474.202" Y="-3500.13" Z="1555.479" />
@@ -400,13 +444,14 @@ END INITORDER COMMENT -->
 			</While>
 
 			<If Condition="HasItem(128306) &amp;&amp; QuestDone(41689)" >
-				<If Condition="Me.MapId == 1" >  <!-- NOTE: <Add-CheckMapId> : Leaving Hyjal, entering Dreamway. -->
+				<If Condition="Me.ZoneId == 616" >  <!-- NOTE: <Add-CheckMapId> : Leaving Hyjal, entering Dreamway. -->
 					<MoveTo X="5460.457" Y="-3442.266" Z="1560.056" />
-					<CustomBehavior File="MyCTM" X="5451.568" Y="-3434.243" Z="1559.89" TerminateWhen="Me.MapId == 1540" /> <!-- Shut off when entered Dreamway -->
+					<CustomBehavior File="MyCTM" X="5451.568" Y="-3434.243" Z="1559.89" TerminateWhen="Me.ZoneId != 616" /> <!-- Shut off when entered Dreamway -->
+					<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Me.MapId == 1540" />
 				</If>
 				<If Condition="Me.MapId == 1540" >  <!-- NOTE: <Add-CheckMapId> : Leaving Dreamway, entering Class Hall. -->
 					<MoveTo X="1772.043" Y="1507.481" Z="7.891945" />
-					<CustomBehavior File="MyCTM" X="1783.71" Y="1500.368" Z="10.05346" TerminateWhen="Me.MapId == 22222" /> <!-- <CheckMapId~>  Probably ZoneId for this - Shut off when entered Class Hall -->
+					<CustomBehavior File="MyCTM" X="1783.71" Y="1500.368" Z="10.05346" TerminateWhen="Me.HasAura(213170)" /> <!-- <CheckMapId~>  Probably ZoneId for this - Shut off when entered Class Hall -->
 				</If>
 			</If>
 			<TurnIn QuestName="Cleansing the Mother Tree" QuestId="41689" TurnInName="Lyessa Bloomwatcher" TurnInId="104577" X="3970.218" Y="7389.277" Z="23.91248" />	
