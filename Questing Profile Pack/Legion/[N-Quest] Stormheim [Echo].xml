@@ -25,10 +25,12 @@
 	<Blackspots>
 		<Blackspot X="2209.372" Y="2498.197" Z="476.4171" Radius="2.582875" />
 		<Blackspot X="3194.205" Y="1519.958" Z="180.8758" Radius="3.867206" /> <!-- Campfire in Valdisdall -->
+		<Blackspot X="2812.58" Y="470.262" Z="30.08834" Radius="9.716625" /> <!-- Avoid Grrvrgull the Conqueror  -->
 	</Blackspots>
 
 	<Blacklist>
 		<Mob Name="Enraged Skrog" Id="105751" Flags="Pull" />
+		<Mob Name="Grrvrgull the Conqueror" Id="98503" Flags="Pull" />
 	</Blacklist>
 
 	<Mailboxes>
@@ -500,6 +502,58 @@ END INITORDER COMMENT -->
 				</If>
 			<!-- [H] END The Aftermath -->
 		<!-- [H] END Horde Quest Section -->
+
+		<!-- Stormtorn Foothills Side Quests -->
+			<PickUp Nav="Fly" QuestName="Plight of the Blackfeather" QuestId="42444" GiverName="Frightened Ravenbear" GiverId="107499" X="3860.467" Y="2113.882" Z="267.0603" />
+			<TurnIn Nav="Fly" QuestName="Plight of the Blackfeather" QuestId="42444" TurnInName="Cukkaw" TurnInId="107498" X="3914.608" Y="2144.313" Z="228.8751" />
+
+			<PickUp Nav="Fly" QuestName="Singed Feathers" QuestId="42446" GiverName="Cukkaw" GiverId="107498" X="3914.608" Y="2144.313" Z="228.8749" />
+			<PickUp Nav="Fly" QuestName="Nithogg's Tribute" QuestId="42445" GiverName="Intact Greatstag Antler" GiverId="250536" X="3915.252" Y="2135.617" Z="229.1741" />
+
+			<CustomBehavior File="KillUntilComplete" TerminateWhen="!DoQuest(42446) &amp;&amp; !DoQuest(42445)" >
+				<HuntingGrounds>
+					<Hotspot X="3931.509" Y="2025.4" Z="226.5603" />
+					<Hotspot X="3977.826" Y="1976.741" Z="208.7637" />
+					<Hotspot X="4079.593" Y="2002.961" Z="193.8898" />
+					<Hotspot X="4109.261" Y="2054.494" Z="193.6494" />
+					<Hotspot X="4105.998" Y="2050.023" Z="194.319" />
+					<Hotspot X="4051.944" Y="2131.585" Z="223.4199" />
+					<Hotspot X="3975.372" Y="2159.963" Z="261.5452" />
+					<Hotspot X="3883.103" Y="2037.564" Z="240.3177" />
+					<Hotspot X="3882.644" Y="2134.801" Z="271.6173" />
+					<Hotspot X="3866.207" Y="2210.042" Z="298.4914" />
+					<Hotspot X="3803.565" Y="2156.063" Z="287.7961" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueUnit Id="107469" PursueWhen="!IsQuestCompleted(42446)" />
+					<PursueUnit Id="97755" PursueWhen="!IsObjectiveComplete(2, 42445)" />
+					<PursueUnit Id="97516" PursueWhen="!IsObjectiveComplete(1, 42445)" />
+				</PursuitList>
+			</CustomBehavior>
+
+			<TurnIn Nav="Fly" QuestName="Singed Feathers" QuestId="42446" TurnInName="Cukkaw" TurnInId="107498" X="3914.608" Y="2144.313" Z="228.8749" />
+			<TurnIn Nav="Fly" QuestName="Nithogg's Tribute" QuestId="42445" TurnInName="Cukkaw" TurnInId="107498" X="3914.608" Y="2144.313" Z="228.8749" />
+
+			<PickUp Nav="Fly" QuestName="Dances With Ravenbears" QuestId="42447" GiverName="Cukkaw" GiverId="107498" X="3914.608" Y="2144.313" Z="228.8749" />
+			<While Condition="DoQuest(42447)" >
+				<CustomBehavior File="InteractWith" MobId="107498" WaitTime="5000" GossipOptions="1" QuestId="42447" X="4007.706" Y="1898.009" Z="190.506" TerminateWhen="Me.HasAura(213351)" />
+				<CustomBehavior File="RunCode"><![CDATA[
+						while (Me.HasAura(213351))
+						{
+							var cukkawPoi = Unit(107519);
+							if (cukkawPoi != null)
+							{
+								if (cukkawPoi.HasAura(213360)) Styx.Helpers.KeyboardManager.KeyUpDown((char)System.Windows.Forms.Keys.D1);
+								if (cukkawPoi.HasAura(213361)) Styx.Helpers.KeyboardManager.KeyUpDown((char)System.Windows.Forms.Keys.D2);
+								if (cukkawPoi.HasAura(213357)) Styx.Helpers.KeyboardManager.KeyUpDown((char)System.Windows.Forms.Keys.D3);
+							}
+							await Coroutine.Sleep(2000);
+						}
+					]]>
+				</CustomBehavior>
+			</While>
+			<TurnIn Nav="Fly" QuestName="Dances With Ravenbears" QuestId="42447" TurnInName="Cukkaw" TurnInId="107498" X="4007.705" Y="1898.007" Z="190.5059" />
+		<!-- END Stormtorn Foothills Side Quests -->
 
 		<!-- Story: The Trial of Might -->
 			<If Condition="Me.IsAlliance" >
@@ -1006,6 +1060,53 @@ END INITORDER COMMENT -->
 
 		<!-- Story: The Trial of Valor -->
 			<PickUp QuestName="The Trials Continue" QuestId="39803" GiverName="Huginn" GiverId="97074" X="3066.666" Y="2246.495" Z="224.9159" />
+
+			<!-- Talonrest Side Quests -->
+				<PickUp QuestName="Eating Into Our Business" QuestId="39789" GiverName="Ootasa Galehoof" GiverId="97258" X="2973.891" Y="2047.205" Z="201.8507" />
+				<While Condition="DoQuest(39789)" >
+					<CustomBehavior File="KillUntilComplete" MobId="97091" QuestId="39789" QuestObjectiveIndex="1" >
+						<HuntingGrounds>
+							<Hotspot X="3018.089" Y="2132.595" Z="200.4632" />
+							<Hotspot X="2996.825" Y="2194.374" Z="205.4693" />
+							<Hotspot X="2935.425" Y="2156.193" Z="202.5331" />
+							<Hotspot X="2974.484" Y="2268.038" Z="210.2" />
+							<Hotspot X="3003.798" Y="2335.032" Z="220.7431" />
+						</HuntingGrounds>
+					</CustomBehavior>
+				</While>
+				<TurnIn QuestName="Eating Into Our Business" QuestId="39789" TurnInName="Rax Sixtrigger" TurnInId="107675" X="2973.891" Y="2047.205" Z="201.8507" />
+
+				<!-- Quests are too hard and too far away.
+				<PickUp Nav="Fly" QuestName="Only the Finest" QuestId="39793" GiverName="Rax Sixtrigger" GiverId="107675" X="2969.439" Y="2047.615" Z="201.856" />
+				<PickUp Nav="Fly" QuestName="Rigging the Wager" QuestId="39787" GiverName="Snaggle Sixtrigger" GiverId="107674" X="2963.95" Y="2058.918" Z="202.0712" />
+
+				<CustomBehavior File="KillUntilComplete" MobId="97828" QuestId="39793" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="3874.156" Y="2488.886" Z="350.8795" />
+						<Hotspot X="3935.388" Y="2480.834" Z="319.5538" />
+						<Hotspot X="3978.925" Y="2425.165" Z="338.074" />
+						<Hotspot X="3926.853" Y="2326.738" Z="374.4883" />
+					</HuntingGrounds>
+				</CustomBehavior>
+
+				<While Condition="DoQuest(39787)" >
+					<MoveTo X="3921.172" Y="2257.472" Z="363.7163" />
+					<CustomBehavior File="RunCode" Code="
+						WoWUnit grapplePoi = Unit(91975, u =&gt; (int)u.Y == 2209);
+						if (grapplePoi != null)
+						{
+							grapplePoi.Interact();
+							await Coroutine.Sleep(5000);
+						}
+					"/>
+					<CustomBehavior File="KillUntilComplete" MobId="97124" QuestId="39787" QuestObjectiveIndex="1" X="3905.583" Y="2223.642" Z="324.4523" />
+				</While>
+
+				<TurnIn Nav="Fly" QuestName="Only the Finest" QuestId="39793" TurnInName="Rax Sixtrigger" TurnInId="107675" X="2969.439" Y="2047.615" Z="201.856" />
+				<TurnIn Nav="Fly" QuestName="Rigging the Wager" QuestId="39787" TurnInName="Snaggle Sixtrigger" TurnInId="107674" X="2963.95" Y="2058.918" Z="202.0712" />
+				mn-->
+			<!-- END Talonrest Side Quests -->
+
 			<TurnIn QuestName="The Trials Continue" QuestId="39803" TurnInName="Havi" TurnInId="92539" X="3214.377" Y="1543.611" Z="180.6391" />
 
 			<PickUp QuestName="Speaking of Bones" QuestId="39804" GiverName="Havi" GiverId="92539" X="3214.377" Y="1543.611" Z="180.6391" />
@@ -1077,7 +1178,7 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="Lay Them to Rest" QuestId="39791" GiverName="Vydhar" GiverId="93231" X="3073.089" Y="1056.875" Z="127.0211" />
 
 			<!-- Side quests -->
-				<PickUp Nav="Fly" QuestName="Remnants of the Past" QuestId="39984" GiverName="Watcher's Journal" GiverType="GameObject" GiverId="244708" X="3296.719" Y="1377.969" Z="97.97977" />
+				<PickUp QuestName="Remnants of the Past" QuestId="39984" GiverName="Watcher's Journal" GiverType="GameObject" GiverId="244708" X="3296.719" Y="1377.969" Z="97.97977" />
 				<While Condition="DoQuest(39984)" >
 					<CustomBehavior File="InteractWith" MobId="244717" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" NumOfTimes="6" QuestId="39984" QuestObjectiveIndex="1" X="3393.294" Y="1508.634" Z="60.96248" />
 					<CustomBehavior File="InteractWith" MobId="244718" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" NumOfTimes="6" QuestId="39984" QuestObjectiveIndex="2" X="3357.123" Y="1648.863" Z="7.552205" />
@@ -1095,11 +1196,11 @@ END INITORDER COMMENT -->
 					</If>
 					<MoveTo X="3521.013" Y="1614.097" Z="11.35885" />
 				</While>
-				<TurnIn Nav="Fly" QuestName="Remnants of the Past" QuestId="39984" TurnInName="Havi" TurnInId="97973" X="3521.013" Y="1614.097" Z="11.35885" />
+				<TurnIn QuestName="Remnants of the Past" QuestId="39984" TurnInName="Havi" TurnInId="97973" X="3521.013" Y="1614.097" Z="11.35885" />
 
-				<PickUp Nav="Fly" QuestName="Scavenging the Shallows" QuestId="40046" GiverName="Havi" GiverId="97973" X="3521.013" Y="1614.097" Z="11.35879" />
-				<PickUp Nav="Fly" QuestName="To Honor the Fallen" QuestId="43595" GiverName="Havi" GiverId="97973" X="3521.013" Y="1614.097" Z="11.35879" />
-				<PickUp Nav="Fly" QuestName="Shadows in the Mists" QuestId="40044" GiverName="Havi" GiverId="97973" X="3521.013" Y="1614.097" Z="11.35879" />
+				<PickUp QuestName="Scavenging the Shallows" QuestId="40046" GiverName="Havi" GiverId="97973" X="3521.013" Y="1614.097" Z="11.35879" />
+				<PickUp QuestName="To Honor the Fallen" QuestId="43595" GiverName="Havi" GiverId="97973" X="3521.013" Y="1614.097" Z="11.35879" />
+				<PickUp QuestName="Shadows in the Mists" QuestId="40044" GiverName="Havi" GiverId="97973" X="3521.013" Y="1614.097" Z="11.35879" />
 
 				<CustomBehavior File="Hooks\Avoid" AvoidName="EnragedSkrog" Command="Add" ObjectId="105751" Radius="30" AvoidWhen="UNIT.IsAlive" />
 				<While Condition="DoQuest(40044)" >
@@ -1137,9 +1238,9 @@ END INITORDER COMMENT -->
 					</CustomBehavior>
 				</While>
 
-				<TurnIn Nav="Fly" QuestName="Shadows in the Mists" QuestId="40044" TurnInName="Havi" TurnInId="97973" X="3521.013" Y="1614.097" Z="11.35879" />
-				<TurnIn Nav="Fly" QuestName="To Honor the Fallen" QuestId="43595" TurnInName="Havi" TurnInId="97973" X="3521.013" Y="1614.097" Z="11.35879" />
-				<TurnIn Nav="Fly" QuestName="Scavenging the Shallows" QuestId="40046" TurnInName="Havi" TurnInId="97973" X="3521.013" Y="1614.097" Z="11.35879" />
+				<TurnIn QuestName="Shadows in the Mists" QuestId="40044" TurnInName="Havi" TurnInId="97973" X="3521.013" Y="1614.097" Z="11.35879" />
+				<TurnIn QuestName="To Honor the Fallen" QuestId="43595" TurnInName="Havi" TurnInId="97973" X="3521.013" Y="1614.097" Z="11.35879" />
+				<TurnIn QuestName="Scavenging the Shallows" QuestId="40046" TurnInName="Havi" TurnInId="97973" X="3521.013" Y="1614.097" Z="11.35879" />
 
 				<CustomBehavior File="Hooks\Avoid" AvoidName="EnragedSkrog" Command="Remove" />
 			<!-- END Side quests -->
@@ -1384,7 +1485,7 @@ END INITORDER COMMENT -->
 				<PickUp QuestName="A Heavy Burden" QuestId="40078" GiverName="Havi" GiverId="92539" X="3214.377" Y="1543.611" Z="180.6394" />
 			</If>
 			<While Condition="DoQuest(40078)" >
-				<CustomBehavior File="InteractWith" MobId="244867" QuestId="40078" QuestObjectiveIndex="1" X="3219.631" Y="1555.299" Z="180.4717" TerminateWhen="Me.HasAura(193563)" />
+				<CustomBehavior File="InteractWith" MobId="244867" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="40078" X="3219.631" Y="1555.299" Z="180.4717" TerminateWhen="Me.HasAura(193563)" />
 				<CustomBehavior File="MyCTM" X="3196.399" Y="1523.409" Z="180.5488" /> <!-- NOTE: <TechnicalIssue> : Using CTM because MoveTo may get mad. -->
 				<CustomBehavior File="InteractWith" MobId="244872" Range="4" NonCompeteDistance="0" InteractBlacklistTimeInSEconds="1" IgnoreLoSToTarget="true" IgnoreMobsInBlackspots="false" QuestId="40078" X="3196.467" Y="1522.065" Z="180.5026" />
 			</While>
@@ -1470,6 +1571,124 @@ END INITORDER COMMENT -->
 
 			<CustomBehavior File="Hooks\DoWhen" ActivityName="UseSpecial" Command="Remove" />
 		<!-- END Story: The Champion of Stormheim -->
+
+		<!-- Dreygrot Side Quests -->
+			<If Condition="Me.Class != WoWClass.DemonHunter" > <!-- Remove once Fel Rush and Vengeful Retreat have proper path checking -->
+				<PickUp QuestName="The Mystery of Dreyrgrot" QuestId="42635" GiverName="Sir Finley Mrrgglton" GiverId="108072" X="3026.762" Y="686.7656" Z="17.67858" />
+				<PickUp QuestName="A Stone of Blood" QuestId="42639" GiverName="Sir Finley Mrrgglton" GiverId="108072" X="3026.762" Y="686.7656" Z="17.67858" />
+
+				<While Condition="DoQuest(42635, 42639)" >
+					<If Condition="Me.X &lt;= 3127" >
+						<MoveTo Precision="1" X="3143.395" Y="660.5744" Z="-1.183627" />
+					</If>
+					<If Condition="Me.X &gt; 3127 &amp;&amp; Me.Z &lt;= 4">
+						<CustomBehavior File="InteractWith" MobId="251027" CollectionDistance="200" NonCompeteDistance="0" Range="8" IgnoreLoSToTarget="true" TerminateWhen="Me.Z &gt; 4" />
+					</If>
+					<If Condition="Me.X &gt; 3127 &amp;&amp; Me.Z &gt;= 4">
+						<CustomBehavior File="InteractWith" MobIds="258851, 258849" NonCompeteDistance="0" NumOfTimes="2" WaitForNpcs="false" InteractByLooting="true" TerminateWhen="Me.X &gt; 3127 &amp;&amp; Me.Z &lt;= 4" />
+
+						<If Condition="Me.Z &gt;= 4" >
+							<MoveTo X="3176.632" Y="628.4471" Z="19.26887" />
+							<CustomBehavior File="RunCode" Code="
+								WoWUnit grapplePoi = Unit(91984, u =&gt; (int)u.Y == 615);
+								if (grapplePoi != null)
+								{
+									grapplePoi.Interact();
+									await Coroutine.Sleep(5000);
+								}
+							"/>
+							<CustomBehavior File="InteractWith" MobId="251008" NonCompeteDistance="0" WaitForNpcs="false" InteractByLooting="true" TerminateWhen="Me.X &gt; 3127 &amp;&amp; Me.Z &lt;= 4" />
+							<CustomBehavior File="KillUntilComplete" MobId="108032" QuestId="42639" QuestObjectiveIndex="1" X="3259.51" Y="618.0147" Z="17.86913" TerminateWhen="Me.X &gt; 3127 &amp;&amp; Me.Z &lt;= 4" />
+						</If>
+
+						<If Condition="Me.Z &gt;= 4" >
+							<MoveTo X="3249.816" Y="621.7765" Z="11.68446" />
+							<CustomBehavior File="RunCode" Code="
+								WoWUnit grapplePoi = Unit(92017, u =&gt; (int)u.Y == 672);
+								if (grapplePoi != null)
+								{
+									grapplePoi.Interact();
+									await Coroutine.Sleep(5000);
+								}
+							"/>
+							<CustomBehavior File="InteractWith" MobId="258850" NonCompeteDistance="0" WaitForNpcs="false" InteractByLooting="true" TerminateWhen="Me.X &gt; 3127 &amp;&amp; Me.Z &lt;= 4" />
+						</If>
+					</If>
+					<If Condition="Me.X &gt;= 4" >
+						<CustomBehavior File="MyCTM" X="3216.257" Y="651.2922" Z="-1.938153" TerminateWhen="Me.IsSwimming" />
+					</If>
+				</While>
+
+				<PickUp QuestName="The Value of Knowledge" QuestId="42640" GiverName="Crate of Ancient Relics" GiverId="250990" GiverType="GameObject" X="3211.839" Y="651.1632" Z="-0.1458523" />
+				<CustomBehavior File="InteractWith" MobId="251007" InteractByLooting="true" MovementBy="ClickToMoveOnly" CollectionDistance="200" QuestId="42640" QuestObjectiveIndex="1" X="3217.08" Y="674.7281" Z="-1.831802" />
+				<TurnIn QuestName="The Value of Knowledge" QuestId="42640" TurnInName="Sir Finley Mrrgglton" TurnInId="108072" X="3026.762" Y="686.7656" Z="17.67858" />
+
+
+				<TurnIn QuestName="The Mystery of Dreyrgrot" QuestId="42635" TurnInName="Sir Finley Mrrgglton" TurnInId="108072" X="3026.762" Y="686.7656" Z="17.67858" />
+				<TurnIn QuestName="A Stone of Blood" QuestId="42639" TurnInName="Sir Finley Mrrgglton" TurnInId="108072" X="3026.762" Y="686.7656" Z="17.67858" />
+
+				<PickUp QuestName="What the Bonespeakers Buried" QuestId="42641" GiverName="Sir Finley Mrrgglton" GiverId="108072" X="3026.762" Y="686.7656" Z="17.67858" />
+				<PickUp QuestName="Spilling Bad Blood" QuestId="42645" GiverName="Sir Finley Mrrgglton" GiverId="108072" X="3026.762" Y="686.7656" Z="17.67858" />
+
+				<While Condition="DoQuest(42641)" >
+					<UseMount Value="false" /> <!-- Avoid running and gathering tons of mobs since this place is pretty dense. -->
+					<MoveTo X="3131.835" Y="792.1031" Z="5.742842" />
+					<CustomBehavior File="RunCode" Code="
+						WoWUnit grapplePoi = Unit(91975, u =&gt; (int)u.Y == 808);
+						if (grapplePoi != null)
+						{
+							grapplePoi.Interact();
+							await Coroutine.Sleep(5000);
+						}
+					"/>
+					<CustomBehavior File="InteractWith" MobId="107588" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="42641" QuestObjectiveIndex="1" X="3190.594" Y="847.8993" Z="12.73094" TerminateWhen="Unit(107588, u =&gt; u.Attackable) != null" />
+					<CustomBehavior File="KillUntilComplete" QuestId="42641" QuestObjectiveIndex="1" X="3190.594" Y="847.8993" Z="12.73094" TerminateWhen="Unit(107588, u =&gt; !u.Attackable) != null" >
+						<PursuitList>
+							<PursueUnit Priority="500" Id="108150" />
+							<PursueUnit Priority="100" Id="107588" />
+						</PursuitList>
+					</CustomBehavior>
+
+					<MoveTo X="3150.204" Y="807.9601" Z="10.33084" />
+					<CustomBehavior File="MyCTM" X="3137.747" Y="792.7203" Z="-1.829709" />
+					<UseMount Value="true" />
+				</While>
+				
+				<CustomBehavior File="KillUntilComplete" MobId="108030" QuestId="42645" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="3076.606" Y="757.7012" Z="2.616086" />
+						<Hotspot X="3057.616" Y="823.2913" Z="16.09817" />
+					</HuntingGrounds>
+				</CustomBehavior>
+
+				<TurnIn QuestName="What the Bonespeakers Buried" QuestId="42641" TurnInName="Sir Finley Mrrgglton" TurnInId="108072" X="3026.762" Y="686.7656" Z="17.67858" />
+				<TurnIn QuestName="Spilling Bad Blood" QuestId="42645" TurnInName="Sir Finley Mrrgglton" TurnInId="108072" X="3026.762" Y="686.7656" Z="17.67858" />
+			</If>
+
+			<PickUp QuestName="A Murky Fate" QuestId="40120" GiverName="Morheim Ancestor" GiverId="98587" X="2907.359" Y="493.566" Z="16.40273" />
+			<CustomBehavior File="InteractWith" MobId="98577" NonCompeteDistance="0" Range="3" InteractByUsingItemId="129725" InteractBlacklistTimeInSeconds="1" QuestId="40120" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="2882.382" Y="416.4601" Z="15.81335" />
+				</HuntingGrounds>
+			</CustomBehavior>
+			<TurnIn QuestName="A Murky Fate" QuestId="40120" TurnInName="Morheim Ancestor" TurnInId="98587" X="2907.359" Y="493.566" Z="16.40273" />
+
+			<CustomBehavior File="InteractWith" MobState="DontCare" NumOfTimes="100" TerminateWhen="!HasQuest(40111)" >
+				<HuntingGrounds>
+					<Hotspot X="2854.07" Y="411.1793" Z="13.52447" />
+					<Hotspot X="2750.504" Y="386.625" Z="17.92409" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueUnit Id="98516" PursueWhen="UNIT.IsAlive" />
+					<PursueUnit Id="98517" PursueWhen="UNIT.IsAlive" />
+					<PursueUnit Id="98518" PursueWhen="UNIT.IsAlive" />
+
+					<PursueUnit Id="98500" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="110258" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="98498" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+				</PursuitList>
+			</CustomBehavior>
+		<!-- END Dreygrot Side Quests -->
 
 		<!-- [A] Story: Secrets of the Shieldmaidens -->
 			<If Condition="Me.IsAlliance" >
@@ -1590,11 +1809,11 @@ END INITORDER COMMENT -->
 
 		<!-- [H] Story: Secrets of the Shieldmaidens -->
 			<If Condition="Me.IsHorde" >
-				<PickUp QuestName="The Dark Lady's Bidding" QuestId="38872" GiverName="Dread-Rider Cullen" GiverId="93624" X="3190.107" Y="1553.792" Z="183.0175" /> <!-- NOTE: <CheckMe> : Breadcrumb? -->
+				<!--<PickUp QuestName="The Dark Lady's Bidding" QuestId="38872" GiverName="Dread-Rider Cullen" GiverId="93624" X="3190.107" Y="1553.792" Z="183.0175" />  Breadcrumb
 				<While Condition="DoQuest(38872)" >
 					<CustomBehavior File="InteractWith" MobId="93624" GossipOptions="1" WaitTime="25000" QuestId="38872" QuestObjectiveIndex="1" X="3190.107" Y="1553.792" Z="183.0175" />
 				</While>
-				<TurnIn QuestName="The Dark Lady's Bidding" QuestId="38872" TurnInName="Nathanos Blightcaller" TurnInId="93603" X="2370.986" Y="1838.804" Z="30.56491" />
+				<TurnIn QuestName="The Dark Lady's Bidding" QuestId="38872" TurnInName="Nathanos Blightcaller" TurnInId="93603" X="2370.986" Y="1838.804" Z="30.56491" />-->
 
 				<PickUp QuestName="Clear the Deck!" QuestId="38873" GiverName="Nathanos Blightcaller" GiverId="93603" X="2370.986" Y="1838.804" Z="30.56491" />
 				<PickUp QuestName="Dreadwake's Dilemma" QuestId="39153" GiverName="Nathanos Blightcaller" GiverId="93603" X="2370.986" Y="1838.804" Z="30.56491" />
