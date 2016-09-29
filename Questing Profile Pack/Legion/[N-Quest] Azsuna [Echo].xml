@@ -1309,34 +1309,39 @@ END INITORDER COMMENT -->
 			QuestId="37466"  -->
 		<!-- END Story: Azsuna versus Azshara --> 
 
-		<!-- Side Quests -->
-			<!-- Farondale -->
-			<!--
-				This quest is being commented because "Eye See You" bugs the bot out since it's not controlling the player
-			<TurnIn QuestName="Felblaze Ingress" QuestId="42372" TurnInName="Tehd Shoemaker" TurnInId="107244" X="534.8368" Y="5623.675" Z="77.29915" />
-			<PickUp QuestName="Eye See You" QuestId="42375" GiverName="Tehd Shoemaker" GiverId="107244" X="XXX" Y="YYY" Z="ZZZ" />
+		<!-- Felblaze Ingress Side Quests -->
+			
+			<PickUp QuestName="Eye See You" QuestId="42375" GiverName="Tehd Shoemaker" GiverId="107244" X="534.8368" Y="5623.675" Z="77.29939" />
 			<While Condition="DoQuest(42375)" >
-				NOTE: <CheckLogic> : LegionBuddy is keeping the XYZ of the player instead of the controlled eye.  Avoid won't work if this remains this way.
-				<CustomBehavior File="Hooks\Avoid" AvoidName="EyeOfZoth" Command="Add" ObjectType="Npc" ObjectId="107352" Radius="8" AvoidWhen="Me.HasAura(42375)" />
+				<DisableBehavior Name="Combat" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="EyeOfZoth" Command="Add" ObjectId="107352" Radius="8" AvoidWhen="Me.Pet != null &amp;&amp; Unit(107352, u =&gt; u.Location.Distance(Me.Pet.Location) &lt;= 8) != null" />
+				<CustomBehavior File="Message" Text="NOTE: Avoidance currently doesn't work for this quest.  It may take a few tries but the eyeball will eventually complete the quest." />
 				<If Condition="!Me.HasAura(212754)" >
 					<CustomBehavior File="InteractWith" MobId="107252" PreInteractMountStrategy="DismountOrCancelShapeshift" QuestId="42375" X="532.7066" Y="5623.68" Z="76.85637" />
 				</If>
-				<CustomBehavior File="NoCombatMoveTo" QuestId="42375" QuestObjectiveIndex="1" X="530.3498" Y="5624.368" Z="76.40353" TerminateWhen="!Me.HasAura(212754)" />
-				<CustomBehavior File="NoCombatMoveTo" QuestId="42375" QuestObjectiveIndex="3" X="530.3498" Y="5624.368" Z="76.40353" TerminateWhen="!Me.HasAura(212754)" />
-				<CustomBehavior File="NoCombatMoveTo" QuestId="42375" QuestObjectiveIndex="2" X="530.3498" Y="5624.368" Z="76.40353" TerminateWhen="!Me.HasAura(212754)" />
-				<If Condition="IsQuestCompleted(42375) &amp;&amp; Me.HasAura(42375)" >
-					<CustomBehavior File="Misc\RunLua" Lua="PossessButton2:Click();" />
+				<!-- Perhaps one day MoveTo will support TerminateWhen  (movember) -->
+				<If Condition="!IsObjectiveComplete(2, 42375)" >
+					<CustomBehavior File="FlyTo" MovementBy="NavigatorOnly" QuestId="42375" QuestObjectiveIndex="2" X="664.234" Y="5562.51" Z="83.588" TerminateWhen="!Me.HasAura(212754)" />
+					<CustomBehavior File="FlyTo" MovementBy="NavigatorOnly" QuestId="42375" QuestObjectiveIndex="2" X="791.0264" Y="5448.871" Z="81.78674" TerminateWhen="!Me.HasAura(212754)" />
+					<CustomBehavior File="MyCTM" QuestId="42375" QuestObjectiveIndex="2" X="735.1036" Y="5396.43" Z="54.35085" TerminateWhen="(int)Me.Pet.X == 735 || !Me.HasAura(212754)" />
+					<CustomBehavior File="FlyTo" MovementBy="NavigatorOnly" QuestId="42375" QuestObjectiveIndex="2" X="706.5974" Y="5364.259" Z="53.24842" TerminateWhen="!Me.HasAura(212754)" />
 				</If>
+				<CustomBehavior File="FlyTo" MovementBy="NavigatorOnly" QuestId="42375" QuestObjectiveIndex="1" X="588.7422" Y="5416.725" Z="51.7391" TerminateWhen="!Me.HasAura(212754)" />
+				<CustomBehavior File="FlyTo" MovementBy="NavigatorOnly" QuestId="42375" QuestObjectiveIndex="3" X="486.6183" Y="5400.245" Z="36.47847" TerminateWhen="!Me.HasAura(212754)" />
 				<CustomBehavior File="Hooks\Avoid" AvoidName="EyeOfZoth" Command="Remove" />
+				<EnableBehavior Name="Combat" />
 			</While>
-			<TurnIn QuestName="Eye See You" QuestId="42375" TurnInName="Tehd Shoemaker" TurnInId="107244" X="534.8368" Y="5623.675" Z="77.29916" />
+			<If Condition="QuestDone(42375)" >
+				<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="PossessButton2:Click();" />
+				<TurnIn QuestName="Eye See You" QuestId="42375" TurnInName="Tehd Shoemaker" TurnInId="107244" X="534.8368" Y="5623.675" Z="77.29916" />
+			</If>
 
 			<PickUp QuestName="They're Doing it Wrong" QuestId="42369" GiverName="Tehd Shoemaker" GiverId="107244" X="534.8368" Y="5623.675" Z="77.29916" />
 			<PickUp QuestName="Quantity Over Quality" QuestId="42368" GiverName="Marius Felbane" GiverId="107245" X="537.368" Y="5622.202" Z="77.62994" />
 			<PickUp QuestName="Arkethrax" QuestId="42367" GiverName="Marius Felbane" GiverId="107245" X="537.368" Y="5622.202" Z="77.62994" />
 
 			<While Condition="DoQuest(42369)" >
-				<CustomBehavior File="InteractWith" MobId="250361" NumOfTimes="4" QuestId="42369" QuestObjectiveIndex="1" X="589.074" Y="5387.316" Z="51.9563" />
+				<CustomBehavior File="InteractWith" MobId="250361" NonCompeteDistance="0" NumOfTimes="4" QuestId="42369" QuestObjectiveIndex="1" X="589.074" Y="5387.316" Z="51.9563" />
 			</While>
 
 			<While Condition="DoQuest(42367)" >
@@ -1357,61 +1362,59 @@ END INITORDER COMMENT -->
 			<TurnIn QuestName="They're Doing it Wrong" QuestId="42369" TurnInName="Tehd Shoemaker" TurnInId="107244" X="534.8368" Y="5623.675" Z="77.29911" />
 			<TurnIn QuestName="Quantity Over Quality" QuestId="42368" TurnInName="Marius Felbane" TurnInId="107245" X="537.368" Y="5622.202" Z="77.62996" />
 			<TurnIn QuestName="Arkethrax" QuestId="42367" TurnInName="Marius Felbane" TurnInId="107245" X="537.368" Y="5622.202" Z="77.62996" />-->
-			<!-- END Farondale -->
+		<!-- END Felblaze Ingress Side  Quests -->
 
-			<!-- Olivian Veil -->
-				<!-- Breadcrumb quest  turn in -->
-				<If Condition="HasQuest(42238)" >
-					<TurnIn QuestName="Missing Demon" QuestId="42238" TurnInName="Daglop" TurnInId="91166" X="-447.5054" Y="5736.651" Z="35.47715" />
-				</If>
+		<!-- Olivian Veil Side Quests -->
+			<If Condition="HasQuest(42238)" ><!-- Breadcrumb quest  turn in -->
+				<TurnIn QuestName="Missing Demon" QuestId="42238" TurnInName="Daglop" TurnInId="91166" X="-447.5054" Y="5736.651" Z="35.47715" />
+			</If>
 
-				<PickUp QuestName="Let's Make A Deal" QuestId="38460" GiverName="Daglop" GiverId="91166" X="-451.318" Y="5718.224" Z="33.95066" />
-				<While Condition="DoQuest(38460)" >
-					<CustomBehavior File="InteractWith" MobId="91166" GossipOptions="2" QuestId="38460" QuestObjectiveIndex="1" X="-451.318" Y="5718.224" Z="33.95066" />
-				</While>
-				<TurnIn QuestName="Let's Make A Deal" QuestId="38460" TurnInName="Daglop" TurnInId="91166" X="-451.318" Y="5718.224" Z="33.95066" />
+			<PickUp QuestName="Let's Make A Deal" QuestId="38460" GiverName="Daglop" GiverId="91166" X="-451.318" Y="5718.224" Z="33.95066" />
+			<While Condition="DoQuest(38460)" >
+				<CustomBehavior File="InteractWith" MobId="91166" GossipOptions="2" QuestId="38460" QuestObjectiveIndex="1" X="-451.318" Y="5718.224" Z="33.95066" />
+			</While>
+			<TurnIn QuestName="Let's Make A Deal" QuestId="38460" TurnInName="Daglop" TurnInId="91166" X="-451.318" Y="5718.224" Z="33.95066" />
 
-				<PickUp QuestName="Minion! Kill Them!" QuestId="38232" GiverName="Daglop" GiverId="91166" X="-451.318" Y="5718.224" Z="33.95066" />
-				<While Condition="DoQuest(38232)" >
-					<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(38232)" >
-						<HuntingGrounds>
-							<Hotspot X="-439.4973" Y="5723.126" Z="35.29445" />
-							<Hotspot X="-371.8706" Y="5682.092" Z="47.91368" />
-							<Hotspot X="-371.9585" Y="5776.589" Z="52.82256" />
-							<Hotspot X="-378.8085" Y="5864.603" Z="56.5452" />
-							<Hotspot X="-417.754" Y="5597.248" Z="31.15229" />
-							<Hotspot X="-368.4402" Y="5686.257" Z="49.2266" />
-						</HuntingGrounds>
-						<PursuitList>
-							<PursueUnit Id="105838" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 38232)" />
-							<PursueUnit Id="109351" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 38232)" />
-							<PursueUnit Id="109349" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(2, 38232)" />
+			<PickUp QuestName="Minion! Kill Them!" QuestId="38232" GiverName="Daglop" GiverId="91166" X="-451.318" Y="5718.224" Z="33.95066" />
+			<While Condition="DoQuest(38232)" >
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(38232)" >
+					<HuntingGrounds>
+						<Hotspot X="-439.4973" Y="5723.126" Z="35.29445" />
+						<Hotspot X="-371.8706" Y="5682.092" Z="47.91368" />
+						<Hotspot X="-371.9585" Y="5776.589" Z="52.82256" />
+						<Hotspot X="-378.8085" Y="5864.603" Z="56.5452" />
+						<Hotspot X="-417.754" Y="5597.248" Z="31.15229" />
+						<Hotspot X="-368.4402" Y="5686.257" Z="49.2266" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueUnit Id="105838" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 38232)" />
+						<PursueUnit Id="109351" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 38232)" />
+						<PursueUnit Id="109349" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(2, 38232)" />
 
-							<PursueGameObject Id="240346" PursueWhen="!IsObjectiveComplete(3, 38232)" />
-						</PursuitList>
-					</CustomBehavior>
-				</While>
-				<While Condition="QuestDone(38232)" >
-					<CustomBehavior File="InteractWith" MobId="91165" IgnoreLoSToTarget="true" X="-459.7767" Y="5711.571" Z="33.6305" TerminateWhen="!HasQuest(38232)" />
-					<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestFrameCompleteButton:Click();" TerminateWhen="!HasQuest(38232)" />
-					<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestFrameCompleteQuestButton:Click();" TerminateWhen="!HasQuest(38232)" />
-					<!-- Using special handling here because the NPC sits behind the player, and normal logic will mess up.
-						<TurnIn QuestName="Minion! Kill Them!" QuestId="38232" TurnInName="Daglop" TurnInId="91165" X="-459.7767" Y="5711.571" Z="33.6305" /> -->
-				</While>
+						<PursueGameObject Id="240346" PursueWhen="!IsObjectiveComplete(3, 38232)" />
+					</PursuitList>
+				</CustomBehavior>
+			</While>
+			<While Condition="QuestDone(38232)" >
+				<CustomBehavior File="InteractWith" MobId="91165" IgnoreLoSToTarget="true" X="-459.7767" Y="5711.571" Z="33.6305" TerminateWhen="!HasQuest(38232)" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestFrameCompleteButton:Click();" TerminateWhen="!HasQuest(38232)" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestFrameCompleteQuestButton:Click();" TerminateWhen="!HasQuest(38232)" />
+				<!-- Using special handling here because the NPC sits behind the player, and normal logic will mess up.
+					<TurnIn QuestName="Minion! Kill Them!" QuestId="38232" TurnInName="Daglop" TurnInId="91165" X="-459.7767" Y="5711.571" Z="33.6305" /> -->
+			</While>
 
-				<While Condition="NeedsQuest(38237)" >
-					<CustomBehavior File="InteractWith" MobId="91165" IgnoreLoSToTarget="true" X="-459.7767" Y="5711.571" Z="33.6305" TerminateWhen="HasQuest(38237)" />
-					<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestFrameAcceptButton:Click();" TerminateWhen="HasQuest(38237)" />
-					<!-- Using special handling here because the NPC sits behind the player, and normal logic will mess up.
-					<PickUp QuestName="This IS In My Contract." QuestId="38237" GiverName="Daglop" GiverId="91165" X="-459.7767" Y="5711.571" Z="33.6305" /> -->
-				</While>
-				<While Condition="DoQuest(38237)" >
-					<CustomBehavior File="InteractWith" MobId="91185" GossipOptions="1" QuestId="38237" QuestObjectiveIndex="1" X="-519.2882" Y="5607.612" Z="4.513766" />
-					<CustomBehavior File="KillUntilComplete" MobId="91184" QuestId="38237" QuestObjectiveIndex="2" X="-546.0191" Y="5659.53" Z="2.766259" />
-				</While>
-				<TurnIn QuestName="This IS In My Contract." QuestId="38237" TurnInName="Daglop" TurnInId="91166" X="-447.5054" Y="5736.651" Z="35.47715" />
-			<!-- END Olivian Veil -->
-		<!-- END Side Quests -->
+			<While Condition="NeedsQuest(38237)" >
+				<CustomBehavior File="InteractWith" MobId="91165" IgnoreLoSToTarget="true" X="-459.7767" Y="5711.571" Z="33.6305" TerminateWhen="HasQuest(38237)" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestFrameAcceptButton:Click();" TerminateWhen="HasQuest(38237)" />
+				<!-- Using special handling here because the NPC sits behind the player, and normal logic will mess up.
+				<PickUp QuestName="This IS In My Contract." QuestId="38237" GiverName="Daglop" GiverId="91165" X="-459.7767" Y="5711.571" Z="33.6305" /> -->
+			</While>
+			<While Condition="DoQuest(38237)" >
+				<CustomBehavior File="InteractWith" MobId="91185" GossipOptions="1" QuestId="38237" QuestObjectiveIndex="1" X="-519.2882" Y="5607.612" Z="4.513766" />
+				<CustomBehavior File="KillUntilComplete" MobId="91184" QuestId="38237" QuestObjectiveIndex="2" X="-546.0191" Y="5659.53" Z="2.766259" />
+			</While>
+			<TurnIn QuestName="This IS In My Contract." QuestId="38237" TurnInName="Daglop" TurnInId="91166" X="-447.5054" Y="5736.651" Z="35.47715" />
+		<!-- END Olivian Veil Side Quests -->
 
 		<!-- Story: Against the Giants -->
 			<TurnIn QuestName="Infiltrating Shipwreck Arena" QuestId="37496" TurnInName="Okuna Longtusk" TurnInId="88873" X="-327.2674" Y="6535.986" Z="1.660431" />
