@@ -141,23 +141,29 @@ END INITORDER COMMENT -->
 					</While>
 					
 					<While Condition="QuestDone(38035)" >
+						<CustomBehavior File="InteractWith" MobId="244567" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" NumOfTimes="5" X="-830.9566" Y="4655.491" Z="749.6113" TerminateWhen="Me.MapId == 0" />
 						<TurnIn QuestName="A Royal Summons" QuestId="38035" TurnInName="Sky Admiral Rogers" TurnInId="96644" X="-8491.159" Y="1394.033" Z="196.3758" />
 					</While>
 					
 					<While Condition="NeedsQuest(38206)" >
+						<CustomBehavior File="InteractWith" MobId="244567" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" NumOfTimes="5" X="-830.9566" Y="4655.491" Z="749.6113" TerminateWhen="Me.MapId == 0" />
 						<CustomBehavior File="InteractWith" MobId="96644" X="-8491.159" Y="1394.033" Z="196.3758" />
 						<CustomBehavior File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click();" />
 					</While>
 					<While Condition="DoQuest(38206)" >
-						<CustomBehavior File="WaitTimer" WaitTime="12000" />
+						<CustomBehavior File="InteractWith" MobId="244567" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" NumOfTimes="5" X="-830.9566" Y="4655.491" Z="749.6113" TerminateWhen="Me.MapId == 0" />
+						<CustomBehavior File="WaitTimer" QuestId="38206" QuestObjectiveIndex="1" WaitTime="12000" />
 						<CustomBehavior File="InteractWith" MobId="110898" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="38206" QuestObjectiveIndex="1" X="-8534.451" Y="1400.251" Z="198.6206" />
 						<MoveTo QuestId="38206" QuestObjectiveIndex="2" X="-8548.114" Y="1399.016" Z="193.6293" />
-						<CustomBehavior File="WaitTimer" WaitTime="20000" />
+						<CustomBehavior File="WaitTimer" QuestId="38206" QuestObjectiveIndex="2" WaitTime="22000" />
 						<CustomBehavior File="Misc\RunLua" QuestId="38206" QuestObjectiveIndex="2" Lua="ExtraActionButton1:Click();" />
 						<MoveTo QuestId="38206" QuestObjectiveIndex="3" X="-8584.947" Y="1399.771" Z="196.4226" />
 						<CustomBehavior File="WaitTimer" QuestId="38206" QuestObjectiveIndex="3" WaitTime="30000" />
 					</While>
-					<TurnIn QuestName="Making the Rounds" QuestId="38206" TurnInName="Genn Greymane" TurnInId="96663" X="-8587.822" Y="1398.612" Z="196.5768" />
+					<If Condition="QuestDone(38206)" >
+						<CustomBehavior File="InteractWith" MobId="244567" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" NumOfTimes="5" X="-830.9566" Y="4655.491" Z="749.6113" TerminateWhen="Me.MapId == 0" />
+						<TurnIn QuestName="Making the Rounds" QuestId="38206" TurnInName="Genn Greymane" TurnInId="96663" X="-8587.822" Y="1398.612" Z="196.5768" />
+					</If>
 				</If>
 			<!-- [A] END Zone Introductory Quests -->
 
@@ -168,10 +174,10 @@ END INITORDER COMMENT -->
 						<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 					</If>
 					<While Condition="DoQuest(39800)" >
-						<While Condition="Me.MapId == 1220">
+						<While Condition="Me.MapId == 1220 &amp;&amp; Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0">
 							<!-- Somehow players are ending back up in Broken Isles.  This will prevent that. -->
 							<MoveTo X="-831.9807" Y="4653.169" Z="749.6398" />
-							<CustomBehavior File="InteractWith" MobId="244567" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" WaitForNpcs="false" />
+							<CustomBehavior File="InteractWith" MobId="244567" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" NumOfTimes="5" X="-830.9566" Y="4655.491" Z="749.6113" TerminateWhen="Me.MapId == 0" />
 						</While>
 						<While Condition="Me.MapId == 0" >
 							<MoveTo X="-8581.744" Y="1400.527" Z="196.4672" />
@@ -181,9 +187,9 @@ END INITORDER COMMENT -->
 						<UseMount Value="false" />
 
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-							<CustomBehavior File="InteractWith" X="5045.783" Y="3137.939" Z="369.9213" PreInteractMountStrategy="DismountOrCancelShapeshift" TerminateWhen="(IsScenarioCriteriaComplete(1) &amp;&amp; IsScenarioCriteriaComplete(2)) || Me.InVehicle" >
+							<CustomBehavior File="InteractWith" X="4966.844" Y="2883.872" Z="137.8287" PreInteractMountStrategy="DismountOrCancelShapeshift" TerminateWhen="(IsScenarioCriteriaComplete(1) &amp;&amp; IsScenarioCriteriaComplete(2)) || Me.InVehicle" >
 								<PursuitList>
-									<PursueUnit Id="92957" PursueWhen="UNIT.X &gt; 140" /> <!-- Only use the one the bot can easily navigate to -->
+									<PursueUnit Id="92957" PursueWhen="UNIT.Z &gt;= 141" /> <!-- Only use the one the bot can easily navigate to -->
 								</PursuitList>
 							</CustomBehavior>
 							<CustomBehavior File="Vehicles\CannonControl" MobId="93113" VehicleId="92957" MinAngle="-0.0868" MaxAngle="1" Gravity="0.01" Velocity="200" Buttons="1,2" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2 || !Me.InVehicle" />
