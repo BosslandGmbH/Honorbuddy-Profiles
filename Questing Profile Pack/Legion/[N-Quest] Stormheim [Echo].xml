@@ -187,16 +187,19 @@ END INITORDER COMMENT -->
 						<UseMount Value="false" />
 
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-							<CustomBehavior File="InteractWith" X="4966.844" Y="2883.872" Z="137.8287" PreInteractMountStrategy="DismountOrCancelShapeshift" TerminateWhen="(IsScenarioCriteriaComplete(1) &amp;&amp; IsScenarioCriteriaComplete(2)) || Me.InVehicle" >
+							<MoveTo X="5072.761" Y="3148.755" Z="367.4862" />
+							<CustomBehavior File="InteractWith" X="4966.844" Y="2883.872" Z="137.8287" PreInteractMountStrategy="DismountOrCancelShapeshift" TerminateWhen="(IsScenarioCriteriaComplete(1) &amp;&amp; IsScenarioCriteriaComplete(2)) || Me.InVehicle || Unit(92957, u =&gt; u.HasAura(184641)) != null" >
 								<PursuitList>
 									<PursueUnit Id="92957" PursueWhen="UNIT.Z &gt;= 141" /> <!-- Only use the one the bot can easily navigate to -->
 								</PursuitList>
 							</CustomBehavior>
 							<CustomBehavior File="Vehicles\CannonControl" MobId="93113" VehicleId="92957" MinAngle="-0.0868" MaxAngle="1" Gravity="0.01" Velocity="200" Buttons="1,2" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2 || !Me.InVehicle" />
-							<CustomBehavior File="KillUntilComplete" MobId="93173" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2 || Unit(93173) == null || Unit(93173, u =&gt; u.IsDead) != null" />
+							<CustomBehavior File="KillUntilComplete" MobId="93173" X="4953.261" Y="2868.317" Z="137.193" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2 || Unit(93173) == null || Unit(93173, u =&gt; u.IsDead) != null" />
 						</While>
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
-							<CustomBehavior File="InteractWith" MobId="240210" WaitTime="18000" Range="1" X="5000.963" Y="2937.803" Z="115.4159" TerminateWhen="Me.Z &lt; 25 || IsScenarioCriteriaComplete(1)" />
+							<While Condition="Me.Z &gt;= 25" >
+								<CustomBehavior File="InteractWith" MobId="240210" WaitTime="18000" Range="1" X="5000.963" Y="2937.803" Z="115.4159" TerminateWhen="Me.Z &lt; 25 || IsScenarioCriteriaComplete(1)" />
+							</While>
 							<CustomBehavior File="KillUntilComplete" MobId="93560" X="4791.23" Y="2871.738" Z="7.923726" TerminateWhen="IsScenarioCriteriaComplete(1)" />
 							<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Unit(97444) == null" />
 
@@ -831,7 +834,7 @@ END INITORDER COMMENT -->
 						</PursuitList>
 					</CustomBehavior>
 
-					<CustomBehavior File="MyCTM" X="2418.247" Y="2367.154" Z="256.2015"  />
+					<CustomBehavior File="MyCTM" X="2418.247" Y="2367.154" Z="256.2015" TerminateWhen="Me.IsFalling" />
 				</While>
 			</If>
 
@@ -926,7 +929,7 @@ END INITORDER COMMENT -->
 						</PursuitList>
 					</CustomBehavior>
 
-					<CustomBehavior File="MyCTM" X="2418.247" Y="2367.154" Z="256.2015"  />
+					<CustomBehavior File="MyCTM" X="2418.247" Y="2367.154" Z="256.2015" TerminateWhen="Me.IsFalling" />
 				</While>
 			</If>
 
