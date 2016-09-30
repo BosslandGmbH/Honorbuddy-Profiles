@@ -148,7 +148,7 @@
 				<ClearVendor />
 				<ClearMailbox />
 
-				<MoveTo Nav="Fly" X="1772.603" Y="-4327.352" Z="-8.197061" />
+				<MoveTo DestName="Portal to Blasted Lands" X="1772.603" Y="-4327.352" Z="-8.197061" />
 				<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" MobId="235877" NonCompeteDistance="0" Range="4" WaitTime="10000" X="-11812.26" Y="-3205.597" Z="-29.56283" /> <!-- BL Portal -->
 			</If>
 			<If Condition="Me.ZoneId == 4"> <!-- Blasted Lands -->
@@ -352,7 +352,7 @@
 			<CustomBehavior File="WaitTimer" WaitTime="2000" GoalText="Waiting for Cinematic {TimeRemaining}" />
 			<CustomBehavior File="Misc\RunLua" Lua="if MovieFrame and MovieFrame:IsVisible() then MovieFrame:StopMovie() elseif CinematicFrame and CinematicFrame:IsVisible() then CinematicFrame_CancelCinematic() end" WaitTime="2000" />
 		</If>
-		<CustomBehavior File="KillUntilComplete" QuestId="34439" >
+		<CustomBehavior File="KillUntilComplete"  MovementBy="NavigatorPreferred" QuestId="34439" >
 			<HuntingGrounds>
 				<Hotspot X="4564.294" Y="-2039.26" Z="-17.96849" />
 				<Hotspot X="4526.458" Y="-2084.793" Z="-17.1782" />
@@ -551,7 +551,7 @@
 		<TurnIn Nav="Fly" QuestName="Back to Work" QuestId="34375" TurnInName="Gazlowe" TurnInId="78466" X="5628.997" Y="4525.767" Z="118.9772" />
 		<TurnIn Nav="Fly" QuestName="A Gronnling Problem" QuestId="34592" TurnInName="Gazlowe" TurnInId="78466" X="5628.997" Y="4525.767" Z="118.9772" />
 		<PickUp Nav="Fly" QuestName="The Den of Skog" QuestId="34765" GiverName="Gazlowe" GiverId="78466" X="5628.997" Y="4525.767" Z="118.9772" />
-		<CustomBehavior File="KillUntilComplete" MobId="79903" QuestId="34765" QuestObjectiveIndex="1" X="5411.537" Y="4543.161" Z="139.1231" />
+		<CustomBehavior File="KillUntilComplete"  MovementBy="NavigatorPreferred" MobId="79903" QuestId="34765" QuestObjectiveIndex="1" X="5411.537" Y="4543.161" Z="139.1231" />
 		<TurnIn Nav="Fly" QuestName="The Den of Skog" QuestId="34765" TurnInName="Gazlowe" TurnInId="78466" X="5628.997" Y="4525.767" Z="118.9772" />
 		<If Condition="!HasQuest(34822) &amp;&amp; !IsQuestCompleted(34822)" > <!-- Establish Your Garrison / What We Need -->
 			<PickUp Nav="Fly" QuestName="Establish Your Garrison" QuestId="34378" GiverName="Gazlowe" GiverId="78466" X="5628.997" Y="4525.767" Z="118.9772" />
@@ -651,6 +651,10 @@
 		<TurnIn Nav="Fly" QuestName="Rally the Frostwolves" QuestId="34380" TurnInName="Durotan" TurnInId="76557" X="5913.826" Y="6226.399" Z="49.7326" />
 		<PickUp Nav="Fly" QuestName="Gormaul Tower" QuestId="33784" GiverName="Durotan" GiverId="76557" X="5913.826" Y="6226.399" Z="49.7326" />
 
+    <!-- <GameObject Name="Bonfire" Entry="238110" X="6443.648" Y="6308.986" Z="228.1085" /> -->
+    <CustomBehavior File="Hooks\Avoid" AvoidName="Bonfire" Command="Add" ObjectType="GameObject" ObjectId="238110" Radius="10" />
+    
+    
 		<!-- bonus available here - 
 				<MoveTo Nav="Fly" DestName="Bonus Objective: Forbidden Glacier" X="6135.184" Y="5996.713" Z="139.041" />
 			<PickUp Nav="Fly" QuestName="Bonus Objective: Forbidden Glacier" QuestId="34505" GiverName="" GiverId="" />
@@ -686,6 +690,9 @@
 			</CustomBehavior>
 		</While>
 		<TurnIn QuestName="These Colors Don't Run" QuestId="33526" TurnInName="Durotan" TurnInId="74273" X="6894.924" Y="5846.719" Z="258.647" />
+
+    <CustomBehavior File="Hooks\Avoid" AvoidName="Bonfire" Command="Remove" />
+    
 		<PickUp QuestName="Deeds Left Undone" QuestId="33546" GiverName="Durotan" GiverId="74273" X="6894.924" Y="5846.719" Z="258.647" />
 		<While Condition="HasQuest(33546) &amp;&amp; !IsQuestCompleted(33546)" > <!-- Deeds Left Undone -->
 			<Objective QuestName="Deeds Left Undone" QuestId="33546" Type="CollectItem" ItemId="107361" CollectCount="5" />
@@ -829,7 +836,7 @@
 		<!-- The Cure 
 		<PickUp Nav="Fly" QuestName="The Cure" QuestId="33454" GiverName="Igrimar the Resolute" GiverId="74635" X="7117.029" Y="6008.2" Z="133.8583"  />
 		<While Condition="HasQuest(33454) &amp;&amp; !IsQuestCompleted(33454)" > 
-			<CustomBehavior File="KillUntilComplete" QuestId="33454" MobId="74697" TerminateWhen="HasItem(106958) || IsObjectiveComplete(1, 33454)" >
+			<CustomBehavior File="KillUntilComplete"  MovementBy="NavigatorPreferred" QuestId="33454" MobId="74697" TerminateWhen="HasItem(106958) || IsObjectiveComplete(1, 33454)" >
 				<HuntingGrounds WaypointVisitStrategy="InOrder" >
 					<Hotspot X="7115.669" Y="5964.927" Z="126.8914" />
 					<Hotspot X="7172.802" Y="5961.551" Z="126.6932" />
@@ -863,7 +870,7 @@
 		<PickUp Nav="Fly" QuestName="The Fall of the Warlord" QuestId="33467" GiverName="Igrimar the Resolute" GiverId="74635" X="7091.213" Y="6011.755" Z="133.8653" />
 		<While Condition="HasQuest(33467) &amp;&amp; !IsQuestCompleted(33467)" >  
 			<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" QuestId="33467" MobId="227291" Range="5" WaitTime="5000" TerminateWhen="Unit(73763) != null || IsObjectiveComplete(1, 33467)" X="7211.021" Y="6077.176" Z="117.4463" />
-			<CustomBehavior File="KillUntilComplete" QuestId="33467" MobId="74697" TerminateWhen="Unit(73763) == null || IsObjectiveComplete(1, 33467)" X="7196.233" Y="6105.592" Z="117.4457" />
+			<CustomBehavior File="KillUntilComplete"  MovementBy="NavigatorPreferred" QuestId="33467" MobId="74697" TerminateWhen="Unit(73763) == null || IsObjectiveComplete(1, 33467)" X="7196.233" Y="6105.592" Z="117.4457" />
 		</While>
 		<TurnIn Nav="Fly" QuestName="The Fall of the Warlord" QuestId="33467" TurnInName="Snowrunner Rolga" TurnInId="81678" X="6785.769" Y="5957.668" Z="257.9766" />
 		-->
@@ -1110,13 +1117,20 @@
 		<PickUp Nav="Fly" QuestName="The Eldest" QuestId="32795" GiverName="Ganar" GiverId="70941" X="6901.172" Y="4554.826" Z="68.05275" />
 		<While Condition="HasQuest(32795) &amp;&amp; !IsQuestCompleted(32795)"> <!-- The Eldest -->
 			<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" MobId="70941" GossipOptions="1" WaitTime="30000" NonCompeteDistance="0" X="6901.172" Y="4554.826" Z="68.05275" />
-			<CustomBehavior File="GetOutOfGroundEffectAndAuras" QuestId="32795" PreferKillingMobId="70863" MoveBehindMobCastingSpellId="141290" MoveAwayFromMobCastingSpellId="141293" 
+
+      <CustomBehavior File="KillUntilComplete" MobIds="70863, 70941, 74006" QuestId="32795" >
+        <HuntingGrounds>
+          <Hotspot Name="The Eldest" X="6812.224" Y="4510.847" Z="67.58623" />
+        </HuntingGrounds>
+      </CustomBehavior>
+      
+      <!--<CustomBehavior File="GetOutOfGroundEffectAndAuras" QuestId="32795" PreferKillingMobId="70863" MoveBehindMobCastingSpellId="141290" MoveAwayFromMobCastingSpellId="141293" 
 											EventX="6848.637" EventY="4545.56" EventZ="68.06463" TerminateWhen="Unit(70941) == null || IsObjectiveComplete(2, 32795)" >
 				<Safespots>
 					<Hotspot X="6853.205" Y="4512.411" Z="68.01273" />
 					<Hotspot X="6802.296" Y="4559.819" Z="68.14767" />
 				</Safespots>
-			</CustomBehavior>
+			</CustomBehavior>-->
 		</While>
 		<TurnIn Nav="Fly" QuestName="The Eldest" QuestId="32795" TurnInName="Ganar" TurnInId="70941" X="6915.31" Y="4560.843" Z="68.06326" />
 		<!-- Grab some Treasures -->
@@ -1186,7 +1200,7 @@
 		<While Condition="HasQuest(32994) &amp;&amp; !IsQuestCompleted(32994)" > <!-- Enfilade -->
 			<UseMount Value="false" />
 
-			<CustomBehavior File="KillUntilComplete" QuestId="32994" ObjectId="230262" MobId1="72328" MobId2="73360" TerminateWhen="GetItemCount(104039) &gt;= 5 || IsObjectiveComplete(1, 32994)" >
+			<CustomBehavior File="KillUntilComplete"  MovementBy="NavigatorPreferred" QuestId="32994" ObjectId="230262" MobId1="72328" MobId2="73360" TerminateWhen="GetItemCount(104039) &gt;= 5 || IsObjectiveComplete(1, 32994)" >
 				<HuntingGrounds WaypointVisitStrategy="InOrder" >
 					<Hotspot X="5359.049" Y="3720.831" Z="120.1101" />
 					<Hotspot X="5327.865" Y="3706.274" Z="121.4442" />
@@ -1272,7 +1286,7 @@
 				<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber > 1" />
 				</While>
 				<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2">
-					<CustomBehavior File="KillUntilComplete" QuestId="37291" Range="4" MobId1="72934" MobId2="88263" MobId3="88265" MobId4="88268" MobId5="88272" MobId6="89241" MobId7="89217" MobId8="87040" MobId9="88266" 
+					<CustomBehavior File="KillUntilComplete"  MovementBy="NavigatorPreferred" QuestId="37291" Range="4" MobId1="72934" MobId2="88263" MobId3="88265" MobId4="88268" MobId5="88272" MobId6="89241" MobId7="89217" MobId8="87040" MobId9="88266" 
 												TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber > 2" >
 						<HuntingGrounds WaypointVisitStrategy="InOrder" >
 							<Hotspot X="5694.571" Y="4512.713" Z="126.8914" />
@@ -1281,7 +1295,7 @@
 				</While>
 				<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3">
 					<MoveTo DestName="Thunderlord Invasion! - Stage 3" X="5692.055" Y="4514.929" Z="126.1018" />
-					<CustomBehavior File="KillUntilComplete" QuestId="37291" Range="4" 
+					<CustomBehavior File="KillUntilComplete"  MovementBy="NavigatorPreferred" QuestId="37291" Range="4" 
 												TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber > 3" >
 						<HuntingGrounds WaypointVisitStrategy="InOrder" >
 							<Hotspot X="5736.703" Y="4497.613" Z="131.9077" />
@@ -1305,7 +1319,7 @@
 					<CustomBehavior File="WaitTimer" WaitTime="30000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber > 3" />
 					</While>
 					<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4">
-						<CustomBehavior File="KillUntilComplete" QuestId="37291" Range="4" MobId1="72934" MobId2="88263" MobId3="88265" MobId4="88268" MobId5="88272" MobId6="89241" MobId7="89217" MobId8="87040" MobId9="88266" 
+						<CustomBehavior File="KillUntilComplete"  MovementBy="NavigatorPreferred" QuestId="37291" Range="4" MobId1="72934" MobId2="88263" MobId3="88265" MobId4="88268" MobId5="88272" MobId6="89241" MobId7="89217" MobId8="87040" MobId9="88266" 
 												TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber > 4" >
 							<HuntingGrounds WaypointVisitStrategy="InOrder" >
 								<Hotspot X="5736.703" Y="4497.613" Z="131.9077" />
@@ -1321,7 +1335,7 @@
 						<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber > 5" />
 						</While>
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6">
-							<CustomBehavior File="KillUntilComplete" QuestId="37291" X="5692.055" Y="4514.929" Z="126.1018" TerminateWhen="IsQuestCompleted(37291)" >
+							<CustomBehavior File="KillUntilComplete"  MovementBy="NavigatorPreferred" QuestId="37291" X="5692.055" Y="4514.929" Z="126.1018" TerminateWhen="IsQuestCompleted(37291)" >
 								<PursuitList>
 									<PursueUnit Id="79654" Priority="5000" /> <!-- Totem -->
 									<PursueUnit Id="79609" Priority="-5000" /> <!-- Boss -->
@@ -1463,19 +1477,20 @@
 											TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber > 1" />
 								</If>
 								<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2">
-									<CustomBehavior File="KillUntilComplete" QuestId="34124" MobId="76549" MobId2="76639" MobId3="76633" X="6025.898" Y="2850.042" Z="200.3987"
+									<CustomBehavior File="KillUntilComplete"  MovementBy="NavigatorPreferred" QuestId="34124" MobId="76549" MobId2="76639" MobId3="76633" X="6025.898" Y="2850.042" Z="200.3987"
 												TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber > 2" />
 									</While>
 									<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3">
-                    <CustomBehavior File="InteractWith" MobIds="76629" NumOfTimes="100" X="6074.845" Y="2759.896" Z="206.0829" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+                    <!-- Type="Repair" Nav="Fly" X="6073.196" Y="2759.502" Z="206.0167" /> -->
+                    <CustomBehavior File="KillUntilComplete"  MovementBy="NavigatorPreferred" MobIds="76629" X="6074.845" Y="2759.896" Z="206.0829" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
                   </While>
 									<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4">
-										<CustomBehavior File="KillUntilComplete" QuestId="34124" MobId="76549" MobId2="76639" MobId3="76633" X="6025.898" Y="2850.042" Z="200.3987"
+										<CustomBehavior File="KillUntilComplete" QuestId="34124" MovementBy="NavigatorPreferred" MobId="76549" MobId2="76639" MobId3="76633" X="6025.898" Y="2850.042" Z="200.3987"
 											TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber > 4" />
 										</While>
 										<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5">
 											<!-- may want to change this to escort for part 5 -->
-											<CustomBehavior File="KillUntilComplete" QuestId="34124" MobId="76549" MobId2="76639" MobId3="76633" 
+											<CustomBehavior File="KillUntilComplete" QuestId="34124" MovementBy="NavigatorPreferred" MobId="76549" MobId2="76639" MobId3="76633" 
 											TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber > 5" >
 												<HuntingGrounds WaypointVisitStrategy="InOrder" >
 													<Hotspot X="6005.886" Y="2771.448" Z="222.6227" />
@@ -1487,7 +1502,7 @@
 											</CustomBehavior>
 										</While>
 										<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6">
-											<CustomBehavior File="KillUntilComplete" QuestId="34124" MobId="76624" MobId2="76587" X="6025.898" Y="2850.042" Z="200.3987"
+											<CustomBehavior File="KillUntilComplete"  MovementBy="NavigatorPreferred" QuestId="34124" MobId="76624" MobId2="76587" X="6025.898" Y="2850.042" Z="200.3987"
 											TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber > 6" />
 											</While>
 											<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7">
@@ -1503,7 +1518,7 @@
 												</CustomBehavior>
 											</While>
 											<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8">
-												<CustomBehavior File="KillUntilComplete" QuestId="34124" MobId="76549" MobId2="76639" MobId3="76633" X="6025.898" Y="2850.042" Z="200.3987"
+												<CustomBehavior File="KillUntilComplete"  MovementBy="NavigatorPreferred" QuestId="34124" MobId="76549" MobId2="76639" MobId3="76633" X="6025.898" Y="2850.042" Z="200.3987"
 												TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber > 8" />
 												</While>
 												<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 9">
@@ -1530,10 +1545,10 @@
 											<If Condition="Unit(76730) != null &amp;&amp; !IsQuestCompleted(37563)" > <!-- The Frostwolves Stand Ready -->
 												<PickUp Nav="Fly" QuestName="The Frostwolves Stand Ready" QuestId="37563" GiverName="Makar Stonebinder" GiverId="76730" X="6008.226" Y="2912.591" Z="188.6128" />
 												<While Condition="HasQuest(37563) &amp;&amp; !IsQuestCompleted(37563)"> <!-- The Frostwolves Stand Ready -->
-													<MoveTo Nav="Fly" DestName="The Frostwolves Stand Ready" X="6008.226" Y="2912.591" Z="188.6128" />
+													<MoveTo DestName="The Frostwolves Stand Ready" X="6036.403" Y="2831.937" Z="200.8711" />
 													<If Condition="Chance(50)">
 														<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" MobId="76724" GossipOptions="1" CollectionDistance="200" KeepTargetSelected="true" NonCompeteDistance="0" X="6008.226" Y="2912.591" Z="188.6128" />
-														<Else>
+														<Else>0
 															<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" MobId="76487" GossipOptions="1" CollectionDistance="200" KeepTargetSelected="true" NonCompeteDistance="0" X="6008.226" Y="2912.591" Z="188.6128" />
 														</Else>
 													</If>
@@ -1595,7 +1610,7 @@
 												<PickUp Nav="Fly" QuestName="A Collection of Coils" QuestId="34067" GiverName="Coil of Sturdy Rope" GiverId="109121" GiverType="Item" />
 											</If>
 											<While Condition="HasQuest(34069) &amp;&amp; !IsQuestCompleted(34069)" > <!-- Getting the Points -->
-												<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" QuestId="34069" MobId="230858" NumOfTimes="20" Range="4" IgnoreLoS="True" TerminateWhen="IsObjectiveComplete(1, 34069)" 
+												<CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" PreInteractMountStrategy="DismountOrCancelShapeshift" QuestId="34069" MobId="230858" NumOfTimes="20" TerminateWhen="IsObjectiveComplete(1, 34069)" 
                                         CollectionDistance="200" >
 													<HuntingGrounds WaypointVisitStrategy="InOrder" >
 														<Hotspot X="5637.019" Y="2302.992" Z="197.4106" />
