@@ -1718,13 +1718,24 @@
     <TurnIn Nav="Fly" QuestName="Hiding in the Shadows" QuestId="34163" />
     <!-- CLQ -->
     <While Condition="HasQuest(34164) &amp;&amp; !IsQuestCompleted(34164)" >
+      <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" QuestId="34163"  TerminateWhen="GetItemCount(109259) &gt;= 3">
+        <PursuitList>
+          <PursueUnit Id="77548" Priority="1" />
+          <PursueUnit Id="79187" Priority="1" />
+        </PursuitList>
+        <HuntingGrounds WaypointVisitStrategy="Random" >
+          <Hotspot Name="Book Burning 0" X="1272.404" Y="3724.71" Z="186.2183" />
+          <Hotspot Name="Book Burning 1" X="1625.138" Y="3797.438" Z="192.6458" />
+        </HuntingGrounds>
+      </CustomBehavior>
+
       <!-- Book Burning -->
       <If Condition="!HasItem(109259) &amp;&amp; !IsQuestCompleted(34164)">
-        <Objective Nav="Fly" QuestName="Book Burning" QuestId="34164" Type="CollectItem" ItemId="109259" CollectCount="3" />
+        <Objective QuestName="Book Burning" QuestId="34164" Type="CollectItem" ItemId="109259" CollectCount="3" />
         <!-- 3 books to burn -->
       </If>
-      <MoveTo Nav="Fly" DestName="Burn Books" X="1482.638" Y="3784.762" Z="176.0346" />
-      <CustomBehavior File="InteractWith" QuestId="34164" MobId="227706" MovementBy="NavigatorPreferred" InteractBlacklistTimeInSeconds="1" NumOfTimes="3" Range="10" NonCompeteDistance="0" WaitTime="2000" PreInteractMountStrategy="Dismount" X="1473.158" Y="3795.115" Z="175.0758" />
+      <CustomBehavior File="InteractWith" MovementBy="NavigatorPreferred" QuestId="34164" PreInteractMountStrategy="DismountOrCancelShapeshift" QuestId="34164" MobId="227706" TerminateWhen="!HasItem(109259)"
+                      InteractBlacklistTimeInSeconds="1" NumOfTimes="3" Range="10" NonCompeteDistance="0" WaitTime="2000" X="1473.158" Y="3795.115" Z="175.0758" />
     </While>
     <TurnIn Nav="Fly" QuestName="Book Burning" QuestId="34164" TurnInName="Korthos Dawnfury" TurnInId="77629" X="1489.457" Y="3806.353" Z="177.5265" />
     <!-- Grab some Treasures 
