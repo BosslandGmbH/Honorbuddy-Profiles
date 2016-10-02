@@ -157,7 +157,7 @@
 		<CustomBehavior File="InteractWith" QuestId="34656" MobId="231827" NumOfTimes="4" WaitTime="2000" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="3" X="770.8195" Y="1958.326" Z="173.3993" />
 		<Objective Nav="Fly" QuestName="Hidden in Plain Sight" QuestId="34656" Type="CollectItem" ItemId="111524" CollectCount="1" />
 		<Objective Nav="Fly" QuestName="Adherents of the Sun God" QuestId="34657" Type="KillMob" MobId="79598" KillCount="8" />
-		<CustomBehavior File="KillUntilComplete" MobId="79598" QuestId="34657" QuestObjectiveIndex="1" >
+		<CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" MobId="79598" QuestId="34657" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="748.5923" Y="2088.807" Z="157.0508" />
 				<Hotspot X="723.113" Y="2149.609" Z="157.1928" />
@@ -1255,7 +1255,7 @@
 		</While>
 		<Objective Nav="Fly" QuestName="The Egg Thieves" QuestId="34924" Type="CollectItem" ItemId="112135" CollectCount="8" />
 		<Objective Nav="Fly" QuestName="Ralshiara's Demise" QuestId="34938" Type="KillMob" MobId="80502" KillCount="1" />
-		<CustomBehavior File="KillUntilComplete" MobId="80448" QuestId="34939" QuestObjectiveIndex="1" >
+		<CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" MobId="80448" QuestId="34939" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="-789.6996" Y="1629.553" Z="33.83214" />
 				<Hotspot X="-826.7191" Y="1582.872" Z="49.17596" />
@@ -1404,6 +1404,153 @@
 			</GrindArea>
 		</SetGrindArea>
 		<GrindTo Condition="Me.Level >= 98" GoalText="Grinding to 98" />
+
+    <!-- Bonus Quests -->
+    <If Condition="!IsQuestCompleted(36660)" >
+      <!-- Bloodmane Pridelands, southern Spires of Arak -->
+      <If Condition="!HasQuest(36660)" >
+        <CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Lime, &quot;[Profile Notification]: Heading to Bloodmane Pridelands.&quot;);" />
+        <DisableBehavior Name="Pull" />
+        <MoveTo DestName="Bloodmane Pridelands" X="-1218.563" Y="1796.782" Z="8.032583" />
+        <EnableBehavior Name="Pull" />
+      </If>
+      <Objective QuestName="Bonus Objective: Bloodmane Pridelands" QuestId="36660" Type="KillMob" MobId="86076" KillCount="1" />
+      <Objective QuestName="Bonus Objective: Bloodmane Pridelands" QuestId="36660" Type="KillMob" MobId="86138" KillCount="1" />
+      <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" QuestId="36660" MobId="86135" X="-1446.05" Y="1689.688" Z="18.54854" TerminateWhen="IsObjectiveComplete(4, 36660)" />
+      <While Condition="!IsObjectiveComplete(2, 36660) &amp;&amp; HasQuest(36660)" >
+        <!--<Objective QuestName="Bonus Objective: Bloodmane Pridelands" QuestId="36660" Type="KillMob" MobId="86159" KillCount="6" /> -->
+        <CustomBehavior File="InteractWith" QuestId="36660" IgnoreMobsInBlackspots="True" IgnoreLoSToTarget="false" MobId="86159" TerminateWhen="IsObjectiveComplete(2, 36660)" >
+          <HuntingGrounds WaypointVisitStrategy="InOrder">
+            <Hotspot X="-1296.578" Y="1905.074" Z="19.91598" />
+            <Hotspot X="-1404.801" Y="1830.062" Z="2.729047" />
+            <Hotspot X="-1490.51" Y="1750.542" Z="10.26661" />
+            <Hotspot X="-1467.1" Y="1704.151" Z="16.54443" />
+          </HuntingGrounds>
+        </CustomBehavior>
+      </While>
+
+      <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" QuestId="36660" MobId1="85892" MobId2="85897" MobId3="86149" MobId4="85896" MobId5="85900" MobId6="86138" MobId7="87491" TerminateWhen="IsObjectiveComplete(1, 36660)" >
+        <HuntingGrounds>
+          <Hotspot X="-1332.036" Y="1969.333" Z="4.169915" />
+          <Hotspot X="-1280.368" Y="1926.633" Z="17.52735" />
+          <Hotspot X="-1511.324" Y="1785.055" Z="3.186139" />
+          <Hotspot X="-1717.61" Y="1698.092" Z="2.032689" />
+          <Hotspot X="-1712.755" Y="1537.488" Z="0.07162423" />
+        </HuntingGrounds>
+      </CustomBehavior>
+    </If>
+
+    <If Condition="!IsQuestCompleted(35649)" >
+      <!-- The Writhing Mire, northern Spires of Arak -->
+      <If Condition="!HasQuest(35649)" >
+        <CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Lime, &quot;[Profile Notification]: Heading to The Writhing Mire.&quot;);" />
+        <DisableBehavior Name="Pull" />
+        <MoveTo DestName="The Writhing Mire" X="-355.5406" Y="2546.91" Z="-0.7122562" />
+        <CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(35649)" />
+        <EnableBehavior Name="Pull" />
+      </If>
+      <Objective QuestName="Bonus Objective: The Writhing Mire" QuestId="35649" Type="KillMob" MobId="85219" KillCount="1" />
+      <Objective QuestName="Bonus Objective: The Writhing Mire" QuestId="35649" Type="UseObject" ObjectId="233035" UseCount="3" />
+      <!--<Objective QuestName="Bonus Objective: The Writhing Mire" QuestId="35649" Type="KillMob" MobId="85429" KillCount="5" />not detecting the mobs -->
+      <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" QuestId="35649" MobId1="85429" MobId2="85473" TerminateWhen="IsObjectiveComplete(3, 35649)" >
+        <HuntingGrounds>
+          <Hotspot X="-402.6297" Y="2616.946" Z="-0.56952" />
+          <Hotspot X="-417.1352" Y="2693.573" Z="-0.6836114" />
+          <Hotspot X="-433.0954" Y="2815.616" Z="-0.996531" />
+          <Hotspot X="-289.6035" Y="2647.51" Z="4.449791" />
+        </HuntingGrounds>
+      </CustomBehavior>
+      <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" QuestId="35649" MobId1="82130" MobId2="85214" MobId3="85461" TerminateWhen="IsObjectiveComplete(4, 35649)" >
+        <HuntingGrounds>
+          <Hotspot X="-354.0969" Y="2631.076" Z="1.489638" />
+          <Hotspot X="-476.2258" Y="2595.331" Z="0.9503465" />
+          <Hotspot X="-519.1331" Y="2716.745" Z="2.137914" />
+        </HuntingGrounds>
+      </CustomBehavior>
+    </If>
+
+    <While Condition="!IsQuestCompleted(36792)" >
+      <!-- Bladefist Hold, northern Spires of Arak -->
+      <If Condition="!HasQuest(36792)" >
+        <CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Lime, &quot;[Profile Notification]: Heading to Bladefist Hold.&quot;);" />
+        <DisableBehavior Name="Pull" />
+        <MoveTo DestName="Bladefist Hold" X="89.93101" Y="2765.979" Z="63.6528" />
+        <CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="HasQuest(36792)" />
+        <EnableBehavior Name="Pull" />
+      </If>
+      <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" QuestId="36792" MobId="86455" X="185.8316" Y="2816.909" Z="15.28534" TerminateWhen="IsObjectiveComplete(4, 36792)" />
+      <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" QuestId="36792" MobId="86461" X="264.7496" Y="2817.09" Z="78.09679" TerminateWhen="IsObjectiveComplete(5, 36792)" />
+      <If Condition="!IsObjectiveComplete(6, 36792)" >
+        <MoveTo X="292.7845" Y="2997.369" Z="99.24784" />
+        <!--<Objective QuestName="Bonus Objective: Bladefist Hold" QuestId="36792" Type="KillMob" MobId="86482" KillCount="1" />-->
+        <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" QuestId="36792" MobId="86482" X="298.8264" Y="2989.751" Z="135.6285" TerminateWhen="IsObjectiveComplete(6, 36792)" />
+      </If>
+      <While Condition="!IsObjectiveComplete(3, 36792) &amp;&amp; HasQuest(36792)" >
+        <!--<Objective QuestName="Bonus Objective: Bladefist Hold" QuestId="36792" Type="KillMob" MobId="86524" KillCount="6" /> -->
+        <CustomBehavior File="InteractWith" QuestId="36792" IgnoreMobsInBlackspots="True" IgnoreLoSToTarget="false" MobId="86524" TerminateWhen="IsObjectiveComplete(3, 36792)" >
+          <HuntingGrounds WaypointVisitStrategy="Random">
+            <Hotspot X="349.9356" Y="2905.86" Z="94.68056" />
+            <Hotspot X="345.815" Y="2906.87" Z="109.3956" />
+            <Hotspot X="388.5656" Y="2898.749" Z="109.4063" />
+            <Hotspot X="360.2306" Y="2822.537" Z="95.73936" />
+            <Hotspot X="271.405" Y="2934.384" Z="83.17164" />
+          </HuntingGrounds>
+        </CustomBehavior>
+      </While>
+      <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" QuestId="36792" MobId1="86285" MobId2="86295" MobId3="86416" MobId4="86268" MobId5="86399" MobId6="86461" MobId7="86296" TerminateWhen="IsObjectiveComplete(1, 36792)" >
+        <HuntingGrounds>
+          <Hotspot X="277.972" Y="2839.729" Z="78.09667" />
+          <Hotspot X="232.0873" Y="2959.968" Z="83.16968" />
+        </HuntingGrounds>
+      </CustomBehavior>
+      <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" QuestId="36792" MobId1="86294" TerminateWhen="IsObjectiveComplete(2, 36792) &amp;&amp; IsQuestCompleted(36792)" >
+        <HuntingGrounds>
+          <Hotspot X="95.37838" Y="2865.529" Z="46.81274" />
+        </HuntingGrounds>
+      </CustomBehavior>
+    </While>
+
+    <While Condition="!IsQuestCompleted(36590)" >
+      <!-- The Howling Crag, north-east Spires of Arak -->
+      <If Condition="!HasQuest(36590)" >
+        <CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Lime, &quot;[Profile Notification]: Heading to The Howling Crag.&quot;);" />
+        <DisableBehavior Name="Pull" />
+        <MoveTo DestName="The Howling Crag" X="382.063" Y="940.6853" Z="72.67851" />
+        <EnableBehavior Name="Pull" />
+      </If>
+      <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" QuestId="36590" MobId="85898" X="319.8438" Y="515.8768" Z="16.00463" TerminateWhen="IsObjectiveComplete(3, 36590)" />
+      <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" QuestId="36590" MobId="85902" X="445.2274" Y="862.2379" Z="16.74715"  TerminateWhen="IsObjectiveComplete(4, 36590)" />
+      <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" QuestId="36590" MobId="85901" X="328.2118" Y="829.5226" Z="9.903864" TerminateWhen="IsObjectiveComplete(5, 36590)" />
+      <If Condition="!IsObjectiveComplete(6, 36590) &amp;&amp; HasQuest(36590)" >
+        <If Condition="GetItemCount(116766) &lt;= 2" >
+          <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" QuestId="36590" MobId="86035" X="287.5187" Y="798.2712" Z="46.21162" TerminateWhen="GetItemCount(116766) &gt;= 3" />
+        </If>
+        <DisableBehavior Name="Combat" />
+        <CustomBehavior File="InteractWith" MobId="86019" WaitTime="2000" NumOfTimes="3" IgnoreCombat="true" WaitForNpcs="false" X="273.4531" Y="785.9983" Z="50.86313" />
+        <EnableBehavior Name="Combat" />
+        <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" QuestId="36590" MobId="85887" X="267.8611" Y="799.3073" Z="47.39889" TerminateWhen="IsObjectiveComplete(6, 36590)" />
+      </If>
+      <CustomBehavior File="KillUntilComplete" MovementBy="NavigatorPreferred" QuestId="36590" MobId1="85893" MobId2="85898" MobId3="85902" MobId4="85883" MobId5="85894" MobId6="85901" MobId7="86044" TerminateWhen="IsObjectiveComplete(1, 36590)" >
+        <HuntingGrounds>
+          <Hotspot X="316.1567" Y="801.7916" Z="13.8442" />
+          <Hotspot X="316.5387" Y="545.5995" Z="18.78783" />
+          <Hotspot X="349.3906" Y="809.501" Z="50.00286" />
+        </HuntingGrounds>
+      </CustomBehavior>
+      <If Condition="!IsObjectiveComplete(2,36590)" >
+        <MoveTo X="306.2009" Y="815.7618" Z="85.41898" />
+        <CustomBehavior File="InteractWith" QuestId="36590" IgnoreMobsInBlackspots="True" IgnoreLoSToTarget="false" MobId="236010" NumOfTimes="10" TerminateWhen="IsObjectiveComplete(2, 36590) || IsQuestCompleted(36590)" >
+          <HuntingGrounds WaypointVisitStrategy="InOrder">
+            <Hotspot X="434.4074" Y="867.9259" Z="83.73187" />
+            <Hotspot X="277.662" Y="803.8696" Z="92.978" />
+            <Hotspot X="263.4608" Y="639.402" Z="87.16801" />
+            <Hotspot X="392.1034" Y="637.5643" Z="82.65866" />
+          </HuntingGrounds>
+        </CustomBehavior>
+      </If>
+    </While>
+    
+    
 
 
 		<!-- GoTo Nagrand -->
