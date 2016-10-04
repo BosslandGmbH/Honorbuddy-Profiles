@@ -644,15 +644,27 @@ END INITORDER COMMENT -->
 				<PickUp QuestName="Ahead of the Game" QuestId="39590" GiverName="Havi" GiverId="96254" X="3510.713" Y="2605.906" Z="318.9" />
 			</If>
 
-
 			<While Condition="DoQuest(39590)" >
-				<!-- NOTE: <FunctionalityChange> : May need to change this to InteractWith with InteractByLooting since each one of these mini-bosses need to be looted. -->
 				<CustomBehavior File="KillUntilComplete" MobId="90734" QuestId="39590" QuestObjectiveIndex="2" X="3394.143" Y="2591.466" Z="292.5534" />
 				<MoveTo QuestId="39590" QuestObjectiveIndex="3" X="3303.941" Y="2403.77" Z="241.6808" />
 				<CustomBehavior File="KillUntilComplete" MobId="90747" QuestId="39590" QuestObjectiveIndex="1" X="3608.46" Y="2431.512" Z="279.9624" /> 
 			</While>
 
-			<PickUp QuestName="Blood and Gold" QuestId="39595" GiverName="Challenger's Tribute" GiverId="128512" GiverType="Item" />
+			<If Condition="NeedsQuest(39595) &amp;&amp; !HasItem(128512)" >
+				<CustomBehavior File="KillUntilComplete" MobIds="96236, 100433, 108289, 108309, 108306, 96135" TerminateWhen="HasQuest(39595) || HasItem(128512)" >
+					<HuntingGrounds>
+						<Hotspot X="3576.95" Y="2469.092" Z="272.9676" />
+						<Hotspot X="3586.193" Y="2538.074" Z="282.3003" />
+						<Hotspot X="3479.981" Y="2473.175" Z="261.2081" />
+						<Hotspot X="3385.603" Y="2535.472" Z="271.9079" />
+						<Hotspot X="3329.786" Y="2405.696" Z="242.0226" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</If>
+
+			<If Condition="HasItem(128512)" >
+				<PickUp QuestName="Blood and Gold" QuestId="39595" GiverName="Challenger's Tribute" GiverId="128512" GiverType="Item" />
+			</If>
 			<While Condition="DoQuest(39595)" >
 				<CustomBehavior File="KillUntilComplete" MobIds="96236, 100433, 108289, 108309, 108306, 96135" QuestId="39595" QuestObjectiveIndex="1" >
 					<HuntingGrounds>
