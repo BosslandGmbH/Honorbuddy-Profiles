@@ -112,6 +112,14 @@ END INITORDER COMMENT -->
 						}
 						return false;
 					}
+					bool QuestFlaggedCompleted(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+						}
+						return false;
+					}
 
 					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
 					{
@@ -731,8 +739,8 @@ END INITORDER COMMENT -->
 				<CustomBehavior File="WaitTimer" QuestId="39597" QuestObjectiveIndex="1" WaitTime="18000" />
 			</While>
 
-			<!-- <While Condition="!IsQuestCompleted(38442) &amp;&amp; Me.Level &lt; 110" > Bonus Objective: A Worthy Challenger
-				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(38442)" >
+			<If Condition="!IsQuestCompleted(38442) &amp;&amp; !QuestFlaggedCompleted(38442) &amp;&amp; Me.Level &lt; 110" > <!-- Bonus Objective: A Worthy Challenger -->
+				<CustomBehavior File="InteractWith" MobState="DontCare" InteractByLooting="true" NumOfTimes="150" TerminateWhen="IsQuestCompleted(38442) || QuestFlaggedCompleted(38442)" >
 					<HuntingGrounds>
 						<Hotspot X="3340.818" Y="2479.66" Z="253.7271" />
 						<Hotspot X="3460.473" Y="2516.221" Z="270.6031" />
@@ -748,7 +756,7 @@ END INITORDER COMMENT -->
 						<PursueUnit Id="108283" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
 					</PursuitList>
 				</CustomBehavior>
-			</While> -->
+			</If> 
 
 			<If Condition="Me.IsAlliance" >
 				<TurnIn QuestName="The Blessing of the Watchers" QuestId="39597" TurnInName="Havi" TurnInId="96254" X="3275.418" Y="2528.082" Z="301.0428" />
@@ -1040,7 +1048,8 @@ END INITORDER COMMENT -->
 
 			<While Condition="DoQuest(38414)" >
 				<!-- NOTE: <AddAvoid> : Could use some avoids here for this boss. -->
-				<CustomBehavior File="KillUntilComplete" MobId="91737" QuestId="38414" X="2031.232" Y="2612.539" Z="467.5106" />
+				<MoveTo X="2007.132" Y="2579.767" Z="485.9268" />
+				<CustomBehavior File="KillUntilComplete" MobId="91737" QuestId="38414" QuestObjectiveIndex="2" X="2031.232" Y="2612.539" Z="467.5106" />
 			</While>
 
 			<While Condition="DoQuest(40568)" >
