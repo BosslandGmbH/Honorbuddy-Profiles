@@ -363,12 +363,28 @@ END INITORDER COMMENT -->
 				<PickUp QuestName="Moozy's Sojourn" QuestId="39323" GiverName="Rordan Waterwise" GiverId="96083" X="3943.739" Y="4843.707" Z="621.8448" />
 			</If>
 
+			<If Condition="!IsQuestCompleted(39274) &amp;&amp; Me.Level &lt;= 110" > <!-- Bonus Objective: Defend the Riverlands -->
+				<CustomBehavior File="InteractWith" MobState="AliveNotInCombat" InteractByLooting="true" NumOfTimes="150" TerminateWhen="IsQuestCompleted(39274)" >
+					<HuntingGrounds>
+						<Hotspot X="3941.23" Y="4936.438" Z="622.6931" />
+						<Hotspot X="4009.044" Y="4883.389" Z="627.3096" />
+						<Hotspot X="3879.027" Y="4866.287" Z="634.6851" />
+						<Hotspot X="3873.758" Y="4945.203" Z="637.6177" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueUnit Id="99406" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="95013" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+						<PursueUnit Id="94687" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					</PursuitList>
+				</CustomBehavior>
+			</If>
+
 			<!-- Hatchlings of the Talon Side Quest -->
 				<PickUp Nav="Fly" QuestName="Hatchlings of the Talon" QuestId="41094" GiverName="Aviana" GiverId="97925" X="3811.742" Y="5414.195" Z="631.5471" />
 				<While Condition="DoQuest(41094)" >
 					<CustomBehavior File="InteractWith" MobId="97925" Quest="41094" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="DismountOrCancelShapeshift" X="3811.76" Y="5414.135" Z="631.6297" TerminateWhen="Me.HasAura(203740) || Me.HasAura(203741)" />
 					<CustomBehavior File="RunCode"><![CDATA[
-							while (Me.HasAura(203740) || Me.HasAura(203741))
+							while (Me.Z > 340 && (Me.HasAura(203740) || Me.HasAura(203741)))
 							{
 								WoWUnit globePoi = ObjectManager.GetObjectsOfType<WoWUnit>().Where(x => x.Entry == 103076 && x.Z < Me.Z).OrderBy(x => x.Distance).FirstOrDefault();
 								while (globePoi != null && globePoi.Z < Me.Z && (Me.HasAura(203740) || Me.HasAura(203741)))
@@ -380,7 +396,7 @@ END INITORDER COMMENT -->
 							}
 						]]>
 					</CustomBehavior>
-					<CustomBehavior File="MyCTM" X="3689.96" Y="5638.046" Z="329.8582" TerminateWhen="!Me.IsFalling" />
+					<CustomBehavior File="MyCTM" X="3660.889" Y="5523.938" Z="305.7928" TerminateWhen="!Me.IsFalling" />
 				</While>
 				<TurnIn Nav="Fly" QuestName="Hatchlings of the Talon" QuestId="41094" TurnInName="Aviana" TurnInId="97925" X="3811.742" Y="5414.195" Z="631.5471" />
 			<!-- END Hatchlings of the Talon Side Quest -->
@@ -388,8 +404,6 @@ END INITORDER COMMENT -->
 			<While Condition="DoQuest(39316)" >
 				<CustomBehavior File="InteractWith" MobId="243368" NonCompeteDistance="0" QuestId="39316" QuestObjectiveIndex="1" X="3987.133" Y="4657.559" Z="642.855" />
 			</While>
-
-			<!-- NOTE: <BonusObjective> : <PickUp QuestName="Defend the Riverlands" QuestId="39274" GiverName="Jale Rivermane" GiverId="95956" XXXX /> -->
 
 			<TurnIn QuestName="Moozy's Sojourn" QuestId="39323" TurnInName="Moozy Waterwise" TurnInId="95130" X="3932.338" Y="5040.542" Z="619.6666" />
 
