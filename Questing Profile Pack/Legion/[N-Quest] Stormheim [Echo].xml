@@ -1367,16 +1367,47 @@ END INITORDER COMMENT -->
 			<TurnIn QuestName="Waking the Shieldmaiden" QuestId="38815" TurnInName="Ashildir" TurnInId="93234" X="3532.885" Y="887.5938" Z="57.4282" />
 
 			<PickUp QuestName="The Final Judgment" QuestId="38818" GiverName="Ashildir" GiverId="93234" X="3532.885" Y="887.5938" Z="57.4282" />
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					private static void IncludeEmpoweredRunestoneUnits()
+					{
+						Targeting.Instance.IncludeTargetsFilter += IncludeEmpoweredRunestoneUnitsFilter;
+						BotEvents.OnBotStopped += BotEvents_OnBotStopped;
+					}
+					private static void StopIncludeEmpoweredRunestoneUnits()
+					{
+						Targeting.Instance.IncludeTargetsFilter -= IncludeEmpoweredRunestoneUnitsFilter;
+						BotEvents.OnBotStopped -= BotEvents_OnBotStopped;
+					}
+					private static void IncludeEmpoweredRunestoneUnitsFilter(List<WoWObject> incomingUnits, HashSet<WoWObject> outgoingUnits)
+					{
+						foreach (var unit in incomingUnits)
+						{
+							if (unit is WoWUnit && (unit.Entry == 97223 || unit.Entry == 97221))
+								outgoingUnits.Add(unit);
+						}
+					}
+					private static void BotEvents_OnBotStopped(EventArgs args)
+					{
+						StopIncludeEmpoweredRunestoneUnits();
+					}
+				]]>
+			</CustomBehavior>
 			<While Condition="DoQuest(38818)" >
-				<MoveTo X="3629.735" Y="798.7022" Z="38.94371" />
-				<CustomBehavior File="KillUntilComplete" MobId="93093" QuestId="38818" X="3626.518" Y="791.3125" Z="38.72163" >
+				<CustomBehavior File="RunCode" Code="IncludeEmpoweredRunestoneUnits();" />
+				<CustomBehavior File="KillUntilComplete" QuestId="38818" ImmediatelySwitchToHighestPriority="true" X="3626.518" Y="791.3125" Z="38.72163" >
 					<PursuitList>
-						<PursueUnit Id="93093" Priority="500" PursueWhen="UNIT.CastingSpellId != 208544" />
-						<!-- NOTE: <CheckId> : The HasAura on this priority needs to be checked.  There's several versions of the same spell on WoWhead and LegionBuddy can't pull aura Ids yet. -->
+						<!--
+							PursuitList won't engage units that aren't in combat with us, or aren't created by our current POI.
+							The stones in this case aren't created by unit 93093.  They exist as a non-hostile non-aggro mob.
+							The RunCode surrounding this will help with forcing our target to the Runestones ~EchoTiger
+						-->
+						<PursueUnit Id="97223" Priority="1000" />
 						<PursueUnit Id="97221" Priority="1000" />
+						<PursueUnit Id="93093" Priority="500" />
 					</PursuitList>
 				</CustomBehavior>
 				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Me.ZoneId == 7588" /> <!-- NOTE: <CheckZoneId> -->
+				<CustomBehavior File="RunCode" Code="StopIncludeEmpoweredRunestoneUnits();" />
 			</While>
 			<!-- NOTE: <LocationCheck> : From this point on to the ENDPOINT the player is in a instanced location.  May need a check for this in case the player starts the bot outside. -->
 			<TurnIn QuestName="The Final Judgment" QuestId="38818" TurnInName="Ashildir" TurnInId="97319" X="341.7656" Y="356.9219" Z="30.293" />
