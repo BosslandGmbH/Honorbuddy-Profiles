@@ -363,7 +363,7 @@ END INITORDER COMMENT -->
 				<PickUp QuestName="Moozy's Sojourn" QuestId="39323" GiverName="Rordan Waterwise" GiverId="96083" X="3943.739" Y="4843.707" Z="621.8448" />
 			</If>
 
-			<If Condition="!IsQuestCompleted(39274) &amp;&amp; Me.Level &lt; 110" > <!-- Bonus Objective: Defend the Riverlands -->
+			<If Condition="!IsQuestCompleted(39274) &amp;&amp; Me.Level &lt;= 110" > <!-- Bonus Objective: Defend the Riverlands -->
 				<CustomBehavior File="InteractWith" MobState="AliveNotInCombat" InteractByLooting="true" NumOfTimes="150" TerminateWhen="IsQuestCompleted(39274)" >
 					<HuntingGrounds>
 						<Hotspot X="3941.23" Y="4936.438" Z="622.6931" />
@@ -633,7 +633,7 @@ END INITORDER COMMENT -->
 						}
 						await Coroutine.Wait(20000, () =&gt; Unit(97956) != null);
 						await VehicleKill(97956);
-						await Coroutine.Wait(20000, () =&gt; Me.MapId != 1515 || Unit(97956) != null);
+						await Coroutine.Wait(20000, () =&gt; Me.MapId != 1515);
 					" />
 				</While>
 				<EnableBehavior Name="All" />
@@ -1051,7 +1051,7 @@ END INITORDER COMMENT -->
 			<TurnIn QuestName="Blood Debt" QuestId="39426" TurnInName="Navarrogg" TurnInId="95392" X="5821.911" Y="4201.273" Z="709.0323" />
 
 			<While Condition="!IsQuestCompleted(42373) &amp;&amp; Me.Level &lt; 110" > <!-- Bonus Objective: Vengeance for the Stonedark -->
-				<CustomBehavior File="InteractWith" MobState="AliveNotInCombat" NonCompeteDistance="0" NumOfTimes="100" TerminateWhen="IsQuestCompleted(42373)" >
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(42373)" >
 					<HuntingGrounds>
 						<Hotspot X="5665.234" Y="4269.152" Z="694.9038" />
 						<Hotspot X="5675.331" Y="4308.199" Z="699.7321" />
@@ -1428,8 +1428,8 @@ END INITORDER COMMENT -->
 			</While>
 			<TurnIn QuestName="Hex-a-Gone" QuestId="39419" TurnInName="Maltha Silenthoof" TurnInId="94522" X="4700.738" Y="4353.918" Z="696.7767" />
 
-			<If Condition="!IsQuestCompleted(40316) &amp;&amp; !QuestFlaggedCompleted(40316) &amp;&amp; Me.Level &lt; 110" > <!-- Bonus Objective: The Screeching Crag -->
-				<CustomBehavior File="InteractWith" MobState="AliveNotInCombat" InteractByLooting="true" NonCompeteDistance="0" NumOfTimes="100" TerminateWhen="IsQuestCompleted(40316) || QuestFlaggedCompleted(40316)" >
+			<While Condition="!IsQuestCompleted(40316) &amp;&amp; Me.Level &lt; 110" > <!-- Bonus Objective: The Screeching Crag -->
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(40316)" >
 					<HuntingGrounds>
 						<Hotspot X="4706.289" Y="4417.684" Z="681.9456" />
 						<Hotspot X="4696.113" Y="4368.797" Z="693.1154" />
@@ -1445,7 +1445,7 @@ END INITORDER COMMENT -->
 						<PursueUnit Id="94196" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
 					</PursuitList>
 				</CustomBehavior>
-			</If>
+			</While>
 
 		<!-- END Side Quests -->
 
