@@ -110,6 +110,15 @@ END INITORDER COMMENT -->
 						return false;
 					}
 
+					bool QuestFlaggedCompleted(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+						}
+						return false;
+					}
+
 					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
 					{
 				// Add detection of cutscene here.
@@ -441,15 +450,6 @@ END INITORDER COMMENT -->
 					</PursuitList>
 				</CustomBehavior>
 			</While>
-				<PickUp Nav="Fly" QuestName="Moonclaw Vale" QuestId="39393" GiverName="" GiverId="" />
-				<Objective QuestName="Moonclaw Vale" QuestId="39393" Type="KillMob" Nav="Fly" MobId="95747" KillCount="20" />
-				<Objective QuestName="Moonclaw Vale" QuestId="39393" Type="KillMob" Nav="Fly" MobId="97799" KillCount="20" />
-				<Objective QuestName="Moonclaw Vale" QuestId="39393" Type="KillMob" Nav="Fly" MobId="98089" KillCount="100" />
-				<Objective QuestName="Moonclaw Vale" QuestId="39393" Type="KillMob" Nav="Fly" MobId="98087" KillCount="34" />
-				<Objective QuestName="Moonclaw Vale" QuestId="39393" Type="KillMob" Nav="Fly" MobId="98088" KillCount="20" />
-				<Objective QuestName="Moonclaw Vale" QuestId="39393" Type="KillMob" Nav="Fly" MobId="95319" KillCount="20" />
-				<Objective QuestName="Moonclaw Vale" QuestId="39393" Type="KillMob" Nav="Fly" MobId="95320" KillCount="20" />
-				<TurnIn Nav="Fly" QuestName="Moonclaw Vale" QuestId="39393" TurnInName="" TurnInId="" />
 		<!-- Story: Archdruid of the Vale -->
 
 		<!-- Moonclaw Vale Side Quests -->
@@ -520,18 +520,18 @@ END INITORDER COMMENT -->
 				<CustomBehavior File="InteractWith" MobId="93602" QuestId="38235" QuestObjectiveIndex="1" InteractBlacklistTimeInSeconds="1" X="2385.297" Y="7193.228" Z="71.26111" />
 			</While>
 
-			<!-- Somehow the bot sees this quest as in the player's quest log and not completed even those it's not in both cases.
-			<While Condition="DoQuest(38372)" > Bonus Objective: Wretched Sisters, bonus quest.
-				<CustomBehavior File="KillUntilComplete" MobIds="94207, 94208, 91598" Termination="!DoQuest(38372)" >
-				<HuntingGrounds>
-					<Hotspot X="2234.981" Y="7059.033" Z="67.33078" />
-					<Hotspot X="2174.476" Y="7062.504" Z="64.25062" />
-					<Hotspot X="2197.568" Y="7130.01" Z="61.03362" />
-					<Hotspot X="2136.51" Y="7135.333" Z="60.4412" />
-					<Hotspot X="2183.095" Y="7184.831" Z="60.31894" />
-				</HuntingGrounds>
-			</CustomBehavior>
-			</While> -->
+			<If Condition="!IsQuestCompleted(38372) &amp;&amp; !QuestFlaggedCompleted(38372)" > <!-- Bonus Objective: Wretched Sisters, bonus quest. -->
+				<!-- Using Lua return as there's a weird issue where IsQuestCompleted and HasQuest won't properly detect the status of this one. -->
+				<CustomBehavior File="KillUntilComplete" MobIds="94207, 94208, 91598" Termination="IsQuestCompleted(38372) || QuestFlaggedCompleted(38372)" >
+					<HuntingGrounds>
+						<Hotspot X="2234.981" Y="7059.033" Z="67.33078" />
+						<Hotspot X="2174.476" Y="7062.504" Z="64.25062" />
+						<Hotspot X="2197.568" Y="7130.01" Z="61.03362" />
+						<Hotspot X="2136.51" Y="7135.333" Z="60.4412" />
+						<Hotspot X="2183.095" Y="7184.831" Z="60.31894" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</If>
 
 			<TurnIn QuestName="Solid as a Rock" QuestId="38235" TurnInName="Elothir" TurnInId="91066" X="2386.075" Y="6914.492" Z="110.4475" />
 			<TurnIn QuestName="Death to the Witchmother" QuestId="38225" TurnInName="Elothir" TurnInId="91066" X="2386.075" Y="6914.492" Z="110.4475" />
@@ -737,8 +737,8 @@ END INITORDER COMMENT -->
 				</CustomBehavior>
 			</While>
 
-			<While Condition="DoQuest(43241) &amp;&amp; Me.Level &lt; 110" > <!-- Bonus Objective: Flow of the Nightmare -->
-				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="!DoQuest(43241)" >
+			<If Condition="!IsQuestCompleted(43241) &amp;&amp; Me.Level &lt; 110" > <!-- Bonus Objective: Flow of the Nightmare -->
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(43241)" >
 					<HuntingGrounds>
 						<Hotspot X="3239.613" Y="5935.024" Z="263.8969" />
 						<Hotspot X="3248.459" Y="6066.122" Z="242.1524" />
@@ -752,7 +752,7 @@ END INITORDER COMMENT -->
 						<PursueUnit Id="92383" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
 					</PursuitList>
 				</CustomBehavior>
-			</While>
+			</If>
 
 			<TurnIn QuestName="Reading the Leaves" QuestId="38684" TurnInName="Elothir" TurnInId="92783" X="3330.326" Y="5959.685" Z="253.6653" />
 
@@ -769,8 +769,25 @@ END INITORDER COMMENT -->
 				<If Condition="!Me.InVehicle" >
 					<CustomBehavior File="InteractWith" MobId="111359" QuestId="43702" X="3317.487" Y="5949.828" Z="251.8741" />
 				</If>
-				<!-- NOTE: <QBUsage> : Make sure this behavior is setup properly. -->
-				<CustomBehavior File="Vehicles\NoControlVehicle" QuestId="43702" TargetId1="109929" TargetId2="109932" TargetId3="109928" TargetId4="109959" TargetId5="109960" TargetId6="109927" TargetId7="109926" AttackButton="1" OftenToUse="2000" VehicleId="38540" MaxRange="100" TypeId="2" />
+				<CustomBehavior File="RunCode"><![CDATA[
+						while (DoQuest(43702) && Me.InVehicle)
+						{
+							WoWUnit attackUnit = ObjectManager.GetObjectsOfType<WoWUnit>().FirstOrDefault(x => new[]{109929,109932,109928,109959,109960,109927,109926}.Contains((int)x.Entry) && x.IsAlive && x.Distance < 100);
+							if (attackUnit != null)
+							{
+								Lua.DoString("CastPetAction(1);");
+								SpellManager.ClickRemoteLocation(attackUnit.Location);
+								await Coroutine.Sleep(1550);
+							}
+							await Coroutine.Yield();
+						}
+						if (QuestDone(43702))
+						{
+							Lua.DoString("CastPetAction(6);");
+							await Coroutine.Wait(45000, () => !Me.InVehicle);
+						}
+					]]>
+				</CustomBehavior>
 			</While>
 			<TurnIn QuestName="Softening the Target" QuestId="43702" TurnInName="Tyrande Whisperwind" TurnInId="104728" X="3413.7" Y="6124.011" Z="211.797" />
 
@@ -794,8 +811,8 @@ END INITORDER COMMENT -->
 				</If>
 			</While>
 
-			<While Condition="DoQuest(38748) &amp;&amp; Me.Level &lt; 110" >
-				<CustomBehavior File="KillUntilComplete" MobIds="113646, 112052" TerminateWhen="!DoQuest(38748)" >
+			<If Condition="IsQuestCompleted(38748) &amp;&amp; Me.Level &lt; 110" > <!-- Bonus Objective Ruins of Shala'nir  --> 
+				<CustomBehavior File="KillUntilComplete" MobIds="113646, 112052" TerminateWhen="!IsQuestCompleted(38748)" >
 					<HuntingGrounds>
 						<Hotspot X="3658.741" Y="6156.199" Z="193.4041" />
 						<Hotspot X="3645.402" Y="6232.694" Z="183.9179" />
@@ -804,7 +821,7 @@ END INITORDER COMMENT -->
 						<Hotspot X="3520.354" Y="6333.377" Z="165.8486" />
 					</HuntingGrounds>
 				</CustomBehavior>
-			</While>
+			</If>
 
 			<If Condition="Me.IsAlliance" >
 				<TurnIn QuestName="Close Enough to Touch" QuestId="38687" TurnInName="Tyrande Whisperwind" TurnInId="104799" X="3547.351" Y="6420.47" Z="168.303" />
