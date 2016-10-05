@@ -1076,7 +1076,13 @@ END INITORDER COMMENT -->
 			</While>
 			<TurnIn QuestName="Where Dragons Rule" QuestId="39652" TurnInName="Thrymjaris" TurnInId="92218" X="2042.729" Y="2662.031" Z="666.3266" />
 
-			<PickUp QuestName="Cry Thunder!" QuestId="38624" GiverName="Thrymjaris" GiverId="92218" X="2042.729" Y="2662.031" Z="666.3266" />
+			<If Condition="NeedsQuest(38624)" >
+				<If Condition="Me.Z &lt; 650">
+					<CustomBehavior File="InteractWith" MobId="96465" WaitForNpcs="false" GossipOptions="1" X="1977.46" Y="2551.438" Z="488.9312" />
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Me.Z &gt;= 650" />
+				</If>
+				<PickUp QuestName="Cry Thunder!" QuestId="38624" GiverName="Thrymjaris" GiverId="92218" X="2042.729" Y="2662.031" Z="666.3266" />
+			</If>
 		 	<!-- <If Condition="DoQuest(38624)" >
 				<CustomBehavior File="Hooks\DoWhen" ActivityName="BlastOffGaldeborns" AllowUseInVehicle="true" UseWhen="Unit(92312, u =&gt; u.Distance &lt;= 5) != null" >
 					<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarButton2:Click();" />
@@ -1084,6 +1090,10 @@ END INITORDER COMMENT -->
 				</CustomBehavior>
 			</If> -->
 			<While Condition="DoQuest(38624)" >
+				<If Condition="Me.Z &lt; 650">
+					<CustomBehavior File="InteractWith" MobId="96465" WaitForNpcs="false" GossipOptions="1" X="1977.46" Y="2551.438" Z="488.9312" />
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Me.Z &gt;= 650" />
+				</If>
 				<CustomBehavior File="InteractWith" MobId="91767" QuestId="38624" X="2079.91" Y="2637.907" Z="676.0861" />
 				<CustomBehavior File="Vehicles\NoControlVehicle" QuestId="38624" TargetId1="92367" TargetId2="92359" TargetId3="92361" TargetId5="92375" AttackButton="1" AttackButton2="2" OftenToUse="650" VehicleId="91767" MaxRange="200" />
 				<CustomBehavior File="WaitTimer" WaitTime="45000" QuestId="38624" />
