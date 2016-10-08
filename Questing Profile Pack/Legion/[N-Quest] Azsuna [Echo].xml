@@ -118,6 +118,14 @@ END INITORDER COMMENT -->
 						}
 						return false;
 					}
+					bool QuestFlaggedCompleted(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+						}
+						return false;
+					}
 					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
 					{
 				// Add detection of cutscene here.
@@ -487,8 +495,8 @@ END INITORDER COMMENT -->
 			</While>
 			<TurnIn QuestName="You Scratch My Back..." QuestId="37860" />
 
-			<While Condition="!IsQuestCompleted(37963) &amp;&amp; Me.Level &lt; 110" > <!-- Bonus Objecitve : Those Beyond Redemption -->
-				<CustomBehavior File="KillUntilComplete" MobIds="90005, 90318, 90616, 109826" TerminateWhen="IsQuestCompleted(37963)" >
+			<If Condition="!IsQuestCompleted(37963) &amp;&amp; Me.Level &lt; 110" > <!-- Bonus Objecitve : Those Beyond Redemption -->
+				<CustomBehavior File="KillUntilComplete" MobIds="90005, 90318, 90616, 109826" TerminateWhen="IsQuestCompleted(37963) || QuestFlaggedCompleted(37963)" >
 					<HuntingGrounds>
 						<Hotspot X="1182.086" Y="6172.282" Z="86.19495" />
 						<Hotspot X="1319.275" Y="6120.765" Z="87.61205" />
@@ -497,7 +505,7 @@ END INITORDER COMMENT -->
 						<Hotspot X="997.1215" Y="6223.384" Z="94.85415" />
 					</HuntingGrounds>
 				</CustomBehavior>
-			</While>
+			</If>
 
 			<While Condition="DoQuest(37861)" >
 				<CustomBehavior File="KillUntilComplete" MobId="90267" QuestId="37861" QuestObjectiveIndex="1" X="1251.304" Y="6027.025" Z="116.3462" />
