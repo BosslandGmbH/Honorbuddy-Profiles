@@ -1,0 +1,722 @@
+<!-- Echo's notes, delete me when no longer relevent.
+	Notes:
+		- All Treasures requiring a Glider is skipped, but is commented for future edits.
+		- <MoveTo may cause suicide runs into huge packs of Humanoid mobs, causing the player to die.
+		- Abu'gar's Vitality (35711) is bugged on Blizzard's end.  Game isn't flagging item as obtained. This section is commented out until fixed.
+
+	Test 1:
+		- 35 Treasures Gained, several bugs while transitioning from a <MoveTo to a CTM while in combat, fixes were made but further testing must be done.
+		- InteractWith getting the in-game error "Can't do that while moving." while interacting with treasure causing it to be skipped.
+
+	Test 2:
+		- 35 Treasures Gained.
+		- Several MoveTo failures around water treasures.
+	Test 3:
+		- 39 Treasures Gained, increase from last but may be due to Interaction failure fixes.
+
+	Test 4:
+		- Start Time: 1:57.  End Time: 3:13.  (Take off about 15-20 minutes due to Blizzard server issues.)
+		- Start Treasures: 71.  End Treasures: 107
+		- Diff: 36
+-->
+
+<HBProfile>
+	<Name>Hawker's 'Nagrand Treasure Hunter' Profile</Name>
+	
+	
+	<MinDurability>0.2</MinDurability>
+	<MinFreeBagSlots>2</MinFreeBagSlots>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>false</MailWhite>
+	<MailGreen>false</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<UseMount>True</UseMount>
+	<TargetElites>True</TargetElites>
+
+	<Blacklist>
+		<Mob Name="Marsh Anaconda" Id="87039" />
+	</Blacklist>
+
+	<Blackspots>
+		<Blackspot X="2425.75" Y="4400.081" Z="209.2588" Radius="9.955385" /> <!-- Cart debris on road. -->
+	</Blackspots>
+
+	<Mailboxes>
+		<Mailbox X="3209.496" Y="4602.257" Z="142.9012" UsableWhen="Me.IsHorde" /><!--  Wor'var  -->
+		<Mailbox X="3130.849" Y="6540.652" Z="12.91128" UsableWhen="Me.IsHorde" /><!--  Riverside Port - Horde  -->
+		
+		<Mailbox X="2575.935" Y="5711.087" Z="100.7982" UsableWhen="Me.IsAlliance" />	<!--  Telaar  -->
+		<Mailbox X="3403.552" Y="5780.667" Z="37.64209" UsableWhen="Me.IsAlliance" />	<!--  Yrel's Watch  -->
+
+		<!--Garrison-->
+		<Mailbox X="1923.274" Y="299.2899" Z="88.96642" UsableWhen="Me.IsAlliance" />
+		<Mailbox X="5580.682" Y="4570.392" Z="136.558" UsableWhen="Me.IsHorde" />
+	</Mailboxes>
+
+	<Vendors>
+		<Vendor Name="Sumi" Entry="82343" Type="Repair" X="3228.321" Y="4625.069" Z="145.0768" UsableWhen="Me.IsHorde" /><!--  Wor'var  -->
+		<Vendor Name="Elathriel Sunstriker" Entry="82345" Type="Food" X="3204.842" Y="4622.534" Z="145.8241" UsableWhen="Me.IsHorde" /><!--  Wor'var  -->
+		<Vendor Name="Tai'tasi" Entry="82344" Type="Repair" X="3121.195" Y="6559.984" Z="12.77843" UsableWhen="Me.IsHorde" /><!--  Riverside Port - Horde  -->
+	
+		<Vendor Name="Caregiver Felaani" Entry="80006" Type="Food" X="2557.208" Y="5699.377" Z="102.2421" UsableWhen="Me.IsAlliance" /><!--  Telaar  -->
+		<Vendor Name="Tradesman Portanuus" Entry="81253" Type="Repair" X="3382.086" Y="5781.919" Z="37.64205" UsableWhen="Me.IsAlliance" /><!--  Yrel's Watch  -->
+		<Vendor Name="Amma Stouthearth" Entry="81249" Type="Food" X="3409.97" Y="5780.557" Z="37.64214" UsableWhen="Me.IsAlliance" /><!--  Yrel's Watch  -->
+
+		<Vendor Name="Rizmax Copperwattz" Entry="87396" Type="Repair" X="3325.174" Y="6443.257" Z="16.31485"/><!--  Ruins of Na'gwa  -->
+		<Vendor Name="Chef Grogglefitz" Entry="79199" Type="Food" X="3013.191" Y="4762.819" Z="128.2746"/><!--  Ring of Trials  -->
+		<Vendor Name="Pyxni Pennypocket" Entry="79310" Type="Repair" X="3085.323" Y="4849.036" Z="128.3313"/><!--  Ring of Trials  -->
+		<!--Garrison Vendors-->
+		<Vendor Name="Provisioner Hanfa" Entry="81346" Type="Repair" X="1854.957" Y="269.2205" Z="76.63961" UsableWhen="Me.IsAlliance" />
+		<Vendor Name="Supplymaster Eri" Entry="76872" Type="Repair" X="5626.828" Y="4629.681" Z="139.3038" UsableWhen="Me.IsHorde" />
+	</Vendors>
+
+	<QuestOrder>
+
+		<CustomBehavior File="RunCode" Code="RoutineManager.SetCapabilityState(CapabilityFlags.MultiMobPull, CapabilityState.Disallowed);"/>
+		<DisableBehavior Name="Pull" />
+		<CustomBehavior File="UserSettings" HarvestHerbs="false" HarvestMinerals="false" /> <!-- Harvesting will bug out CTMs. --> 
+
+		<If Condition="Me.ZoneId == 7078 || Me.ZoneId == 7004" >
+			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.BlueViolet, &quot;[Profile Notification]: Going to vendor and mail before we start farming.&quot;);" />
+			<CustomBehavior File="ForceSetVendor" DoSell="true" DoRepair="true" />
+		</If>
+
+		<If Condition="Me.ZoneId != 6755">
+			<MoveTo DestName="The Ring of Trials to start hunting for treasures." X="3040.81" Y="4781.461" Z="128.2757" />
+		</If>
+
+
+		
+		<!-- Need jump
+				<If Condition="!IsQuestCompleted(35591)" >
+			<MoveTo DestName="Steamwheedle Supplies" MobIds="232598" X="2957.642" Y="4891.429" Z="168.0384" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Steamwheedle Supplies" MobIds="232598" X="2957.642" Y="4891.429" Z="168.0384" />
+		</If>
+-->
+
+		<If Condition="!IsQuestCompleted(36074)" >
+			<CustomBehavior File="InteractWith" WaitTime="2500" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Gambler's Purse" MobIds="233649" X="3140.645" Y="5031.07" Z="89.74341" />
+		</If>
+
+		<!-- Glider Controlling + Need Jump
+		<If Condition="!IsQuestCompleted(35593)" >
+			<MoveTo DestName="Glider" X="2477.275" Y="5011.498" Z="333.4029" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="2500" ProactiveCombatStrategy="ClearMobsTargetingUs" MobIds="232567" X="2484.839" Y="5013.212" Z="329.8409" />
+			<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Me.Z &lt;= 310 || Me.HasAura(160277)" /> 
+ 			<CustomBehavior File="MyCTM" X="2632.272" Y="4737.213" Z="222.0621" />  !- Glider should go to this coordinate. -
+			<CustomBehavior File="InteractWith" Name="Warsong Spoils" MobIds="232599" X="2632.434" Y="4731.55" Z="222.0615" />
+			<MoveTo DestName="Get Off Tower" X="2632.911" Y="4740.11" Z="222.0622" />
+			!- Jump as we go to this coordinate. -
+			<CustomBehavior File="MyCTM" X="2626.869" Y="4759.46" Z="183.5851" />
+		</If>
+-->
+		<!-- Need Glider Controls, shares the same glider as above.
+		<If Condition="!IsQuestCompleted(35590)" >
+			<GameObject Name="Goblin Pack" Entry="232597" X="2572.533" Y="5167.321" Z="144.5682" />
+		</If>
+-->
+		<!-- Need Glider Controls, shares the same glider as above.
+		<If Condition="!IsQuestCompleted(35682)" >
+			<GameObject Name="Warsong Spear" Entry="233113" X="2278.266" Y="4992.127" Z="250.688" />
+		</If>
+-->
+		<!-- Need Glider Controls, shares the same glider as above.
+		<If Condition="!IsQuestCompleted(35678)" >
+			<GameObject Name="Warsong Lockbox" Entry="233103" X="2261.113" Y="5163.319" Z="250.2928" />
+		</If>
+-->
+
+
+		<If Condition="!IsQuestCompleted(35765)" >
+			<MoveTo DestName="Adventurer's Pack"  X="2777.533" Y="4635.836" Z="191.0876" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Adventurer's Pack" MobIds="233218" X="2781.601" Y="4639.753" Z="190.246" />
+		</If>
+
+		
+		<!-- Works, but is very messy.  A lot of chance for failure given the CTMs and the Jump code's intolerance to latency.
+		<If Condition="!IsQuestCompleted(36077) || !IsQuestComplete(36035)" >
+			<MoveTo DestName="Adventurer's Mace or Polished Saberon Skull" X="2575.047" Y="4910.176" Z="189.6489" />
+			<CustomBehavior File="ForcedMount" /> !- We *need* to be mounted for this jump to work. -
+			<MoveTo DestName="Adventurer's Mace or Polished Saberon Skull" X="2589.485" Y="4908.524" Z="191.1289" />
+			<CustomBehavior File="MyCTM" X="2589.85" Y="4914.73" Z="193.2198" />  !- Alignment for the jump -
+			<CustomBehavior File="Misc\RunLua" Lua="MoveForwardStart();" WaitTime="180" />  !- Echo's semi-reliable temporary jump solution! -
+			<CustomBehavior File="Misc\RunLua" Lua="JumpOrAscendStart();" />
+			<CustomBehavior File="Misc\RunLua" Lua="MoveForwardStop(); AscendStop();" />
+			<CustomBehavior File="MyCTM" X="2599.637" Y="4936.662" Z="200.5852" />
+			<CustomBehavior File="MyCTM" X="2607.427" Y="4967.009" Z="190.9167" />
+			<If Condition="!IsQuestCompleted(36077)" >
+				<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+					Name="Adventurer's Mace" MobIds="233650" X="2576.186" Y="5005.851" Z="167.6307" />
+			</If>
+			<If Condition="!IsQuestCompleted(36035)" >
+				<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+					Name="Polished Saberon Skull" MobIds="233593" X="2618.104" Y="5182.128" Z="189.7166" />
+			</If>
+			<MoveTo X="2488.137" Y="5178.002" Z="202.9676" />
+			<CustomBehavior File="MyCTM" X="2479.151" Y="5194.571" Z="192.7587" />
+		</If>
+-->
+
+		<If Condition="!IsQuestCompleted(36102)" >
+			<MoveTo DestName="Saberon Stash" X="2442.033" Y="5038.336" Z="294.4886" />
+			<CustomBehavior File="MyCTM" X="2454.615" Y="5043.656" Z="292.0423" />
+			<DisableBehavior Name="Combat" /> <!-- Keep any slow fall effects off -->
+			<CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="MyCTM" X="2466.123" Y="5041.485" Z="280.3818" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Saberon Stash" MobId="233697" X="2465.943" Y="5042.031" Z="280.114" />
+			<CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+			<CustomBehavior File="MyCTM" X="2493.393" Y="5033.129" Z="260.1257" />
+			<MoveTo X="2470.588" Y="4975.934" Z="293.5033" />
+			<CustomBehavior File="MyCTM" X="2452.141" Y="4980.366" Z="285.2864" />
+			<CustomBehavior File="MyCTM" X="2422.408" Y="5005.794" Z="280.7435" />
+			<EnableBehavior Name="Combat" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36099)" >
+			<MoveTo DestName="Important Exploration Supplies" X="2440.002" Y="5037.802" Z="294.0208" />
+			<DisableBehavior Name="Combat" /> <!-- Keep any slow fall effects off -->
+			<CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="MyCTM" X="2434.553" Y="5062.736" Z="257.3406" />
+			<CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+			<EnableBehavior Name="Combat" />
+			<MoveTo DestName="Important Exploration Supplies" X="2437.366" Y="5040.446" Z="255.796" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Important Exploration Supplies" MobId="233696" X="2440.05" Y="5039.187" Z="256.4347" />
+			<MoveTo X="2428.979" Y="5064.719" Z="255.3427" />
+			<CustomBehavior File="MyCTM" X="2404.916" Y="5092.107" Z="217.7114" />
+		</If>
+
+		<!-- Need Glider Controls
+		<If Condition="!IsQuestCompleted()" >
+			<GameObject Name="Appropriated Warsong Supplies" Entry="233079" X="2064.877" Y="5162.518" Z="261.4038" />
+		</If>
+
+-->
+
+
+		<While Condition="!IsQuestCompleted(36049)" >
+			<MoveTo DestName="Ogre Beads" X="1897.245" Y="4681.374" Z="351.2729" />
+			<CustomBehavior File="ForcedDismount" /> <!-- Clear out mobs attacking us before setting up for the MyCTM. -->
+			<MoveTo DestName="Ogre Beads" Entry="233618" X="1900.735" Y="4699.359" Z="353.2238" />
+			<DisableBehavior Name="Combat" /> <!-- Prevent slow fall buffs. -->
+			<CustomBehavior File="MyCTM" X="1893.307" Y="4702.753" Z="358.8674" />  <!-- Need a proper termination code in case the CTM fails. -->
+			<CustomBehavior File="MyCTM" X="1891.512" Y="4705.499" Z="359.5579" />
+			<CustomBehavior File="MyCTM" X="1891.258" Y="4713.972" Z="364.0563" />
+			<CustomBehavior File="MyCTM" X="1887.155" Y="4715.399" Z="366.7705" />
+			<CustomBehavior File="MyCTM" X="1889.221" Y="4716.137" Z="365.7661" />
+			<CustomBehavior File="Misc\RunLua" Lua="MoveForwardStart();" WaitTime="200" />
+			<CustomBehavior File="Misc\RunLua" Lua="JumpOrAscendStart();" />
+			<CustomBehavior File="Misc\RunLua" Lua="MoveForwardStop(); AscendStop();" />
+			<CustomBehavior File="MyCTM" X="1902.168" Y="4715.375" Z="364.3234" TerminateWhen="Me.Z &lt;= 359" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" WaitForNpcs="false" PreInteractMountStrategy="Dismount" 
+				Name="Ogre Beads" MobId="233618" X="1904.056" Y="4713.988" Z="364.6995" TerminateWhen="Me.Z &lt;= 359 || IsQuestCompleted(36049)" />
+			<CustomBehavior File="MyCTM" X="1897.534" Y="4691.679" Z="353.4852" TerminateWhen="Me.Z &lt;= 359" />
+			<EnableBehavior Name="Combat" />
+		</While>
+		
+
+
+		<If Condition="!IsQuestCompleted(36051)" > <!-- Aggros a bugged NPC which causes issues. -->
+			<MoveTo DestName="Grizzlemaw's Bonepile" X="2301.882" Y="4541.805" Z="253.665" />
+			<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.Combat" />
+			<MoveTo DestName="Grizzlemaw's Bonepile" X="2304.399" Y="4513.192" Z="253.5822" />
+			<CustomBehavior File="MyCTM" X="2270.892" Y="4476.698" Z="245.6085" />
+			<MoveTo DestName="Grizzlemaw's Bonepile" X="2165.522" Y="4362.654" Z="221.3854" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Grizzlemaw's Bonepile" MobIds="233626" Range="9" IgnoreLoSToTarget="true" X="2165.747" Y="4365.18" Z="221.103" />
+			<CustomBehavior File="ForcedMount" />
+			<CustomBehavior File="MyCTM" X="2293.185" Y="4301.624" Z="202.9325" />
+
+		<!--<If Condition="!IsQuestCompleted(36082)" >  Id is wrong. -->
+			<MoveTo DestName="Lost Pendant" X="2751.272" Y="5803.463" Z="107.9399" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Lost Pendant" MobIds="233651" Range="9" IgnoreLoSToTarget="true" X="2748.736" Y="5803.464" Z="111.5155" />
+			<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="IsQuestCompleted(36082)" />
+		<!-- </If> -->
+		</If>
+
+		<!-- Need Glider Controls 
+		<If Condition="!IsQuestCompleted(35976)" >
+			<MoveTo DestName="" />
+			<CustomBehavior File="ForcedDismount" />
+			<GameObject Name="Warsong Supplies" Entry="233521" X="2430.627" Y="4234.758" Z="265.137" />
+		</If>
+-->
+
+
+
+
+		<If Condition="!IsQuestCompleted(36046)" >
+			<MoveTo DestName="Telaar Defender Shield" X="2426.933" Y="5617.719" Z="152.9948" />
+			<CustomBehavior File="ForcedDismount" /> <!-- Clear out mobs attacking us before setting up for the MyCTM. -->
+			<MoveTo DestName="Telaar Defender Shield" X="2461.178" Y="5651.676" Z="157.5462" />
+			<CustomBehavior File="MyCTM" X="2459.527" Y="5642.417" Z="159.6101" />
+			<CustomBehavior File="MyCTM" X="2448.061" Y="5638" Z="162.1796" />
+			<CustomBehavior File="MyCTM" X="2434.944" Y="5636.687" Z="168.7297" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Telaar Defender Shield" MobIds="233613" Range="9" IgnoreLoSToTarget="true" X="2432.226" Y="5635.986" Z="169.1597" TerminateWhen="Me.Z &lt;= 165" />
+			<CustomBehavior File="MyCTM" X="2422.603" Y="5621.457" Z="155.5585" TerminateWhen="Me.Z &lt;= 160" />
+		</If>
+
+		<!--<If Condition="!IsQuestCompleted(36046)" >
+			<MoveTo DestName="Telaar Defender Shield" X="2426.933" Y="5617.719" Z="152.9948" />
+			<CustomBehavior File="ForcedDismount" /> 
+			<MoveTo DestName="Telaar Defender Shield" X="2421.795" Y="5638.413" Z="162.3315" />
+			<CustomBehavior File="MyCTM" X="2421.195" Y="5638.72" Z="162.0257" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+			<CustomBehavior File="MyCTM" X="2426.946" Y="5641.432" Z="164.1406" TerminateWhen="Me.Combat" />
+			<CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+			<CustomBehavior File="MyCTM" X="2431.049" Y="5638.099" Z="168.8961" TerminateWhen="Me.Combat" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Telaar Defender Shield" MobIds="233613" Range="9" IgnoreLoSToTarget="true" X="2432.226" Y="5635.986" Z="169.1597" TerminateWhen="Me.Z &lt;= 165" />
+			<CustomBehavior File="MyCTM" X="2422.603" Y="5621.457" Z="155.5585" TerminateWhen="Me.Z &lt;= 160" />
+		</If>-->
+
+		<!-- Returns false even after obtaining it.  Bug on Blizzard's end?  /run print(IsQuestFlaggedCompleted(35711)) 
+		<If Condition="!IsQuestCompleted(36711)" >  
+			<MoveTo DestName="Abu'gar's Vitality" X="2583.12" Y="5570.372" Z="129.8373" />
+			<CustomBehavior File="ForcedDismount" /> !- Clear out mobs attacking us before setting up for the MyCTM. -
+			<MoveTo DestName="Abu'gar's Vitality" X="2597.825" Y="5568.069" Z="124.4194" />
+			<DisableBehavior Name="Combat" /> !- To prevent slow fall buffs. -
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+			<CustomBehavior File="MyCTM" X="2611.666" Y="5571.153" Z="90.17718" />
+			<CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Abu'gar's Vitality" MobIds="233157" Range="9" IgnoreLoSToTarget="true" X="2609.344" Y="5572.999" Z="91.78837" />
+			<EnableBehavior Name="Combat" />
+			<CustomBehavior File="MyCTM" X="2662.232" Y="5608.637" Z="79.76167" />
+		</If>
+-->
+
+		<If Condition="!IsQuestCompleted(36116)" >
+			<MoveTo DestName="Bag of Herbs" X="2398.338" Y="5803.732" Z="112.8197" />
+			<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="!Me.Combat" />
+			<MoveTo DestName="Bag of Herbs" X="2392.962" Y="5797.736" Z="112.866" />
+			<CustomBehavior File="MyCTM" X="2384.634" Y="5794.226" Z="113.0602" />
+			<CustomBehavior File="MyCTM" X="2385.048" Y="5760.675" Z="105.1204" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Bag of Herbs" MobIds="233773" Range="9" IgnoreLoSToTarget="true" X="2385.167" Y="5759.047" Z="104.9119" />
+			<CustomBehavior File="MyCTM" X="2363.5" Y="5793.167" Z="90.42631" />
+			<CustomBehavior File="MyCTM" X="2399.341" Y="5861.283" Z="93.66344" />
+		</If>
+
+
+		<While Condition="!IsQuestCompleted(36021)" >
+			<MoveTo DestName="Pokkar's Thirteenth Axe" X="2704.523" Y="6027.229" Z="88.33611" />
+			<CustomBehavior File="ForcedDismount" /> <!-- Clear out mobs attacking us before setting up for the MyCTM. -->
+			<MoveTo DestName="Pokkar's Thirteenth Axe" X="2686.709" Y="6015.149" Z="86.35663" />
+			<CustomBehavior File="MyCTM" X="2682.939" Y="6011.983" Z="85.08853" TerminateWhen="Me.Z &lt;= 55" />
+			<DisableBehavior Name="Combat" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="Misc\RunLua" Lua="MoveForwardStart();" WaitTime="480" />
+			<CustomBehavior File="Misc\RunLua" Lua="JumpOrAscendStart();" />
+			<CustomBehavior File="Misc\RunLua" Lua="MoveForwardStop(); AscendStop();" />
+			<CustomBehavior File="WaitTimer" WaitTime="1500" />
+			<CustomBehavior File="MyCTM" X="2677.636" Y="5999.918" Z="71.43498" TerminateWhen="Me.Z &lt;= 55" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" WaitForNpcs="false" PreInteractMountStrategy="Dismount" 
+				Name="Pokkar's Thirteenth Axe" MobIds="233561" Range="9" IgnoreLoSToTarget="true" X="2678.853" Y="6000.099" Z="72.13931" TerminateWhen="Me.Z &lt;= 55 || IsQuestCompleted(36021)" />
+			<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="IsQuestCompleted(36021) || Me.Z &lt;= 55" />
+			<EnableBehavior Name="Combat" />
+			<CustomBehavior File="MyCTM" X="2683.024" Y="5987.873" Z="42.91673" TerminateWhen="Me.Z &lt;= 55"  />
+		</While>
+
+		<While Condition="!IsQuestCompleted(36115)" >
+			<MoveTo DestName="Pale Elixir" X="2507.789" Y="6052.18" Z="81.85856" TerminateWhen="Me.Z &lt;= 45" />
+			<MoveTo DestName="Pale Elixir" X="2520.772" Y="6051.827" Z="79.99503" TerminateWhen="Me.Z &lt;= 45" />
+			<CustomBehavior File="MyCTM" DestName="Pale Elixir" X="2541.264" Y="6051.37" Z="71.06689" TerminateWhen="Me.Z &lt;= 45" />
+			<CustomBehavior File="MyCTM" DestName="Pale Elixir" X="2549.451" Y="6047.987" Z="69.73586" TerminateWhen="Me.Z &lt;= 45" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="Misc\RunLua" Lua="MoveForwardStart();" WaitTime="200" />
+			<CustomBehavior File="Misc\RunLua" Lua="JumpOrAscendStart();" />
+			<CustomBehavior File="Misc\RunLua" Lua="MoveForwardStop(); AscendStop();" />
+			<CustomBehavior File="WaitTimer" WaitTime="1000" />
+			<CustomBehavior File="MyCTM" DestName="Pale Elixir" X="2568.612" Y="6029.497" Z="64.85265" TerminateWhen="Me.Z &lt;= 45" />
+			<CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+			<DisableBehavior Name="Combat" /> <!-- Prevent Slow falls -->
+			<CustomBehavior File="MyCTM" DestName="Pale Elixir" X="2575.237" Y="6028.306" Z="59.42193" TerminateWhen="Me.Z &lt;= 45" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Pale Elixir" MobIds="233768" Range="9" IgnoreLoSToTarget="true" X="2575.405" Y="6028.518" Z="59.94761" TerminateWhen="Me.Z &lt;= 45 || IsQuestCompleted(36115)" />
+			<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="IsQuestCompleted(36115) || Me.Z &lt;= 45" />
+			<CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+			<EnableBehavior Name="Combat" />
+			<CustomBehavior File="MyCTM" X="2586.031" Y="6020.82" Z="36.8358" TerminateWhen="Me.Z &lt;= 40" />
+			<If Condition="HasItem(118278)" ><CustomBehavior File="DeleteItems" Ids="118278" /></If>
+		</While>
+
+		<If Condition="!IsQuestCompleted(36088)" >
+			<MoveTo DestName="Adventurer's Pouch" X="2492.968" Y="6279.667" Z="-49.55568" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Adventurer's Pouch" MobIds="233658" Range="9" IgnoreLoSToTarget="true" X="2492.012" Y="6279.075" Z="-48.2082" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36011)" >
+			<MoveTo DestName="Genedar Debris" X="2340.365" Y="6165.348" Z="71.24093" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Genedar Debris" MobId="233557" IgnoreLoSToTarget="true" X="2339.733" Y="6167.44" Z="71.57911" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36050)" >
+			<MoveTo DestName="Adventurer's Pouch" X="2150.593" Y="6072.329" Z="149.8541" />
+			<CustomBehavior File="MyCTM" X="2164.388" Y="6098.951" Z="121.6433" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Adventurer's Pouch" MobIds="233623" Range="9" IgnoreLoSToTarget="true" X="2163.285" Y="6098.297" Z="121.7895" />
+			<CustomBehavior File="MyCTM" X="2214.242" Y="6133.25" Z="75.67668" />
+		</If>
+
+		<!-- Need Glider Controls 
+		<If Condition="!IsQuestCompleted(35583)" >
+			<GameObject Name="Steamwheedle Supplies" Entry="232595" X="1893.13" Y="6319.139" Z="41.49382" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(35577)" >
+			<GameObject Name="Steamwheedle Supplies" Entry="232584" X="1809.851" Y="6463.887" Z="54.73555" />
+		</If>
+		<If Condition="!IsQuestCompleted(35576)" >
+			<GameObject Name="Goblin Pack" Entry="232571" X="2113.915" Y="6629.726" Z="67.41004" />
+		</If>
+-->
+
+		<While Condition="!IsQuestCompleted(36008)" >
+			<MoveTo DestName="Genedar Debris" X="2171.999" Y="6550.853" Z="39.14659" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Genedar Debris" WaitForNpcs="false" MobIds="233555" Range="9" WaitTime="3000" IgnoreLoSToTarget="true" X="2169.201" Y="6551.215" Z="40.38825" TerminateWhen="IsQuestCompleted(36008)" />
+			<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="IsQuestCompleted(36008) || Object(233555) != null" />
+		</While>
+
+		<!-- Need Glider Controls
+		<If Condition="!IsQuestCompleted(35576)" >
+			<GameObject Name="Void-Infused Crystal" Entry="232590" X="2406.651" Y="6472.311" Z="77.40481" />
+		</If>
+-->
+
+		<If Condition="!IsQuestCompleted(35695)" >
+			<MoveTo DestName="Warsong Cache" X="2641.028" Y="6374.121" Z="49.67361" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Warsong Cache" MobIds="233135" Range="9" IgnoreLoSToTarget="true" X="2642.108" Y="6373.464" Z="49.61965" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(35999)" >
+			<MoveTo DestName="Genedar Debris" X="2647.303" Y="6580.273" Z="22.67351" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Genedar Debris" MobIds="233549" Range="9" IgnoreLoSToTarget="true" X="2648.761" Y="6580.662" Z="22.82538" />
+		</If>
+
+		<While Condition="!IsQuestCompleted(36020)" >
+			<MoveTo DestName="Fragment of Oshu'gun" X="2413.389" Y="6707.237" Z="9.503881" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" WaitForNpcs="false" PreInteractMountStrategy="Dismount" 
+				Name="Fragment of Oshu'gun" MobIds="233560" Range="9" IgnoreLoSToTarget="true" X="2414.811" Y="6706.011" Z="9.838943" TerminateWhen="IsQuestCompleted(36020)" />
+			<CustomBehavior File="WaitTimer" WaitTime="10000" />
+		</While>
+
+		<If Condition="!IsQuestCompleted(36002)" >
+			<MoveTo DestName="Genedar Debris" X="2366.692" Y="6775.5" Z="29.45359" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="!Me.IsMoving &amp;&amp; !Me.Combat" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Genedar Debris" MobIds="233551" Range="9" IgnoreLoSToTarget="true" X="2366.674" Y="6772.226" Z="28.61595" />
+		</If>
+		
+        <If Condition="!IsQuestCompleted(37435)" >
+            <MoveTo DestName="Spirit Coffer" X="2321.313" Y="7014.576" Z="31.66488" />
+            <CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsMoving &amp;&amp; !Me.Combat" />
+            <MoveTo DestName="Spirit Coffer" X="2321.313" Y="7014.576" Z="31.66488" />
+            <CustomBehavior File="ForcedDismount" />
+            <CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsMoving &amp;&amp; !Me.Combat" />
+            <CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" NumOfTimes="5"
+                Name="Spirit Coffer" MobIds="237946" Range="9" IgnoreLoSToTarget="true" TerminateWhen="IsQuestCompleted(37435) || Object(237946) == null" X="2326.28" Y="7018.958" Z="35.35936" />
+        </If>
+
+		<!-- <If Condition="!IsQuestCompleted(34760)" >  Too hard.
+			<EnableBehavior Name="Pull" />
+			<MoveTo DestName="Treasure of Kull'krosh" X="2252.152" Y="7168.986" Z="0.1033367" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Treasure of Kull'krosh" MobIds="230725" Range="9" IgnoreLoSToTarget="true" X="2249.955" Y="7168.293" Z="0.2037559" />
+			<DisableBehavior Name="Pull" />
+		</If> -->
+
+		<If Condition="!IsQuestCompleted(35987)" >
+			<MoveTo DestName="Genedar Debris" X="2747.808" Y="6853.893" Z="17.67149" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Genedar Debris" MobIds="233539" Range="9" IgnoreLoSToTarget="true" X="2745.786" Y="6855.361" Z="18.22186" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36109)" >
+			<MoveTo DestName="Goldtoe's Plunder" X="2697.766" Y="7130.576" Z="4.513174" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Unit(84068, u =&gt; u.Distance &lt;= 5) != null" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Rusty Keys" MobIds="84068" Range="9" IgnoreLoSToTarget="true" X="2698.2" Y="7130.413" Z="7.646333" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Goldtoe's Plunder" MobIds="233715" Range="9" IgnoreLoSToTarget="true" X="2701.168" Y="7132.761" Z="6.322422" />
+		</If>
+
+		<!-- Need some sort of flag to check if this is completed or not.
+		<If Condition="!IsQuestCompleted()" >
+			<MoveTo DestName="Spirit's Gift" X="2766.177" Y="7294.837" Z="89.35707" />
+			<CustomBehavior File="ForcedDismount" />
+			<While Condition="!(Object(236610, o =&gt; o.IsValid) != null)" >
+				<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount"
+					Name="Forgotten Brazier" MobId1="236604" MobId2="236612" X="2757.578" Y="7294.644" Z="89.20352" NumOfTimes="6" TerminateWhen="Object(236610, o =&gt; o.IsValid) != null" /> !- Even with separate interacts, the bot acted strange around the torches. -
+			</While>
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Spirit's Gift" MobId="236610" Range="9" IgnoreLoSToTarget="true" X="2757.136" Y="7295.27" Z="89.1935" />
+		</If>
+-->
+
+		<While Condition="!IsQuestCompleted(35969)" >
+			<MoveTo DestName="Adventurer's Pack" X="2957.418" Y="6719.5" Z="25.38932" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" WaitForNpcs="false" PreInteractMountStrategy="Dismount" 
+				Name="Adventurer's Pack" MobId="233511" Range="9" IgnoreLoSToTarget="true" X="2955.452" Y="6718.929" Z="26.06898" TerminateWhen="IsQuestCompleted(35969)" />
+			<CustomBehavior File="WaitTimer" WaitTime="10000" />
+		</While>
+
+		<If Condition="!IsQuestCompleted(36073)" >
+			<MoveTo DestName="Warsong Helm" X="3244.893" Y="6335.27" Z="1.06365" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Warsong Helm" MobId="233645" Range="9" IgnoreLoSToTarget="true" X="3243.724" Y="6333.919" Z="2.430676" />
+		</If>
+
+		<While Condition="!IsQuestCompleted(35694)" >
+			<MoveTo DestName="Golden Kaliri Egg" X="2945.069" Y="6041.432" Z="120.3588" />
+			<CustomBehavior File="ForcedDismount" /> <!-- Clear out mobs attacking us before setting up for the MyCTM. -->
+			<MoveTo DestName="Golden Kaliri Egg" X="2927.219" Y="6035.399" Z="133.9163" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="MyCTM" X="2930.846" Y="6016.088" Z="128.4926" TerminateWhen="Me.Z &lt;= 116" />
+			<CustomBehavior File="MyCTM" X="2930.854" Y="6008.404" Z="128.8101" TerminateWhen="Me.Z &lt;= 116" />
+			<CustomBehavior File="MyCTM" X="2934.14" Y="6003.091" Z="130.9712" TerminateWhen="Me.Z &lt;= 116" />
+			<CustomBehavior File="WaitTimer" WaitTime="500" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" WaitForNpcs="false" PreInteractMountStrategy="Dismount" 
+				Name="Golden Kaliri Egg" MobIds="233134" Range="9" IgnoreLoSToTarget="true" X="2937.118" Y="6001.19" Z="131.8606" TerminateWhen="Me.Z &lt;= 116 || IsQuestCompleted(35694)" />
+			<CustomBehavior File="MyCTM" X="2941.329" Y="6009.984" Z="113.4949" TerminateWhen="Me.Z &lt;= 116" />
+			<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="IsQuestCompleted(35694)" />
+		</While>
+
+		<If Condition="!IsQuestCompleted(36039)" >
+			<MoveTo DestName="Highmaul Sledge" X="3095.04" Y="5475.99" Z="39.12654" />
+			<CustomBehavior File="ForcedDismount" /> <!-- Clear out mobs attacking us before setting up for the MyCTM. -->
+			<MoveTo DestName="Highmaul Sledge" X="3085.373" Y="5476.16" Z="42.50097" />
+			<CustomBehavior File="MyCTM" X="3072.572" Y="5475.833" Z="46.33716" />
+			<MoveTo DestName="Highmaul Sledge" X="3067.598" Y="5483.204" Z="50.95161" />
+			<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="!Me.IsMoving" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Highmaul Sledge" MobIds="233611" Range="9" IgnoreLoSToTarget="true" X="3066.684" Y="5484.286" Z="51.42748" />
+			<CustomBehavior File="MyCTM" X="3073.677" Y="5475.655" Z="46.08224" />
+			<CustomBehavior File="MyCTM" X="3090.178" Y="5476.108" Z="40.57539" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36071)" >
+			<MoveTo DestName="Watertight Bag" X="3570.676" Y="5635.176" Z="28.35448" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Watertight Bag" MobIds="233641" Range="9" IgnoreLoSToTarget="true" X="3571.056" Y="5632.976" Z="27.46263" />
+			<CustomBehavior File="MyCTM" X="3579.058" Y="5637.113" Z="30.16305" />
+			<CustomBehavior File="MyCTM" X="3593.351" Y="5611.184" Z="35.70056" />
+		</If>
+
+		<!-- Need glider controls
+		<If Condition="!IsQuestCompleted(35648)" >
+			<MoveTo DestName="Steamwheedle Supplies" />
+			<CustomBehavior File="ForcedDismount" />
+			<GameObject Name="Steamwheedle Supplies" Entry="233034" X="4256.379" Y="5642.717" Z="144.9682" />
+		</If>
+		<If Condition="!IsQuestCompleted(35646)" >
+			<MoveTo DestName="Steamwheedle Supplies" />
+			<CustomBehavior File="ForcedDismount" />
+			<GameObject Name="Steamwheedle Supplies" Entry="233033" X="4219.137" Y="5301.935" Z="100.9219" />
+		</If>
+-->
+
+		<If Condition="!IsQuestCompleted(35692)" > <!-- Had issues moving to location. -->
+			<MoveTo DestName="Freshwater Clam" X="3909.11" Y="5310.452" Z="54.59786" />
+			<MoveTo DestName="Freshwater Clam" X="4103.06" Y="5158.589" Z="52.51738" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="MyCTM" X="4107.204" Y="5162.344" Z="42.89593" />
+			<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="!Me.Combat &amp;&amp; !Me.IsMoving" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Freshwater Clam" MobIds="233132" Range="9" IgnoreLoSToTarget="true" X="4108.274" Y="5162.79" Z="43.17806" />
+			<CustomBehavior File="MyCTM" X="4111.149" Y="5140.819" Z="51.80311" />
+			<CustomBehavior File="MyCTM" X="4211.264" Y="5104.833" Z="55.42398" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(35955)" >
+			<MoveTo DestName="Adventurer's Sack" X="4390.585" Y="5114.498" Z="44.67813" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Adventurer's Sack" MobIds="233499" Range="9" IgnoreLoSToTarget="true" X="4391.368" Y="5112.813" Z="45.08746" />
+		</If>
+
+		<While Condition="!IsQuestCompleted(35954)" >
+			<MoveTo DestName="Elemental Offering" X="4201.125" Y="5506.828" Z="119.2611" />
+			<CustomBehavior File="ForcedDismount" />
+			<DisableBehavior Name="Combat" /> <!-- To avoid slow fall buffs. -->
+			<CustomBehavior File="MyCTM" X="4192.058" Y="5508.815" Z="115.6244" />
+			<CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+			<CustomBehavior File="MyCTM" X="4183.336" Y="5510.486" Z="92.36074" TerminateWhen="Me.Z &lt;= 75" />
+			<CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+			<EnableBehavior Name="Combat" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Elemental Offering" MobIds="233492" Range="9" IgnoreLoSToTarget="true" X="4185.468" Y="5508.517" Z="93.88924" TerminateWhen="Me.Z &lt;= 75 || IsQuestCompleted(35954)" />
+			<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="IsQuestCompleted(35954)" />
+			<CustomBehavior File="MyCTM" X="4158.513" Y="5507.609" Z="52.81663" />
+		</While>
+
+		<!-- Need glider controls
+		<If Condition="!IsQuestCompleted(35643)" >
+			<GameObject Name="Mountain Climber's Pack" Entry="233032" X="4398.923" Y="5305.63" Z="137.6024" />
+		</If>
+-->
+
+		<While Condition="!IsQuestCompleted(35951)" >
+			<MoveTo DestName="A Pile of Dirt" X="4516.257" Y="5167.709" Z="297.415" />
+			<CustomBehavior File="ForcedDismount" />
+			<DisableBehavior Name="Combat" />
+			<CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+			<CustomBehavior File="MyCTM" X="4514.382" Y="5162.178" Z="276.5207" TerminateWhen="Me.Z &lt;= 260" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="A Pile of Dirt" MobIds="233452" Range="9" IgnoreLoSToTarget="true" X="4514.324" Y="5161.796" Z="275.3882" TerminateWhen="Me.Z &lt;= 260 || IsQuestCompleted(35951)" />
+			<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="IsQuestCompleted(35951)" />
+			<EnableBehavior Name="Combat" />
+			<CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+			<CustomBehavior File="MyCTM" X="4518.053" Y="5145.103" Z="250.1942" TerminateWhen="Me.Combat" />
+		</While>
+
+		<While Condition="!IsQuestCompleted(36036)" >
+			<MoveTo DestName="Elemental Shackles" X="4399.671" Y="4881.146" Z="289.5321" />
+			<MoveTo DestName="Elemental Shackles" X="4387.104" Y="4871.414" Z="286.6054" />
+			<CustomBehavior File="ForcedMount" />
+			<CustomBehavior File="Misc\RunLua" Lua="MoveForwardStart();" WaitTime="150" />
+			<CustomBehavior File="Misc\RunLua" Lua="JumpOrAscendStart();" />
+			<CustomBehavior File="Misc\RunLua" Lua="MoveForwardStop(); AscendStop();" />
+			<CustomBehavior File="WaitTimer" WaitTime="2500" />
+			<While Condition="!IsQuestCompleted(36036) &amp;&amp; Me.Z &gt;= 260" >
+				<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" WaitForNpcs="false" PreInteractMountStrategy="Dismount" 
+					Name="Elemental Shackles" MobIds="233598" Range="9" IgnoreLoSToTarget="true" X="4334.327" Y="4830.916" Z="277.1243" TerminateWhen="IsQuestCompleted(36036) || Me.Z &lt;= 259" />
+				<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="IsQuestCompleted(36036)" />
+			</While>
+			<MoveTo X="4357.664" Y="4867.965" Z="278.4677" />
+			<CustomBehavior File="MyCTM" X="4368.272" Y="4911.051" Z="235.4119" />
+		</While>
+
+		<!-- Need some sort of flag to check if this is completed or not.
+		<If Condition="!IsQuestCompleted()" >
+			<MoveTo DestName="Bounty of the Elements" X="4291.057" Y="4934.17" Z="268.0435" />
+			<CustomBehavior File="InteractWith" MobId="84307" X="4296.795" Y="4931.726" Z="268.3551" />
+			<CustomBehavior File="InteractWith" MobId="84343" X="4292.003" Y="4936.986" Z="268.4087" />
+			<CustomBehavior File="InteractWith" MobId="84345" X="4291.886" Y="4932.054" Z="268.3642" />
+			<CustomBehavior File="InteractWith" MobId="84347" X="4296.722" Y="4937.238" Z="268.3367" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Bounty of the Elements" MobIds="233973" Range="9" IgnoreLoSToTarget="true" X="4294.313" Y="4934.307" Z="268.5439" />
+		</If>
+-->
+
+		<If Condition="!IsQuestCompleted(35953)" >
+			<MoveTo DestName="Adventurer's Staff" X="4429.604" Y="4684.326" Z="143.3001" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Adventurer's Staff" MobIds="233457" Range="9" IgnoreLoSToTarget="true" X="4428.327" Y="4685.477" Z="143.4612" />
+		</If>
+
+		<While Condition="!IsQuestCompleted(35986)" >
+			<MoveTo DestName="Bone-Carved Dagger" X="3815.74" Y="4900.869" Z="172.222" />
+			<DisableBehavior Name="Combat" />
+			<CustomBehavior File="MyCTM" X="3832.779" Y="4921.029" Z="147.3715" TerminateWhen="Me.Z &lt;= 140" />
+			<MoveTo DestName="Bone-Carved Dagger" X="3859.813" Y="4919.306" Z="135.9232" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Bone-Carved Dagger" MobIds="233532" Range="9" IgnoreLoSToTarget="true" X="3861" Y="4921.224" Z="137.2804" TerminateWhen="IsQuestCompleted(35986)" />
+			<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="IsQuestCompleted(35986)" />
+			<EnableBehavior Name="Combat" />
+			<CustomBehavior File="MyCTM" X="3876.653" Y="4892.937" Z="98.22768" TerminateWhen="Me.Z &lt;= 100 || IsQuestCompleted(35986)" />
+		</While>
+		
+		<!-- Need Glider controls
+		<If Condition="!IsQuestCompleted(35661)" >
+			<GameObject Name="Brilliant Dreampetal" Entry="233048" X="3513.492" Y="4707.116" Z="174.3371" />
+		</If>
+		<If Condition="!IsQuestCompleted(35662)" >
+			<GameObject Name="Steamwheedle Supplies" Entry="233052" X="4155.813" Y="4337.042" Z="29.25555" />
+		</If>
+		<If Condition="!IsQuestCompleted(35662)" >
+			<GameObject Name="Fungus-Covered Chest" Entry="233044" X="4232.899" Y="4263.482" Z="35.51948" />
+		</If>
+-->
+
+		<If Condition="!IsQuestCompleted(36857)" >
+			<MoveTo DestName="Smuggler's Cache" X="3669.489" Y="4253.515" Z="178.835" />
+			<CustomBehavior File="ForcedDismount" />
+			<MoveTo DestName="Smuggler's Cache" X="3667.17" Y="4249.899" Z="178.8356" />
+			<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="!Me.IsMoving" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Smuggler's Cache" MobIds="236633" Range="9" IgnoreLoSToTarget="true" X="3669.489" Y="4253.515" Z="178.835" />
+		</If>
+
+		<!-- Need Glider controls
+		<If Condition="!IsQuestCompleted(35616)" >
+			<GameObject Name="Steamwheedle Supplies" Entry="232985" X="3310.394" Y="4299.127" Z="219.7103" />
+		</If>
+		<If Condition="!IsQuestCompleted(35622)" >
+			<GameObject Name="Hidden Stash" Entry="232986" X="3221.08" Y="4335.749" Z="172.8805" />
+		</If>
+-->
+
+		<While Condition="!IsQuestCompleted(35696)" >
+			<MoveTo DestName="Burning Blade Cache" X="2932.404" Y="4586.625" Z="167.3273" />
+			<CustomBehavior File="MyCTM" X="2941.1" Y="4596.129" Z="176.2703" />
+			<CustomBehavior File="MyCTM" X="2950.961" Y="4595.003" Z="181.5979" />
+			<MoveTo DestName="Burning Blade Cache" X="2890.371" Y="4504.187" Z="208.2422" TerminateWhen="Me.Z &lt;= 200" />
+			<CustomBehavior File="MyCTM" X="2891.643" Y="4491.91" Z="214.8943" TerminateWhen="Me.Z &lt;= 200" />
+			<CustomBehavior File="MyCTM" X="2883.623" Y="4491.408" Z="220.091" TerminateWhen="Me.Z &lt;= 200" />
+			<CustomBehavior File="MyCTM" X="2887.463" Y="4485.707" Z="221.8008" TerminateWhen="Me.Z &lt;= 200" />
+			<CustomBehavior File="ForcedMount" />
+			<CustomBehavior File="Misc\RunLua" Lua="MoveForwardStart();" WaitTime="180" />
+			<CustomBehavior File="Misc\RunLua" Lua="JumpOrAscendStart();" />
+			<CustomBehavior File="Misc\RunLua" Lua="MoveForwardStop(); AscendStop();" WaitTime="2500" />
+			<CustomBehavior File="MyCTM" X="2900.036" Y="4461.452" Z="195.0904" />
+			<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="!Me.IsMoving" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Burning Blade Cache" MobIds="233137" Range="9" IgnoreLoSToTarget="true" X="2900.036" Y="4461.452" Z="195.0904" TerminateWhen="IsQuestCompleted(35696)" />
+			<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="IsQuestCompleted(35696)" />
+			<CustomBehavior File="MyCTM" X="2903.845" Y="4476.707" Z="183.7627" TerminateWhen="Me.Z &lt;= 185" />
+		</While>
+
+		<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.BlueViolet, &quot;[Profile Notification]: Treasure farming complete!  Going mail and vendor.&quot;);" />
+		<CustomBehavior File="ForceSetVendor" DoSell="True" DoRepair="True" />
+
+		<CustomBehavior File="UserSettings" Preset="UserOriginal" />
+		<CustomBehavior File="LoadProfile" ProfileName="Talador Treasure Hunter.xml" RememberProfile="false" />
+
+
+	</QuestOrder>
+</HBProfile>
