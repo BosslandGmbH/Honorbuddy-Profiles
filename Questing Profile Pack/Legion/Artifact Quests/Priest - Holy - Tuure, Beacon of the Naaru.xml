@@ -99,56 +99,113 @@ END INITORDER COMMENT -->
 
 		<!-- Simple Heal Routine -->
 			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					string healMeName = "";
+
 					WoWUnit HealPriority()
 					{
 						return ObjectManager.GetObjectsOfType<WoWUnit>(true, true).Where(x => new[]{106137, 106253, 106134}.Contains((int)x.Entry) || x.IsMe).OrderBy(x => x.GetPredictedHealthPercent(true)).FirstOrDefault();
 					}
 
-					async Task HealRoutine(WoWUnit healMe)
+					WoWUnit AttackPriority()
+					{
+						return ObjectManager.GetObjectsOfType<WoWUnit>(true, true).Where(x => (x.Aggro || x.Combat) && x.IsHostile).OrderBy(x => x.Distance).FirstOrDefault();
+					}
+
+					WoWUnit MovePriority()
+					{
+						return ObjectManager.GetObjectsOfType<WoWUnit>(true).Where(x => new[]{106137, 106253, 106134}.Contains((int)x.Entry)).OrderBy(x => x.Distance).FirstOrDefault();
+					}
+
+					async Task MoveToUnit(WoWUnit moveToPoi, int distanceTo = 39)
+					{
+						if (moveToPoi == null) return;
+						while (moveToPoi.Distance >= distanceTo || !moveToPoi.InLineOfSight)
+						{
+							Navigator.MoveTo(moveToPoi.Location);
+							await Coroutine.Yield();
+						}
+					}
+
+					async Task SmiteFireSpam(WoWUnit attackMe)
+					{
+						if (attackMe == null) return;
+						if (HealPriority().HealthPercent <= 90) return;
+						while ((attackMe.Distance >= 39 || !attackMe.InLineOfSight) && HealPriority().HealthPercent > 70)
+						{
+							Navigator.MoveTo(attackMe.Location);
+							await Coroutine.Yield();
+						}
+
+						attackMe.Target();
+						StyxWoW.Me.SetFacing(attackMe.Location);
+
+						if (SpellManager.CanCast("Holy Fire"))
+						{
+							SpellManager.Cast("Holy Fire");
+							Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Holy Fire on {attackMe.Name}  @ {(int)attackMe.HealthPercent}% HP");
+							return;
+						}
+						if (SpellManager.CanCast("Smite"))
+						{
+							SpellManager.Cast("Smite");
+							Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Smite on {attackMe.Name}  @ {(int)attackMe.HealthPercent}% HP");
+							return;
+						}
+					}
+
+					async Task HealRoutine(WoWUnit healMe, int healToPercent = 90)
 					{
 						if (healMe == null) return;
-						if (healMe.HealthPercent >= 95) return;
+
+						if (healMe == Me) healMeName = "Me";
+						else healMeName = healMe.Name;
+
+						if (healMe.HealthPercent >= healToPercent) return;
 
 						await Coroutine.Wait(3000, () => !StyxWoW.Me.IsCasting && !SpellManager.GlobalCooldown);
-						if (StyxWoW.Me.CurrentTarget != healMe) { healMe.Target(); }
-						StyxWoW.Me.SetFacing(healMe.Location);
-						await Coroutine.Sleep(385);
+						if (StyxWoW.Me.CurrentTarget != healMe) healMe.Target();
 
-						while (healMe.Distance >= 39 && !healMe.InLineOfSight)
+						while (healMe.Distance >= 39 || !healMe.InLineOfSight)
 						{
 							Navigator.MoveTo(healMe.Location);
 							await Coroutine.Yield();
 						}
 
 						await CommonCoroutines.StopMoving(); 
+						StyxWoW.Me.SetFacing(healMe.Location);
 
 						if (healMe.HealthPercent < 8 && SpellManager.CanCast(47788)) // Guardian Spirit
 						{
 							SpellManager.Cast(47788);
+							Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Guardian Spirit on {healMeName}  @ {(int)healMe.HealthPercent}% HP");
 							return;
 						}
 						
 						if (healMe.HealthPercent < 55 && SpellManager.CanCast(2050)) // Holy Word: Serenity
 						{
 							SpellManager.Cast(2050);
+							Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Holy Word: Serenity on {healMeName}  @ {(int)healMe.HealthPercent}% HP");
 							return;
 						}
 
 						if (!healMe.HasAura(139) && SpellManager.CanCast(139)) // Renew
 						{
 							SpellManager.Cast(139);
+							Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Renew on {healMeName}  @ {(int)healMe.HealthPercent}% HP");
 							return;
 						}
 
 						if (!healMe.HasAura(33076) && SpellManager.CanCast(33076)) // Prayer of Mending
 						{
 							SpellManager.Cast(33076);
+							Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Prayer of Mending on {healMeName}  @ {(int)healMe.HealthPercent}% HP");
 							return;
 						}
 
 						if (SpellManager.CanCast(204883)) // Circle of Healing - Talent 
 						{
 							SpellManager.Cast(204883);
+							Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Circle of Healing on {healMeName}  @ {(int)healMe.HealthPercent}% HP");
 							return;
 						}
 
@@ -156,14 +213,21 @@ END INITORDER COMMENT -->
 						{
 							SpellManager.Cast(34861);
 							SpellManager.ClickRemoteLocation(healMe.Location);
+							Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Holy Word: Sanctify on {healMeName}  @ {(int)healMe.HealthPercent}% HP");
 							return;
 						}
 
-						
-
-						if (SpellManager.CanCast(2061)) // Flash Heal, ignoring 'Heal' 
+						if (SpellManager.CanCast(2061) && (healMe.HealthPercent < 35 || Me.HasAura(114255))) // Flash Heal
 						{
 							SpellManager.Cast(2061);
+							Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Flash Heal on {healMeName}  @ {(int)healMe.HealthPercent}% HP");
+							return;
+						}
+
+						if (SpellManager.CanCast(2060)) //Heal
+						{
+							SpellManager.Cast(2060);
+							Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Flash Heal on {healMeName}  @ {(int)healMe.HealthPercent}% HP");
 							return;
 						}
 					}
@@ -172,20 +236,34 @@ END INITORDER COMMENT -->
 		<!-- END Simple Heal Routine -->
 
 		<!-- Get Continuation Quest -->
+			<If Condition="IsQuestCompleted(40938) &amp;&amp; NeedsQuest(41957) &amp;&amp; NeedsQuest(43935, 44407)" > <!-- Using The Light and the Void (40938) to determine if we've already got the first artifact.  -->
+				<CustomBehavior File="InteractWith" MobId="110564" WaitTime="1250" X="1333.91" Y="1335.634" Z="177.1372" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="if GossipTitleButton2:IsVisible() then GossipTitleButton2:Click() else GossipTitleButton1:Click() end" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="2000" Lua="QuestFrameAcceptButton:Click();" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="if QuestChoiceFrameOption2.OptionButton:IsVisible() then QuestChoiceFrameOption2.OptionButton:Click() else QuestChoiceFrameOption1.OptionButton:Click() end" />
+				<!-- If this isn't our last artifact, then there will be a second dialog box here.  This code is uncommented out to ignore it since this should typically be our last artifact 
+					<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="StaticPopup1Button1:Click();" /> -->
+				<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="StaticPopup1Button2:Click();" /> <!-- Decline changing specs -->
+			</If>
 		<!-- END Get Continuation Quest -->
 
-		<!-- Second Artifact -->
-		<!-- END Second Artifact -->
-
-		<!-- Third Artifact -->
-		<!-- END Third Artifact -->
+		<!-- Second+Third Artifact -->
+			<If Condition="QuestDone(43935, 44407)" >
+				<CustomBehavior File="InteractWith" MobId="110564" WaitTime="1250" X="1333.91" Y="1335.634" Z="177.1372" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="if GossipTitleButton3:IsVisible() then GossipTitleButton3:Click() else GossipTitleButton2:Click() end" />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+			</If>
+		<!-- END Second+Third Artifact -->
 
 		<!-- Story: Artifact Weapon - Tuure, Beacon of the Naaru -->
-			<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text=":::WARNING\n\nIf you are seeing this message, then that means this artifact profile has NOT been tested yet.\n\nPlease do not report bugs for this profile until this message is no longer visible." />
-			<!--START1: Need to detect if this is the player's first artifact quest since the NPC is in a different location. -->
-			<PickUp QuestName="The Vindicator's Plea" QuestId="41957" GiverName="Alonsus Faol" GiverId="101314" X="2602.816" Y="-534.5225" Z="89.00004" />
-			<!-- :END1 -->
-			<If Condition="HasQuest(41957)" ><!-- NOTE: <CheckMapId~> &amp;&amp; Me.MapId != 111111 : Need to check if the player isn't in Dalaran -->
+			<If Condition="Me.HasAura(213170) &amp;&amp; NeedsQuest(41957)" > <!-- Class Hall -->
+				<PickUp aQuestName="The Vindicator's Plea" QuestId="41957" GiverName="Alonsus Faol" GiverId="110564" X="1333.91" Y="1335.634" Z="177.1372" />
+				<CustomBehavior File="InteractWith" MobId="251677" WaitTime="3000" X="1231.858" Y="1344.203" Z="186.3952" />
+			</If>
+			<If Condition="!Me.HasAura(213170) &amp;&amp; NeedsQuest(41957)" >
+				<PickUp QuestName="The Vindicator's Plea" QuestId="41957" GiverName="Alonsus Faol" GiverId="101314" X="2602.816" Y="-534.5225" Z="89.00004" />
+			</If>
+			<If Condition="HasQuest(41957) &amp;&amp; Me.MapId == 1" >
 				<CustomBehavior File="InteractWith" MobId="105769" WaitTime="10000" GossipOptions="1" X="2600.161" Y="-513.6042" Z="88.99979" />
 			</If>
 			<TurnIn QuestName="The Vindicator's Plea" QuestId="41957" TurnInName="Vindicator Boros" TurnInId="105602" X="-785.1249" Y="4562.131" Z="727.1848" />
@@ -208,7 +286,6 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="Out of the Darkness" QuestId="41967" GiverName="Defender Barrem" GiverId="105603" X="-778.1324" Y="4565.286" Z="726.8548" />
 			<While Condition="DoQuest(41967)" >
 				<CustomBehavior File="InteractWith" MobId="105697" WaitTime="2500" QuestId="41967" QuestObjectiveIndex="1" X="-824.7535" Y="4290.036" Z="746.2729" />
-				<CustomBehavior File="WaitTimer" WaitTime="45000" TerminateWhen="!Me.IsFlying" />
 				<CustomBehavior File="KillUntilComplete" MobId="105641" QuestId="41967" QuestObjectiveIndex="2" X="-866.0781" Y="3604.503" Z="2.39824" />
 				<MoveTo QuestId="41967" QuestObjectiveIndex="3" X="-870.3797" Y="3601.889" Z="2.71994" />
 				<CustomBehavior File="RunCode"><![CDATA[
@@ -240,7 +317,10 @@ END INITORDER COMMENT -->
 				<If Condition="Me.MapId != 1489" > <!-- NOTE: <CheckID> : Player goes through big portal.  Could use a mapId check here for this below logic. -->
 					<MoveTo X="-830.1863" Y="3675.801" Z="26.49424" />
 					<CustomBehavior File="MyCTM" X="-820.3788" Y="3686.787" Z="27.03888" TerminateWhen="Me.MapId == 1489" />
+					<CustomBehavior File="WaitTimer" WaitTime="2000" />
 				</If>
+
+				<DisableBehavior Name="Combat" />
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
 					<MoveTo X="-27.33948" Y="1168.955" Z="-70.341" />
@@ -248,7 +328,7 @@ END INITORDER COMMENT -->
 							var borosPoi = Unit(106134);
 							while (borosPoi.HealthPercent < 100)
 							{
-								await HealRoutine(borosPoi);
+								await HealRoutine(borosPoi, 100);
 								await Coroutine.Yield();
 							}
 						]]>
@@ -256,32 +336,42 @@ END INITORDER COMMENT -->
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-					<CustomBehavior File="KillUntilComplete" MobId="106201" X="71.04404" Y="1218.746" Z="-74.35352" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							while (Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2)
+							{
+								await SmiteFireSpam(AttackPriority());
+								await HealRoutine(HealPriority());
+								await Coroutine.Yield();
+							}
+						]]>
+					</CustomBehavior>
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
-					<CustomBehavior File="KillUntilComplete" MobId="106221" X="77.6441" Y="1223.868" Z="-72.13527" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+					<MoveTo X="68.5049" Y="1218.589" Z="-74.35337" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" />
 					<CustomBehavior File="RunCode"><![CDATA[
-							var borosPoi = Unit(106134);
-							var jacePoi = Unit(106137);
-
-							while (borosPoi != null && borosPoi.HealthPercent < 100 && borosPoi.Distance < 40)
+							while (HealPriority() != null && HealPriority().HealthPercent < 100)
 							{
-								await HealRoutine(borosPoi);
+								await HealRoutine(HealPriority());
 								await Coroutine.Yield();
 							}
-
-							while (jacePoi != null && jacePoi.HealthPercent < 100 && jacePoi.Distance < 40)
+						]]>
+					</CustomBehavior>
+					<CustomBehavior File="RunCode"><![CDATA[
+							var crystalPoi = Unit(106221);
+							while (crystalPoi != null && crystalPoi.IsAlive)
 							{
-								await HealRoutine(jacePoi);
+								await SmiteFireSpam(crystalPoi);
 								await Coroutine.Yield();
 							}
 						]]>
 					</CustomBehavior>
 
+					<EnableBehavior Name="Combat" />
+
 					<If Condition="!IsScenarioCriteriaComplete(2)" >
 						<CustomBehavior File="KillUntilComplete" MobId="106287" X="57.80244" Y="1204.254" Z="-39.68142" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
-
 					</If>
 				</If>
 
@@ -292,24 +382,24 @@ END INITORDER COMMENT -->
 
 							while (borosPoi != null && borosPoi.HealthPercent < 100 && borosPoi.Distance < 40)
 							{
-								await HealRoutine(borosPoi);
+								await HealRoutine(borosPoi, 100);
 								await Coroutine.Yield();
 							}
 
 							while (jacePoi != null && jacePoi.HealthPercent < 100 && jacePoi.Distance < 40)
 							{
-								await HealRoutine(jacePoi);
+								await HealRoutine(jacePoi, 100);
 								await Coroutine.Yield();
 							}
 						]]>
 					</CustomBehavior>
-					<CustomBehavior File="InteractWith" MobId="249693" X="58.64583" Y="1212.526" Z="-39.73246" />
+					<CustomBehavior File="InteractWith" MobId="249693" IgnoreCombat="true" InteractBlacklistTimeInSeconds="1" Range="5" X="57.06965" Y="1214.216" Z="-39.73515" />
 				</If>
 
-				<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
-					<DisableBehavior Name="Combat" />
+				<DisableBehavior Name="Combat" />
 
-					<If Condition="!Me.Combat" >
+				<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<If Condition="Unit(106107, u =&gt; !u.Combat) != null" >
 						<MoveTo X="12.9236" Y="1192.45" Z="-45.9861" /> <!-- Initiate Combat -->
 					</If>
 					<CustomBehavior File="RunCode"><![CDATA[
@@ -318,6 +408,7 @@ END INITORDER COMMENT -->
 
 							while (naranothPoi != null && naranothPoi.IsAlive && borosPoi != null && StyxWoW.Me.IsAlive)
 							{
+								await SmiteFireSpam(AttackPriority());
 								await HealRoutine(HealPriority());
 								await Coroutine.Yield();
 							}
@@ -327,73 +418,79 @@ END INITORDER COMMENT -->
 				</While>
 
 				<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
-					<DisableBehavior Name="Combat" />
-
-					<MoveTo X="127.1343" Y="1247.168" Z="-38.70029" />
+					<MoveTo X="75.38093" Y="1221.02" Z="-39.64474" />
+					<CustomBehavior File="WaitTimer" WaitTime="30000" TerminateWhen="ObjectManager.GetObjectsOfType&lt;WoWUnit&gt;().Where(x =&gt; x.Entry == 106590 &amp;&amp; x.X &lt; 200).FirstOrDefault() != null" />
 					<CustomBehavior File="RunCode"><![CDATA[
-							while (StyxWoW.Me.Combat)
+							while (ObjectManager.GetObjectsOfType<WoWUnit>().Any(x => x.Entry == 106590 && x.X < 200))
 							{
+								await MoveToUnit(MovePriority(), 5);
+								await SmiteFireSpam(AttackPriority());
 								await HealRoutine(HealPriority());
 								await Coroutine.Yield();
 							}
-
 						]]>
 					</CustomBehavior>
 
-					<MoveTo X="171.3382" Y="1234.025" Z="-45.35261" />
+					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Me.ManaPercent &gt;= 80" />
+
+					<MoveTo X="194.1462" Y="1278.214" Z="-58.8044" />
+					<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Unit(106134, u =&gt; u.Distance &lt;= 10) != null" />
+					<CustomBehavior File="MyCTM" X="183.875" Y="1334.104" Z="-58.75566" TerminateWhen="Me.Combat" />
 					<CustomBehavior File="RunCode"><![CDATA[
-							while (StyxWoW.Me.Combat)
+						var celandrisPoi = Unit(106318);
+						var borosPoi = Unit(106134);
+						while (Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6)
+						{
+							await SmiteFireSpam(AttackPriority());
+							await HealRoutine(HealPriority());
+							while (Unit(106606, u => u.IsAlive) != null) //Images
 							{
-								await HealRoutine(HealPriority());
+								SpellManager.StopCasting();
+								await Coroutine.Sleep(100);
+								SpellManager.Cast("Holy Nova");
+								await Coroutine.Sleep(1000);
 								await Coroutine.Yield();
 							}
 
-						]]>
+							await Coroutine.Yield();
+						}
+					]]>
 					</CustomBehavior>
-
-					<MoveTo X="189.7054" Y="1304.63" Z="-59.08168" />
-					<CustomBehavior File="RunCode"><![CDATA[
-							var calindrisPoi = Unit(106318);
-							var borosPoi = Unit(106134);
-							var imagePoi = Unit(105505);
-
-							while (calindrisPoi != null && calindrisPoi.IsAlive && borosPoi != null && !borosPoi.HasAura(210703) && StyxWoW.Me.IsAlive)
-							{
-								await HealRoutine(HealPriority());
-
-								while (imagePoi != null && imagePoi.IsAlive)
-								{
-									WoWMovement.ClickToMove(imagePoi.Location);
-									SpellManager.Cast(132157);
-									await Coroutine.Wait(2000, () => !SpellManager.GlobalCooldown);
-								}
-
-								await Coroutine.Yield();
-							}
-
-						]]>
-					</CustomBehavior>
-					<EnableBehavior Name="Combat" />
-					<CustomBehavior File="KillUntilComplete" MobId="106318" X="185.4585" Y="1324.871" Z="-59.14021" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+					<!-- <CustomBehavior File="KillUntilComplete" MobId="106318" X="185.4585" Y="1324.871" Z="-59.14021" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />-->
 				</While>
 
+				<EnableBehavior Name="Combat" />
+
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
-					<!-- Secondary Object: Name="T'uure" Entry="106326" X="189.8004" Y="1293.991" Z="-59.01334" -->
 					<CustomBehavior File="InteractWith" MobId="249705" InteractByLooting="true" WaitTime="1500" X="189.8004" Y="1293.991" Z="-59.01367" />
 					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
 					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
 				</If>
 
-				<If Condition="HasItem(128825)" >
-					<CustomBehavior File="InteractWith" MobId="106360" QuestId="42074" X="180.5191" Y="1292.099" Z="-59.07774" />
-					<CustomBehavior File="WaitTimer" QuestId="42074" WaitTime="5000" />
-				</If>
 			</While>
-			<TurnIn QuestName="Return of the Light" QuestId="42074" TurnInName="Prophet Velen" TurnInId="101313" X="-695.5399" Y="4492.624" Z="728.5384" />
+			<If Condition="HasItem(128825) &amp;&amp; Me.MapId == 1489" >
+				<CustomBehavior File="InteractWith" MobId="106360" X="180.5191" Y="1292.099" Z="-59.07774" />
+				<CustomBehavior File="WaitTimer" WaitTime="5000" />
+			</If>
+
+			<If Condition="IsQuestCompleted(40938)" > <!-- If secord or third artifact aquisition -->
+				<If Condition="!Me.HasAura(213170)" >
+					<If Condition="Me.IsAlliance" >
+						<MoveTo X="-898.0295" Y="4552.3" Z="744.436" />
+						<CustomBehavior File="InteractWith" MobId="251306" NonCompeteDistance="0" X="-897.5434" Y="4547.79" Z="744.4398" />
+					</If>
+					<If Condition="Me.IsHorde" >
+						<MoveTo X="-680.4219" Y="4354.915" Z="748.5759" />
+						<CustomBehavior File="InteractWith" MobId="251307" NonCompeteDistance="0" X="-680.4219" Y="4354.915" Z="748.5759" />
+					</If>
+				</If>
+				<TurnIn QuestName="Return of the Light" QuestId="42074" TurnInName="Prophet Velen" TurnInId="109771" X="1334.696" Y="1353.443" Z="177.1372" />
+			</If>
 		<!-- END Story: Artifact Weapon - Tuure, Beacon of the Naaru -->
 
 
 		<If Condition="!IsQuestCompleted(40938)" >
+			<TurnIn QuestName="Return of the Light" QuestId="42074" TurnInName="Prophet Velen" TurnInId="101313" X="-695.5399" Y="4492.624" Z="728.5384" />
 			<PickUp QuestName="The Light and the Void" QuestId="40938" GiverName="Prophet Velen" GiverId="101313" X="-695.5399" Y="4492.624" Z="728.5385" />
 			<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
 			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Priest [Echo].xml" />
