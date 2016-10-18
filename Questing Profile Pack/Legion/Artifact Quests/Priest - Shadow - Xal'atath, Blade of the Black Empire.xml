@@ -99,14 +99,25 @@ END INITORDER COMMENT -->
 		<!-- END RunCode Methods -->
 
 		<!-- Get Continuation Quest -->
+			<If Condition="IsQuestCompleted(40938) &amp;&amp; NeedsQuest(41625) &amp;&amp; NeedsQuest(43935, 44407)" > <!-- Using The Light and the Void (40938) to determine if we've already got the first artifact.  -->
+				<CustomBehavior File="InteractWith" MobId="110564" WaitTime="1250" X="1333.91" Y="1335.634" Z="177.1372" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="if GossipTitleButton2:IsVisible() then GossipTitleButton2:Click() else GossipTitleButton1:Click() end" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="2000" Lua="QuestFrameAcceptButton:Click();" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="if QuestChoiceFrameOption2.OptionButton:IsVisible() then QuestChoiceFrameOption2.OptionButton:Click() else QuestChoiceFrameOption1.OptionButton:Click() end" />
+				<!-- If this isn't our last artifact, then there will be a second dialog box here.  This code is uncommented out to ignore it since this should typically be our last artifact 
+					<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="StaticPopup1Button1:Click();" /> -->
+				<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="StaticPopup1Button2:Click();" /> <!-- Decline changing specs -->
+			</If>
 		<!-- END Get Continuation Quest -->
 
-		<!-- Second Artifact -->
-		<!-- END Second Artifact -->
-
-		<!-- Third Artifact -->
-		<!-- END Third Artifact -->
-
+		<!-- Second+Third Artifact -->
+			<If Condition="QuestDone(43935, 44407)" >
+				<CustomBehavior File="InteractWith" MobId="110564" WaitTime="1250" X="1333.91" Y="1335.634" Z="177.1372" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="if GossipTitleButton3:IsVisible() then GossipTitleButton3:Click() else GossipTitleButton2:Click() end" />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+			</If>
+		<!-- END Second+Third Artifact -->
+		
 		<!-- Story: Artifact Weapon - Xal'atath, Blade of the Black Empire -->
 			<!--START1: Need to detect if this is the player's first artifact quest since the NPC is in a different location. -->
 			<PickUp QuestName="Blade in Twilight" QuestId="40710" GiverName="Alonsus Faol" GiverId="101314" X="2602.816" Y="-534.5225" Z="89.00004" />
