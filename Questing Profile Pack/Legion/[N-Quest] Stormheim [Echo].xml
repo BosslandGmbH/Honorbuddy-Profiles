@@ -138,7 +138,6 @@ END INITORDER COMMENT -->
 
 		<!-- [A] Alliance Quest Section -->
 			<!-- [A] Zone Introductory Quests -->
-
 				<If Condition="Me.IsAlliance" >
 					<If Condition="QuestDone(39735)" >
 						<TurnIn QuestName="Stormheim" QuestId="39735" TurnInName="Sky Admiral Rogers" TurnInId="96644" X="-840.5087" Y="4633.81" Z="749.4136" />
@@ -392,6 +391,16 @@ END INITORDER COMMENT -->
 						<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 					</While>
 					<While Condition="DoQuest(39801)" >
+						<While Condition="Me.MapId == 1220 &amp;&amp; Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0">
+							<!-- Somehow players are ending back up in Broken Isles.  This will prevent that. -->
+							<MoveTo X="-831.9807" Y="4653.169" Z="749.6398" />
+							<CustomBehavior File="InteractWith" MobId="244571" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" NumOfTimes="5" X="-830.9566" Y="4655.491" Z="749.6113" TerminateWhen="Me.MapId == 1" />
+						</While>
+						<While Condition="Me.MapId == 1" >
+							<MoveTo X="1500.367" Y="-5211.311" Z="11.60725" />
+							<CustomBehavior File="InteractWith" MobId="96686" GossipOptions="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" X="1502.566" Y="-5212.933" Z="11.8475" />
+						</While>
+
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
 							<CustomBehavior File="InteractWith" MobId="94419" X="4623.434" Y="2853.851" Z="7.856867" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
 							<CustomBehavior File="WaitTimer" WaitTime="32000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
