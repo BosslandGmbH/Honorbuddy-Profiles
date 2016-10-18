@@ -297,6 +297,8 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="WaitTimer" WaitTime="90000" TerminateWhen="Unit(104659, u =&gt; u.Combat) != null" />
 
 					<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+							string healMeName = "";
+
 							WoWUnit HealPriority()
 							{
 								return ObjectManager.GetObjectsOfType<WoWUnit>(true, true).Where(x => new[]{104628, 104659, 104658, 104657}.Contains((int)x.Entry) || x.IsMe).OrderBy(x => x.GetPredictedHealthPercent(true)).FirstOrDefault();
@@ -312,6 +314,9 @@ END INITORDER COMMENT -->
 								}
 
 								if (healMe == null) return;
+								
+								if (healMe == Me) healMeName = "Me";
+								else healMeName = healMe.Name;
 
 								if (Me.HealthPercent <= 30 && SpellManager.CanCast("Renewal"))
 								{
@@ -348,7 +353,7 @@ END INITORDER COMMENT -->
 								{
 									while (SpellManager.CanCast(18562))
 									{
-										Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Swiftmend on {healMe.Name}  @ {(int)healMe.HealthPercent}% HP");
+										Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Swiftmend on {healMeName}  @ {(int)healMe.HealthPercent}% HP");
 										SpellManager.Cast(18562);
 										await Coroutine.Wait(3000, () => !StyxWoW.Me.IsCasting && !SpellManager.GlobalCooldown);
 										await Coroutine.Yield();
@@ -358,7 +363,7 @@ END INITORDER COMMENT -->
 
 								if (healMe != Me && Unit(47649) == null && SpellManager.CanCast(145205))
 								{
-									Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Efflorescence on {healMe.Name}  @ {(int)healMe.HealthPercent}% HP");
+									Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Efflorescence on {healMeName}  @ {(int)healMe.HealthPercent}% HP");
 									SpellManager.Cast(145205);
 									SpellManager.ClickRemoteLocation(healMe.Location);
 									return;
@@ -366,35 +371,35 @@ END INITORDER COMMENT -->
 
 								if (!healMe.HasAura("Rejuvenation") || (healMe.HasAura("Rejuvenation") && healMe.GetAuraByName("Rejuvenation").TimeLeft < TimeSpan.FromSeconds(2)))
 								{
-									Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Rejuvenation on {healMe.Name}  @ {(int)healMe.HealthPercent}% HP");
+									Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Rejuvenation on {healMeName}  @ {(int)healMe.HealthPercent}% HP");
 									SpellManager.Cast("Rejuvenation");
 									return;
 								}
 
 								if (!healMe.HasAura("Lifebloom") || (healMe.HasAura("Lifebloom") && healMe.GetAuraByName("Lifebloom").TimeLeft < TimeSpan.FromSeconds(2)))
 								{
-									Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Lifebloom on {healMe.Name}  @ {(int)healMe.HealthPercent}% HP");
+									Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Lifebloom on {healMeName}  @ {(int)healMe.HealthPercent}% HP");
 									SpellManager.Cast("Lifebloom");
 									return;
 								}
 
 								if (!healMe.HasAura("Regrowth") || (healMe.HasAura("Regrowth") && healMe.GetAuraByName("Regrowth").TimeLeft < TimeSpan.FromSeconds(1)))
 								{
-									Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Regrowth on {healMe.Name}  @ {(int)healMe.HealthPercent}% HP");
+									Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Regrowth on {healMeName}  @ {(int)healMe.HealthPercent}% HP");
 									SpellManager.Cast("Regrowth");
 									return;
 								}
 
 								if (SpellManager.CanCast("Wild Growth"))
 								{
-									Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Wild Growth on {healMe.Name}  @ {(int)healMe.HealthPercent}% HP");
+									Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Wild Growth on {healMeName}  @ {(int)healMe.HealthPercent}% HP");
 									SpellManager.Cast("Wild Growth");
 									return;
 								}
 
 								if (SpellManager.CanCast("Healing Touch"))
 								{
-									Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Healing Touch on {healMe.Name}  @ {(int)healMe.HealthPercent}% HP");
+									Logging.Write(System.Windows.Media.Colors.Yellow, $"[PRoutine]: Healing Touch on {healMeName}  @ {(int)healMe.HealthPercent}% HP");
 									SpellManager.Cast("Healing Touch");
 									return;
 								}
