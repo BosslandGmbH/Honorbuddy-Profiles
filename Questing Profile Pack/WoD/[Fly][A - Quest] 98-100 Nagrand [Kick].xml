@@ -1533,12 +1533,29 @@
 											<CustomBehavior File="ForceSetVendor" DoSell="True" DoRepair="True" DoMail="True" />
 										</If>
 
-										<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" ExpiryTime="280" ExpiryAction="InputEnabled_Continue" 
-										Text="End of WoD Profiles - Now Loading the Draenor Pathefinder Profiles" />
+										<If Condition="Me.Level &gt;= 100 &amp;&amp; Lua.GetReturnVal&lt;int&gt;(&quot;return GetAccountExpansionLevel();&quot;, 0) &gt;= 6" >
+											<If Condition="Me.IsAlliance &amp;&amp; Me.CurrentMap.ExpansionId == 5" >
+												<If Condition="Styx.WoWInternals.DBC.AreaTable.FromId(StyxWoW.Me.HearthstoneAreaId).MapId == 0" >
+													<CustomBehavior File="RunCode" Code="await Coroutine.Wait(1800000, () =&gt; HasItem(6948) &amp;&amp; !WoWSpell.FromId(8690).Cooldown);" />				
+													<CustomBehavior File="UseItem" ItemId="6948" />
+												<Else>
+													<CustomBehavior File="InteractWith" MobId="235883" X="3734.65" Y="-4042.976" Z="44.81873" TerminateWhen="Me.MapId == 0" />
+												</Else>
+												</If>
+											</If>
+											<If Condition="Me.IsHorde &amp;&amp; Me.CurrentMap.ExpansionId == 5" >
+												<If Condition="Styx.WoWInternals.DBC.AreaTable.FromId(StyxWoW.Me.HearthstoneAreaId).MapId == 1" >
+													<CustomBehavior File="RunCode" Code="await Coroutine.Wait(1800000, () =&gt; HasItem(6948) &amp;&amp; !WoWSpell.FromId(8690).Cooldown);" />				
+													<CustomBehavior File="UseItem" ItemId="6948" />
+												<Else>
+													<CustomBehavior File="InteractWith" MobId="235880" X="5266.4" Y="-4075.891" Z="21.13024" TerminateWhen="Me.MapId == 1" />
+												</Else>
+												</If>
+											</If>
+											<CustomBehavior File="LoadProfile" ProfileName="..\Legion\Auto-Loader.xml" RememberProfile="true" />
+										</If>
 
 										<CustomBehavior File="LoadProfile" ProfileName="Pathfinder Profiles\[N - Quest] WoD Pathfinder Loader [Kick]" RememberProfile="true" />
-
-										<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" Text="I'm serious, there's no more quests." />
 
 									</QuestOrder>
 
