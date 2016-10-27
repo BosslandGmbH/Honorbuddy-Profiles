@@ -555,6 +555,16 @@ END INITORDER COMMENT -->
 		<!-- Moozy Finale -->
 			<PickUp QuestName="Moozy's Reunion" QuestId="42590" GiverName="Sella Waterwise" GiverId="96084" X="4056.849" Y="4372.806" Z="768.562" />
 			<While Condition="DoQuest(42590)" >
+				<MoveTo X="4269.8" Y="4303.593" Z="738.8216" />
+				<DisableBehavior Name="Combat" />
+				<UseMount Value="false" />
+				<!-- Mounts and Shapeshifts can cause weird issues here. -->
+				<CustomBehavior File="RunCode"><![CDATA[
+						await CommonCoroutines.LandAndDismount();
+						foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+						aura.TryCancelAura();
+					]]>
+				</CustomBehavior>
 				<CustomBehavior File="InteractWith" MobId="107726" NonCompeteDistance="0" GossipOptions="1" InteractBlacklistTimeInSeconds="1" QuestId="42590" X="4269.8" Y="4303.593" Z="738.8216" />
 				<CustomBehavior File="EscortGroup" EscortCompleteWhen="QuestObjectiveComplete" NonCompeteDistance="0" EscortMaxFollowDistance="4" EscortCountMax="1" QuestId="42590" QuestObjectiveIndex="2"
 					EscortNpcId="107726" EscortMaxFightDistance="15" SearchForNpcsRadius="30" TerminateWhen="Unit(107726) == null" >
@@ -562,6 +572,8 @@ END INITORDER COMMENT -->
 						<Hotspot X="4269.94" Y="4299.034" Z="738.876" />
 					</SearchPath>
 				</CustomBehavior>
+				<EnableBehavior Name="Combat" />
+				<UseMount Value="true" />
 			</While>
 			<TurnIn QuestName="Moozy's Reunion" QuestId="42590" TurnInName="Sella Waterwise" TurnInId="96084" X="4056.849" Y="4372.806" Z="768.562" />
 
