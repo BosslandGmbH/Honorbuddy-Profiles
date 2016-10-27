@@ -136,7 +136,7 @@ END INITORDER COMMENT -->
 					<PickUp QuestName="Making Arrangements" QuestId="40819" GiverName="Kayn Sunfury" GiverId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
 					<TurnIn QuestName="Making Arrangements" QuestId="40819" TurnInName="Kayn Sunfury" TurnInId="94902" X="-952.618" Y="4332.883" Z="740.184" />
 				</If>
-				<If Condition="HasQuest(40819) || (DoQuest(40819) &amp;&amp; Me.HasAura(213170))" > <!-- Second artifact weapon, class hall -->
+				<If Condition="NeedsQuest(40819) || (DoQuest(40819) &amp;&amp; Me.HasAura(213170))" > <!-- Second artifact weapon, class hall -->
 					<PickUp QuestName="Making Arrangements" QuestId="40819" GiverName="Kayn Sunfury" GiverId="108572" X="1551.054" Y="1413.816" Z="237.1085" />
 					<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" TerminateWhen="!Me.HasAura(213170)" />
 					<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.Z &lt; 746" /> <!-- Walk off ledge -->
@@ -176,7 +176,7 @@ END INITORDER COMMENT -->
 					<PickUp QuestName="Making Arrangements" QuestId="41120" GiverName="Altruis the Sufferer" GiverId="99254" X="-852.2726" Y="4256.074" Z="746.285" />
 					<TurnIn QuestName="Making Arrangements" QuestId="41120" TurnInName="Altruis the Sufferer" TurnInId="103156" X="-952.618" Y="4332.883" Z="740.1839" />
 				</If>
-				<If Condition="HasQuest(41120) || (DoQuest(41120) &amp;&amp; Me.HasAura(213170))" > <!-- Second artifact weapon, class hall -->
+				<If Condition="NeedsQuest(41120) || (DoQuest(41120) &amp;&amp; Me.HasAura(213170))" > <!-- Second artifact weapon, class hall -->
 					<PickUp Nav="Fly" QuestName="Making Arrangements" QuestId="41120" GiverName="Altruis the Sufferer" GiverId="108571" X="1551.054" Y="1413.816" Z="237.1085" />
 					<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" TerminateWhen="!Me.HasAura(213170)" />
 					<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.Z &lt; 746" /> <!-- Walk off ledge -->
@@ -185,8 +185,8 @@ END INITORDER COMMENT -->
 
 				<PickUp QuestName="By Any Means" QuestId="41121" GiverName="Altruis the Sufferer" GiverId="103156" X="-952.618" Y="4332.883" Z="740.1839" />
 				<While Condition="DoQuest(41121)" >
-					<CustomBehavior File="InteractWith" MobId="96313" GossipOptions="2,2" QuestId="41121" QuestObjectiveIndex="1" X="-957.408" Y="4329.056" Z="740.1688" />
-					<CustomBehavior File="InteractWith" MobId="242174" QuestId="41121" X="-960.4443" Y="4324.997" Z="740.1581" />
+					<CustomBehavior File="InteractWith" MobId="96313" NonCompeteDistance="0" GossipOptions="2,2" QuestId="41121" QuestObjectiveIndex="1" X="-957.408" Y="4329.056" Z="740.1688" />
+					<CustomBehavior File="InteractWith" MobId="242174" NonCompeteDistance="0" QuestId="41121" X="-960.4443" Y="4324.997" Z="740.1581" />
 					<!-- NOTE: <WIP> : This quest involves going through a door and into an instance.  Using IW to open the door, and CTM to go into portal, use TerminateWhen to shut off CTM -->
 					<CustomBehavior File="MyCTM" QuestId="41121" QuestObjectiveIndex="2" X="-962.2867" Y="4322.663" Z="740.1408" TerminateWhen="Me.MapId == 1494" />
 					<CustomBehavior File="WaitTimer" WaitTime="60000" />
@@ -259,9 +259,11 @@ END INITORDER COMMENT -->
 				<CustomBehavior File="WaitTimer" WaitTime="12000" /> <!-- Wait for little cinematic. -->
 			</While>
 
-			<CustomBehavior File="InteractWith" MobId="101902" InteractBlacklistTimeInSeconds="1" X="971.3768" Y="4841.856" Z="35.01244" />
-			<CustomBehavior File="WaitTimer" WaitTime="18000" />
-			<CustomBehavior File="Hooks\Avoid" AvoidName="ChaosBomb" Command="Remove" />
+			<If Condition="HasItem(127829)" >
+				<CustomBehavior File="InteractWith" MobId="101902" InteractBlacklistTimeInSeconds="1" X="971.3768" Y="4841.856" Z="35.01244" />
+				<CustomBehavior File="WaitTimer" WaitTime="18000" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="ChaosBomb" Command="Remove" />
+			</If>
 			<UseMount Value="true" />
 		</While>
 
