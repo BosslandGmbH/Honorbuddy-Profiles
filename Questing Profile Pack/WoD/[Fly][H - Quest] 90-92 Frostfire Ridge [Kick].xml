@@ -1721,7 +1721,13 @@
       <CustomBehavior File="Misc\RunLua" Lua="if MovieFrame and MovieFrame:IsVisible() then MovieFrame:StopMovie() elseif CinematicFrame and CinematicFrame:IsVisible() then CinematicFrame_CancelCinematic() end" WaitTime="2000" />
       <MoveTo Nav="Fly" DestName="The Battle of Thunder Pass - Stage 10" X="6025.898" Y="2850.042" Z="200.401" />
     </While>
-    <TurnIn Nav="Fly" QuestName="The Battle of Thunder Pass" QuestId="34124" TurnInName="Durotan" TurnInId="76484" X="6025.898" Y="2850.042" Z="200.401" />
+    <While Condition="HasQuest(34124) &amp;&amp; IsQuestCompleted(34124)" >
+      <!-- Users noted that this wasn't working anymore for whatever reason.
+      <TurnIn Nav="Fly" QuestName="The Battle of Thunder Pass" QuestId="34124" TurnInName="Durotan" TurnInId="76484" X="6025.898" Y="2850.042" Z="200.401" /> -->
+
+      <CustomBehavior File="InteractWith" MobId="76484" WaitTime="1500" X="6025.898" Y="2850.042" Z="200.401" TerminateWhen="!HasQuest(34124)" />
+      <CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+    </While>
     <PickUp Nav="Fly" QuestName="The Secrets of Gorgrond" QuestId="34867" GiverName="Durotan" GiverId="76484" X="6025.898" Y="2850.042" Z="200.401" />
 
     <If Condition="Unit(76730) != null &amp;&amp; !IsQuestCompleted(37563)" >
