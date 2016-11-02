@@ -99,18 +99,32 @@ END INITORDER COMMENT -->
 		<!-- END RunCode Methods -->
 
 		<!-- Get Continuation Quest -->
+			<If Condition="IsQuestCompleted(40731) &amp;&amp; NeedsQuest(42128) &amp;&amp; NeedsQuest(43984, 1111111)" > <!-- Using The Heart of the Dreadscar (40731) to determine if we've already got the first artifact.  -->
+				<CustomBehavior File="InteractWith" MobId="101097" WaitTime="1250" X="3121.295" Y="1106.274" Z="286.4945" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="if GossipTitleButton2:IsVisible() then GossipTitleButton2:Click() else GossipTitleButton1:Click() end" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="2000" Lua="QuestFrameAcceptButton:Click();" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="if QuestChoiceFrameOption2.OptionButton:IsVisible() then QuestChoiceFrameOption2.OptionButton:Click() else QuestChoiceFrameOption1.OptionButton:Click() end" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="StaticPopup1Button1:Click();" /> <!-- Accept picking artifact. -->
+			</If>
 		<!-- END Get Continuation Quest -->
 
-		<!-- Second Artifact -->
-		<!-- END Second Artifact -->
-
-		<!-- Third Artifact -->
-		<!-- END Third Artifact -->
+		<!-- Second+Third Artifact -->
+			<If Condition="QuestDone(43984, 1111111)" >
+				<CustomBehavior File="InteractWith" MobId="101097" WaitTime="1250" X="3121.295" Y="1106.274" Z="286.4945" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="if GossipTitleButton3:IsVisible() then GossipTitleButton3:Click() else GossipTitleButton2:Click() end" />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+			</If>
+		<!-- END Second+Third Artifact -->
 
 		<!-- Story: Artifact Weapon - Skull of the Man'ari -->
-			<!--START1: Need to detect if this is the player's first artifact quest since the NPC is in a different location. -->
-			<PickUp QuestName="Ritual Reagents" QuestId="42128" GiverName="Calydus" GiverId="101097" X="-858.3073" Y="4456.332" Z="695.9578" />
-			<!-- :END1 -->
+			<If Condition="Me.HasAura(213170) &amp;&amp; NeedsQuest(42128)" >
+				<PickUp QuestName="Ritual Reagents" QuestId="42128" GiverName="Calydus" GiverId="101097" X="3121.295" Y="1106.274" Z="286.4945" />
+				<MoveTo X="3088.475" Y="838.9525" Z="243.8864" />
+				<CustomBehavior File="MyCTM" X="3084.979" Y="819.9088" Z="243.6615" TerminateWhen="Me.ZoneId == 8392" />
+			</If>
+			<If Condition="!Me.HasAura(213170) &amp;&amp; NeedsQuest(42128)" >
+				<PickUp QuestName="Ritual Reagents" QuestId="42128" GiverName="Calydus" GiverId="101097" X="-858.3073" Y="4456.332" Z="695.9578" />
+			</If>
 			<While Condition="DoQuest(42128)" >
 				<CustomBehavior File="InteractWith" MobId="106581" GossipOptions="1" QuestId="42128" QuestObjectiveIndex="4" X="-795.0504" Y="4378.95" Z="740.1576" />
 				<CustomBehavior File="InteractWith" MobId="249748" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" InteractByLooting="true" QuestId="42128" QuestObjectiveIndex="3" X="-791.8264" Y="4474.007" Z="736.1099" />
@@ -147,7 +161,7 @@ END INITORDER COMMENT -->
 				</If>
  
  				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
- 					<MoveTo X="1153.517" Y="5062.131" Z="57.71943" />
+ 					<MoveTo X="1155.388" Y="5060.562" Z="57.71455" />
 					<CustomBehavior File="RunCode"><![CDATA[
 							await CommonCoroutines.LandAndDismount();
 							await CommonCoroutines.StopMoving();
@@ -157,6 +171,7 @@ END INITORDER COMMENT -->
 							await Coroutine.Sleep(3500);
 						]]> 
 					</CustomBehavior>
+					<CustomBehavior File="WaitTimer" WaitTime="3000" />
 					<CustomBehavior File="InteractWith" MobId="59271" X="1153.517" Y="5062.131" Z="57.71968" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
  					<MoveTo X="1180.539" Y="5023.105" Z="55.99846" />
  				</If>
@@ -180,11 +195,19 @@ END INITORDER COMMENT -->
  					<CustomBehavior File="InteractWith" MobId="106846" X="1006.182" Y="4917.022" Z="36.27739" />
  				</If>
 			</While>
-			<TurnIn QuestName="Dark Whispers" QuestId="42125" TurnInName="Calydus" TurnInId="101097" X="-858.3073" Y="4456.332" Z="695.9576" />
 		<!-- END Story: Artifact Weapon - Skull of the Man'ari -->
+
+		<If Condition="IsQuestCompleted(40731)" >
+			<While Condition="!Me.HasAura(213170)" >
+				<MoveTo X="-798.684" Y="4577.701" Z="700.5798" />
+				<CustomBehavior File="InteractWith" MobId="251302" Range="5" NonCompeteDistance="0" X="-795.9913" Y="4582.382" Z="700.575" />
+			</While>
+			<TurnIn QuestName="Dark Whispers" QuestId="42125" TurnInName="Calydus" TurnInId="101097" X="3121.295" Y="1106.274" Z="286.4946" />
+		</If>
 
 
 		<If Condition="!IsQuestCompleted(40731)" >
+			<TurnIn QuestName="Dark Whispers" QuestId="42125" TurnInName="Calydus" TurnInId="101097" X="-858.3073" Y="4456.332" Z="695.9576" />
 			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Warlock [Echo].xml" />
 		</If>
 

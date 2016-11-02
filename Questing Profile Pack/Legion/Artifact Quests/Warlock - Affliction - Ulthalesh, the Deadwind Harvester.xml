@@ -98,13 +98,22 @@ END INITORDER COMMENT -->
 		<!-- END RunCode Methods -->
 
 		<!-- Get Continuation Quest -->
+			<If Condition="IsQuestCompleted(40731) &amp;&amp; NeedsQuest(42128) &amp;&amp; NeedsQuest(43984, 1111111)" > <!-- Using The Heart of the Dreadscar (40731) to determine if we've already got the first artifact.  -->
+				<CustomBehavior File="InteractWith" MobId="101097" WaitTime="1250" X="3121.295" Y="1106.274" Z="286.4945" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="if GossipTitleButton2:IsVisible() then GossipTitleButton2:Click() else GossipTitleButton1:Click() end" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="2000" Lua="QuestFrameAcceptButton:Click();" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="if QuestChoiceFrameOption2.OptionButton:IsVisible() then QuestChoiceFrameOption2.OptionButton:Click() else QuestChoiceFrameOption1.OptionButton:Click() end" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="StaticPopup1Button1:Click();" /> <!-- Accept picking artifact. -->
+			</If>
 		<!-- END Get Continuation Quest -->
 
-		<!-- Second Artifact -->
-		<!-- END Second Artifact -->
-
-		<!-- Third Artifact -->
-		<!-- END Third Artifact -->
+		<!-- Second+Third Artifact -->
+			<If Condition="QuestDone(43984, 1111111)" >
+				<CustomBehavior File="InteractWith" MobId="101097" WaitTime="1250" X="3121.295" Y="1106.274" Z="286.4945" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="if GossipTitleButton3:IsVisible() then GossipTitleButton3:Click() else GossipTitleButton2:Click() end" />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+			</If>
+		<!-- END Second+Third Artifact -->
 
 		<!-- Story: Artifact Weapon - Ulthalesh, the Deadwind Harvester -->
 			<!--START1: Need to detect if this is the player's first artifact quest since the NPC is in a different location. -->
