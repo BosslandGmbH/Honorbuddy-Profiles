@@ -6390,10 +6390,21 @@
     <PickUp QuestName="Hippogryph Muisek" QuestId="25337" GiverName="Gombana" GiverId="39894" />
 
     <PickUp QuestName="Talk to Swar'jan" QuestId="25342" GiverName="Orhan Ogreblade" GiverId="39656" />
-    <TurnIn QuestName="Talk to Swar'jan" QuestId="25342" TurnInName="Swar'jan" TurnInId="39840" />
-
-    <PickUp QuestName="Ogre Abduction" QuestId="25344" GiverName="Swar'jan" GiverId="39840" />
-
+    <If Condition="HasQuest(25342)">
+      <MoveTo DestName="Base of Tower" X="-4523.398" Y="1859.233" Z="107.9184" />
+      <CustomBehavior File="ForcedDismount" />
+      <UseMount Value="false" />
+      <TurnIn QuestName="Talk to Swar'jan" QuestId="25342" TurnInName="Swar'jan" TurnInId="39840" X="-4530.772" Y="1830.492" Z="144.2256" />
+    </If>
+    <If Condition="!HasQuest(25344) &amp;&amp; !IsQuestCompleted(25344)">
+      <If Condition="Unit(39840) == null">
+        <MoveTo DestName="Base of Tower" X="-4523.398" Y="1859.233" Z="107.9184" />
+      </If>
+      <CustomBehavior File="ForcedDismount" />
+      <UseMount Value="false" />
+      <PickUp QuestName="Ogre Abduction" QuestId="25344" GiverName="Swar'jan" GiverId="39840" X="-4530.772" Y="1830.492" Z="144.2256" />
+    </If>
+    <UseMount Value="true" />
     <If Condition="HasItem(8705)">
       <CustomBehavior File="WaitTimer" WaitTime="5000" GoalText="Waiting for looting to complete {TimeRemaining}" />
       <PickUp QuestName="Find OOX-22/FE!" QuestId="25475" GiverName="Find OOX-22/FE!" GiverId="8705" GiverType="Item" />
@@ -6459,7 +6470,13 @@
 
     <PickUp QuestName="The Flow of Muisek" QuestId="25641" GiverName="Gombana" GiverId="39894" />
 
-    <TurnIn QuestName="Ogre Abduction" QuestId="25344" TurnInName="Swar'jan" TurnInId="39840" />
+    <If Condition="HasQuest(25344)">
+      <MoveTo DestName="Base of Tower" X="-4523.398" Y="1859.233" Z="107.9184" />
+      <CustomBehavior File="ForcedDismount" />
+      <UseMount Value="false" />
+      <TurnIn QuestName="Ogre Abduction" QuestId="25344" TurnInName="Swar'jan" TurnInId="39840" />
+    </If>
+    <UseMount Value="true" />
     <TurnIn QuestName="Improved Quality" QuestId="25453" TurnInName="Jangdor Swiftstrider" TurnInId="7854" />
     <TurnIn QuestName="Perfect Yeti Hide" QuestId="25454" TurnInName="Jangdor Swiftstrider" TurnInId="7854" />
 
@@ -6881,7 +6898,7 @@
     <PickUp QuestName="Booty Duty" QuestId="24949" GiverName="Megs Dreadshredder" GiverId="38703" X="-7954.868" Y="-5245.221" Z="1.250963" />
 
     <While Condition="HasQuest(24949) &amp;&amp; !IsQuestCompleted(24949)">
-      <CustomBehavior File="InteractWith" QuestId="24949" MobIds="203019, 203021, 203022, 202263" 
+      <CustomBehavior File="InteractWith" QuestId="24949" MobIds="203019, 203021, 203022, 202263"
                             Range="5" CollectionDistance="10" NumOfTimes="10">
         <HuntingGrounds WaypointVisitStrategy="InOrder">
           <Hotspot X="-8000.11" Y="-5207.908" Z="1.20099" />
@@ -6936,7 +6953,8 @@
     <TargetingDistance Value="150" />
     <Objective QuestName="Chicken of the Desert" QuestId="24933" Type="CollectItem" ItemId="51778" CollectCount="6" />
     <Objective QuestName="Gazer Tag" QuestId="24931" Type="CollectItem" ItemId="51793" CollectCount="5" />
-    <TargetingDistance Value="null" />  <!-- back to Honorbuddy default -->
+    <TargetingDistance Value="null" />
+    <!-- back to Honorbuddy default -->
 
     <TurnIn QuestName="Gazer Tag" QuestId="24931" TurnInName="Narain Soothfancy" TurnInId="11811" />
     <TurnIn QuestName="Chicken of the Desert" QuestId="24933" TurnInName="Zeke Bootscuff" TurnInId="38706" />
@@ -8913,7 +8931,7 @@
         <Hotspot X="-9224.174" Y="-3104.424" Z="23.60571" />
       </HuntingGrounds>
     </CustomBehavior>
-    
+
     <TurnIn QuestName="Laying Claim" QuestId="25019" TurnInName="Examiner Andoren Dawnrise" TurnInId="38922" />
     <TurnIn QuestName="Fragments of Language" QuestId="25020" TurnInName="Examiner Andoren Dawnrise" TurnInId="38922" />
 
@@ -9525,7 +9543,8 @@
 
     <TargetingDistance Value="150" />
     <GrindUntil Level="55" />
-    <TargetingDistance Value="null" /> <!-- back to Honorbuddy default -->
+    <TargetingDistance Value="null" />
+    <!-- back to Honorbuddy default -->
     <Checkpoint Level="56" />
     <!-- CHECKPOINT BLOCK START: This code needs to be replicated after every checkpoint.
             If you modify something in this block, don't forget to update the copy of this
