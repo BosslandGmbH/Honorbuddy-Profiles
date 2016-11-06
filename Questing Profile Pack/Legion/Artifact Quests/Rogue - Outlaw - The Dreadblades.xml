@@ -125,7 +125,7 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="The Dreadblades" QuestId="40849" GiverName="Fleet Admiral Tethys" GiverId="102120" X="-14335.34" Y="499.5063" Z="19.76163" />
 			<While Condition="DoQuest(40849)" >
-				<CustomBehavior File="InteractWith" MobId="102120" GossipOptions="1" QuestId="40849" QuestObjectiveIndex="1" X="-14335.34" Y="499.5063" Z="19.76163" />
+				<CustomBehavior File="InteractWith" MobId="102120" GossipOptions="1" QuestId="40849" X="-14335.34" Y="499.5063" Z="19.76163" TerminateWhen="Me.MapId != 0" />
 				<CustomBehavior File="WaitTimer" WaitTime="250000" TerminateWhen="Me.MapId != 0" />
 
         <CustomBehavior File="Hooks\Avoid" AvoidName="Campfire" Command="Add" ObjectType="GameObject" ObjectId="248575" Radius="5" />
@@ -179,7 +179,7 @@ END INITORDER COMMENT -->
 
 				<CustomBehavior File="Hooks\Avoid" AvoidName="LandMines" Command="Remove" />
 				<CustomBehavior File="Hooks\Avoid" AvoidName="Dreadhound" Command="Remove" />
-				<CustomBehavior File="Hooks\Avoid" AvoidName="DreadCrewman" Command="Remove" />
+				<!--<CustomBehavior File="Hooks\Avoid" AvoidName="DreadCrewman" Command="Remove" />-->
 				<CustomBehavior File="Hooks\Avoid" AvoidName="DreadLookout" Command="Remove" />
 				<CustomBehavior File="Hooks\Avoid" AvoidName="DreadSharpshooter" Command="Remove" />
 
@@ -189,8 +189,9 @@ END INITORDER COMMENT -->
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
 					<!-- NOTE: <AddAvoid>: Stuff starts  falling from the ceiling -->
+          <CustomBehavior File="Hooks\DoWhen" ActivityName="KeepStealth" Command="Remove" />
 
-					<CustomBehavior File="InteractWith" MobId="246473" X="-1214.47" Y="6139.858" Z="47.08427" /> <!-- NOTE: <Optimization> : Open door to temple, can terminate if in temple. -->
+					<CustomBehavior File="InteractWith" MobId="246473" X="-1214.47" Y="6139.858" Z="47.08427" TerminateWhen="Object(246473) == null" />
 					<MoveTo X="-1233.155" Y="6148.064" Z="35.43583" />
 					<CustomBehavior File="Hooks\DoWhen" ActivityName="InterruptHeal" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.CastingSpellId == 208094 &amp;&amp; SpellManager.CanCast(1766)" >
 						<CustomBehavior File="RunCode"><![CDATA[
@@ -199,12 +200,24 @@ END INITORDER COMMENT -->
 							]]>
 						</CustomBehavior>
 					</CustomBehavior>
-					<CustomBehavior File="KillUntilComplete" MobId="102298" X="-1275.234" Y="6167.17" Z="30.15948" TerminateWhen="Unit(102300) == null" />
+          <MoveTo DestName="Temple of 1000 Lights" X="-1292.88" Y="6173.626" Z="32.61359" />
+          <MoveTo DestName="Temple of 1000 Lights" X="-1292.88" Y="6173.626" Z="32.61359" />
+          <MoveTo DestName="Temple of 1000 Lights" X="-1292.88" Y="6173.626" Z="32.61359" />
+          <MoveTo DestName="Temple of 1000 Lights" X="-1292.88" Y="6173.626" Z="32.61359" />
+          <CustomBehavior File="KillUntilComplete" MobId="102298" TerminateWhen="Unit(102300) == null" >
+            <HuntingGrounds>
+              <Hotspot Name="Dread Squallshaper 0" X="-1259.086" Y="6159.048" Z="32.61351" />
+              <Hotspot Name="Dread Squallshaper 3" X="-1253.966" Y="6158.459" Z="32.32325" />
+              <Hotspot Name="Dread Squallshaper 1" X="-1268.929" Y="6183.299" Z="32.61333" />
+              <Hotspot Name="Dread Squallshaper 2" X="-1292.88" Y="6173.626" Z="32.61359" />
+            </HuntingGrounds>
+          </CustomBehavior>
 					<CustomBehavior File="Hooks\DoWhen" ActivityName="InterruptHeal" Command="Remove" />
 					<MoveTo X="-1337.985" Y="6277.858" Z="9.483399" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+          <MoveTo DestName="Dread Admiral Eliza" X="-1359.75" Y="6322.288" Z="9.493173" />
 					<CustomBehavior File="Hooks\Avoid" AvoidName="MusketBarrage" Command="Add" ObjectId="63677" Radius="5" AvoidWhen="UNIT.CastingSpellId == 208226" AvoidLocationProducer="UNIT.Location.RayCast(UNIT.Rotation, 8)" />
 					<CustomBehavior File="KillUntilComplete" MobId="102293" X="-1359.75" Y="6322.288" Z="9.492381" TerminateWhen="IsScenarioCriteriaComplete(1)" />
 					<CustomBehavior File="Hooks\Avoid" AvoidName="MusketBarrage" Command="Remove" />
