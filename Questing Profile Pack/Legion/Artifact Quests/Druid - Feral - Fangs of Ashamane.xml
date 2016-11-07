@@ -162,13 +162,12 @@ END INITORDER COMMENT -->
 
     <PickUp QuestName="Aid for the Ashen" QuestId="42439" GiverName="Delandros Shimmermoon" GiverId="107392" X="3250.186" Y="5727.08" Z="321.1192" />
     <PickUp QuestName="Seeds of Renewal" QuestId="42438" GiverName="Delandros Shimmermoon" GiverId="107392" X="3250.186" Y="5727.08" Z="321.1192" />
-
-    <CustomBehavior File="Hooks\DoWhen" ActivityName="KeepStealth" UseWhen="Me.Specialization == WoWSpec.DruidFeral &amp;&amp; Me.HasAura(768) &amp;&amp;  !Me.Combat &amp;&amp; !Me.HasAura(5215)" >
+    <CustomBehavior File="Hooks\DoWhen" ActivityName="KeepStealth" UseWhen="Me.Specialization == WoWSpec.DruidFeral &amp;&amp; Me.HasAura(768) &amp;&amp;  !Me.Combat &amp;&amp; !Me.HasAura(5215) &amp;&amp; SpellManager.CanCast(5215)" >
       <CustomBehavior File="RunCode">
         <![CDATA[
-								await Coroutine.Wait(5000, () => SpellManager.CanCast(5215));
-								SpellManager.Cast(5215);
-							]]>
+            SpellManager.Cast(5215);
+            await Coroutine.Wait(2000, () => Me.HasAura(5215));
+          ]]>
       </CustomBehavior>
     </CustomBehavior>
 
@@ -216,12 +215,14 @@ END INITORDER COMMENT -->
       </If>
 
       <If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-        <CustomBehavior File="InteractWith" MobId="250641" NumOfTimes="2" InteractBlacklistTimeInSeconds="1" X="2047.347" Y="5372.541" Z="47.30041" />
-        <CustomBehavior File="InteractWith" MobId="250638" NumOfTimes="2" InteractBlacklistTimeInSeconds="1" X="2068.309" Y="5444.192" Z="47.3004" />
+        <UseMount Value="false" />
+        <CustomBehavior File="InteractWith" MobId="250641" PreInteractMountStrategy="Dismount" ProactiveCombatStrategy="ClearAll" NumOfTimes="2" InteractBlacklistTimeInSeconds="1" X="2047.347" Y="5372.541" Z="47.30041" />
+        <CustomBehavior File="InteractWith" MobId="250638" PreInteractMountStrategy="Dismount" ProactiveCombatStrategy="ClearAll" NumOfTimes="2" InteractBlacklistTimeInSeconds="1" X="2068.309" Y="5444.192" Z="47.3004" />
         <MoveTo X="2119.902" Y="5389.882" Z="52.41041" />
         <CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
       </If>
 
+      <UseMount Value="true" />
 
       <If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
         <MoveTo X="2245.052" Y="5355.108" Z="37.02452" />
