@@ -634,12 +634,34 @@ END INITORDER COMMENT -->
 						aura.TryCancelAura();
 					]]>
 				</CustomBehavior>
-				<CustomBehavior File="InteractWith" MobId="107726" NonCompeteDistance="0" GossipOptions="1" InteractBlacklistTimeInSeconds="1" QuestId="42590" X="4269.8" Y="4303.593" Z="738.8216" />
-				<CustomBehavior File="EscortGroup" EscortCompleteWhen="QuestObjectiveComplete" NonCompeteDistance="0" EscortMaxFollowDistance="3" EscortCountMax="1" QuestId="42590" QuestObjectiveIndex="2"
-					EscortNpcId="107726" EscortMaxFightDistance="15" SearchForNpcsRadius="30" TerminateWhen="Unit(107726) == null" >
-					<SearchPath>
-						<Hotspot X="4269.94" Y="4299.034" Z="738.876" />
-					</SearchPath>
+				<CustomBehavior File="InteractWith" MobId="107726" NonCompeteDistance="0" GossipOptions="1" InteractBlacklistTimeInSeconds="1" WaitForNpcs="false" QuestId="42590" X="4269.8" Y="4303.593" Z="738.8216" />
+				<CustomBehavior File="RunCode"><![CDATA[
+						var ethelPoi = ObjectManager.GetObjectsOfType<WoWUnit>().FirstOrDefault(x => x.Entry == 107726);
+						Random rnd = new Random();
+
+						while (ethelPoi != null && !QuestDone(42590))
+						{
+							while (ethelPoi.Distance > 6)
+							{
+								Navigator.MoveTo(ethelPoi.Location);
+								await Coroutine.Yield();
+							}
+
+							WoWMovement.ClickToMove(WoWMathHelper.CalculatePointInFront(ethelPoi.Location, ethelPoi.Rotation, 3.5f));
+							await Coroutine.Wait(rnd.Next(2000, 2500), () => ethelPoi.IsMoving);
+
+							if (!ethelPoi.IsMoving)
+							{
+								// This is to prevent a potential issue where Moozy may glitch out and face the wrong way.
+								WoWMovement.ClickToMove(WoWMathHelper.CalculatePointBehind(ethelPoi.Location, ethelPoi.Rotation, 2.5f));
+								await Coroutine.Sleep(2000);
+							}
+							else
+								await Coroutine.Sleep(rnd.Next(500, 1000));
+
+							await Coroutine.Yield();
+						}
+					]]>
 				</CustomBehavior>
 				<EnableBehavior Name="Combat" />
 				<UseMount Value="true" />
