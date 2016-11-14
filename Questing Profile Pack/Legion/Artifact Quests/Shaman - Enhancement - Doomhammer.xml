@@ -24,6 +24,7 @@
 	</AvoidMobs>
 
 	<Blackspots>
+		<Blackspot X="1755.788" Y="1675.757" Z="316.0116" Radius="35.41944" /> <!-- Area where tons of troggs are at on Needlerock Beatdown -->
 	</Blackspots>
 
 	<Blacklist>
@@ -134,8 +135,9 @@ END INITORDER COMMENT -->
 						<PursueUnit Id="109365" PursueWhen="!IsObjectiveComplete(1, 42936)" /> <!-- Clutch Play ; Getting some to follow us for now for optimization purposes. -->
 						<PursueUnit Id="109301" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsQuestCompleted(42933)" />
 						<!-- NOTE: <CheckFunction> : UNIT.IsCasting is used to make the bot only engage troggs that are subduing the drakes.  Make sure IsCasting is flagged for these units. -->
-						<PursueUnit Id="109302" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsQuestCompleted(42935) &amp;&amp; UNIT.IsCasting" />
-						<PursueUnit Id="109301" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsQuestCompleted(42935) &amp;&amp; UNIT.IsCasting" />
+						<PursueUnit Id="109302" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsQuestCompleted(42935)" />
+						<PursueUnit Id="109301" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsQuestCompleted(42935)" />
+						<PursueUnit Id="109298" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsQuestCompleted(42935)" />
 					</PursuitList>
 				</CustomBehavior>
 			</While>
@@ -169,13 +171,21 @@ END INITORDER COMMENT -->
 					</CustomBehavior>
 					<CustomBehavior File="WaitTimer" WaitTime="750" />
 				</CustomBehavior>
-				<CustomBehavior File="InteractWith" MobId="109385" WaitTime="2000" QuestId="42937" QuestObjectiveIndex="1" X="2368.297" Y="157.151" Z="182.4131" />
+				<CustomBehavior File="InteractWith" MobId="109385" WaitTime="2000" QuestId="42937" X="2368.297" Y="157.151" Z="182.4131" />
+				<UseMount Value="false" /> <!-- So the bot doesn't suicide into all three mobs -->
 				<CustomBehavior File="WaitTimer" WaitTime="65000" TerminateWhen="!Me.InVehicle" />
-				<MoveTo Nav="Fly" QuestId="42937" QuestObjectiveIndex="3" X="1769.366" Y="1769.776" Z="355.5551" />
 				<CustomBehavior File="KillUntilComplete" MobId="109852" QuestId="42937" QuestObjectiveIndex="3" X="1786.377" Y="1817.717" Z="357.201" />
 				<CustomBehavior File="Hooks\DoWhen" ActivityName="Purge_FelCloud" Command="Remove" />
+				<UseMount Value="true" />
 			</While>
-			<TurnIn QuestName="Needlerock Beatdown" QuestId="42937" TurnInName="Therazane" TurnInId="42465" X="2382.325" Y="178.2153" Z="182.2379" />
+			<If Condition="QuestDone(42937)" >
+				<If Condition="Me.Y &gt;= 1700" /> <!-- Nav issues here -->
+					<CustomBehavior File="ForcedDismount" />
+					<CustomBehavior File="ForcedMount" MountType="Flying" />
+					<CustomBehavior File="MyCTM" X="1765.192" Y="1762.995" Z="379.5169" />
+				</If>
+				<TurnIn Nav="Fly" QuestName="Needlerock Beatdown" QuestId="42937" TurnInName="Therazane" TurnInId="42465" X="2382.325" Y="178.2153" Z="182.2379" />
+			</If>
 
 			<PickUp QuestName="The Hammer in the Deep" QuestId="40224" GiverName="Thrall" GiverId="96527" X="2356.837" Y="168.7396" Z="181.4614" />
 			<While Condition="DoQuest(40224)" >
