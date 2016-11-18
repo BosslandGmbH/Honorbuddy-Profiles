@@ -40,6 +40,12 @@ END INITORDER COMMENT -->
 	<QuestOrder> <!-- No checkpoints here. -->
 		<!-- RunCode Methods -->
 			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					int currentZone = 0;
+					bool doAzsuna = false;
+					bool doValsharah = false;
+					bool doHighmountain = false;
+					bool doStormheim = false;
+
 					bool DoQuest(params uint[] questIds)
 					{
 						foreach (var questId in questIds)
@@ -304,10 +310,26 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="Thus Begins the War" QuestId="40585" GiverName="Skyseer Ghrent" GiverId="100635" X="XXX" Y="YYY" Z="ZZZ" />
 			<While Condition="DoQuest(40585)" >
 				<CustomBehavior File="InteractWith" MobId="97389" NonCompeteDistance="0" WaitTime="1500" QuestId="40585" X="1142.707" Y="7223.202" Z="101.8188" />
-				<If Condition="NeedsQuest(39718)" > <!-- Azsuna -->
-					<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
-					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
-				</If>
+				<While Condition="DoQuest(40585)" >
+					<If Condition="Chance(25)" > <!-- Azsuna -->
+						<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+
+					<ElseIf Condition="Chance(25)" > <!-- Val'sharah -->
+						<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39731);" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</ElseIf>
+					<ElseIf Condition="Chance(25)" > <!-- Highmountain -->
+						<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39733);" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</ElseIf>
+					<Else> <!-- Stormheim -->
+						<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39735); C_AdventureMap.StartQuest(39864);" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</Else>
+
+					</If>
+				</While>
 			</While>
 			<TurnIn QuestName="Thus Begins the War" QuestId="40585" TurnInName="Skyseer Ghrent" TurnInId="100635" X="1138.405" Y="7219.138" Z="101.817" />
 
@@ -321,34 +343,172 @@ END INITORDER COMMENT -->
 			</While>
 		<!-- END Tutorial Class Hall Quests -->
 
+		<!-- Determine Questing Status -->
+			<CustomBehavior File="RunCode"><![CDATA[
+				if ((!IsQuestCompleted(40794) && Me.IsAlliance) || (!IsQuestCompleted(42244) && Me.IsHorde)) doAzsuna = true;
+				if (!IsQuestCompleted(40890)) doValsharah = true;
+				if (!IsQuestCompleted(39656)) doHighmountain = true;
+				if ((!IsQuestCompleted(39122) && Me.IsAlliance) || (!IsQuestCompleted(38882) && Me.IsHorde)) doStormheim = true;
 
-		<!-- Boolean for IsAchievementCompleted defaults to false. -->
-		<!-- NOTE: <CheckMe> : As a warrior learns more locations throughout Draenor, the gossip options for the Stormflgiht master will change.
-								We need a way to actually click by name instead of index.
-								This note applies to every InteractWith below.
-		-->
-		<!-- Azsuna -->
-			<If Condition="(!IsQuestCompleted(40794) &amp;&amp; Me.IsAlliance) || (!IsQuestCompleted(42244) &amp;&amp; Me.IsHorde)" > 
-				<If Condition="NeedsQuest(39718)" >
-					<If Condition="!Me.HasAura(213170)" >
-						<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
-						<MoveTo Precision="1" X="-842.1536" Y="4253.124" Z="746.4725" />
-						<CustomBehavior File="WaitTimer" WaitTime="1000" />
-						<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+				if (doAzsuna && !NeedsQuest(39718)) currentZone = 1;
+				else if (doValsharah && !NeedsQuest(39731)) currentZone = 2;
+				else if (doHighmountain && !NeedsQuest(39733)) currentZone = 3;
+				else if (doStormheim && (Me.IsAlliance && !NeedsQuest(39735)) || (Me.IsHorde && !NeedsQuest(39864))) currentZone = 4;
+				else currentZone = 0;
+			]]>
+			</CustomBehavior>
+			<!-- currentZone is checking if the player has started questing in a zone, but hasn't finished yet. -->
+		<!-- END Determine Questing Status -->
+
+		<!-- Tell the user what's good. -->
+			<CustomBehavior File="RunCode"><![CDATA[
+					if (currentZone == 0)
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Randomizing our next questing zone!");
+					else if (currentZone == 1)
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Continuing our questing in Azsuna.");
+					else if (currentZone == 2)
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Continuing our questing in Val'sharah.");
+					else if (currentZone == 3)
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Continuing our questing in Highmountain.");
+					else if (currentZone == 4)
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Continuing our questing in Stormheim.");
+				]]>
+			</CustomBehavior>
+		<!-- END Tell the user what's good. -->
+
+		<!-- Randomize to a new zone -->
+			<While Condition="currentZone == 0" >
+				<!-- Azsuna -->
+				<If Condition="doAzsuna &amp;&amp; Chance(10)" > 
+					<If Condition="NeedsQuest(39718)" >
+						<If Condition="!Me.HasAura(213170)" >
+							<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+							<MoveTo Precision="1" X="-842.1536" Y="4253.124" Z="746.4725" />
+							<CustomBehavior File="WaitTimer" WaitTime="1000" />
+							<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+						</If>
+						<CustomBehavior File="InteractWith" MobId="97389" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+						<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
 					</If>
-					<CustomBehavior File="InteractWith" MobId="97389" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
-					<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
-					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
-				</If>
 
+					<If Condition="Me.HasAura(213170)" >
+						<CustomBehavior File="InteractWith" MobId="96679" GossipOptions="1" X="1082.998" Y="7229.331" Z="98.11864" />
+						<CustomBehavior File="WaitTimer" WaitTime="10000" />
+					</If>
+					<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />
+				</If>
+				<!-- END Azsuna -->
+
+				<!-- Val'sharah -->
+				<If Condition="doValsharah &amp;&amp; Chance(10)" > 
+					<If Condition="NeedsQuest(39731)" >
+						<If Condition="!Me.HasAura(213170)" >
+							<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+							<MoveTo Precision="1" X="-842.1536" Y="4253.124" Z="746.4725" />
+							<CustomBehavior File="WaitTimer" WaitTime="1000" />
+							<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+						</If>
+						<CustomBehavior File="InteractWith" MobId="97389" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+						<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39731);" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</If>
+
+					<If Condition="Me.HasAura(213170)" >
+						<CustomBehavior File="InteractWith" MobId="96679" GossipOptions="1" X="1082.998" Y="7229.331" Z="98.11864" />
+						<CustomBehavior File="WaitTimer" WaitTime="10000" />
+					</If>
+					<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Val'sharah [Echo].xml" />
+				</If>
+				<!-- END Val'sharah -->
+
+				<!-- Highmountain -->
+				<If Condition="doHighmountain &amp;&amp; Chance(10)" >
+					<If Condition="NeedsQuest(39733)" >
+						<If Condition="!Me.HasAura(213170)" >
+							<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+							<MoveTo Precision="1" X="-842.1536" Y="4253.124" Z="746.4725" />
+							<CustomBehavior File="WaitTimer" WaitTime="1000" />
+							<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+						</If>
+						<CustomBehavior File="InteractWith" MobId="97389" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+						<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39733);" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</If>
+
+					<If Condition="Me.HasAura(213170)" >
+						<CustomBehavior File="InteractWith" MobId="96679" GossipOptions="1" X="1082.998" Y="7229.331" Z="98.11864" />
+						<CustomBehavior File="WaitTimer" WaitTime="10000" />
+					</If>
+					<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Highmountain [Echo].xml" />
+				</If>
+				<!-- END Highmountain -->
+
+				<!-- Stormheim -->
+				<If Condition="doStormheim &amp;&amp; Chance(10)" > 
+					<If Condition="(Me.IsAlliance &amp;&amp; NeedsQuest(39735)) || (Me.IsHorde &amp;&amp; NeedsQuest(39864))" >
+						<If Condition="!Me.HasAura(213170)" >
+							<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+							<MoveTo Precision="1" X="-842.1536" Y="4253.124" Z="746.4725" />
+							<CustomBehavior File="WaitTimer" WaitTime="1000" />
+							<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+						</If>
+						<CustomBehavior File="InteractWith" MobId="97389" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+						<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39735); C_AdventureMap.StartQuest(39864);" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</If>
+
+					<If Condition="Me.HasAura(213170)" >
+						<CustomBehavior File="InteractWith" MobId="96679" GossipOptions="1" X="1082.998" Y="7229.331" Z="98.11864" />
+						<CustomBehavior File="WaitTimer" WaitTime="10000" />
+					</If>
+					<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Stormheim [Echo].xml" />
+				</If>
+				<!-- END Stormheim -->
+			</While>
+		<!-- END Randomize to a new zone -->
+
+		<!-- Load into existing zone -->
+			<!-- Azsuna -->
+			<If Condition="currentZone == 1" > 
 				<If Condition="Me.HasAura(213170)" >
 					<CustomBehavior File="InteractWith" MobId="96679" GossipOptions="1" X="1082.998" Y="7229.331" Z="98.11864" />
 					<CustomBehavior File="WaitTimer" WaitTime="10000" />
 				</If>
 				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Azsuna [Echo].xml" />
 			</If>
-		<!-- END Azsuna -->
+			<!-- END Azsuna -->
 
+			<!-- Val'sharah -->
+			<If Condition="currentZone == 2" > 
+				<If Condition="Me.HasAura(213170)" >
+					<CustomBehavior File="InteractWith" MobId="96679" GossipOptions="1" X="1082.998" Y="7229.331" Z="98.11864" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" />
+				</If>
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Val'sharah [Echo].xml" />
+			</If>
+			<!-- END Val'sharah -->
+
+			<!-- Highmountain -->
+			<If Condition="currentZone == 3" >
+				<If Condition="Me.HasAura(213170)" >
+					<CustomBehavior File="InteractWith" MobId="96679" GossipOptions="1" X="1082.998" Y="7229.331" Z="98.11864" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" />
+				</If>
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Highmountain [Echo].xml" />
+			</If>
+			<!-- END Highmountain -->
+
+			<!-- Stormheim -->
+			<If Condition="currentZone == 4" > 
+				<If Condition="Me.HasAura(213170)" >
+					<CustomBehavior File="InteractWith" MobId="96679" GossipOptions="1" X="1082.998" Y="7229.331" Z="98.11864" />
+					<CustomBehavior File="WaitTimer" WaitTime="10000" />
+				</If>
+				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Stormheim [Echo].xml" />
+			</If>
+			<!-- END Stormheim -->
+		<!-- END Load into existing zone -->
 
 		<!-- Class Hall Tutorials -->
 			<If Condition="NeedsQuest(42610)" >
@@ -426,74 +586,5 @@ END INITORDER COMMENT -->
 				</If>
 			</If>
 		<!-- END Class Hall Tutorials -->
-
-
-		<!-- Val'sharah -->
-			<If Condition="!IsQuestCompleted(40890)" > 
-				<If Condition="NeedsQuest(39731)" >
-					<If Condition="!Me.HasAura(213170)" >
-						<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
-						<MoveTo Precision="1" X="-842.1536" Y="4253.124" Z="746.4725" />
-						<CustomBehavior File="WaitTimer" WaitTime="1000" />
-						<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
-					</If>
-					<CustomBehavior File="InteractWith" MobId="97389" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
-					<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39731);" WaitTime="1500" />
-					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
-				</If>
-
-				<If Condition="Me.HasAura(213170)" >
-					<CustomBehavior File="InteractWith" MobId="96679" GossipOptions="1" X="1082.998" Y="7229.331" Z="98.11864" />
-					<CustomBehavior File="WaitTimer" WaitTime="10000" />
-				</If>
-				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Val'sharah [Echo].xml" />
-			</If>
-		<!-- END Val'sharah -->
-
-		<!-- Highmountain -->
-			<If Condition="!IsQuestCompleted(39656)" >
-				<If Condition="NeedsQuest(39733)" >
-					<If Condition="!Me.HasAura(213170)" >
-						<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
-						<MoveTo Precision="1" X="-842.1536" Y="4253.124" Z="746.4725" />
-						<CustomBehavior File="WaitTimer" WaitTime="1000" />
-						<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
-					</If>
-					<CustomBehavior File="InteractWith" MobId="97389" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
-					<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39733);" WaitTime="1500" />
-					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
-				</If>
-
-				<If Condition="Me.HasAura(213170)" >
-					<CustomBehavior File="InteractWith" MobId="96679" GossipOptions="1" X="1082.998" Y="7229.331" Z="98.11864" />
-					<CustomBehavior File="WaitTimer" WaitTime="10000" />
-				</If>
-				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Highmountain [Echo].xml" />
-			</If>
-		<!-- END Highmountain -->
-
-		<!-- Stormheim -->
-			<If Condition="(!IsQuestCompleted(39122) &amp;&amp; Me.IsAlliance) || (!IsQuestCompleted(38882) &amp;&amp; Me.IsHorde)" > 
-				<If Condition="(Me.IsAlliance &amp;&amp; NeedsQuest(39735)) || (Me.IsHorde &amp;&amp; NeedsQuest(39864))" >
-					<If Condition="!Me.HasAura(213170)" >
-						<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
-						<MoveTo Precision="1" X="-842.1536" Y="4253.124" Z="746.4725" />
-						<CustomBehavior File="WaitTimer" WaitTime="1000" />
-						<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
-					</If>
-					<CustomBehavior File="InteractWith" MobId="97389" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
-					<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39735); C_AdventureMap.StartQuest(39864);" WaitTime="1500" />
-					<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
-				</If>
-
-				<If Condition="Me.HasAura(213170)" >
-					<CustomBehavior File="InteractWith" MobId="96679" GossipOptions="1" X="1082.998" Y="7229.331" Z="98.11864" />
-					<CustomBehavior File="WaitTimer" WaitTime="10000" />
-				</If>
-				<CustomBehavior File="LoadProfile" ProfileName="../[N-Quest] Stormheim [Echo].xml" />
-			</If>
-		<!-- END Stormheim -->
-
-
 	</QuestOrder>
 </HBProfile>
