@@ -28,6 +28,7 @@
 		<Blackspot X="5677.544" Y="4255.224" Z="695.3536" Radius="12.15873" /> <!-- Large fire that bot can get stuck in -->
 		<Blackspot X="4260.577" Y="4463.903" Z="671.5811" Radius="3.730841" /> <!-- Weapon Rack outside of Thundertotem -->
 		<Blackspot X="4983.007" Y="3782.136" Z="733.887" Radius="4.976638" /> <!-- Huge rock beside Bluewax Gatekeeper in Candle Rock. -->
+		<Blackspot X="5210.68" Y="4908.445" Z="709.0677" Radius="3.262056" /> <!-- Campfire in CLiff's Edge -->
 	</Blackspots>
 
 	<Blacklist>
@@ -192,7 +193,7 @@ END INITORDER COMMENT -->
 					async Task CombatAwareness()
 					{
 						if (!StyxWoW.Me.InVehicle) return;
-						var killArray = ObjectManager.GetObjectsOfType<WoWUnit>().Where(u => u.IsTargetingMeOrPet && u.Distance <= 5);
+						var killArray = ObjectManager.GetObjectsOfType<WoWUnit>().Where(u => u.IsTargetingMeOrPet && u.Distance <= 5 && u.IsHostile);
 						if (killArray == null) return;
 
 						foreach (WoWUnit killMe in killArray)
@@ -424,7 +425,7 @@ END INITORDER COMMENT -->
 			</While>
 
 			<While Condition="DoQuest(39277)" >
-				<CustomBehavior File="InteractWith" MobIds="95013, 96124" InteractByUsingItemId="127988" MobState="Alive" Range="5" IgnoreCombat="true" QuestId="39277" QuestObjectiveIndex="1" >
+				<CustomBehavior File="InteractWith" MobIds="95013, 96124" InteractByUsingItemId="127988" MobState="Alive" Range="5" IgnoreCombat="true" QuestId="39277" QuestObjectiveIndex="1" TerminateWhen="Me.HealthPercent &lt;= 20" >
 					<HuntingGrounds>
 						<Hotspot X="4038.536" Y="4775.965" Z="623.6185" />
 						<Hotspot X="3985.755" Y="4902.08" Z="624.2513" />
@@ -825,8 +826,8 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="An Ancient Secret" QuestId="39577" GiverName="Spiritwalker Ebonhorn" GiverId="99190" X="3420.367" Y="4294.182" Z="703.812" />
 			<While Condition="DoQuest(39577)" >
 				<CustomBehavior File="InteractWith" MobId="251031" QuestId="39577" X="3399.019" Y="4208.474" Z="720.011" TerminateWhen="Unit(96387) != null" />
-				<CustomBehavior File="KillUntilComplete" MobIds="96242" QuestId="39577" QuestObjectiveIndex="2" X="3409.205" Y="4189.848" Z="721.3736" />
-				<CustomBehavior File="WaitTimer" WaitTime="20000" QuestId="39577" QuestObjectiveIndex="3" />
+				<CustomBehavior File="KillUntilComplete" MobIds="96242" QuestId="39577" QuestObjectiveIndex="2" X="3409.205" Y="4189.848" Z="721.3736" TerminateWhen="Unit(96387) == null" />
+				<CustomBehavior File="WaitTimer" WaitTime="20000" QuestId="39577" QuestObjectiveIndex="3" TerminateWhen="Unit(96387) == null" />
 			</While>
 			<TurnIn QuestName="An Ancient Secret" QuestId="39577" TurnInName="Ebyssian" TurnInId="96270" X="3419.826" Y="4198.662" Z="721.3149" />
 
