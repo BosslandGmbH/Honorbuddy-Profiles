@@ -121,9 +121,9 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="Off To Adventure!" QuestId="40633" GiverName="Li Li Stormstout" GiverId="100475" X="XXX" Y="YYY" Z="ZZZ" />
 			<While Condition="DoQuest(40633)" >
-				<CustomBehavior File="InteractWith" MobId="102531" NonCompeteDistance="0" QuestId="40633" QuestObjectiveIndex="1" X="742.4219" Y="3629.197" Z="142.6947" />
+				<CustomBehavior File="InteractWith" MobId="102531" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="40633" QuestObjectiveIndex="1" X="742.4219" Y="3629.197" Z="142.6947" />
 				<CustomBehavior File="WaitTimer" WaitTime="12000" />
-				<MoveTo Name="Li Li Stormstout" X="-9386.915" Y="-955.684" Z="113.7651" />
+				<MoveTo Name="Li Li Stormstout" Precision="1" X="-9382.467" Y="-958.4627" Z="113.7647" />
 				<CustomBehavior File="WaitTimer" WaitTime="1500" />
 			</While>
 			<TurnIn QuestName="Off To Adventure!" QuestId="40633" TurnInName="Li Li Stormstout" TurnInId="100571" X="-9386.915" Y="-955.684" Z="113.7651" />
@@ -166,7 +166,7 @@ END INITORDER COMMENT -->
 						</HuntingGrounds>
 					</CustomBehavior>
 					<CustomBehavior File="WaitTimer" WaitTime="35000" TerminateWhen="Unit(100647) != null" />
-					<CustomBehavior File="KillUntilComplete" MobId="100647" X="-917.7604" Y="567.5712" Z="716.5313" TerminateWhen="IsScenarioCriteriaComplete(2)" />
+					<CustomBehavior File="KillUntilComplete" MobId="100647" X="-917.7604" Y="567.5712" Z="716.5313" TerminateWhen="IsScenarioCriteriaComplete(2) || Unit(100647, u =&gt; u.IsDead) != null" />
 					<MoveTo X="-977.6823" Y="506.3613" Z="700.0155" /> <!-- Could use a roll logic here to make the player go through the pushback faster. -->
 					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
 				</If>
@@ -174,7 +174,7 @@ END INITORDER COMMENT -->
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
 					<!-- NOTE: <AddAvoids> : Four waves of mobs spawn and attack the player.  The only logic we need here is avoiding area affects and frontal-cone attacks. -->
 					<MoveTo X="-977.6823" Y="506.3613" Z="700.0155" /> <!-- Could use a roll logic here to make the player go through the pushback faster. -->
-					<CustomBehavior File="KillUntilComplete" MobIds="101098, 101092, 100830" X="-994.9135" Y="474.1765" Z="699.9752" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+					<CustomBehavior File="KillUntilComplete" MobIds="101098, 101092, 100830, 100824" X="-994.9135" Y="474.1765" Z="699.9752" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
 					<!-- Remove avoids. -->
 				</If>
 
@@ -184,6 +184,7 @@ END INITORDER COMMENT -->
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<CustomBehavior File="Hooks\Avoid" AvoidName="LightingWhip" ObjectType="AreaTrigger" ObjectId="10415" Radius="3" /> 
 					<CustomBehavior File="Hooks\DoWhen" ActivityName="SingularShoveOff" AllowUseDuringCombat="true" UseWhen="Unit(100760) != null &amp;&amp; Blacklist.Contains(Unit(100760), BlacklistFlags.Combat)" >
 						<CustomBehavior File="RunCode" Code="Blacklist.Clear(u =&gt; u.Entry == 100760)" />
 					</CustomBehavior>
@@ -191,6 +192,7 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="KillUntilComplete" MobId="100760" X="-1225.967" Y="389.3854" Z="662.1934" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
 					<!-- Remove avoid -->
 					<CustomBehavior File="Hooks\DoWhen" ActivityName="SingularShoveOff" Command="Remove" />
+					<CustomBehavior File="Hooks\Avoid" AvoidName="LightingWhip" Command="Remove" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
@@ -201,11 +203,11 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
 				</If>
 
-				<If Condition="HasItem(128940)" >
+				<While Condition="HasItem(128940) &amp;&amp; Me.ZoneId == 7960" >
 					<!-- Could just use Zen Pilgrimage here instead? :P -->
-					<CustomBehavior File="InteractWith" MobId="101133" X="-1244.368" Y="388.4097" Z="662.1934" />
-					<CustomBehavior File="WaitTimer" WaitTime="17000" />
-				</If>
+					<CustomBehavior File="InteractWith" MobId="101133" X="-1244.368" Y="388.4097" Z="662.1934" TerminateWhen="Me.InVehicle" />
+					<CustomBehavior File="WaitTimer" WaitTime="17000" TerminateWhen="!Me.InVehicle" />
+				</While>
 			</While>
 			<TurnIn QuestName="Into The Heavens" QuestId="40570" TurnInName="Li Li Stormstout" TurnInId="101046" X="741.6788" Y="3667.434" Z="143.2641" />
 
