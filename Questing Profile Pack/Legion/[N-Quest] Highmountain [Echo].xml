@@ -33,6 +33,7 @@
 	</Blackspots>
 
 	<Blacklist>
+		<Mob Name="Hill Ettin" Id="102886" Flags="Combat" />
 	</Blacklist>
 
 	<Mailboxes>
@@ -781,17 +782,38 @@ END INITORDER COMMENT -->
 
 			<TurnIn QuestName="The Bloodtotem Tribe" QuestId="38916" TurnInName="Spiritwalker Ebonhorn" TurnInId="94571" X="3865.907" Y="4516.458" Z="776.5803" />
 
+			<If Condition="NeedsQuest(39575)" >
+				<!-- We want to clear our bags and repair first so that the bot won't traverse back through the Hill Ettins --> 
+				<CustomBehavior File="ForceSetVendor" DoSell="true" DoRepair="true" />
+			</If>
 			<PickUp QuestName="The Path of Huln" QuestId="39575" GiverName="Spiritwalker Ebonhorn" GiverId="94571" X="3865.907" Y="4516.458" Z="776.5803" />
 			<While Condition="DoQuest(39575)" >
-				<!-- NOTE: <AddAvoid> : Need to add avoids here to avoid the Ettin's attacks. -->
-				<MoveTo X="3868.524" Y="4515.501" Z="776.5807" />
 				<DisableBehavior Name="Combat" />
-				<CustomBehavior File="EscortGroup" QuestId="39575" EscortCompleteWhen="QuestObjectiveComplete" QuestObjectiveIndex="1" EscortCountMax="1"
-				EscortNpcId="96164" EscortMaxFightDistance="15" SearchForNpcsRadius="30" >
-					<SearchPath>
-						<Hotspot X="3843.838" Y="4514.991" Z="776.7822" />
-					</SearchPath>
+				<CustomBehavior File="ForcedMount" />
+				<CustomBehavior File="RunCode"><![CDATA[
+						var spiritwalkerPoi = ObjectManager.GetObjectsOfType<WoWUnit>().FirstOrDefault(x => x.Entry == 96164);
+						Random rnd = new Random();
+
+						while (spiritwalkerPoi != null && !IsObjectiveComplete(1, 39575))
+						{
+							while (spiritwalkerPoi.Distance > 8)
+							{
+								Navigator.MoveTo(spiritwalkerPoi.Location);
+								await Coroutine.Yield();
+							}
+
+							WoWMovement.ClickToMove(WoWMathHelper.CalculatePointInFront(spiritwalkerPoi.Location, spiritwalkerPoi.Rotation, 8f));
+							await Coroutine.Wait(rnd.Next(1000, 1500), () => spiritwalkerPoi.IsMoving);
+							await Coroutine.Sleep(rnd.Next(500, 800));
+
+							await Coroutine.Yield();
+						}
+					]]>
 				</CustomBehavior>
+
+				<MoveTo X="3607.821" Y="4468.811" Z="784.5651" />
+				<CustomBehavior File="WaitTimer" QuestId="39575" QuestObjectiveIndex="1" WaitTime="30000" />
+
 				<If Condition="!IsObjectiveComplete(2, 39575)" >
 					<MoveTo X="3614.548" Y="4404.908" Z="765.1949" />
 					<CustomBehavior File="ForcedDismount" />
