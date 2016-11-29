@@ -281,73 +281,113 @@ END INITORDER COMMENT -->
 			</CustomBehavior>			
 		<!-- END RunCode Methods -->
 
-	    <!-- Activate Artifact Boost Items Usage 
-	    <CustomBehavior File="Hooks\DoWhen" LogExecution="false" AllowExecutionWhileNotAlive="false" ActivityName="UseArtifactBoostItems"
-	                    UseWhen="(Lua.GetReturnVal&lt;bool&gt;(&quot;return HasArtifactEquipped()&quot;, 0) &amp;&amp; Me.IsAlive &amp;&amp; !Me.Combat) &amp;&amp; (HasItem(141383) || HasItem(138781) || HasItem(141384) || HasItem(141863) || HasItem(141404) || HasItem(141403) || HasItem(141397) || HasItem(141396) || HasItem(141394) || HasItem(141390) || HasItem(141389) || HasItem(141388) || HasItem(141387) || HasItem(141386) || HasItem(138781))" >
-	      <CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Using Artifact Boost Itemss.&quot;);" />
-	      <While Condition="HasItem(141383) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-	        <WoWItem Name="Crystallized Moon Drop" Entry="141383" />
-	        <CustomBehavior File="UseItem" ItemId="141383" WaitTime="3100" />
-	      </While>
+		<!-- Anti-stuck hook -->
+		<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+			public static class StuckDetection
+			{
+				private static Vector3 _lastPoint = new Vector3(0f,0f,0f);
 
-	      <While Condition="HasItem(138781) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-	        <WoWItem Name="Brief History of the Aeons" Entry="138781" />
-	        <CustomBehavior File="UseItem" ItemId="138781" WaitTime="3100" />
-	      </While>
-	      <While Condition="HasItem(141384) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-	        <WoWItem Name="Emblem of the Dark Covenant" Entry="141384" />
-	        <CustomBehavior File="UseItem" ItemId="141384" WaitTime="3100" />
-	      </While>
-	      <While Condition="HasItem(141405) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-	        <WoWItem Name="Senegos' Favor" Entry="141405" />
-	        <CustomBehavior File="UseItem" ItemId="141405" WaitTime="3100" />
-	      </While>
-	      <While Condition="HasItem(141863) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-	        <WoWItem Name="Daglop's Precious" Entry="141863" />
-	        <CustomBehavior File="UseItem" ItemId="141863" WaitTime="3100" />
-	      </While>
-	      <While Condition="HasItem(141404) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-	        <WoWItem Name="Insignia of the Second Command" Entry="141404" />
-	        <CustomBehavior File="UseItem" ItemId="141404" WaitTime="3100" />
-	      </While>
-	      <While Condition="HasItem(141403) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-	        <WoWItem Name="Tablet of Tyr" Entry="141403" />
-	        <CustomBehavior File="UseItem" ItemId="141403" WaitTime="3100" />
-	      </While>
-	      <While Condition="HasItem(141397) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-	        <WoWItem Name="The Spiritwalker's Wisdom" Entry="141397" />
-	        <CustomBehavior File="UseItem" ItemId="141397" WaitTime="3100" />
-	      </While>
-	      <While Condition="HasItem(141396) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-	        <WoWItem Name="The River's Blessing" Entry="141396" />
-	        <CustomBehavior File="UseItem" ItemId="141396" WaitTime="3100" />
-	      </While>
-	      <While Condition="HasItem(141394) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-	        <WoWItem Name="Plume of the Great Eagle" Entry="141394" />
-	        <CustomBehavior File="UseItem" ItemId="141394" WaitTime="3100" />
-	      </While>
-	      <While Condition="HasItem(141390) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-	        <WoWItem Name="The Corruptor's Totem" Entry="141390" />
-	        <CustomBehavior File="UseItem" ItemId="141390" WaitTime="3100" />
-	      </While>
-	      <While Condition="HasItem(141389) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-	        <WoWItem Name="Stareye Gem" Entry="141389" />
-	        <CustomBehavior File="UseItem" ItemId="141389" WaitTime="3100" />
-	      </While>
-	      <While Condition="HasItem(141388) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-	        <WoWItem Name="Warden's Boon" Entry="141388" />
-	        <CustomBehavior File="UseItem" ItemId="141388" WaitTime="3100" />
-	      </While>
-	      <While Condition="HasItem(141387) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-	        <WoWItem Name="Emerald Bloom" Entry="141387" />
-	        <CustomBehavior File="UseItem" ItemId="141387" WaitTime="3100" />
-	      </While>
-	      <While Condition="HasItem(141386) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-	        <WoWItem Name="Giant Pearl Scepter" Entry="141386" />
-	        <CustomBehavior File="UseItem" ItemId="141386" WaitTime="3100" />
-	      </While>
-	    </CustomBehavior> -->
-	    <!-- END Activate Artifact Boost Items Usage -->
+				public static bool IsStuck()
+				{
+					if (!StyxWoW.Me.IsValid) return false;
+					if (!StyxWoW.Me.IsDead) return false;
+					if (StyxWoW.Me.IsActuallyInCombat) return false;
+					if (!HasItem(140192)) return false;
+
+					var currentPoint = StyxWoW.Me.Location;
+					var isStuck = currentPoint.DistanceSqr(_lastPoint) < 10f * 10f;
+					_lastPoint = currentPoint;
+					return isStuck;
+				}
+			}
+		]]>
+		</CustomBehavior>
+		<CustomBehavior File="Hooks\DoWhen" ActivityName="DoWhen_StuckDetector" AllowUseWhileMounted="true" LogExecution="false" UseAtInterval="210000" >
+			<If Condition="StuckDetection.IsStuck()" >
+				<CustomBehavior File="RunCode"><![CDATA[
+					Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Stuck detection activated!");
+					await CommonCoroutines.StopMoving(); 
+					WoWItem dalaranHearthstone = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+					if (dalaranHearthstone.CooldownTimeLeft != TimeSpan.Zero)) {
+						Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Awaiting Dalaran Hearthstone cooldown before attempting hearth!");
+						await Coroutine.Wait(901000, () => dalaranHearthstone.CooldownTimeLeft == TimeSpan.Zero);
+					}
+					dalaranHearthstone.Interact();
+					await Coroutine.Sleep(11500);
+					Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Reloading profile.");
+					ProfileManager.LoadNew(ProfileManager.XmlLocation);
+				]]>
+				</CustomBehavior>
+			</If>
+		</CustomBehavior>
+		<!-- END Anti-stuck hook -->
+
+		<!-- Activate Artifact Boost Items Usage -->
+		<CustomBehavior File="Hooks\DoWhen" LogExecution="false" AllowExecutionWhileNotAlive="false" ActivityName="UseArtifactBoostItems"
+						UseWhen="(Lua.GetReturnVal&lt;bool&gt;(&quot;return HasArtifactEquipped()&quot;, 0) &amp;&amp; Me.IsAlive &amp;&amp; !Me.Combat) &amp;&amp; (HasItem(141383) || HasItem(138781) || HasItem(141384) || HasItem(141863) || HasItem(141404) || HasItem(141403) || HasItem(141397) || HasItem(141396) || HasItem(141394) || HasItem(141390) || HasItem(141389) || HasItem(141388) || HasItem(141387) || HasItem(141386) || HasItem(138781))" >
+			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Using Artifact Boost Itemss.&quot;);" />
+			<While Condition="HasItem(141383) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+				<WoWItem Name="Crystallized Moon Drop" Entry="141383" />
+				<CustomBehavior File="UseItem" ItemId="141383" WaitTime="3100" />
+			</While>
+			<While Condition="HasItem(138781) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+				<WoWItem Name="Brief History of the Aeons" Entry="138781" />
+				<CustomBehavior File="UseItem" ItemId="138781" WaitTime="3100" />
+			</While>
+			<While Condition="HasItem(141384) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+				<WoWItem Name="Emblem of the Dark Covenant" Entry="141384" />
+				<CustomBehavior File="UseItem" ItemId="141384" WaitTime="3100" />
+			</While>
+			<While Condition="HasItem(141405) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+				<WoWItem Name="Senegos' Favor" Entry="141405" />
+				<CustomBehavior File="UseItem" ItemId="141405" WaitTime="3100" />
+			</While>
+			<While Condition="HasItem(141863) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+				<WoWItem Name="Daglop's Precious" Entry="141863" />
+				<CustomBehavior File="UseItem" ItemId="141863" WaitTime="3100" />
+			</While>
+			<While Condition="HasItem(141404) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+				<WoWItem Name="Insignia of the Second Command" Entry="141404" />
+				<CustomBehavior File="UseItem" ItemId="141404" WaitTime="3100" />
+			</While>
+			<While Condition="HasItem(141403) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+				<WoWItem Name="Tablet of Tyr" Entry="141403" />
+				<CustomBehavior File="UseItem" ItemId="141403" WaitTime="3100" />
+			</While>
+			<While Condition="HasItem(141397) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+				<WoWItem Name="The Spiritwalker's Wisdom" Entry="141397" />
+				<CustomBehavior File="UseItem" ItemId="141397" WaitTime="3100" />
+			</While>
+			<While Condition="HasItem(141396) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+				<WoWItem Name="The River's Blessing" Entry="141396" />
+				<CustomBehavior File="UseItem" ItemId="141396" WaitTime="3100" />
+			</While>
+			<While Condition="HasItem(141394) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+				<WoWItem Name="Plume of the Great Eagle" Entry="141394" />
+				<CustomBehavior File="UseItem" ItemId="141394" WaitTime="3100" />
+			</While>
+			<While Condition="HasItem(141390) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+				<WoWItem Name="The Corruptor's Totem" Entry="141390" />
+				<CustomBehavior File="UseItem" ItemId="141390" WaitTime="3100" />
+			</While>
+			<While Condition="HasItem(141389) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+				<WoWItem Name="Stareye Gem" Entry="141389" />
+				<CustomBehavior File="UseItem" ItemId="141389" WaitTime="3100" />
+			</While>
+			<While Condition="HasItem(141388) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+				<WoWItem Name="Warden's Boon" Entry="141388" />
+				<CustomBehavior File="UseItem" ItemId="141388" WaitTime="3100" />
+			</While>
+			<While Condition="HasItem(141387) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+				<WoWItem Name="Emerald Bloom" Entry="141387" />
+				<CustomBehavior File="UseItem" ItemId="141387" WaitTime="3100" />
+			</While>
+			<While Condition="HasItem(141386) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+				<WoWItem Name="Giant Pearl Scepter" Entry="141386" />
+				<CustomBehavior File="UseItem" ItemId="141386" WaitTime="3100" />
+			</While>
+		</CustomBehavior>
+		<!-- END Activate Artifact Boost Items Usage -->
 
 		<!-- Zone Introductory Quests -->
 			<If Condition="QuestDone(39733)" >
@@ -601,7 +641,7 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="Dargrul and the Hammer" QuestId="39027" GiverName="Warbrave Oro" GiverId="97553" X="3482.253" Y="4601.077" Z="681.6348" />
 			<While Condition="DoQuest(39027)" >
-    		    <MoveTo X="3464.436" Y="4511.601" Z="679.8839" />
+				<MoveTo X="3464.436" Y="4511.601" Z="679.8839" />
 				<CustomBehavior File="WaitTimer" WaitTime="10000" />
 				<!-- NOTE: <TechnicalCheck> : Something weird happens here.  When the player is caught in the grasp, all mobs around the player become 5500+ yards away from the player, this is why this IW has a range of 6000.
 											May also remove the WaitForNpcs="false" on the IW, and instead, have the IW terminate on a detection. -->
@@ -752,7 +792,7 @@ END INITORDER COMMENT -->
 				</While>
 				<EnableBehavior Name="All" />				
 			</If>
-    <TurnIn QuestName="Huln's War - The Nathrezim" QuestId="39992" TurnInName="Spiritwalker Ebonhorn" TurnInId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
+	<TurnIn QuestName="Huln's War - The Nathrezim" QuestId="39992" TurnInName="Spiritwalker Ebonhorn" TurnInId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
 		<!-- END Story: Huln's War -->
 
 		<!-- Story: Secrets of Highmountain -->

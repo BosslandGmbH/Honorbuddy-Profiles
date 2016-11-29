@@ -149,6 +149,47 @@ END INITORDER COMMENT -->
     </CustomBehavior>
     <!-- END RunCode Methods -->
 
+    <!-- Anti-stuck hook -->
+    <CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+      public static class StuckDetection
+      {
+        private static Vector3 _lastPoint = new Vector3(0f,0f,0f);
+
+        public static bool IsStuck()
+        {
+          if (!StyxWoW.Me.IsValid) return false;
+          if (!StyxWoW.Me.IsDead) return false;
+          if (StyxWoW.Me.IsActuallyInCombat) return false;
+          if (!HasItem(140192)) return false;
+
+          var currentPoint = StyxWoW.Me.Location;
+          var isStuck = currentPoint.DistanceSqr(_lastPoint) < 10f * 10f;
+          _lastPoint = currentPoint;
+          return isStuck;
+        }
+      }
+    ]]>
+    </CustomBehavior>
+    <CustomBehavior File="Hooks\DoWhen" ActivityName="DoWhen_StuckDetector" AllowUseWhileMounted="true" LogExecution="false" UseAtInterval="210000" >
+      <If Condition="StuckDetection.IsStuck()" >
+        <CustomBehavior File="RunCode"><![CDATA[
+          Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Stuck detection activated!");
+          await CommonCoroutines.StopMoving(); 
+          WoWItem dalaranHearthstone = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+          if (dalaranHearthstone.CooldownTimeLeft != TimeSpan.Zero)) {
+            Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Awaiting Dalaran Hearthstone cooldown before attempting hearth!");
+            await Coroutine.Wait(901000, () => dalaranHearthstone.CooldownTimeLeft == TimeSpan.Zero);
+          }
+          dalaranHearthstone.Interact();
+          await Coroutine.Sleep(11500);
+          Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Reloading profile.");
+          ProfileManager.LoadNew(ProfileManager.XmlLocation);
+        ]]>
+        </CustomBehavior>
+      </If>
+    </CustomBehavior>
+    <!-- END Anti-stuck hook -->
+
     <!-- Activate Artifact Boost Items Usage -->
     <CustomBehavior File="Hooks\DoWhen" LogExecution="false" AllowExecutionWhileNotAlive="false" ActivityName="UseArtifactBoostItems"
                     UseWhen="(Lua.GetReturnVal&lt;bool&gt;(&quot;return HasArtifactEquipped()&quot;, 0) &amp;&amp; Me.IsAlive &amp;&amp; !Me.Combat) &amp;&amp; 
@@ -1921,7 +1962,7 @@ END INITORDER COMMENT -->
 						{
 							if (dalaranHearth.CooldownTimeLeft != TimeSpan.Zero)
 							{
-								Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
+								Logging.Write(System.Windows.Media.Colors.Yellow, "[ProfileBase]: Awaiting cooldown before attempting hearth!");
 								await Coroutine.Wait(306000, () => dalaranHearth.CooldownTimeLeft == TimeSpan.Zero);
 							}
 							dalaranHearth.Interact();
