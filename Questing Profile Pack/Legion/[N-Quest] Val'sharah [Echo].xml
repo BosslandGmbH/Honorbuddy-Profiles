@@ -148,7 +148,6 @@ END INITORDER COMMENT -->
           if (!StyxWoW.Me.IsValid) return false;
           if (!StyxWoW.Me.IsDead) return false;
           if (StyxWoW.Me.IsActuallyInCombat) return false;
-          if (!HasItem(140192)) return false;
 
           var currentPoint = StyxWoW.Me.Location;
           var isStuck = currentPoint.DistanceSqr(_lastPoint) < 10f * 10f;
@@ -159,12 +158,12 @@ END INITORDER COMMENT -->
     ]]>
     </CustomBehavior>
     <CustomBehavior File="Hooks\DoWhen" ActivityName="DoWhen_StuckDetector" AllowUseWhileMounted="true" LogExecution="false" UseAtInterval="210000" >
-      <If Condition="StuckDetection.IsStuck()" >
+      <If Condition="StuckDetection.IsStuck() &amp;&amp; HasItem(140192)" >
         <CustomBehavior File="RunCode"><![CDATA[
           Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Stuck detection activated!");
           await CommonCoroutines.StopMoving(); 
           WoWItem dalaranHearthstone = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
-          if (dalaranHearthstone.CooldownTimeLeft != TimeSpan.Zero)) {
+          if (dalaranHearthstone.CooldownTimeLeft != TimeSpan.Zero) {
             Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Awaiting Dalaran Hearthstone cooldown before attempting hearth!");
             await Coroutine.Wait(901000, () => dalaranHearthstone.CooldownTimeLeft == TimeSpan.Zero);
           }
