@@ -503,32 +503,6 @@
 			</Hotspots>
 		</Objective>
 	</Quest>
-	<Quest Id="29751" Name="Ritual Artifacts">
-		<Objective Type="CollectItem" ItemId="74762" CollectCount="1">
-			<CollectFrom>
-				<Object Name="Jade Cong" Id="209699" />
-			</CollectFrom>
-			<Hotspots>
-				<Hotspot X="2920.738" Y="-1527.284" Z="255.8835" />
-			</Hotspots>
-		</Objective>
-		<Objective Type="CollectItem" ItemId="74761" CollectCount="1">
-			<CollectFrom>
-				<Object Name="Pungent Ritual Candle" Id="209701" />
-			</CollectFrom>
-			<Hotspots>
-				<Hotspot X="2855.894" Y="-1501.322" Z="273.0155" />
-			</Hotspots>
-		</Objective>
-		<Objective Type="CollectItem" ItemId="74760" CollectCount="1">
-			<CollectFrom>
-				<Object Name="Chipped Ritual Bowl" Id="209700" />
-			</CollectFrom>
-			<Hotspots>
-				<Hotspot X="2985.999" Y="-1454.534" Z="244.9068" />
-			</Hotspots>
-		</Objective>
-	</Quest>
 	<Quest Id="29750" Name="Vessels of the Spirit">
 		<Objective Type="CollectItem" ItemId="74763" CollectCount="8">
 			<CollectFrom>
@@ -1859,11 +1833,15 @@
 				X="2952.861" Y="-1636.967" Z="252.8331" />
 		<PickUp QuestName="The Wayward Dead" QuestId="29752" GiverName="Pei-Zhi" GiverId="55614"
 				X="2952.861" Y="-1636.967" Z="252.8331" />
-		<Objective QuestName="Ritual Artifacts" QuestId="29751" Type="CollectItem" ItemId="74762" CollectCount="1" />
-		<CustomBehavior File="InteractWith" QuestId="29751" QuestObjectiveIndex="3" MobId="209701" X="2855.894" Y="-1501.322" Z="273.0155" />
-			<!--<Objective QuestName="Ritual Artifacts" QuestId="29751" Type="CollectItem" ItemId="74761" CollectCount="1" />, 
-			EchoTiger: bot seems to have issues not interacting, so we're using the above code instead. -->
-
+		
+		<While Condition="HasQuest(29751) &amp;&amp; !IsQuestCompleted(29751)">
+			<!-- Changed "Ritual Artifacts" to use InteractWith behavior. -->
+		<CustomBehavior File="InteractWith" InteractByLooting="true" MobId="209699" QuestId="29751" X="2919.22" Y="-1528.629" Z="255.8837" TerminateWhen="IsObjectiveComplete(1, 29751)" />
+		<CustomBehavior File="InteractWith" InteractByLooting="true" MobId="209701" QuestId="29751" X="2855.894" Y="-1501.322" Z="273.0155" TerminateWhen="IsObjectiveComplete(3, 29751)" /> 
+		<MoveTo X="2877.531" Y="-1470.702" Z="268.2194" />
+		<CustomBehavior File="InteractWith" InteractByLooting="true" MobId="209700" QuestId="29751" X="2986.482" Y="-1455.243" Z="245.1957" TerminateWhen="IsObjectiveComplete(2, 29751)" />
+		</While>
+		
 		<While Condition="HasQuest(29752) &amp;&amp; !IsQuestCompleted(29752)">
 			<CustomBehavior File="InteractWith" QuestId="29752" MobId="55290" MobState="Alive" IgnoreCombat="true" MobHpPercentLeft="100"
 							InteractByUsingItemId="74771"
