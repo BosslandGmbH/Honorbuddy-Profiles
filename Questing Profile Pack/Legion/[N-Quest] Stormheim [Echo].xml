@@ -134,6 +134,13 @@ END INITORDER COMMENT -->
 						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
 						await Coroutine.Sleep(postWait);
 					}
+
+					private static void BotEvents_OnBotStopped(EventArgs args)
+					{
+						StopIncludeFelskornChannelers();
+						StopIncludeEmpoweredRunestoneUnits();
+
+					}
 				]]>
 			</CustomBehavior>
 		<!-- END RunCode Methods -->
@@ -804,7 +811,7 @@ END INITORDER COMMENT -->
 			</While>
 
 			<If Condition="!IsQuestCompleted(38442) &amp;&amp; !QuestFlaggedCompleted(38442) &amp;&amp; Me.Level &lt; 110" > <!-- Bonus Objective: A Worthy Challenger -->
-				<CustomBehavior File="InteractWith" MobState="DontCare" InteractByLooting="true" NumOfTimes="150" TerminateWhen="IsQuestCompleted(38442) || QuestFlaggedCompleted(38442)" >
+				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="150" TerminateWhen="IsQuestCompleted(38442) || QuestFlaggedCompleted(38442)" >
 					<HuntingGrounds>
 						<Hotspot X="3340.818" Y="2479.66" Z="253.7271" />
 						<Hotspot X="3460.473" Y="2516.221" Z="270.6031" />
@@ -1158,8 +1165,8 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="InteractWith" MobId="96465" WaitForNpcs="false" GossipOptions="1" X="1977.46" Y="2551.438" Z="488.9312" />
 					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Me.Z &gt;= 650" />
 				</If>
-				<CustomBehavior File="InteractWith" MobId="91767" QuestId="38624" X="2079.91" Y="2637.907" Z="676.0861" />
-				<CustomBehavior File="Vehicles\NoControlVehicle" QuestId="38624" TargetId1="92367" TargetId2="92359" TargetId3="92361" TargetId5="92375" AttackButton="1" AttackButton2="2" OftenToUse="650" VehicleId="91767" MaxRange="200" />
+				<CustomBehavior File="InteractWith" MobId="91767" QuestId="38624" PreInteractMountStrategy="Dismount" X="2079.91" Y="2637.907" Z="676.0861" />
+				<CustomBehavior File="Vehicles\NoControlVehicle" QuestId="38624" TargetId1="92367" TargetId2="92359" TargetId3="92361" TargetId5="92375" AttackButton="1" AttackButton2="2" OftenToUse="650" VehicleId="91767" MaxRange="200" TerminateWhen="!Me.InVehicle" />
 				<CustomBehavior File="WaitTimer" WaitTime="45000" QuestId="38624" />
 			</While>
 			<If Condition="QuestDone(38624)" >
@@ -1462,10 +1469,6 @@ END INITORDER COMMENT -->
 								outgoingUnits.Add(unit);
 						}
 					}
-					private static void BotEvents_OnBotStopped(EventArgs args)
-					{
-						StopIncludeEmpoweredRunestoneUnits();
-					}
 				]]>
 			</CustomBehavior>
 			<While Condition="DoQuest(38818)" >
@@ -1671,8 +1674,31 @@ END INITORDER COMMENT -->
 			<TurnIn QuestName="Break the Spine" QuestId="40004" TurnInName="Vethir" TurnInId="97986" X="2488.99" Y="959.9774" Z="241.4456" />
 
 			<PickUp QuestName="Stormheim's Salvation" QuestId="40005" GiverName="Vethir" GiverId="97986" X="2488.99" Y="959.9774" Z="241.4456" />
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					private static void IncludeFelskornChannelers()
+					{
+						Targeting.Instance.IncludeTargetsFilter += IncludeFelskornChannelersFilter;
+						BotEvents.OnBotStopped += BotEvents_OnBotStopped;
+					}
+					private static void StopIncludeFelskornChannelers()
+					{
+						Targeting.Instance.IncludeTargetsFilter -= IncludeFelskornChannelersFilter;
+						BotEvents.OnBotStopped -= BotEvents_OnBotStopped;
+					}
+					private static void IncludeFelskornChannelersFilter(List<WoWObject> incomingUnits, HashSet<WoWObject> outgoingUnits)
+					{
+						foreach (var unit in incomingUnits)
+						{
+							if (unit is WoWUnit && unit.Entry == 96489)
+								outgoingUnits.Add(unit);
+						}
+					}
+				]]>
+			</CustomBehavior>
 			<While Condition="DoQuest(40005)" >
-				<CustomBehavior File="InteractWith" MobId="97986" GossipOptions="1" QuestId="40005" X="2488.99" Y="959.9774" Z="241.4456" />
+				<CustomBehavior File="RunCode" Code="IncludeFelskornChannelers();" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="FelOrb" Radius="8" ObjectId="96091" ObjectType="Npc" />
+				<CustomBehavior File="InteractWith" MobId="97986" GossipOptions="1" QuestId="40005" X="2488.99" Y="959.9774" Z="241.4456" TerminateWhen="Me.Z &gt;= 590" />
 				<CustomBehavior File="WaitTimer" WaitTime="45000" TerminateWhen="!Me.InVehicle" /> <!-- NOTE: <ConditionalCheck> : Make sure this vehicle is considered as flying -->
 				<!-- NOTE: <AddAvoid> : Add avoid Name="Fel Orb" Entry="96091" X="2453.87" Y="921.71" Z="596.3068"
 										Little ball that moves around slowly, does AoE damage if player is within range. 
@@ -1690,6 +1716,8 @@ END INITORDER COMMENT -->
 				<!-- detect player z this is a high loc -->
 				<!-- NOTE: <AddAvoid> <WoWUnit Name="Engulfed Felstalker" Entry="96090" X="2473.327" Y="924.6622" Z="596.1414" /> -->
 				<CustomBehavior File="InteractWith" MobId="98190" GossipOptions="1" X="2488.314" Y="945.1337" Z="596.1414" />
+				<CustomBehavior File="RunCode" Code="StopIncludeFelskornChannelers();" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="FelOrb" Command="Remove" />
 				<CustomBehavior File="WaitTimer" WaitTime="45000" TerminateWhen="!Me.IsFlying" /> <!-- NOTE: <ConditionalCheck> : Make sure this vehicle is considered as flying -->
 			</While>
 			<TurnIn QuestName="Stormheim's Salvation" QuestId="40005" TurnInName="Havi" TurnInId="97988" X="2497.892" Y="956.9375" Z="241.4456" />
