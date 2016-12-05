@@ -151,12 +151,15 @@ END INITORDER COMMENT -->
 
     <!-- Anti-stuck hook -->
     <CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+      static bool UseAntiStuck = true;
+
       public static class StuckDetection
       {
         private static Vector3 _lastPoint = new Vector3(0f,0f,0f);
 
         public static bool IsStuck()
         {
+          if (!UseAntiStuck) return false; 
           if (!StyxWoW.Me.IsValid) return false;
           if (StyxWoW.Me.IsDead) return false;
           if (StyxWoW.Me.IsActuallyInCombat) return false;
@@ -995,6 +998,7 @@ END INITORDER COMMENT -->
       <MoveTo X="201.533" Y="6470.866" Z="-52.8875" />
 
       <CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+      <CustomBehavior File="RunCode" Code="UseAntiStuck = false;" />
 
       <While Condition="!IsObjectiveComplete(1, 37729)" >
         <CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="197.8543" Y="6453.159" Z="-53.77754" />
@@ -1356,6 +1360,7 @@ END INITORDER COMMENT -->
       </While>
 
       <CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+      <CustomBehavior File="RunCode" Code="UseAntiStuck = true;" />
 
     </While>
     <TurnIn QuestName="Pop Quiz: Advanced Rune Drawing" QuestId="37729" TurnInName="Instructor Nidriel" TurnInId="89661" X="201.533" Y="6470.866" Z="-52.8875" />
