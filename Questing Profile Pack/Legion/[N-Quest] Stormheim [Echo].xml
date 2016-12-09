@@ -72,121 +72,272 @@ END INITORDER COMMENT -->
 
 	<QuestOrder>
 		<!-- Init Settings -->
-			<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+				<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
 
-			<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
-			<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+				<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+				<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
 
-			<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+				<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 
-			<LootMobs Value="true" />
-			<TargetingDistance Value="45" />
+				<LootMobs Value="true" />
+				<TargetingDistance Value="45" />
 		<!-- END Init Settings -->
 
-		<!-- RunCode Methods -->
-			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
-					bool DoQuest(params uint[] questIds)
-					{
-						foreach (var questId in questIds)
-						{
-							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
-						}
-						return false;
-					}
-					bool NeedsQuest(params uint[] questIds)
-					{
-						foreach (var questId in questIds)
-						{
-							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
-						}
-						return false;
-					}
-					bool NeedsBreadcrumbQuest(params uint[] questIds)
-					{
-						foreach (var questId in questIds)
-						{
-							if (IsQuestCompleted(questId)) return false;
-						}
-						return true;
-					}
-					bool QuestDone(params uint[] questIds)
-					{
-						foreach (var questId in questIds)
-						{
-							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
-						}
-						return false;
-					}
-					bool QuestFlaggedCompleted(params uint[] questIds)
-					{
-						foreach (var questId in questIds)
-						{
-							return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
-						}
-						return false;
-					}
-
-					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
-					{
-				// Add detection of cutscene here.
-						await Coroutine.Sleep(preWait);
-				// Test and improve the working method.
-						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
-						await Coroutine.Sleep(postWait);
-					}
-
-					private static void BotEvents_OnBotStopped(EventArgs args)
-					{
-						StopIncludeFelskornChannelers();
-						StopIncludeEmpoweredRunestoneUnits();
-
-					}
+		<!-- Profile Settings -->
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[private static System.Windows.Window _uiWindow{get;set;}public static void Initialize(){Settings.Instance.Load();System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{var grid=(System.Windows.Controls.Grid)((Honorbuddy.MainWindow)System.Windows.Application.Current.MainWindow).Content;var profileConfigButton=grid.Children.OfType<System.Windows.Controls.Button>().FirstOrDefault(btn=>btn.Name=="btnProfileSettings");if(profileConfigButton!=null)return;profileConfigButton=new System.Windows.Controls.Button{Name="btnProfileSettings",HorizontalAlignment=System.Windows.HorizontalAlignment.Right,VerticalAlignment=System.Windows.VerticalAlignment.Bottom,Margin=new System.Windows.Thickness(0,0,8,86),Content="Profile Config",Height=20,Width=120};grid.Children.Add(profileConfigButton);profileConfigButton.Click+=(sender,args)=>{System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{if(_uiWindow!=null){_uiWindow.Close();_uiWindow=null;}Settings.Instance.Load();_uiWindow=UiWindow.GetWindow();_uiWindow.Show();_uiWindow.Closing+=(o,eventArgs)=>{Settings.Instance.Save();};}));};}));Styx.CommonBot.BotEvents.OnBotStopped+=args=>{System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{var grid=(System.Windows.Controls.Grid)((Honorbuddy.MainWindow)System.Windows.Application.Current.MainWindow).Content;var profileConfigButton=grid.Children.OfType<System.Windows.Controls.Button>().FirstOrDefault(btn=>btn.Name=="btnProfileSettings");grid.Children.Remove(profileConfigButton);_uiWindow.Close();}));};Styx.CommonBot.TreeRoot.OnShutdownRequested+=(sender,args)=>{System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{_uiWindow.Close();}));};}public static class UiWindow{public static System.Windows.Window GetWindow(){var window=new System.Windows.Window{Title="Profile Settings",SizeToContent=System.Windows.SizeToContent.WidthAndHeight,ResizeMode=System.Windows.ResizeMode.NoResize,DataContext=Settings.Instance};var grid=new System.Windows.Controls.Grid{Width=500,Height=550};window.Content=grid;var hbHeaderLogo=new System.Windows.Controls.MediaElement{LoadedBehavior=System.Windows.Controls.MediaState.Play,VerticalAlignment=System.Windows.VerticalAlignment.Top,HorizontalAlignment=System.Windows.HorizontalAlignment.Center};hbHeaderLogo.MediaEnded+=(sender,args)=>{hbHeaderLogo.Position=TimeSpan.FromMilliseconds(1);};grid.Children.Add(hbHeaderLogo);var discordButton=new System.Windows.Controls.Button{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(20,20,0,0),Style=new System.Windows.Style(),Background=System.Windows.Media.Brushes.Transparent,BorderThickness=new System.Windows.Thickness(0),Cursor=System.Windows.Input.Cursors.Hand};discordButton.Click+=(sender,args)=>{Process.Start("http://discord.gg/h74WjFY");};grid.Children.Add(discordButton);var discordImage=new System.Windows.Controls.Image{Height=36,Width=50,Style=new System.Windows.Style()};discordButton.Content=discordImage;var paypalButton=new System.Windows.Controls.Button{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(25,80,0,0),Style=new System.Windows.Style(),Background=System.Windows.Media.Brushes.Transparent,BorderThickness=new System.Windows.Thickness(0),Cursor=System.Windows.Input.Cursors.Hand};paypalButton.Click+=(sender,args)=>{Process.Start("https://www.paypal.me/EchoTiger/");};grid.Children.Add(paypalButton);var paypalImage=new System.Windows.Controls.Image{Height=50,Width=38,Style=new System.Windows.Style()};paypalButton.Content=paypalImage;var tabControl=new System.Windows.Controls.TabControl{Margin=new System.Windows.Thickness(0,150,0,0)};grid.Children.Add(tabControl);var changelogTab=new System.Windows.Controls.TabItem{Header="Changelog",Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255))};tabControl.Items.Add(changelogTab);changelogTab.GotFocus+=(sender,args)=>{changelogTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(73,96,210));};changelogTab.LostFocus+=(sender,args)=>{changelogTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255));};changelogTab.Focus();var changelogTextBox=new System.Windows.Controls.RichTextBox{Margin=new System.Windows.Thickness(10),VerticalScrollBarVisibility=System.Windows.Controls.ScrollBarVisibility.Auto,IsReadOnly=true,SelectionOpacity=0};changelogTab.Content=changelogTextBox;var generalTab=new System.Windows.Controls.TabItem{Header="General Settings",Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255))};tabControl.Items.Add(generalTab);generalTab.GotFocus+=(sender,args)=>{generalTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(73,96,210));};generalTab.LostFocus+=(sender,args)=>{generalTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255));};var generalGrid=new System.Windows.Controls.Grid();generalTab.Content=generalGrid;var useAPItemCheckBox=new System.Windows.Controls.CheckBox{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(50,50,0,0),Content="Use Artifact Power Items"};generalGrid.Children.Add(useAPItemCheckBox);useAPItemCheckBox.SetBinding(System.Windows.Controls.CheckBox.IsCheckedProperty,new System.Windows.Data.Binding(nameof(Settings.Instance.UseAPItems)){Source=Settings.Instance});var useCustomAntiStuckCheckBox=new System.Windows.Controls.CheckBox{HorizontalAlignment=System.Windows.HorizontalAlignment.Center,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(0,100,20,0),Content="Use Custom Anti-Stuck"};generalGrid.Children.Add(useCustomAntiStuckCheckBox);useCustomAntiStuckCheckBox.SetBinding(System.Windows.Controls.CheckBox.IsCheckedProperty,new System.Windows.Data.Binding(nameof(Settings.Instance.UseCustomAntiStuck)){Source=Settings.Instance});var generalTabLabel=new System.Windows.Controls.Label{HorizontalAlignment=System.Windows.HorizontalAlignment.Center,VerticalAlignment=System.Windows.VerticalAlignment.Bottom,Margin=new System.Windows.Thickness(0,0,0,50),Content="More settings coming soon!"};generalGrid.Children.Add(generalTabLabel);var farmTreasuresCheckBox=new System.Windows.Controls.CheckBox{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(270,50,0,0),Content="Passively Farm Treasures"};generalGrid.Children.Add(farmTreasuresCheckBox);farmTreasuresCheckBox.SetBinding(System.Windows.Controls.CheckBox.IsCheckedProperty,new System.Windows.Data.Binding(nameof(Settings.Instance.FarmTreasures)){Source=Settings.Instance});Task.WhenAll(LoadChangelogAsync(window,changelogTextBox),LoadDiscordImageAsync(window,discordImage),LoadPaypalImageAsync(window,paypalImage),LoadHBLogoAsync(window,hbHeaderLogo));return window;}private static async Task LoadChangelogAsync(System.Windows.Window window,System.Windows.Controls.RichTextBox changelogTextBox){await window.Dispatcher.BeginInvoke(new Action(async()=>{using(var client=new System.Net.WebClient()){var str=await client.DownloadStringTaskAsync("http://ech-o.net/bForum/changelog");using(var stream=new MemoryStream(System.Text.Encoding.Default.GetBytes(str))){changelogTextBox.Selection.Load(stream,System.Windows.DataFormats.Rtf);}}}));}private static async Task LoadDiscordImageAsync(System.Windows.Window window,System.Windows.Controls.Image imageControl){await window.Dispatcher.BeginInvoke(new Action(async()=>{using(var client=new System.Net.WebClient()){var str=await client.DownloadDataTaskAsync("http://ech-o.net/bForum/discord.png");using(var stream=new MemoryStream(str)){var bitmap=new System.Windows.Media.Imaging.BitmapImage();bitmap.BeginInit();bitmap.StreamSource=stream;bitmap.CacheOption=System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;bitmap.EndInit();bitmap.Freeze();imageControl.Source=bitmap;}}}));}private static async Task LoadPaypalImageAsync(System.Windows.Window window,System.Windows.Controls.Image imageControl){await window.Dispatcher.BeginInvoke(new Action(async()=>{using(var client=new System.Net.WebClient()){var str=await client.DownloadDataTaskAsync("http://ech-o.net/bForum/paypaltrasnp.png");using(var stream=new MemoryStream(str)){var bitmap=new System.Windows.Media.Imaging.BitmapImage();bitmap.BeginInit();bitmap.StreamSource=stream;bitmap.CacheOption=System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;bitmap.EndInit();bitmap.Freeze();imageControl.Source=bitmap;}}}));}private static async Task LoadHBLogoAsync(System.Windows.Window window,System.Windows.Controls.MediaElement mediaElement){await window.Dispatcher.BeginInvoke(new Action(async()=>{var savedImagePath=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"Profile Settings","header.png");if(savedImagePath==null)return;if(File.Exists(savedImagePath)){mediaElement.Source=new Uri(savedImagePath);}else{mediaElement.Source=new Uri("http://ech-o.net/bForum/headerlowres.jpg");var directory=Path.GetDirectoryName(savedImagePath);if(directory==null)return;if(!Directory.Exists(directory)){Directory.CreateDirectory(directory);}using(var client=new System.Net.WebClient()){await client.DownloadFileTaskAsync("http://ech-o.net/bForum/header.png",savedImagePath);if(File.Exists(savedImagePath)){mediaElement.Source=new Uri(savedImagePath);}}}}));}}public class Settings : System.ComponentModel.INotifyPropertyChanged{private readonly string _filePath;private readonly string _jsonLocation;private bool _useAPItems=true;	private bool _useCustomAntiStuck=true;private bool _farmTreasures=false;private Settings(){var hbLocation=Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);_jsonLocation=Path.Combine(hbLocation,"Newtonsoft.Json.dll");_filePath=Path.Combine(Styx.Helpers.Settings.CharacterSettingsDirectory,"OfficialProfilePackSettings.json");}public bool UseAPItems{get{return _useAPItems;}set{if(value==_useAPItems)return;_useAPItems=value;OnPropertyChanged();}}public bool UseCustomAntiStuck{get{return _useCustomAntiStuck;}set{if(value==_useCustomAntiStuck)return;_useCustomAntiStuck=value;OnPropertyChanged();}}public static Settings Instance{get;private set;}=new Settings();public bool FarmTreasures{get{return _farmTreasures;}set{if(value==_farmTreasures)return;_farmTreasures=value;OnPropertyChanged();}}public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;public void Load(){try{if(File.Exists(_filePath)){var assembly=AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a=>a.FullName.Contains("Newtonsoft.Json"))?? System.Reflection.Assembly.LoadFrom(_jsonLocation);var jsonConvert=assembly.GetTypes().FirstOrDefault(a=>a.FullName=="Newtonsoft.Json.JsonConvert");var json=string.Empty;using(var streamReader=new StreamReader(_filePath)){json=streamReader.ReadToEnd();}var populateObject=jsonConvert.GetMethods().FirstOrDefault(m=>m.Name=="PopulateObject");populateObject.Invoke(null,new object[]{json,Instance});}}catch(Exception ex){Logging.Write(ex.Message);}}private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName=null){PropertyChanged?.Invoke(this,new System.ComponentModel.PropertyChangedEventArgs(propertyName));}public void Save(){try{var assembly=AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a=>a.FullName.Contains("Newtonsoft.Json"))?? System.Reflection.Assembly.LoadFrom(_jsonLocation);var jsonConvert=assembly.GetTypes().FirstOrDefault(a=>a.FullName=="Newtonsoft.Json.JsonConvert");var serializeObject=jsonConvert.GetMethods().FirstOrDefault(m=>m.Name=="SerializeObject");var content=(string)serializeObject.Invoke(null,new object[]{this});using(var streamWriter=new StreamWriter(_filePath)){streamWriter.WriteLine(content);}}catch(Exception ex){Logging.Write(ex.Message);}}}]]>
+			</CustomBehavior>
+			<CustomBehavior File="RunCode"><![CDATA[
+					Initialize();
+					string settingsLog = $"[ProfileBase]: Settings Activated\n	Use Artifact Power Items :: {Settings.Instance.UseAPItems}\n	Use Custom Anti-Stuck    :: {Settings.Instance.UseCustomAntiStuck}\n 	Passively Farm Treasures :: {Settings.Instance.FarmTreasures}\n\nUse the 'Profile Config' button above the bot's Stop/Start button to change these settings.\n";
+					Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, settingsLog);
 				]]>
 			</CustomBehavior>
+		<!-- END Profile Settings -->
+
+		<!-- RunCode Methods -->
+				<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+
+						private static void BotEvents_OnBotStopped(EventArgs args)
+						{
+							StopIncludeFelskornChannelers();
+							StopIncludeEmpoweredRunestoneUnits();
+
+						}
+					]]>
+				</CustomBehavior>
 		<!-- END RunCode Methods -->
 
 		<!-- Anti-stuck hook -->
-		<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
-			public static class StuckDetection
-			{
-				private static Vector3 _lastPoint = new Vector3(0f,0f,0f);
+				<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					public static class StuckDetection
+					{
+						private static Vector3 _lastPoint = new Vector3(0f,0f,0f);
 
-				public static bool IsStuck()
-				{
-					if (!StyxWoW.Me.IsValid) return false;
-					if (StyxWoW.Me.IsDead) return false;
-					if (StyxWoW.Me.IsActuallyInCombat) return false;
+						public static bool IsStuck()
+						{
+							if (!Settings.Instance.UseCustomAntiStuck) return false;
+							if (!StyxWoW.Me.IsValid) return false;
+							if (StyxWoW.Me.IsDead) return false;
+							if (StyxWoW.Me.IsActuallyInCombat) return false;
 
-					var currentPoint = StyxWoW.Me.Location;
-					var isStuck = currentPoint.DistanceSqr(_lastPoint) < 10f * 10f;
-					_lastPoint = currentPoint;
-					return isStuck;
-				}
-			}
-		]]>
-		</CustomBehavior>
-		<CustomBehavior File="Hooks\DoWhen" ActivityName="DoWhen_StuckDetector" AllowUseWhileMounted="true" LogExecution="false" UseAtInterval="210000" >
-			<If Condition="StuckDetection.IsStuck() &amp;&amp; HasItem(140192)" >
-				<CustomBehavior File="RunCode"><![CDATA[
-					Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Stuck detection activated!");
-					await CommonCoroutines.StopMoving();
-					await CommonCoroutines.LandAndDismount();
-					WoWItem dalaranHearthstone = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
-					if (dalaranHearthstone.CooldownTimeLeft != TimeSpan.Zero) {
-						Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Awaiting Dalaran Hearthstone cooldown before attempting hearth!");
-						await Coroutine.Wait(901000, () => dalaranHearthstone.CooldownTimeLeft == TimeSpan.Zero);
+							var currentPoint = StyxWoW.Me.Location;
+							var isStuck = currentPoint.DistanceSqr(_lastPoint) < 10f * 10f;
+							_lastPoint = currentPoint;
+							return isStuck;
+						}
 					}
-					dalaranHearthstone.Interact();
-					await Coroutine.Sleep(11500);
-					Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Reloading profile.");
-					ProfileManager.LoadNew(ProfileManager.XmlLocation);
 				]]>
 				</CustomBehavior>
-			</If>
-		</CustomBehavior>
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="DoWhen_StuckDetector" AllowUseWhileMounted="true" LogExecution="false" UseAtInterval="210000" >
+					<If Condition="StuckDetection.IsStuck() &amp;&amp; HasItem(140192)" >
+						<CustomBehavior File="RunCode"><![CDATA[
+							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Stuck detection activated!");
+							await CommonCoroutines.StopMoving();
+							await CommonCoroutines.LandAndDismount();
+							WoWItem dalaranHearthstone = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+							if (dalaranHearthstone.CooldownTimeLeft != TimeSpan.Zero) {
+								Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Awaiting Dalaran Hearthstone cooldown before attempting hearth!");
+								await Coroutine.Wait(901000, () => dalaranHearthstone.CooldownTimeLeft == TimeSpan.Zero);
+							}
+							dalaranHearthstone.Interact();
+							await Coroutine.Sleep(11500);
+							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Reloading profile.");
+							ProfileManager.LoadNew(ProfileManager.XmlLocation);
+						]]>
+						</CustomBehavior>
+					</If>
+				</CustomBehavior>
 		<!-- END Anti-stuck hook -->
 
-		<!-- [A] Alliance Quest Section -->
+		<!-- Activate Artifact Boost Items Usage -->
+			<CustomBehavior File="Hooks\DoWhen" LogExecution="false" AllowExecutionWhileNotAlive="false" ActivityName="UseArtifactBoostItems"
+				UseWhen="Settings.Instance.UseAPItems &amp;&amp; (Lua.GetReturnVal&lt;bool&gt;(&quot;return HasArtifactEquipped()&quot;, 0) &amp;&amp; Me.IsAlive &amp;&amp; !Me.Combat) &amp;&amp; 
+				(HasItem(141383) || HasItem(138781) || HasItem(138782) || HasItem(141384) || HasItem(141863) || HasItem(141404) || HasItem(141403) || HasItem(141397) || HasItem(141396) || HasItem(141394) || 
+				HasItem(141390) || HasItem(141389) || HasItem(141388) || HasItem(141387) || HasItem(141386))" >
+				<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Using Artifact Boost Itemss.&quot;);" />
+				<While Condition="HasItem(138839) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+					<!-- <WoWItem Name="Valiant's Glory" Entry="138839" />-->
+					<CustomBehavior File="UseItem" ItemId="138839" WaitTime="3100" />
+				</While>
+				<While Condition="HasItem(141383) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+					<!-- <WoWItem Name="Crystallized Moon Drop" Entry="141383" /> -->
+					<CustomBehavior File="UseItem" ItemId="141383" WaitTime="3100" />
+				</While>
+				<While Condition="HasItem(138781) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+					<!-- <WoWItem Name="Brief History of the Aeons" Entry="138781" /> -->
+					<CustomBehavior File="UseItem" ItemId="138781" WaitTime="3100" />
+				</While>
+				<While Condition="HasItem(138782) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+					<!-- <WoWItem Name="Brief History of the Ages" Entry="138782" /> -->
+					<CustomBehavior File="UseItem" ItemId="138782" WaitTime="3100" />
+				</While>
+				<While Condition="HasItem(141384) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+					<!-- <WoWItem Name="Emblem of the Dark Covenant" Entry="141384" /> -->
+					<CustomBehavior File="UseItem" ItemId="141384" WaitTime="3100" />
+				</While>
+				<While Condition="HasItem(141405) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+					<!-- <WoWItem Name="Senegos' Favor" Entry="141405" /> -->
+					<CustomBehavior File="UseItem" ItemId="141405" WaitTime="3100" />
+				</While>
+				<While Condition="HasItem(141863) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+					<!-- <WoWItem Name="Daglop's Precious" Entry="141863" /> -->
+					<CustomBehavior File="UseItem" ItemId="141863" WaitTime="3100" />
+				</While>
+				<While Condition="HasItem(141404) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+					<!-- <WoWItem Name="Insignia of the Second Command" Entry="141404" /> -->
+					<CustomBehavior File="UseItem" ItemId="141404" WaitTime="3100" />
+				</While>
+				<While Condition="HasItem(141403) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+					<!-- <WoWItem Name="Tablet of Tyr" Entry="141403" /> -->
+					<CustomBehavior File="UseItem" ItemId="141403" WaitTime="3100" />
+				</While>
+				<While Condition="HasItem(141397) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+					<!-- <WoWItem Name="The Spiritwalker's Wisdom" Entry="141397" /> -->
+					<CustomBehavior File="UseItem" ItemId="141397" WaitTime="3100" />
+				</While>
+				<While Condition="HasItem(141396) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+					<!-- <WoWItem Name="The River's Blessing" Entry="141396" /> -->
+					<CustomBehavior File="UseItem" ItemId="141396" WaitTime="3100" />
+				</While>
+				<While Condition="HasItem(141394) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+					<!-- <WoWItem Name="Plume of the Great Eagle" Entry="141394" /> -->
+					<CustomBehavior File="UseItem" ItemId="141394" WaitTime="3100" />
+				</While>
+				<While Condition="HasItem(141390) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+					<!-- <WoWItem Name="The Corruptor's Totem" Entry="141390" /> -->
+					<CustomBehavior File="UseItem" ItemId="141390" WaitTime="3100" />
+				</While>
+				<While Condition="HasItem(141389) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+					<!-- <WoWItem Name="Stareye Gem" Entry="141389" /> -->
+					<CustomBehavior File="UseItem" ItemId="141389" WaitTime="3100" />
+				</While>
+				<While Condition="HasItem(141388) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+					<!-- <WoWItem Name="Warden's Boon" Entry="141388" /> -->
+					<CustomBehavior File="UseItem" ItemId="141388" WaitTime="3100" />
+				</While>
+				<While Condition="HasItem(141387) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+					<!-- <WoWItem Name="Emerald Bloom" Entry="141387" /> -->
+					<CustomBehavior File="UseItem" ItemId="141387" WaitTime="3100" />
+				</While>
+				<While Condition="HasItem(141386) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
+					<!-- <WoWItem Name="Giant Pearl Scepter" Entry="141386" /> -->
+					<CustomBehavior File="UseItem" ItemId="141386" WaitTime="3100" />
+				</While>
+			</CustomBehavior>
+		<!-- END Activate Artifact Boost Items Usage -->
+
+		<!-- Profession Items -->
+			<!-- <WoWItem Name="Skinning Technique: Unbroken Tooth" Entry="139893" /> -->
+			<If Condition="HasItem(139893)" >
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="139893" WaitTime="1337" />
+			</If>
+
+			<!-- <WoWItem Name="Skinning Technique: Unbroken Claw" Entry="139894" /> -->
+			<If Condition="HasItem(139894)" >
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="139894" WaitTime="1337" />
+			</If>
+		<!-- END Profession Items -->
+
+		<!-- Treasure Farm Hook -->
+			<CustomBehavior File="RunCode" Type="Definition" Code="List&lt;WoWGuid&gt; treasureBlacklist = new List&lt;WoWGuid&gt;();" />
+			<CustomBehavior File="RunCode">
+			<![CDATA[
+				TreeHooks.Instance.InsertHook("Questbot_Main", 0,
+					_treasureHuntComposite ?? (_treasureHuntComposite = new  CommonBehaviors.Actions.ActionRunCoroutine(ctx => TreasureHunt())));	
+			]]>
+			</CustomBehavior>
+
+			<CustomBehavior File="RunCode" Type="Definition" ><![CDATA[
+					public Styx.TreeSharp.Composite _treasureHuntComposite;
+
+					public async Task<bool> TreasureHunt()
+					{
+						if (!Settings.Instance.FarmTreasures) return false;
+						if (StyxWoW.Me.IsDead || StyxWoW.Me.IsGhost) return false;
+						if (StyxWoW.Me.IsActuallyInCombat) return false;
+
+						var treasureList = ObjectManager.GetObjectsOfType<WoWGameObject>().Where(obj => !treasureBlacklist.Contains(obj.Guid) && obj.CanLoot && obj.SubType == WoWGameObjectType.Chest && obj.LockType == WoWLockType.Open && obj.CanUse() && obj.DistanceSqr < 40f*40f);
+
+						if (!treasureList.Any()) return false;
+						else Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Stuck detection activated!");
+
+						foreach (WoWGameObject lootMe in treasureList)
+						{
+							while (lootMe != null && lootMe.CanLoot)
+							{	
+								if (!lootMe.WithinInteractRange)
+									Flightor.MoveTo(lootMe.Location);
+								else
+								{
+									await CommonCoroutines.LandAndDismount();
+									lootMe.Interact();
+								}
+								await Coroutine.Yield();
+							}
+							if (lootMe == null)
+								treasureBlacklist.Add(lootMe.Guid);
+						}
+						return true;
+					}
+			]]>
+			</CustomBehavior>
+		<!-- END Treasure Farm Hook -->
+
+
+
+	<!-- [A] Alliance Quest Section -->
 			<!-- [A] Zone Introductory Quests -->
 				<If Condition="Me.IsAlliance" >
 					<If Condition="QuestDone(39735)" >
@@ -403,9 +554,9 @@ END INITORDER COMMENT -->
 					<TurnIn QuestName="Signal Boost" QuestId="38060" TurnInName="Sky Admiral Rogers" TurnInId="90749" X="3396.464" Y="3071.967" Z="526.5197" />
 				</If>
 			<!-- [A] END Story: The Aftermath -->
-		<!-- [A] END Alliance Quest Section -->
+	<!-- [A] END Alliance Quest Section -->
 
-		<!-- [H] Horde Quest Section -->
+	<!-- [H] Horde Quest Section -->
 			<!-- [H] Zone Introductory Quests -->
 				<If Condition="Me.IsHorde" >
 					<If Condition="QuestDone(39864)" >
@@ -595,9 +746,9 @@ END INITORDER COMMENT -->
 					</If>
 				</If>
 			<!-- [H] END The Aftermath -->
-		<!-- [H] END Horde Quest Section -->
+	<!-- [H] END Horde Quest Section -->
 
-		<!-- Stormtorn Foothills Side Quests -->
+	<!-- Stormtorn Foothills Side Quests -->
 			<PickUp Nav="Fly" QuestName="Plight of the Blackfeather" QuestId="42444" GiverName="Frightened Ravenbear" GiverId="107499" X="3860.467" Y="2113.882" Z="267.0603" />
 			<TurnIn Nav="Fly" QuestName="Plight of the Blackfeather" QuestId="42444" TurnInName="Cukkaw" TurnInId="107498" X="3914.608" Y="2144.313" Z="228.8751" />
 
@@ -647,9 +798,9 @@ END INITORDER COMMENT -->
 				</CustomBehavior>
 			</While>
 			<TurnIn Nav="Fly" QuestName="Dances With Ravenbears" QuestId="42447" TurnInName="Cukkaw" TurnInId="107498" X="4007.705" Y="1898.007" Z="190.5059" />
-		<!-- END Stormtorn Foothills Side Quests -->
+	<!-- END Stormtorn Foothills Side Quests -->
 
-		<!-- Story: The Trial of Might -->
+	<!-- Story: The Trial of Might -->
 			<If Condition="Me.IsAlliance" >
 				<PickUp QuestName="The Ancient Trials" QuestId="38210" GiverName="Muninn" GiverId="97306" X="3403.811" Y="3075.332" Z="526.5199" />
 
@@ -836,9 +987,9 @@ END INITORDER COMMENT -->
 			<If Condition="Me.IsHorde" >
 				<TurnIn QuestName="The Blessing of the Watchers" QuestId="39597" TurnInName="Havi" TurnInId="96254" X="3510.713" Y="2605.906" Z="318.8996" />
 			</If>
-		<!-- END Story: The Trial of Might -->
+	<!-- END Story: The Trial of Might -->
 
-		<!-- Story: The Trial of Will -->
+	<!-- Story: The Trial of Will -->
 			<If Condition="Me.IsAlliance" >
 				<PickUp QuestName="Will of the Thorignir" QuestId="38473" GiverName="Havi" GiverId="96254" X="3275.418" Y="2528.082" Z="301.0428" />
 				<TurnIn QuestName="Will of the Thorignir" QuestId="38473" TurnInName="Commander Lorna Crowley" TurnInId="91222" X="2706.913" Y="2864.66" Z="309.4812" />
@@ -1173,9 +1324,9 @@ END INITORDER COMMENT -->
 				<!-- <CustomBehavior File="Hooks\DoWhen" ActivityName="BlastOffGaldeborns" Command="Remove" /> -->
 				<TurnIn QuestName="Cry Thunder!" QuestId="38624" TurnInName="Huginn" TurnInId="97074" X="3066.666" Y="2246.495" Z="224.9159" />
 			</If>
-		<!-- END Story: The Trial of Will -->
+	<!-- END Story: The Trial of Will -->
 
-		<!-- Story: The Trial of Valor -->
+	<!-- Story: The Trial of Valor -->
 			<PickUp QuestName="The Trials Continue" QuestId="39803" GiverName="Huginn" GiverId="97074" X="3066.666" Y="2246.495" Z="224.9159" />
 
 			<!-- Talonrest Side Quests -->
@@ -1493,9 +1644,9 @@ END INITORDER COMMENT -->
 				<CustomBehavior File="MyCTM" X="3658.073" Y="757.7772" Z="-11.01861" TerminateWhen="Me.MapId == 1463" />
 			</If>
 			<TurnIn QuestName="The Final Judgment" QuestId="38818" TurnInName="Ashildir" TurnInId="97319" X="341.7656" Y="356.9219" Z="30.293" />
-		<!-- END Story: The Trial of Valor -->
+	<!-- END Story: The Trial of Valor -->
 
-		<!-- Story: To Helheim and Back -->
+	<!-- Story: To Helheim and Back -->
 			<PickUp QuestName="An Unworthy Task" QuestId="39837" GiverName="Ashildir" GiverId="97319" X="341.7656" Y="356.9219" Z="30.293" />
 			<While Condition="DoQuest(39837)" >
 				<CustomBehavior File="InteractWith" MobId="241778" NonCompeteDistance="0" Range="5" IgnoreLoSToTarget="true" QuestId="39837" QuestObjectiveIndex="1" X="363.6193" Y="409.2457" Z="20.14446" />
@@ -1626,9 +1777,9 @@ END INITORDER COMMENT -->
 				<CustomBehavior File="WaitTimer" QuestId="39855" WaitTime="60000" />
 			</While>
 			<TurnIn QuestName="Paid in Lifeblood" QuestId="39855" TurnInName="Havi" TurnInId="92539" X="3214.377" Y="1543.611" Z="180.6394" />
-		<!-- END Story: To Helheim and Back -->
+	<!-- END Story: To Helheim and Back -->
 
-		<!-- Story: The Champion of Stormheim -->
+	<!-- Story: The Champion of Stormheim -->
 			<If Condition="NeedsQuest(40078)" >
 				<MoveTo Precision="25" X="3214.377" Y="1543.611" Z="180.6394" />
 				<PickUp QuestName="A Heavy Burden" QuestId="40078" GiverName="Havi" GiverId="92539" X="3214.377" Y="1543.611" Z="180.6394" />
@@ -1744,9 +1895,9 @@ END INITORDER COMMENT -->
 			</While>
 
 			<CustomBehavior File="Hooks\DoWhen" ActivityName="UseSpecial" Command="Remove" />
-		<!-- END Story: The Champion of Stormheim -->
+	<!-- END Story: The Champion of Stormheim -->
 
-		<!-- Dreygrot Side Quests -->
+	<!-- Dreygrot Side Quests -->
 			<If Condition="Me.Class != WoWClass.DemonHunter" > <!-- Remove once Fel Rush and Vengeful Retreat have proper path checking -->
 				<PickUp QuestName="The Mystery of Dreyrgrot" QuestId="42635" GiverName="Sir Finley Mrrgglton" GiverId="108072" X="3026.762" Y="686.7656" Z="17.67858" />
 				<PickUp QuestName="A Stone of Blood" QuestId="42639" GiverName="Sir Finley Mrrgglton" GiverId="108072" X="3026.762" Y="686.7656" Z="17.67858" />
@@ -1862,9 +2013,9 @@ END INITORDER COMMENT -->
 					<PursueUnit Id="98498" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
 				</PursuitList>
 			</CustomBehavior>
-		<!-- END Dreygrot Side Quests -->
+	<!-- END Dreygrot Side Quests -->
 
-		<!-- [A] Story: Secrets of the Shieldmaidens -->
+	<!-- [A] Story: Secrets of the Shieldmaidens -->
 			<If Condition="Me.IsAlliance" >
 				<PickUp QuestName="Combustible Contagion" QuestId="39060" GiverName="Genn Greymane" GiverId="94318" X="2862.65" Y="882.9323" Z="79.52061" />
 				<PickUp QuestName="Whispers from the Dark" QuestId="39061" GiverName="Genn Greymane" GiverId="94318" X="2862.65" Y="882.9323" Z="79.52061" />
@@ -1983,10 +2134,9 @@ END INITORDER COMMENT -->
 				</While>
 				<TurnIn QuestName="Ending the New Beginning" QuestId="39122" TurnInName="Commander Lorna Crowley" TurnInId="95932" X="2833.457" Y="887.2101" Z="78.51015" />
 			</If>
-		<!-- [A] END Story: Secrets of the Shieldmaidens -->
+	<!-- [A] END Story: Secrets of the Shieldmaidens -->
 
-
-		<!-- [H] Story: Secrets of the Shieldmaidens -->
+	<!-- [H] Story: Secrets of the Shieldmaidens -->
 			<If Condition="Me.IsHorde" >
 				<!--<PickUp QuestName="The Dark Lady's Bidding" QuestId="38872" GiverName="Dread-Rider Cullen" GiverId="93624" X="3190.107" Y="1553.792" Z="183.0175" />  Breadcrumb
 				<While Condition="DoQuest(38872)" >
@@ -2096,28 +2246,28 @@ END INITORDER COMMENT -->
 				</While>
 				<TurnIn QuestName="A New Life for Undeath" QuestId="38882" TurnInName="Lady Sylvanas Windrunner" TurnInId="95755" X="2365.924" Y="1836.932" Z="30.5652" />
 			</If>
-		<!-- [H] END Story: Secrets of the Shieldmaidens -->
+	<!-- [H] END Story: Secrets of the Shieldmaidens -->
 
-		<!-- Note sure where to wedge this in.
-			<PickUp QuestName="The Brood of Nithogg" QuestId="42431" GiverName="Adult Squallhunter" GiverId="99223" X="XXX" Y="YYY" Z="ZZZ" />
-			<While Condition="!IsQuestCompleted(42431)" >
-				<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(42431)" >
-					<HuntingGrounds>
-						<Hotspot X="3764.815" Y="2363.997" Z="400.5123" />
-						<Hotspot X="3808.989" Y="2319.056" Z="395.0925" />
-						<Hotspot X="4032.355" Y="2445.337" Z="316.3226" />
-						<Hotspot X="4078.506" Y="2551.034" Z="253.6078" />
-					</HuntingGrounds>
-					<PursuitList>
-						<PursueGameObject Id="250427" />
-						<PursueUnit Id="99223" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
-						<PursueUnit Id="107258" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
-						<PursueUnit Id="107455" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
-					</PursuitList>
-				</CustomBehavior>
-			</While> -->
+	<!-- Note sure where to wedge this in.
+		<PickUp QuestName="The Brood of Nithogg" QuestId="42431" GiverName="Adult Squallhunter" GiverId="99223" X="XXX" Y="YYY" Z="ZZZ" />
+		<While Condition="!IsQuestCompleted(42431)" >
+			<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(42431)" >
+				<HuntingGrounds>
+					<Hotspot X="3764.815" Y="2363.997" Z="400.5123" />
+					<Hotspot X="3808.989" Y="2319.056" Z="395.0925" />
+					<Hotspot X="4032.355" Y="2445.337" Z="316.3226" />
+					<Hotspot X="4078.506" Y="2551.034" Z="253.6078" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueGameObject Id="250427" />
+					<PursueUnit Id="99223" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="107258" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="107455" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+				</PursuitList>
+			</CustomBehavior>
+		</While> -->
 
-		<!-- Load Class Hall stuff -->
+	<!-- Load Class Hall stuff -->
 			<!--
 			NOTE <ImproveLater> : This is currently the easy solution.
 			I'm thinking a RunCode where Me.Class auto-fills the text with using ProfileManager.LoadNew to load the profilewould be more clean.
@@ -2158,7 +2308,7 @@ END INITORDER COMMENT -->
 			<If Condition="Me.Class == WoWClass.DemonHunter" >
 				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Demon Hunter [Echo]" />
 			</If>
-		<!-- END Load Class Hall stuff -->
+	<!-- END Load Class Hall stuff -->
 
 
 	</QuestOrder>
