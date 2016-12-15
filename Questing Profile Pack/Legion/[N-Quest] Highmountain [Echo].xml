@@ -294,6 +294,8 @@ END INITORDER COMMENT -->
 
 		<!-- Anti-stuck hook -->
 			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+				static bool UseAntiStuck = true;
+
 				public static class StuckDetection
 				{
 					private static Vector3 _lastPoint = new Vector3(0f,0f,0f);
@@ -301,6 +303,7 @@ END INITORDER COMMENT -->
 					public static bool IsStuck()
 					{
 						if (!Settings.Instance.UseCustomAntiStuck) return false;
+						if (!UseAntiStuck) return false; 
 						if (!StyxWoW.Me.IsValid) return false;
 						if (StyxWoW.Me.IsDead) return false;
 						if (StyxWoW.Me.IsActuallyInCombat) return false;
@@ -1006,6 +1009,12 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="The Gates of Wax" QuestId="39769" GiverName="Oenia Skyhorn" GiverId="96984" X="4841.946" Y="3822.238" Z="764.2232" />
 		<TurnIn QuestName="The Gates of Wax" QuestId="39769" TurnInName="Bluewax Gatekeeper" TurnInId="97130" X="4992.674" Y="3780.547" Z="734.2362" />
 
+			<CustomBehavior File="RunCode" Code="
+				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Disabling custom anti-stuck measures until this quest is complete.&quot;);
+				if (!IsQuestCompleted(40339) || !IsQuestCompleted(97130))
+					UseAntiStuck = false;
+			" />
+
 		<PickUp QuestName="Candle of Command" QuestId="40339" GiverName="Bluewax Gatekeeper" GiverId="97130" X="4841.946" Y="3822.238" Z="764.2232" />
 		<While Condition="DoQuest(40339)" >
 			<DisableBehavior Name="Combat" />
@@ -1033,6 +1042,12 @@ END INITORDER COMMENT -->
 			<CustomBehavior File="InteractWith" MobId="245357" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" GossipOptions="1" QuestId="40345" QuestObjectiveIndex="8" X="4974.663" Y="3898.847" Z="732.0211" />
 		</While>
 		<TurnIn QuestName="Burn the Candle at Both Ends" QuestId="40345" TurnInName="Bluewax Gatekeeper" TurnInId="97130" X="4992.387" Y="3781.002" Z="734.2791" />
+
+		<CustomBehavior File="RunCode" Code="
+			Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Re-enabling custom anti-stuck measures.&quot;);
+			if (IsQuestCompleted(40339) &amp;&amp; IsQuestCompleted(97130))
+				UseAntiStuck = true;
+		" />
 
 
 		<PickUp QuestName="Can't Hold a Candle To You" QuestId="39772" GiverName="Bluewax Gatekeeper" GiverId="97130" X="4992.387" Y="3781.002" Z="734.2791" />
