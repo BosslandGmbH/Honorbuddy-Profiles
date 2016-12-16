@@ -309,7 +309,7 @@ END INITORDER COMMENT -->
 						if (StyxWoW.Me.IsDead || StyxWoW.Me.IsGhost) return false;
 						if (StyxWoW.Me.IsActuallyInCombat) return false;
 
-						var treasureList = ObjectManager.GetObjectsOfType<WoWGameObject>().Where(obj => !treasureBlacklist.Contains(obj.Guid) && obj.CanLoot && obj.SubType == WoWGameObjectType.Chest && obj.LockType == WoWLockType.Open && obj.CanUse() && obj.DistanceSqr < 40f*40f);
+						var treasureList = ObjectManager.GetObjectsOfType<WoWGameObject>().Where(obj => !treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.CanLoot && obj.SubType == WoWGameObjectType.Chest && obj.LockType == WoWLockType.Open && obj.CanUse() && obj.DistanceSqr < 40f*40f);
 
 						if (!treasureList.Any()) return false;
 						else Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Treasure detected, moving to farm it.");

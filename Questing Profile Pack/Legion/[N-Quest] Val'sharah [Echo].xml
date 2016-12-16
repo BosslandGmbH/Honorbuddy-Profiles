@@ -33,6 +33,9 @@
 	</Blacklist>
 
 	<Blackspots>
+		<Blackspot X="2565.552" Y="7487.28" Z="21.6668" Radius="4" />
+		<!-- Blackspot for Treasure inside of cellar. -->
+
 		<Blackspot X="2953.907" Y="6346.191" Z="241.6791" Radius="4.776577" />
 		<!-- Root under ground for quest 38655 -->
 		<Blackspot X="1933.022" Y="6261.604" Z="68.99588" Radius="11.50931" />
@@ -301,7 +304,7 @@ END INITORDER COMMENT -->
 						if (StyxWoW.Me.IsDead || StyxWoW.Me.IsGhost) return false;
 						if (StyxWoW.Me.IsActuallyInCombat) return false;
 
-						var treasureList = ObjectManager.GetObjectsOfType<WoWGameObject>().Where(obj => !treasureBlacklist.Contains(obj.Guid) && obj.CanLoot && obj.SubType == WoWGameObjectType.Chest && obj.LockType == WoWLockType.Open && obj.CanUse() && obj.DistanceSqr < 40f*40f);
+						var treasureList = ObjectManager.GetObjectsOfType<WoWGameObject>().Where(obj => !treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.CanLoot && obj.SubType == WoWGameObjectType.Chest && obj.LockType == WoWLockType.Open && obj.CanUse() && obj.DistanceSqr < 40f*40f);
 
 						if (!treasureList.Any()) return false;
 						else Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Treasure detected, moving to farm it.");

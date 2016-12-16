@@ -47,6 +47,8 @@
 	</Vendors>
 
 	<Blackspots>
+		<Blackspot X="-8855.167" Y="651.3267" Z="96.37325" Radius="1.491184" />
+
 		<Blackspot X="-136.9882" Y="6983.85" Z="8.050956" Radius="4.494911" />
 		<!-- Soul Shooter object thing near Illidari Stand -->
 		<Blackspot X="-235.3848" Y="7039.291" Z="3.527598" Radius="3.520475" />
@@ -316,7 +318,7 @@ END INITORDER COMMENT -->
 						if (StyxWoW.Me.IsDead || StyxWoW.Me.IsGhost) return false;
 						if (StyxWoW.Me.IsActuallyInCombat) return false;
 
-						var treasureList = ObjectManager.GetObjectsOfType<WoWGameObject>().Where(obj => !treasureBlacklist.Contains(obj.Guid) && obj.CanLoot && obj.SubType == WoWGameObjectType.Chest && obj.LockType == WoWLockType.Open && obj.CanUse() && obj.DistanceSqr < 40f*40f);
+						var treasureList = ObjectManager.GetObjectsOfType<WoWGameObject>().Where(obj => !treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.CanLoot && obj.SubType == WoWGameObjectType.Chest && obj.LockType == WoWLockType.Open && obj.CanUse() && obj.DistanceSqr < 40f*40f);
 
 						if (!treasureList.Any()) return false;
 						else Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Treasure detected, moving to farm it.");
