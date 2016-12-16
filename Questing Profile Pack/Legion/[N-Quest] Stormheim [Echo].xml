@@ -96,107 +96,108 @@ END INITORDER COMMENT -->
 		<!-- END Profile Settings -->
 
 		<!-- RunCode Methods -->
-				<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
-						bool DoQuest(params uint[] questIds)
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
 						{
-							foreach (var questId in questIds)
-							{
-								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
-							}
-							return false;
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
 						}
-						bool NeedsQuest(params uint[] questIds)
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
 						{
-							foreach (var questId in questIds)
-							{
-								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
-							}
-							return false;
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
 						}
-						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
 						{
-							foreach (var questId in questIds)
-							{
-								if (IsQuestCompleted(questId)) return false;
-							}
-							return true;
+							if (IsQuestCompleted(questId)) return false;
 						}
-						bool QuestDone(params uint[] questIds)
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
 						{
-							foreach (var questId in questIds)
-							{
-								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
-							}
-							return false;
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
 						}
-						bool QuestFlaggedCompleted(params uint[] questIds)
+						return false;
+					}
+					bool QuestFlaggedCompleted(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
 						{
-							foreach (var questId in questIds)
-							{
-								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
-							}
-							return false;
+							return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
 						}
+						return false;
+					}
 
-						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
-						{
-					// Add detection of cutscene here.
-							await Coroutine.Sleep(preWait);
-					// Test and improve the working method.
-							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
-							await Coroutine.Sleep(postWait);
-						}
+					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(preWait);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(postWait);
+					}
 
-						private static void BotEvents_OnBotStopped(EventArgs args)
-						{
-							StopIncludeFelskornChannelers();
-							StopIncludeEmpoweredRunestoneUnits();
+					private static void BotEvents_OnBotStopped(EventArgs args)
+					{
+						StopIncludeFelskornChannelers();
+						StopIncludeEmpoweredRunestoneUnits();
 
-						}
-					]]>
-				</CustomBehavior>
+					}
+				]]>
+			</CustomBehavior>
 		<!-- END RunCode Methods -->
 
 		<!-- Anti-stuck hook -->
-				<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
-					public static class StuckDetection
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+				public static class StuckDetection
+				{
+					public static Vector3 LastPoint = new Vector3(0f,0f,0f);
+
+					public static bool IsStuck()
 					{
-						private static Vector3 _lastPoint = new Vector3(0f,0f,0f);
+						if (!Settings.Instance.UseCustomAntiStuck) return false;
+						if (!StyxWoW.Me.IsValid) return false;
+						if (StyxWoW.Me.IsDead) return false;
+						if (StyxWoW.Me.IsActuallyInCombat) return false;
 
-						public static bool IsStuck()
-						{
-							if (!Settings.Instance.UseCustomAntiStuck) return false;
-							if (!StyxWoW.Me.IsValid) return false;
-							if (StyxWoW.Me.IsDead) return false;
-							if (StyxWoW.Me.IsActuallyInCombat) return false;
-
-							var currentPoint = StyxWoW.Me.Location;
-							var isStuck = currentPoint.DistanceSqr(_lastPoint) < 10f * 10f;
-							_lastPoint = currentPoint;
-							return isStuck;
-						}
+						var currentPoint = StyxWoW.Me.Location;
+						var isStuck = currentPoint.DistanceSqr(LastPoint) < 10f * 10f;
+						LastPoint = currentPoint;
+						return isStuck;
 					}
-				]]>
-				</CustomBehavior>
-				<CustomBehavior File="Hooks\DoWhen" ActivityName="DoWhen_StuckDetector" AllowUseWhileMounted="true" LogExecution="false" UseAtInterval="210000" >
-					<If Condition="StuckDetection.IsStuck() &amp;&amp; HasItem(140192)" >
-						<CustomBehavior File="RunCode"><![CDATA[
-							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Stuck detection activated!");
-							await CommonCoroutines.StopMoving();
-							await CommonCoroutines.LandAndDismount();
-							WoWItem dalaranHearthstone = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
-							if (dalaranHearthstone.CooldownTimeLeft != TimeSpan.Zero) {
-								Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Awaiting Dalaran Hearthstone cooldown before attempting hearth!");
-								await Coroutine.Wait(901000, () => dalaranHearthstone.CooldownTimeLeft == TimeSpan.Zero);
-							}
-							dalaranHearthstone.Interact();
-							await Coroutine.Sleep(11500);
-							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Reloading profile.");
-							ProfileManager.LoadNew(ProfileManager.XmlLocation);
-						]]>
-						</CustomBehavior>
-					</If>
-				</CustomBehavior>
+				}
+			]]>
+			</CustomBehavior>
+			<CustomBehavior File="RunCode" Code="StuckDetection.LastPoint = new Vector3(0f,0f,0f);" /> <!-- Clean out stale data in case the user stop/starts the bot. -->
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="DoWhen_StuckDetector" AllowUseWhileMounted="true" LogExecution="false" UseAtInterval="210000" >
+				<If Condition="StuckDetection.IsStuck() &amp;&amp; HasItem(140192)" >
+					<CustomBehavior File="RunCode"><![CDATA[
+						Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Stuck detection activated!");
+						await CommonCoroutines.StopMoving();
+						await CommonCoroutines.LandAndDismount();
+						WoWItem dalaranHearthstone = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+						if (dalaranHearthstone.CooldownTimeLeft != TimeSpan.Zero) {
+							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Awaiting Dalaran Hearthstone cooldown before attempting hearth!");
+							await Coroutine.Wait(901000, () => dalaranHearthstone.CooldownTimeLeft == TimeSpan.Zero);
+						}
+						dalaranHearthstone.Interact();
+						await Coroutine.Sleep(11500);
+						Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Reloading profile.");
+						ProfileManager.LoadNew(ProfileManager.XmlLocation);
+					]]>
+					</CustomBehavior>
+				</If>
+			</CustomBehavior>
 		<!-- END Anti-stuck hook -->
 
 		<!-- Activate Artifact Boost Items Usage -->
@@ -311,7 +312,7 @@ END INITORDER COMMENT -->
 						var treasureList = ObjectManager.GetObjectsOfType<WoWGameObject>().Where(obj => !treasureBlacklist.Contains(obj.Guid) && obj.CanLoot && obj.SubType == WoWGameObjectType.Chest && obj.LockType == WoWLockType.Open && obj.CanUse() && obj.DistanceSqr < 40f*40f);
 
 						if (!treasureList.Any()) return false;
-						else Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Stuck detection activated!");
+						else Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Treasure detected, moving to farm it.");
 
 						foreach (WoWGameObject lootMe in treasureList)
 						{

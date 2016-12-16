@@ -298,7 +298,7 @@ END INITORDER COMMENT -->
 
 				public static class StuckDetection
 				{
-					private static Vector3 _lastPoint = new Vector3(0f,0f,0f);
+					public static Vector3 LastPoint = new Vector3(0f,0f,0f);
 
 					public static bool IsStuck()
 					{
@@ -309,13 +309,14 @@ END INITORDER COMMENT -->
 						if (StyxWoW.Me.IsActuallyInCombat) return false;
 
 						var currentPoint = StyxWoW.Me.Location;
-						var isStuck = currentPoint.DistanceSqr(_lastPoint) < 10f * 10f;
-						_lastPoint = currentPoint;
+						var isStuck = currentPoint.DistanceSqr(LastPoint) < 10f * 10f;
+						LastPoint = currentPoint;
 						return isStuck;
 					}
 				}
 			]]>
 			</CustomBehavior>
+			<CustomBehavior File="RunCode" Code="StuckDetection.LastPoint = new Vector3(0f,0f,0f);" /> <!-- Clean out stale data in case the user stop/starts the bot. -->
 			<CustomBehavior File="Hooks\DoWhen" ActivityName="DoWhen_StuckDetector" AllowUseWhileMounted="true" LogExecution="false" UseAtInterval="210000" >
 				<If Condition="StuckDetection.IsStuck() &amp;&amp; HasItem(140192)" >
 					<CustomBehavior File="RunCode"><![CDATA[
@@ -449,7 +450,7 @@ END INITORDER COMMENT -->
 						var treasureList = ObjectManager.GetObjectsOfType<WoWGameObject>().Where(obj => !treasureBlacklist.Contains(obj.Guid) && obj.CanLoot && obj.SubType == WoWGameObjectType.Chest && obj.LockType == WoWLockType.Open && obj.CanUse() && obj.DistanceSqr < 40f*40f);
 
 						if (!treasureList.Any()) return false;
-						else Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Stuck detection activated!");
+						else Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Treasure detected, moving to farm it.");
 
 						foreach (WoWGameObject lootMe in treasureList)
 						{
