@@ -172,9 +172,13 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="Arcane Unleashed" QuestId="42010" GiverName="Image of Kalec" />
 			<While Condition="DoQuest(42010)" >
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="StealDarkEmpowerment" LogExecution="false" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.HasAura(209329)" >
+					<CustomBehavior File="RunCode" Code="SpellManager.Cast(30449); await Coroutine.Sleep(550);" />
+				</CustomBehavior>
 				<CustomBehavior File="InteractWith" MobId="104828" QuestId="42010" QuestObjectiveIndex="2" X="3761.105" Y="7179.227" Z="165.1684" />
 				<CustomBehavior File="InteractWith" MobId="104819" QuestId="42010" QuestObjectiveIndex="3" X="4113.514" Y="6996.014" Z="168.2267" />
 				<CustomBehavior File="InteractWith" MobId="104826" QuestId="42010" QuestObjectiveIndex="1" X="3828.431" Y="6685.926" Z="156.2073" />
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="StealDarkEmpowerment" Command="Remove" />
 			</While>
 			<TurnIn QuestName="Arcane Unleashed" QuestId="42010" />
 
@@ -257,7 +261,7 @@ END INITORDER COMMENT -->
 
 					<If Condition="!IsScenarioCriteriaComplete(2) &amp;&amp; Me.Z &gt;= 300" >
 						<MoveTo Precision="1" X="1098.997" Y="1013.372" Z="308.2924" />
-						<CustomBehavior File="MyCTM" X="1156.599" Y="1056.209" Z="308.2923" />
+						<CustomBehavior File="MyCTM" X="1098.997" Y="1013.372" Z="308.2924" />
 						<CustomBehavior File="WaitTimer" WaitTime="1500" />
 						<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click()" />
 						<CustomBehavior File="WaitTimer" WaitTime="5125" />
