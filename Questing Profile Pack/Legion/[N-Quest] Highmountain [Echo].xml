@@ -439,6 +439,7 @@ END INITORDER COMMENT -->
 
 			<CustomBehavior File="RunCode" Type="Definition" ><![CDATA[
 					List<WoWGuid> treasureBlacklist = new List<WoWGuid>();
+					bool TreasureIsLogged = false;
 					public Styx.TreeSharp.Composite _treasureHuntComposite;
 
 					public async Task<bool> TreasureHunt()
@@ -448,15 +449,19 @@ END INITORDER COMMENT -->
 						if (StyxWoW.Me.IsActuallyInCombat) return false;
 
 						var treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.CanLoot && obj.SubType == WoWGameObjectType.Chest && obj.LockType == WoWLockType.Open && obj.CanUse() && obj.DistanceSqr < 40f*40f);
-						if (!treasurePoi.IsValid) return false;
+						if (treasurePoi == null || !treasurePoi.IsValid) return false;
 
 						if (Navigator.LookupPathInfo(treasurePoi).Navigability != PathNavigability.Navigable)
 						{
 							treasureBlacklist.Add(treasurePoi.Guid);
 							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, $"[ProfileBase]: Treasure detected near us! But we can't navigate to it. Blacklisting it..\n	Name     :: {treasurePoi.Name}\n	Entry    :: {treasurePoi.Entry}\n	Location :: {treasurePoi.Location}");
+							return false;
 						}
-						else
+						else if (!TreasureIsLogged)
+						{
+							bool TreasureIsLogged = true;
 							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, $"[ProfileBase]: Treasure detected near us!\n	Name     :: {treasurePoi.Name}\n	Entry    :: {treasurePoi.Entry}\n	Location :: {treasurePoi.Location}");
+						}
 
 						if (!treasurePoi.WithinInteractRange)
 							Navigator.MoveTo(treasurePoi.Location);
@@ -470,8 +475,11 @@ END INITORDER COMMENT -->
 							await Coroutine.Wait(2000, () => !LootFrame.Instance.IsVisible);
 						}
 
-						if (!treasurePoi.IsValid)
+						if (treasurePoi == null || !treasurePoi.IsValid)
+						{
+							TreasureIsLogged = false;
 							treasureBlacklist.Add(treasurePoi.Guid);
+						}
 
 						return true;
 					}
@@ -545,6 +553,10 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Spray and Prey" QuestId="39277" GiverName="Jale Rivermane" GiverId="95956" X="4064.991" Y="4778.116" Z="626.1729" />
 
 		<While Condition="DoQuest(39614)" >
+			<CustomBehavior File="RunCode" Code="
+				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Disabling custom anti-stuck measures until this quest is complete.&quot;);
+				UseAntiStuck = false;
+			" />
 			<!-- NOTE: <PerformanceIssue> : Bot must face lake prior to kicking(interacting) with the fish. Add custom code here. -->
 			<CustomBehavior File="InteractWith" MobIds="95148" InteractBlacklistTimeInSeconds="10" NumOfTimes="50" QuestId="39614" QuestObjectiveIndex="1" >
 				<HuntingGrounds>
@@ -555,6 +567,10 @@ END INITORDER COMMENT -->
 					<Hotspot X="3904.754" Y="5002.131" Z="627.1608" />
 				</HuntingGrounds>
 			</CustomBehavior>
+			<CustomBehavior File="RunCode" Code="
+				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Re-enabling custom anti-stuck measures.&quot;);
+				UseAntiStuck = true;
+			" />
 		</While>
 
 		<While Condition="DoQuest(39277)" >
