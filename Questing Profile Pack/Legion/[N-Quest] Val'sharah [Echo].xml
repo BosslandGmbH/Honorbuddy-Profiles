@@ -287,7 +287,6 @@ END INITORDER COMMENT -->
 		<!-- END Profession Items -->
 
 		<!-- Treasure Farm Hook -->
-			<CustomBehavior File="RunCode" Type="Definition" Code="List&lt;WoWGuid&gt; treasureBlacklist = new List&lt;WoWGuid&gt;();" />
 			<CustomBehavior File="RunCode">
 			<![CDATA[
 				TreeHooks.Instance.InsertHook("Questbot_Main", 0,
@@ -296,6 +295,7 @@ END INITORDER COMMENT -->
 			</CustomBehavior>
 
 			<CustomBehavior File="RunCode" Type="Definition" ><![CDATA[
+					List<WoWGuid> treasureBlacklist = new List<WoWGuid>();
 					public Styx.TreeSharp.Composite _treasureHuntComposite;
 
 					public async Task<bool> TreasureHunt()
@@ -304,27 +304,32 @@ END INITORDER COMMENT -->
 						if (StyxWoW.Me.IsDead || StyxWoW.Me.IsGhost) return false;
 						if (StyxWoW.Me.IsActuallyInCombat) return false;
 
-						var treasureList = ObjectManager.GetObjectsOfType<WoWGameObject>().Where(obj => !treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.CanLoot && obj.SubType == WoWGameObjectType.Chest && obj.LockType == WoWLockType.Open && obj.CanUse() && obj.DistanceSqr < 40f*40f);
+						var treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.CanLoot && obj.SubType == WoWGameObjectType.Chest && obj.LockType == WoWLockType.Open && obj.CanUse() && obj.DistanceSqr < 40f*40f);
+						if (!treasurePoi.IsValid) return false;
 
-						if (!treasureList.Any()) return false;
-						else Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Treasure detected, moving to farm it.");
-
-						foreach (WoWGameObject lootMe in treasureList)
+						if (Navigator.LookupPathInfo(treasurePoi).Navigability != PathNavigability.Navigable)
 						{
-							while (lootMe != null && lootMe.CanLoot)
-							{	
-								if (!lootMe.WithinInteractRange)
-									Flightor.MoveTo(lootMe.Location);
-								else
-								{
-									await CommonCoroutines.LandAndDismount();
-									lootMe.Interact();
-								}
-								await Coroutine.Yield();
-							}
-							if (lootMe == null)
-								treasureBlacklist.Add(lootMe.Guid);
+							treasureBlacklist.Add(treasurePoi.Guid);
+							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, $"[ProfileBase]: Treasure detected near us! But we can't navigate to it. Blacklisting it..\n	Name     :: {treasurePoi.Name}\n	Entry    :: {treasurePoi.Entry}\n	Location :: {treasurePoi.Location}");
 						}
+						else
+							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, $"[ProfileBase]: Treasure detected near us!\n	Name     :: {treasurePoi.Name}\n	Entry    :: {treasurePoi.Entry}\n	Location :: {treasurePoi.Location}");
+
+						if (!treasurePoi.WithinInteractRange)
+							Navigator.MoveTo(treasurePoi.Location);
+						else
+						{
+							await CommonCoroutines.LandAndDismount();
+							await CommonCoroutines.StopMoving();
+							treasurePoi.Interact();
+							await Coroutine.Wait(2000, () => LootFrame.Instance.IsVisible);
+							LootFrame.Instance.LootAll();
+							await Coroutine.Wait(2000, () => !LootFrame.Instance.IsVisible);
+						}
+
+						if (!treasurePoi.IsValid)
+							treasureBlacklist.Add(treasurePoi.Guid);
+
 						return true;
 					}
 			]]>
