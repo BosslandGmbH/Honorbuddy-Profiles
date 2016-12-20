@@ -465,7 +465,9 @@ END INITORDER COMMENT -->
 							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, $"[ProfileBase]: Treasure detected near us!\n	Name     :: {treasurePoi.Name}\n	Entry    :: {treasurePoi.Entry}\n	Location :: {treasurePoi.Location}");
 						}
 
-						while (treasurePoi != null && Me.IsAlive && !Me.IsActuallyInCombat)
+						var treasureGuid = treasurePoi.Guid;
+
+						while (treasurePoi != null && treasurePoi.IsValid && Me.IsAlive && !Me.IsActuallyInCombat)
 						{
 							if (!treasurePoi.WithinInteractRange)
 								Navigator.MoveTo(treasurePoi.Location);
@@ -484,7 +486,7 @@ END INITORDER COMMENT -->
 						if (treasurePoi == null || !treasurePoi.IsValid)
 						{
 							TreasureIsLogged = false;
-							treasureBlacklist.Add(treasurePoi.Guid);
+							treasureBlacklist.Add(treasureGuid);
 						}
 
 						return true;
@@ -1037,11 +1039,13 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="The Gates of Wax" QuestId="39769" GiverName="Oenia Skyhorn" GiverId="96984" X="4841.946" Y="3822.238" Z="764.2232" />
 		<TurnIn QuestName="The Gates of Wax" QuestId="39769" TurnInName="Bluewax Gatekeeper" TurnInId="97130" X="4992.674" Y="3780.547" Z="734.2362" />
 
-			<CustomBehavior File="RunCode" Code="
+		<CustomBehavior File="RunCode" Code="
+			if (!IsQuestCompleted(40339) || !IsQuestCompleted(97130))
+			{
 				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Disabling custom anti-stuck measures until this quest is complete.&quot;);
-				if (!IsQuestCompleted(40339) || !IsQuestCompleted(97130))
-					UseAntiStuck = false;
-			" />
+				UseAntiStuck = false;
+			}
+		" />
 
 		<PickUp QuestName="Candle of Command" QuestId="40339" GiverName="Bluewax Gatekeeper" GiverId="97130" X="4841.946" Y="3822.238" Z="764.2232" />
 		<While Condition="DoQuest(40339)" >
@@ -1072,9 +1076,11 @@ END INITORDER COMMENT -->
 		<TurnIn QuestName="Burn the Candle at Both Ends" QuestId="40345" TurnInName="Bluewax Gatekeeper" TurnInId="97130" X="4992.387" Y="3781.002" Z="734.2791" />
 
 		<CustomBehavior File="RunCode" Code="
-			Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Re-enabling custom anti-stuck measures.&quot;);
 			if (IsQuestCompleted(40339) &amp;&amp; IsQuestCompleted(97130))
+			{
+				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Re-enabling custom anti-stuck measures.&quot;);
 				UseAntiStuck = true;
+			}
 		" />
 
 
