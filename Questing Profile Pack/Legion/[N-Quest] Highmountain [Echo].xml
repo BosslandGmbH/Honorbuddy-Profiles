@@ -341,79 +341,28 @@ END INITORDER COMMENT -->
 		<!-- END Anti-stuck hook -->
 
 		<!-- Activate Artifact Boost Items Usage -->
-			<CustomBehavior File="Hooks\DoWhen" LogExecution="false" AllowExecutionWhileNotAlive="false" ActivityName="UseArtifactBoostItems"
-				UseWhen="Settings.Instance.UseAPItems &amp;&amp; (Lua.GetReturnVal&lt;bool&gt;(&quot;return HasArtifactEquipped()&quot;, 0) &amp;&amp; Me.IsAlive &amp;&amp; !Me.Combat) &amp;&amp; 
-				(HasItem(141383) || HasItem(138781) || HasItem(138782) || HasItem(141384) || HasItem(141863) || HasItem(141404) || HasItem(141403) || HasItem(141397) || HasItem(141396) || HasItem(141394) || 
-				HasItem(141390) || HasItem(141389) || HasItem(141388) || HasItem(141387) || HasItem(141386))" >
-				<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: Using Artifact Boost Itemss.&quot;);" />
-				<While Condition="HasItem(138839) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-					<!-- <WoWItem Name="Valiant's Glory" Entry="138839" />-->
-					<CustomBehavior File="UseItem" ItemId="138839" WaitTime="3100" />
-				</While>
-				<While Condition="HasItem(141383) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-					<!-- <WoWItem Name="Crystallized Moon Drop" Entry="141383" /> -->
-					<CustomBehavior File="UseItem" ItemId="141383" WaitTime="3100" />
-				</While>
-				<While Condition="HasItem(138781) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-					<!-- <WoWItem Name="Brief History of the Aeons" Entry="138781" /> -->
-					<CustomBehavior File="UseItem" ItemId="138781" WaitTime="3100" />
-				</While>
-				<While Condition="HasItem(138782) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-					<!-- <WoWItem Name="Brief History of the Ages" Entry="138782" /> -->
-					<CustomBehavior File="UseItem" ItemId="138782" WaitTime="3100" />
-				</While>
-				<While Condition="HasItem(141384) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-					<!-- <WoWItem Name="Emblem of the Dark Covenant" Entry="141384" /> -->
-					<CustomBehavior File="UseItem" ItemId="141384" WaitTime="3100" />
-				</While>
-				<While Condition="HasItem(141405) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-					<!-- <WoWItem Name="Senegos' Favor" Entry="141405" /> -->
-					<CustomBehavior File="UseItem" ItemId="141405" WaitTime="3100" />
-				</While>
-				<While Condition="HasItem(141863) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-					<!-- <WoWItem Name="Daglop's Precious" Entry="141863" /> -->
-					<CustomBehavior File="UseItem" ItemId="141863" WaitTime="3100" />
-				</While>
-				<While Condition="HasItem(141404) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-					<!-- <WoWItem Name="Insignia of the Second Command" Entry="141404" /> -->
-					<CustomBehavior File="UseItem" ItemId="141404" WaitTime="3100" />
-				</While>
-				<While Condition="HasItem(141403) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-					<!-- <WoWItem Name="Tablet of Tyr" Entry="141403" /> -->
-					<CustomBehavior File="UseItem" ItemId="141403" WaitTime="3100" />
-				</While>
-				<While Condition="HasItem(141397) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-					<!-- <WoWItem Name="The Spiritwalker's Wisdom" Entry="141397" /> -->
-					<CustomBehavior File="UseItem" ItemId="141397" WaitTime="3100" />
-				</While>
-				<While Condition="HasItem(141396) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-					<!-- <WoWItem Name="The River's Blessing" Entry="141396" /> -->
-					<CustomBehavior File="UseItem" ItemId="141396" WaitTime="3100" />
-				</While>
-				<While Condition="HasItem(141394) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-					<!-- <WoWItem Name="Plume of the Great Eagle" Entry="141394" /> -->
-					<CustomBehavior File="UseItem" ItemId="141394" WaitTime="3100" />
-				</While>
-				<While Condition="HasItem(141390) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-					<!-- <WoWItem Name="The Corruptor's Totem" Entry="141390" /> -->
-					<CustomBehavior File="UseItem" ItemId="141390" WaitTime="3100" />
-				</While>
-				<While Condition="HasItem(141389) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-					<!-- <WoWItem Name="Stareye Gem" Entry="141389" /> -->
-					<CustomBehavior File="UseItem" ItemId="141389" WaitTime="3100" />
-				</While>
-				<While Condition="HasItem(141388) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-					<!-- <WoWItem Name="Warden's Boon" Entry="141388" /> -->
-					<CustomBehavior File="UseItem" ItemId="141388" WaitTime="3100" />
-				</While>
-				<While Condition="HasItem(141387) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-					<!-- <WoWItem Name="Emerald Bloom" Entry="141387" /> -->
-					<CustomBehavior File="UseItem" ItemId="141387" WaitTime="3100" />
-				</While>
-				<While Condition="HasItem(141386) &amp;&amp; (Me.IsAlive &amp;&amp; !Me.Combat)" >
-					<!-- <WoWItem Name="Giant Pearl Scepter" Entry="141386" /> -->
-					<CustomBehavior File="UseItem" ItemId="141386" WaitTime="3100" />
-				</While>
+			<CustomBehavior File="RunCode" Type="Definition" ><![CDATA[
+					bool ReadyToEmpowerArtifact()
+					{
+						if (!Settings.Instance.UseAPItems) return false;
+						if (!Lua.GetReturnVal<bool>("return HasArtifactEquipped()", 0)) return false;
+						bool HaveItem = Me.BagItems.Any(x => x.TriggersSpell && x.Usable && x.GetEffect(0).Spell.Name.Contains("Empowering"));
+						return HaveItem;
+					}
+				]]>
+			</CustomBehavior>
+			<CustomBehavior File="Hooks\DoWhen" LogExecution="false" AllowExecutionWhileNotAlive="false" ActivityName="UseArtifactBoostItems" UseWhen="ReadyToEmpowerArtifact()" >
+				<CustomBehavior File="RunCode"><![CDATA[
+						Logging.Write(System.Windows.Media.Colors.Yellow, "[Notification]: Using Artifact Boost Items.");
+						var artifactPowerItems = Me.BagItems.Where(x => x.TriggersSpell && x.Usable && x.GetEffect(0).Spell.Name.Contains("Empowering"));
+						foreach (WoWItem useMe in artifactPowerItems)
+						{
+							useMe.Use();
+							await Coroutine.Wait(1600, () => !SpellManager.GlobalCooldown;
+							await Coroutine.Wait(2500, () => !Me.IsCasting);
+						}
+					]]>
+				</CustomBehavior>
 			</CustomBehavior>
 		<!-- END Activate Artifact Boost Items Usage -->
 
