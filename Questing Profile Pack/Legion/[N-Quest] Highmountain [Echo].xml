@@ -30,6 +30,8 @@
 		<Blackspot X="4983.007" Y="3782.136" Z="733.887" Radius="4.976638" /> <!-- Huge rock beside Bluewax Gatekeeper in Candle Rock. -->
 		<Blackspot X="5210.68" Y="4908.445" Z="709.0677" Radius="3.262056" /> <!-- Campfire in CLiff's Edge -->
 		<Blackspot X="5201.003" Y="4938.592" Z="711.0554" Radius="6.220824" /> <!-- Cage in Cliff's Edge -->
+
+		<Blackspot X="4909.1" Y="3909.448" Z="721.8604" Radius="4" /> <!-- Treasure up on rock in Candle Rock -->
 	</Blackspots>
 
 	<Blacklist>
@@ -448,7 +450,7 @@ END INITORDER COMMENT -->
 						if (StyxWoW.Me.IsDead || StyxWoW.Me.IsGhost) return false;
 						if (StyxWoW.Me.IsActuallyInCombat) return false;
 
-						var treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.CanLoot && obj.SubType == WoWGameObjectType.Chest && obj.LockType == WoWLockType.Open && obj.CanUse() && obj.DistanceSqr < 40f*40f);
+						var treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.Name.Contains("Treasure") && obj.CanUse() && obj.DistanceSqr <= 40f*40f);
 						if (treasurePoi == null || !treasurePoi.IsValid) return false;
 
 						if (Navigator.LookupPathInfo(treasurePoi).Navigability != PathNavigability.Navigable)
@@ -463,16 +465,20 @@ END INITORDER COMMENT -->
 							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, $"[ProfileBase]: Treasure detected near us!\n	Name     :: {treasurePoi.Name}\n	Entry    :: {treasurePoi.Entry}\n	Location :: {treasurePoi.Location}");
 						}
 
-						if (!treasurePoi.WithinInteractRange)
-							Navigator.MoveTo(treasurePoi.Location);
-						else
+						while (treasurePoi != null && Me.IsAlive && !Me.IsActuallyInCombat)
 						{
-							await CommonCoroutines.LandAndDismount();
-							await CommonCoroutines.StopMoving();
-							treasurePoi.Interact();
-							await Coroutine.Wait(2000, () => LootFrame.Instance.IsVisible);
-							LootFrame.Instance.LootAll();
-							await Coroutine.Wait(2000, () => !LootFrame.Instance.IsVisible);
+							if (!treasurePoi.WithinInteractRange)
+								Navigator.MoveTo(treasurePoi.Location);
+							else
+							{
+								await CommonCoroutines.LandAndDismount();
+								await CommonCoroutines.StopMoving();
+								treasurePoi.Interact();
+								await Coroutine.Wait(2000, () => LootFrame.Instance.IsVisible);
+								LootFrame.Instance.LootAll();
+								await Coroutine.Wait(2000, () => !LootFrame.Instance.IsVisible);
+							}
+							await Coroutine.Yield();
 						}
 
 						if (treasurePoi == null || !treasurePoi.IsValid)
@@ -1057,7 +1063,7 @@ END INITORDER COMMENT -->
 			<CustomBehavior File="InteractWith" MobId="99782" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" MovementBy="None" GossipOptions="1" QuestId="40345" QuestObjectiveIndex="3" X="4959.91" Y="3781.795" Z="732.8875" />
 			<CustomBehavior File="InteractWith" MobId="243465" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" MovementBy="None" GossipOptions="1" QuestId="40345" QuestObjectiveIndex="4" X="4961.25" Y="3778.908" Z="733.0018" />
 			<CustomBehavior File="InteractWith" MobId="99782" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" MovementBy="None" GossipOptions="1" QuestId="40345" QuestObjectiveIndex="5" X="4959.91" Y="3781.795" Z="732.8875" />
-			<CustomBehavior File="EjectVeh" QuestId="40345" QuestObjectiveIndex="6" />
+			<CustomBehavior File="EjectVeh" QuestId="40345" />
 			<EnableBehavior Name="Combat" />
 			<CustomBehavior File="InteractWith" MobId="99783" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="40345" QuestObjectiveIndex="6" X="4937.702" Y="3805.764" Z="733.0316" />
 			<CustomBehavior File="InteractWith" MobId="99784" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" GossipOptions="1" QuestId="40345" QuestObjectiveIndex="7" X="4977.628" Y="3898.031" Z="729.7892" />
