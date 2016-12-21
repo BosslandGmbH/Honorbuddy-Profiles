@@ -212,7 +212,7 @@ END INITORDER COMMENT -->
 			<CustomBehavior File="Hooks\DoWhen" LogExecution="false" AllowExecutionWhileNotAlive="false" ActivityName="UseArtifactBoostItems" UseWhen="ReadyToEmpowerArtifact()" >
 				<CustomBehavior File="RunCode"><![CDATA[
 						Logging.Write(System.Windows.Media.Colors.Yellow, "[Notification]: Using Artifact Boost Items.");
-						var artifactPowerItems = Me.BagItems.Where(x => x.TriggersSpell && x.Usable && x.GetEffect(0).Spell.Name.Contains("Empowering"));
+						var artifactPowerItems = Me.BagItems.Where(x => x.GetEffect(0) != null && x.GetEffect(0).Spell.Name.Contains("Empowering"));
 						foreach (WoWItem useMe in artifactPowerItems)
 						{
 							await CommonCoroutines.StopMoving();
