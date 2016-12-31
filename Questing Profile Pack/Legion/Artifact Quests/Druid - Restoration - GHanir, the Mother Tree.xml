@@ -166,13 +166,13 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="In Deep Slumber" QuestId="41436" GiverName="Naralex" GiverId="104349" X="4289" Y="7426.044" Z="-17.43501" />
 			<While Condition="DoQuest(41436)" >
-				<If Condition="true"> <!-- NOTE: <Add-CheckAura> : Drink potion for dreamwalking aura, need to check internal auras for this.  If dont have aura, useitem -->
+				<If Condition="!Me.HasAura(206556)"> <!-- NOTE: <Add-CheckAura> : Drink potion for dreamwalking aura, need to check for 'The Emerald Dream' aura.  If dont have aura, useitem -->
 					<MoveTo X="4300.369" Y="7422.058" Z="-17.13339" /> <!-- Go to bed. -->
 					<CustomBehavior File="UseItem" ItemId="135506" />
 					<CustomBehavior File="WaitTimer" WaitTime="15000" />
 				</If>
 
-				<CustomBehavior File="Hooks\DoWhen" ActivityName="PreventCorruption" AllowUseDuringCombat="true" UseWhen="!Me.HasAura(774) || !Me.HasAura(33763)" > <!-- NOTE: <Add-CheckAura> : If have dreamwalking aura.  Same aura as mentioned in the note above. -->
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="PreventCorruption" AllowUseDuringCombat="true" UseWhen="Me.HasAura(206556) &amp;&amp; (!Me.HasAura(774) || !Me.HasAura(33763))" > <!-- NOTE: <Add-CheckAura> : If have dreamwalking aura.  Same aura as mentioned in the note above. -->
 					<!-- All that may be needed here is Lifebloom.  It's able to surpress the corruption very efficiently on its own. -->
 					<CustomBehavior File="RunCode" Code="Me.Target();" />
 					<If Condition="!Me.HasAura(774)" > <!-- Rejuvenation -->
@@ -193,14 +193,22 @@ END INITORDER COMMENT -->
 				<DisableBehavior Name="Combat" />
 				<CustomBehavior File="WaitTimer" WaitTime="25000" /> <!-- NOTE: <Optimize> : Roots do not go null.  Need to check object state to see if they are removed. -->
 
-				<MoveTo X="4230.775" Y="7394.456" Z="-5.798958" />
-				<CustomBehavior File="Hooks\Avoid" AvoidName="CongealedNightmare" ObjectId="104533" Radius="2" AvoidWhen="Lua.GetReturnVal&lt;int&gt;(&quot;return UnitPower('player', ALTERNATE_POWER_INDEX)&quot;, 0) &gt;= 50" />
-				<CustomBehavior File="Hooks\Avoid" AvoidName="CongealedNightmareTrail" ObjectId="10956" ObjectType="AreaTrigger" Radius="2" AvoidWhen="Lua.GetReturnVal&lt;int&gt;(&quot;return UnitPower('player', ALTERNATE_POWER_INDEX)&quot;, 0) &gt;= 80" />
-				
-				<MoveTo X="4197.082" Y="7387.041" Z="3.418731" />
-				<CustomBehavior File="RunCode" Code="SpellManager.Cast(1850);" />
-
+				<MoveTo X="4220.129" Y="7371.49" Z="-5.967033" />
+				<!-- Wait for mob to move out of way -->
+				<CustomBehavior File="WaitTimer" WaitTime="80000" TerminateWhen="Unit(104515, u =&gt; u.Location.Distance(new Vector3(4208.401f, 7385.235f, -5.897796f)) &lt; 1) != null &amp;&amp; Me.HealthPercent &gt;= 99" />
+				<MoveTo X="4190.211" Y="7381.423" Z="-0.4116783" />
+				<!-- Heal up before moving on -->
+				<CustomBehavior File="Hooks\Avoid" AvoidName="CongealedNightmare" ObjectId="104533" Radius="1.75" AvoidWhen="UNIT.ZDiff &lt; 8" />
+				<CustomBehavior File="Hooks\Avoid" AvoidName="CongealedNightmareTrail" ObjectId="10956" ObjectType="AreaTrigger" Radius="1.75" AvoidWhen="AREATRIGGER.ZDiff &lt; 8" />
+				<CustomBehavior File="RunCode" Type="Definition" ><![CDATA[
+					bool InDeepSlumber_MoveOn => Me.HealthPercent >= 99 && Lua.GetReturnVal<int>("return UnitPower('player', ALTERNATE_POWER_INDEX)", 0) < 10;
+				]]></CustomBehavior>
+				<CustomBehavior File="WaitTimer" WaitTime="40000" TerminateWhen="InDeepSlumber_MoveOn" />
+				<MoveTo X="4218.505" Y="7414.767" Z="9.159934" />
+				<CustomBehavior File="WaitTimer" WaitTime="40000" TerminateWhen="InDeepSlumber_MoveOn" />
 				<MoveTo X="4102.368" Y="7374.856" Z="22.9132" />
+				<CustomBehavior File="WaitTimer" WaitTime="40000" TerminateWhen="InDeepSlumber_MoveOn" />
+				
 				<CustomBehavior File="Hooks\DoWhen" ActivityName="PreventCorruption" Command="Remove" />
 
 				<CustomBehavior File="Hooks\DoWhen" ActivityName="RemoveRoots" AllowUseDuringCombat="true" UseWhen="Me.HasAura(186456)" >
@@ -216,8 +224,8 @@ END INITORDER COMMENT -->
 				<CustomBehavior File="Hooks\Avoid" AvoidName="CongealedNightmareTrail" Command="Remove" />
 				<CustomBehavior File="Hooks\Avoid" AvoidName="RemoveRoots" Command="Remove" />
 
-				<CustomBehavior File="InteractWith" MobId="248098" InteractByLooting="true" QuestId="41436" QuestObjectiveIndex="2" X="3975.752" Y="7390.431" Z="25.86293" />
-				<CustomBehavior File="WaitTimer" WaitTime="12000" />
+				<CustomBehavior File="InteractWith" MobId="248098" InteractByLooting="true" QuestId="41436" QuestObjectiveIndex="2" X="3975.752" Y="7390.431" Z="25.86293" TerminateWhen="!Me.HasAura(206556)" />
+				<CustomBehavior File="WaitTimer" WaitTime="12000" TerminateWhen="!Me.HasAura(206556)" />
 				<UseMount Value="true" />
 			</While>
 			<TurnIn QuestName="In Deep Slumber" QuestId="41436" TurnInName="Naralex" TurnInId="104349" X="4294.677" Y="7422.983" Z="-17.58418" />
