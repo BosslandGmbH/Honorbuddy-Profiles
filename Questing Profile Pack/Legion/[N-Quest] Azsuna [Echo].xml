@@ -1004,15 +1004,20 @@ END INITORDER COMMENT -->
 			<!-- NOTE: <LogicalCheck> : This code has no null check on the wandTarget var.  Need to test this and improve when bot is availible. -->
 			<CustomBehavior File="RunCode">
 				<![CDATA[
-						WoWGuid blacklistTarget = new WoWGuid();
+						List<WoWGuid> targetBlacklist = new List<WoWGuid>();
 						while (DoQuest(42370))
 						{
-							var wandTarget = Unit(107279, u => u.Guid != blacklistTarget);
-							blacklistTarget = wandTarget.Guid;
+							var wandTarget = ObjectManager.GetObjectsOfType<WoWUnit>().Where(u => !targetBlacklist.Contains(u.Guid) && u.Entry == 107279).OrderBy(u => u.DistanceSqr).FirstOrDefault();
 
-							wandTarget.Face();
-							await Coroutine.Sleep(778);
-							Lua.DoString("ExtraActionButton1:Click();");
+							if (wandTarget != null && wandTarget.IsValid)
+							{
+								targetBlacklist.Add(wandTarget.Guid);
+								wandTarget.Face();
+								await Coroutine.Sleep(350);
+								Lua.DoString("ExtraActionButton1:Click();");
+								await Coroutine.Sleep(950);
+							}
+							await Coroutine.Yield();
 						}
 					]]>
 			</CustomBehavior>
