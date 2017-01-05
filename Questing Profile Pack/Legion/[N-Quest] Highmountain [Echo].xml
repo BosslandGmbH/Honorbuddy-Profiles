@@ -347,7 +347,7 @@ END INITORDER COMMENT -->
 					{
 						if (!Settings.Instance.UseAPItems) return false;
 						if (!Lua.GetReturnVal<bool>("return HasArtifactEquipped()", 0)) return false;
-						bool HaveItem = Me.BagItems.FirstOrDefault(x => x.ItemInfo.SubClassId.Equals(8) && x.GetEffect(0) != null && x.GetEffect(0).Spell.LocalizedName.Equals("Empowering")) != null;
+						bool HaveItem = Me.BagItems.Any(x => x.ItemInfo.ConsumableClass == WoWItemConsumableClass.Other && x.GetEffect(0)?.Spell?.Name == "Empowering");
 						return HaveItem;
 					}
 				]]>
