@@ -355,9 +355,11 @@ END INITORDER COMMENT -->
 			<CustomBehavior File="Hooks\DoWhen" LogExecution="false" AllowExecutionWhileNotAlive="false" ActivityName="UseArtifactBoostItems" UseWhen="ReadyToEmpowerArtifact()" >
 				<CustomBehavior File="RunCode"><![CDATA[
 						Logging.Write(System.Windows.Media.Colors.Yellow, "[Notification]: Using Artifact Boost Items.");
-						var artifactPowerItems = Me.BagItems.Where(x => x.ItemInfo.SubClassId.Equals(8) && x.GetEffect(0) != null && x.GetEffect(0).Spell.LocalizedName.Equals("Empowering"));
+						var artifactPowerItems = Me.BagItems.Where(x => x.ItemInfo.ConsumableClass == WoWItemConsumableClass.Other && x.GetEffect(0)?.Spell?.Name == "Empowering");
 						foreach (WoWItem useMe in artifactPowerItems)
 						{
+							if (!Me.IsValid || !Me.IsAlive || Me.IsActuallyInCombat)
+								break;						
 							await CommonCoroutines.StopMoving();
 							useMe.Use();
 							await Coroutine.Sleep(500);
