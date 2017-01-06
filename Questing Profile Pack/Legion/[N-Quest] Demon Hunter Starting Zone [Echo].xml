@@ -606,7 +606,20 @@
 				<If Condition="NeedsQuest(41002) &amp;&amp; Me.Z &lt;= 33" >
 					<CustomBehavior File="FlyTo" X="1257.226" Y="-4376.972" Z="39.55751" /> <!-- Temporary work-around since this platform isn't meshed. -->
 				</If>
-				<PickUp QuestName="A Weapon of the Horde" QuestId="41002" GiverName="Lady Sylvanas Windrunner" GiverId="101035" X="1246.866" Y="-4377.863" Z="34.91656" />
+				<If Condition="NeedsQuest(41002)" >
+					<!-- <PickUp QuestName="A Weapon of the Horde" QuestId="41002" GiverName="Lady Sylvanas Windrunner" GiverId=""  -->
+					<CustomBehavior File="InteractWith" MobId="101035" MovementBy="ClickToMoveOnly" X="1246.866" Y="-4377.863" Z="34.91656" />
+					<CustomBehavior File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click();" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							while (Me.Location.Distance(new Vector3(1265.48f, -4381.345f, 28.67969f)) > 5)
+							{
+								WoWMovement.ClickToMove(new Vector3(1265.48f, -4381.345f, 28.67969f));
+								await Coroutine.Yield();
+							}
+						]]>
+					</CustomBehavior>
+				</If>
+				
 				<TurnIn Nav="Fly" QuestName="A Weapon of the Horde" QuestId="41002" TurnInName="Elthyn Da'rai" TurnInId="95234" X="1812.56" Y="-4432.923" Z="103.1367" />
 			</If>
 		<!-- END Loc: Azuna -->
