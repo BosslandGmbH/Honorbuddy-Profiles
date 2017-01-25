@@ -422,9 +422,9 @@ END INITORDER COMMENT -->
 					</If>
 					<PickUp QuestName="In the Blink of an Eye" QuestId="44663" GiverName="Khadgar's Upgraded Servant" GiverId="114562" X="-8866.701" Y="642.0375" Z="96.14512" />
 				</If>
-				<If Condition="HasQuest(44663)" >
+				<If Condition="HasQuest(44663) &amp;&amp; Me.ZoneId != 7502" >
 					<MoveTo Nav="Fly" X="-8401.058" Y="330.757" Z="147.0138" />
-					<CustomBehavior File="InteractWith" MobId="216350" QuestId="44663" QuestObjectiveIndex="1" X="-8401.058" Y="330.757" Z="147.0138" TerminateWhen="Me.ZoneId == 41" />
+					<CustomBehavior File="InteractWith" MobId="216350" QuestId="44663" QuestObjectiveIndex="1" X="-8401.058" Y="330.757" Z="147.0138" TerminateWhen="Me.ZoneId == 7502" />
 				</If>
 			</If>
 		<!-- END Alliance Section -->
@@ -437,9 +437,9 @@ END INITORDER COMMENT -->
 					</If>
 					<PickUp QuestName="In the Blink of an Eye" QuestId="44663" GiverName="Khadgar's Upgraded Servant" GiverId="114562" X="1824.579" Y="-4421.238" Z="103.3658" />
 				</If>
-				<If Condition="HasQuest(44663)" >
+				<If Condition="HasQuest(44663) &amp;&amp; Me.ZoneId != 7502" >
 					<MoveTo Nav="Fly" X="1881.895" Y="-4502.215" Z="23.3662" />
-					<CustomBehavior File="InteractWith" MobId="254292" MovementBy="NavigatorOnly" QuestId="44663" QuestObjectiveIndex="1" X="1758.979" Y="-4293.224" Z="7.621215" TerminateWhen="Me.ZoneId == 41" />
+					<CustomBehavior File="InteractWith" MobId="254292" MovementBy="NavigatorOnly" QuestId="44663" QuestObjectiveIndex="1" X="1758.979" Y="-4293.224" Z="7.621215" TerminateWhen="Me.ZoneId == 7502" />
 				</If>
 			</If>
 		<!-- END Horde Section -->
@@ -452,11 +452,11 @@ END INITORDER COMMENT -->
 			<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 		</If>
 
-		<If Condition="HasQuest(44663) || HasQuest(44184)" > <!-- Using InteractWith to bypass a Blizz-end bug where the quest isn't showing up properly. -->
+		<While Condition="(HasQuest(44663) || HasQuest(44184)) &amp;&amp; Unit(111109) != null" > <!-- Using InteractWith to bypass a Blizz-end bug where the quest isn't showing up properly. -->
 			<!-- In the Blink of an Eye -->
 			<CustomBehavior File="InteractWith" MobId="111109" WaitTime="1500" X="-834.3594" Y="4399.119" Z="737.5295" />
-			<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
-		</If>
+			<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" WaitTime="2500" />
+		</While>
 
 
 		<!-- Load Class Hall stuff -->
