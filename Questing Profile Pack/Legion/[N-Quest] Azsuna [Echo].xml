@@ -1455,9 +1455,9 @@ END INITORDER COMMENT -->
 		</If>
 
 		<PickUp QuestName="Save Yourself" QuestId="37530" GiverName="Prince Farondis" GiverId="89009" X="-98.34375" Y="6018.329" Z="0.4202359" />
-		<While Condition="DoQuest(37530)" >
+		<While Condition="HasQuest(37530)" >
 			<DisableBehavior Name="All" />
-			<CustomBehavior File="InteractWith" MobId="89009" WaitTime="10000" NonCompeteDistance="0" GossipOptions="1" NumOfTimes="6" QuestId="37530" X="-98.34375" Y="6018.329" Z="0.4202359" TerminateWhen="Me.InVehicle" />
+			<CustomBehavior File="InteractWith" MobId="89009" WaitTime="10000" NonCompeteDistance="0" GossipOptions="1" NumOfTimes="6" X="-98.34375" Y="6018.329" Z="0.4202359" TerminateWhen="Me.InVehicle" />
 
 			<CustomBehavior File="RunCode" Type="Definition">
 				<![CDATA[
@@ -1525,20 +1525,22 @@ END INITORDER COMMENT -->
 			</CustomBehavior>
 
 			<If Condition="Me.InVehicle" >
-				<CustomBehavior File="RunCode" QuestId="37530" QuestObjectiveIndex="2" Code="await VehicleMove(new WoWPoint(-3.882, 6276.46, 3.146761));" />
-				<CustomBehavior File="RunCode" QuestId="37530" QuestObjectiveIndex="3" Code="await VehicleMove(new WoWPoint(-26.50426, 6178.747, 4.55294));" />
-				<CustomBehavior File="RunCode" QuestId="37530" QuestObjectiveIndex="4" Code="await VehicleKill(89116);" />
-				<CustomBehavior File="RunCode" QuestId="37530" QuestObjectiveIndex="5" Code="await VehicleMove(new WoWPoint(-11.47015, 5977.641, 0.7397661));" />
-				<CustomBehavior File="WaitTimer" QuestId="37530" QuestObjectiveIndex="6" WaitTime="95000" />
+				<CustomBehavior File="RunCode" QuestId="37530" Code="await VehicleMove(new WoWPoint(-3.882, 6276.46, 3.146761));" /> <!-- QuestObjectiveIndex="2" -->
+				<CustomBehavior File="RunCode" QuestId="37530" Code="await VehicleMove(new WoWPoint(-26.50426, 6178.747, 4.55294));" /> <!-- QuestObjectiveIndex="3" -->
+				<CustomBehavior File="RunCode" QuestId="37530" Code="await VehicleKill(89116);" /> <!-- QuestObjectiveIndex="4" -->
+				<CustomBehavior File="RunCode" QuestId="37530" Code="await VehicleMove(new WoWPoint(-11.47015, 5977.641, 0.7397661));" /> <!-- QuestObjectiveIndex="5" -->
+				<CustomBehavior File="WaitTimer" QuestId="37530" WaitTime="95000" /> <!-- QuestObjectiveIndex="6" -->
 				<MoveTo X="-98.56056" Y="6020.948" Z="0.3888235" />
+
+				<While Condition="QuestDone(37530) &amp;&amp; Me.InVehicle" >
+					<CustomBehavior File="InteractWith" MobId="89090" X="-101.252" Y="6021.44" Z="0.475772" TerminateWhen="!HasQuest(37530) || !Me.InVehicle" />
+					<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestInfoRewardsFrameQuestInfoItem1:Click();" TerminateWhen="!HasQuest(37530) || !Me.InVehicle" />
+					<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestFrameCompleteQuestButton:Click();" TerminateWhen="!HasQuest(37530) || !Me.InVehicle" />
+				</While>
+
 			</If>
 		</While>
 		<!-- NOTE: <CheckMe> : The NPC will show up as the player's name, but internally shows up as 'Your Doppleganger' - need to make sure bot properly interacts for the quest turnin. -->
-		<While Condition="QuestDone(37530)" >
-			<CustomBehavior File="InteractWith" MobId="89090" X="-101.252" Y="6021.44" Z="0.475772" TerminateWhen="!HasQuest(37530)" />
-			<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestInfoRewardsFrameQuestInfoItem1:Click();" TerminateWhen="!HasQuest(37530)" />
-			<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestFrameCompleteQuestButton:Click();" TerminateWhen="!HasQuest(37530)" />
-		</While>
 		<EnableBehavior Name="All" />
 
 
