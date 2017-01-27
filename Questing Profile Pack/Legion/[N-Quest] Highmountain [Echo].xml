@@ -154,8 +154,7 @@ END INITORDER COMMENT -->
 			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
 					async Task VehicleMove(WoWPoint moveTo)
 					{
-						if (!StyxWoW.Me.InVehicle) return;
-						while (Me.Location.Distance(moveTo) >= 5)
+						while (StyxWoW.Me.InVehicle && Me.Location.Distance(moveTo) >= 5)
 						{
 							Navigator.MoveTo(moveTo);
 							await CombatAwareness();
@@ -166,23 +165,13 @@ END INITORDER COMMENT -->
 					async Task VehicleKill(uint unitId)
 					{
 						if (!StyxWoW.Me.InVehicle) return;
-						WoWUnit killMe = Unit(unitId, u => u.IsAlive);
-						if (killMe == null || Blacklist.Contains(killMe, BlacklistFlags.Combat)) return;
+						WoWUnit killMe = Unit(unitId, u => u.IsAlive && !Blacklist.Contains(u, BlacklistFlags.Combat));
+						if (killMe == null) return;
 
-						while (killMe != null && killMe.IsAlive)
+						while (StyxWoW.Me.InVehicle && killMe != null && killMe.IsAlive)
 						{
-							if (Me.Location.Distance(killMe.Location) >= 5)
-							{
-								Navigator.MoveTo(killMe.Location);
-								await CombatAwareness();
-								await Coroutine.Yield();
-							}
-
-							if (killMe.IsAlive)
-							{
-								await VehicleCombat(killMe);
-								await Coroutine.Yield();
-							}
+							await VehicleMove(killMe.Location);
+							await VehicleCombat(killMe);
 							await Coroutine.Yield();
 						}
 					}
@@ -190,11 +179,11 @@ END INITORDER COMMENT -->
 					async Task VehicleCombat(WoWUnit vehicleKill)
 					{
 						if (!StyxWoW.Me.InVehicle) return;
+						if (vehicleKill == null) return;
+						if (!vehicleKill.IsAlive) return;
 						if (vehicleKill.Distance > 5) return;
 						if (Me.CurrentTarget != vehicleKill)
-						{
 							vehicleKill.Target();
-						}
 						Me.SetFacing(vehicleKill.Location);
 						if (Me.ZoneId == 7503)
 						{
@@ -213,7 +202,7 @@ END INITORDER COMMENT -->
 
 						foreach (WoWUnit killMe in killArray)
 						{
-							while (killMe != null && killMe.IsTargetingMeOrPet && killMe.Distance <= 5)
+							while (StyxWoW.Me.InVehicle && killMe != null && killMe.IsTargetingMeOrPet && killMe.Distance <= 5)
 							{
 								await CommonCoroutines.StopMoving();
 								StyxWoW.Me.SetFacing(killMe.Location);
@@ -228,30 +217,20 @@ END INITORDER COMMENT -->
 						if (!StyxWoW.Me.InVehicle) return;
 						if (!NeedsQuest(questId)) return;
 						Logging.Write(System.Windows.Media.Colors.Yellow, $"[ProfileBase]: Moving to PickUp questId {questId}");
-						while (Me.Location.Distance(giverSpot) >= 10)
-						{
-							Navigator.MoveTo(giverSpot);
-							await CombatAwareness();
-							await Coroutine.Yield();
-						}
+
+						await VehicleMove(giverSpot);
 
 						var unitPoi = Unit(unitId);
 						if (unitPoi == null) await Coroutine.Wait(10000, () => unitPoi != null);
 
-						while (!HasQuest(questId))
+						while (StyxWoW.Me.InVehicle && !HasQuest(questId))
 						{
-							while (Me.Location.Distance(unitPoi.Location) >= 5)
-							{
-								Navigator.MoveTo(unitPoi.Location);
-								await Coroutine.Yield();
-							}
+							await VehicleMove(unitPoi.Location);
 
-							if (Me.Location.Distance(unitPoi.Location) < 5)
-							{
-								unitPoi.Interact();
-								await Coroutine.Sleep(500);
-								Lua.DoString("QuestFrameAcceptButton:Click();");
-							}
+							unitPoi.Interact();
+							await Coroutine.Sleep(500);
+							Lua.DoString("QuestFrameAcceptButton:Click();");
+
 							await Coroutine.Yield();
 						}
 					}
@@ -261,32 +240,22 @@ END INITORDER COMMENT -->
 						if (!StyxWoW.Me.InVehicle) return;
 						if (!QuestDone(questId)) return;
 						Logging.Write(System.Windows.Media.Colors.Yellow, $"[ProfileBase]: Moving to TurnIn questId {questId}");
-						while (Me.Location.Distance(giverSpot) >= 10)
-						{
-							Navigator.MoveTo(giverSpot);
-							await CombatAwareness();
-							await Coroutine.Yield();
-						}
+
+						await VehicleMove(giverSpot);
 
 						var unitPoi = Unit(unitId);
 						if (unitPoi == null) await Coroutine.Wait(10000, () => unitPoi != null);
 
-						while (HasQuest(questId))
+						while (StyxWoW.Me.InVehicle && HasQuest(questId))
 						{
-							while (Me.Location.Distance(unitPoi.Location) >= 5)
-							{
-								Navigator.MoveTo(unitPoi.Location);
-								await Coroutine.Yield();
-							}
+							await VehicleMove(unitPoi.Location);
 
-							if (Me.Location.Distance(unitPoi.Location) < 5)
-							{
-								unitPoi.Interact();
-								await Coroutine.Sleep(500);
-								Lua.DoString("QuestInfoRewardsFrameQuestInfoItem1:Click();");
-								await Coroutine.Sleep(300);
-								Lua.DoString("QuestFrameCompleteQuestButton:Click();");
-							}
+							unitPoi.Interact();
+							await Coroutine.Sleep(500);
+							Lua.DoString("QuestInfoRewardsFrameQuestInfoItem1:Click();");
+							await Coroutine.Sleep(300);
+							Lua.DoString("QuestFrameCompleteQuestButton:Click();");
+
 							await Coroutine.Yield();
 						}
 					}
@@ -806,6 +775,8 @@ END INITORDER COMMENT -->
 
 	<!-- Story: Huln's War -->
 		<If Condition="!IsQuestCompleted(39992)" > <!-- Last quest in this chain -->
+			<MoveTo X="4057.205" Y="4320.374" Z="675.4365" />
+
 			<DisableBehavior Name="All" />
 
 			<PickUp QuestName="Huln's War - The Arrival" QuestId="39983" GiverName="Spiritwalker Ebonhorn" GiverId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
@@ -846,15 +817,12 @@ END INITORDER COMMENT -->
 			<CustomBehavior File="RunCode" Code="await VehiclePickUp(questId: 39992, unitId: 97903, giverSpot: new WoWPoint(3451.221, -5101.295, 85.30394));" />
 			<While Condition="DoQuest(39992)" >
 				<CustomBehavior File="RunCode" Code="
-					if (!QuestDone(39992))
-					{
-						await VehicleMove(new WoWPoint(3513.153, -5184.868, 85.54453));
-					}
-					await Coroutine.Wait(20000, () =&gt; Unit(97956) != null);
+					await VehicleMove(new WoWPoint(3513.153, -5184.868, 85.54453));
+					await Coroutine.Wait(20000, () =&gt; Unit(97956, u =&gt; u.IsAlive) != null);
 					await VehicleKill(97956);
-					await Coroutine.Wait(20000, () =&gt; Me.MapId != 1515 || Unit(97956) != null);
 				" />
 			</While>
+			<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Me.ZoneId == 7731" />
 			<EnableBehavior Name="All" />				
 		</If>
 		<TurnIn QuestName="Huln's War - The Nathrezim" QuestId="39992" TurnInName="Spiritwalker Ebonhorn" TurnInId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
