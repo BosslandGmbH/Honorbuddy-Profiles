@@ -366,6 +366,8 @@ END INITORDER COMMENT -->
 					<If Condition="NeedsQuest(39800)" >
 						<PickUp QuestName="Greymane's Gambit" QuestId="39800" GiverName="Genn Greymane" GiverId="96663" X="-8587.822" Y="1398.612" Z="196.5768" />
 						<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+						<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Unit(92932) != null || Unit(96644) != null" /> <!-- Wait to see if the scenario fails to load. -->
+						<CustomBehavior File="WaitTimer" WaitTime="2000" /> <!-- Wait for objects to phase in. -->
 					</If>
 					<While Condition="DoQuest(39800)" >
 						<While Condition="Me.MapId == 1220 &amp;&amp; Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0">
@@ -374,17 +376,17 @@ END INITORDER COMMENT -->
 							<CustomBehavior File="InteractWith" MobId="244567" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" NumOfTimes="5" X="-830.9566" Y="4655.491" Z="749.6113" TerminateWhen="Me.MapId == 0" />
 						</While>
 						<While Condition="Me.MapId == 0" >
-							<MoveTo X="-8581.744" Y="1400.527" Z="196.4672" />
-							<CustomBehavior File="InteractWith" MobId="96644" GossipOptions="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" X="-8583.434" Y="1398.754" Z="196.5766" />
+							<CustomBehavior File="InteractWith" MobId="96644" GossipOptions="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" X="-8583.434" Y="1398.754" Z="196.5766" TerminateWhen="Me.MapId == 1475" />
+							<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Unit(92932) != null || Unit(96644) != null" /> <!-- Wait to see if the scenario fails to load. -->
+							<CustomBehavior File="WaitTimer" WaitTime="2000" /> <!-- Wait for objects to phase in. -->
 						</While>
 
 						<UseMount Value="false" />
 
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-							<MoveTo X="5072.761" Y="3148.755" Z="367.4862" />
-							<CustomBehavior File="InteractWith" X="4966.844" Y="2883.872" Z="137.8287" PreInteractMountStrategy="Dismount" TerminateWhen="(IsScenarioCriteriaComplete(1) &amp;&amp; IsScenarioCriteriaComplete(2)) || Me.InVehicle || Unit(92957, u =&gt; u.HasAura(184641)) != null" >
+							<CustomBehavior File="InteractWith" X="4961.467" Y="2873.761" Z="141.9041" IgnoreLoSToTarget="true" PreInteractMountStrategy="Dismount" TerminateWhen="(IsScenarioCriteriaComplete(1) &amp;&amp; IsScenarioCriteriaComplete(2)) || Me.InVehicle || Unit(92957, u =&gt; u.HasAura(184641)) != null" >
 								<PursuitList>
-									<PursueUnit Id="92957" PursueWhen="UNIT.Z &gt;= 141" /> <!-- Only use the one the bot can easily navigate to -->
+									<PursueUnit Id="92957" PursueWhen="UNIT.Z &gt;= 371" /> <!-- Only use the one the bot can easily navigate to -->
 								</PursuitList>
 							</CustomBehavior>
 							<CustomBehavior File="Vehicles\CannonControl" MobId="93113" VehicleId="92957" MinAngle="-0.0868" MaxAngle="1" Gravity="0.01" Velocity="200" Buttons="1,2" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2 || !Me.InVehicle" />
