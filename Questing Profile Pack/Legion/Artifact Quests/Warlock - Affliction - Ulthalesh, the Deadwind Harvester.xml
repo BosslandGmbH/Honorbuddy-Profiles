@@ -5,6 +5,8 @@
 	<MinDurability>0.3</MinDurability>
 	<MinFreeBagSlots>3</MinFreeBagSlots>
 
+	<DefaultNavType>Fly</DefaultNavType>
+
 	<SellGrey>true</SellGrey>
 	<SellWhite>true</SellWhite>
 	<SellGreen>true</SellGreen>
@@ -120,15 +122,14 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="Ulthalesh, the Deadwind Harvester" QuestId="40495" GiverName="Calydus" GiverId="101097" X="-858.3073" Y="4456.332" Z="695.9575" />
 			<!-- :END1 -->
 			<While Condition="DoQuest(40495)" >
-				<If Condition="Me.MapId != 0" > <!-- NOTE: <CheckMapIds> : Dalaran to Karazhan -->
-					<If Condition="Me.Z &gt; 605" > <!-- NOTE: <CheckFunction> : Dalaran to Dalaran Portal Room -->
+				<While Condition="Me.MapId != 0" >
+					<If Condition="Me.Z &gt; 605" >
 						<MoveTo X="-850.0136" Y="4460.374" Z="735.6611" />
 						<CustomBehavior File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" TerminateWhen="Me.Z &lt;= 605" />
 					</If>
-					<MoveTo X="-872.5156" Y="4501.743" Z="580.1682" />
-					<CustomBehavior File="InteractWith" MobId="246009" X="-869.9479" Y="4503.124" Z="580.4584" />
-					<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Me.MapId == 0" /> <!-- NOTE: Terminate when player is in Karazhan -->
-				</If>
+					<CustomBehavior File="InteractWith" MobId="246009" X="-869.9479" Y="4503.124" Z="580.4584" TerminateWhen="Me.MapId == 0" />
+					<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Me.MapId == 0" />
+				</While>
 				<MoveTo Nav="Fly" X="-10355.38" Y="-1256.694" Z="35.30087" />
 				<MoveTo Nav="Run" X="-10366.78" Y="-1256.696" Z="35.91049" />
 				
@@ -154,13 +155,13 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="Disturbing the Past" QuestId="40604" GiverName="Revil Kost" GiverId="100729" X="-10440.19" Y="-2143.814" Z="90.77973" />
 			<While Condition="DoQuest(40604)" >
-				<CustomBehavior File="InteractWith" MobId="245789" QuestId="40604" QuestObjectiveIndex="1" X="-10436.61" Y="-2142.387" Z="90.77908" />
+				<CustomBehavior File="InteractWith" MobId="245789" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="40604" QuestObjectiveIndex="1" X="-10436.61" Y="-2142.387" Z="90.77908" />
 			</While>
 			<TurnIn QuestName="Disturbing the Past" QuestId="40604" TurnInType="Object" TurnInName="Battered Journal" TurnInId="245793" X="-10429.92" Y="-2141.151" Z="91.85447" />
 
 			<PickUp QuestName="To Point the Way" QuestId="40606" GiverName="Battered Journal" GiverType="Object" GiverId="245793" X="-10429.92" Y="-2141.151" Z="91.85447" />
 			<While Condition="DoQuest(40606)" >
-				<CustomBehavior File="InteractWith" MobId="245794" InteractByLooting="true" QuestId="40606" QuestObjectiveIndex="1" X="-10433.74" Y="-2136.538" Z="91.61791" />
+				<CustomBehavior File="InteractWith" MobId="245794" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" InteractByLooting="true" QuestId="40606" QuestObjectiveIndex="1" X="-10433.74" Y="-2136.538" Z="91.61791" />
 			</While>
 			<TurnIn QuestName="To Point the Way" QuestId="40606" TurnInName="Revil Kost" TurnInId="100729" X="-10440.19" Y="-2143.814" Z="90.77973" />
 
@@ -248,7 +249,7 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="The Power Possessed" QuestId="40712" GiverName="Revil Kost" GiverId="101282" X="-10871.4" Y="-1961.52" Z="-41.03577" />
 			<!-- Alternative "mean" quest. 
 			<PickUp QuestName="The Power Possessed" QuestId="41156" GiverName="Revil Kost" GiverId="101282" X="-10871.4" Y="-1961.52" Z="-41.03577" /> -->
-			<If Condition="HasQuest(41156) &amp;&amp; Me.ZoneId == 41" > <!-- NOTE: <CheckId> Should only run if player is in Karazhan Catacombs. --> 
+			<If Condition="HasQuest(40712) &amp;&amp; Me.ZoneId == 41" > <!-- NOTE: <CheckId> Should only run if player is in Karazhan Catacombs. --> 
 				<CustomBehavior File="RunCode"><![CDATA[
 					if (!(Me.ZoneId == 7502 || Me.ZoneId == 8392) && HasItem(140192))
 					{
@@ -269,7 +270,7 @@ END INITORDER COMMENT -->
 				]]>
 				</CustomBehavior>
 			</If>
-			<TurnIn QuestName="The Power Possessed" QuestId="41156" TurnInName="Calydus" TurnInId="101097" X="-858.3073" Y="4456.332" Z="695.9577" />
+			<TurnIn QuestName="The Power Possessed" QuestId="40712" TurnInName="Calydus" TurnInId="101097" X="-858.3073" Y="4456.332" Z="695.9577" />
 			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/[N-Quest] Warlock [Echo].xml" />
 		</If>
 
