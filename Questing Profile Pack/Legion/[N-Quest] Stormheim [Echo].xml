@@ -384,9 +384,10 @@ END INITORDER COMMENT -->
 						<UseMount Value="false" />
 
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-							<CustomBehavior File="InteractWith" X="5074.784" Y="3149.916" Z="367.4868" IgnoreLoSToTarget="true" PreInteractMountStrategy="Dismount" TerminateWhen="(IsScenarioCriteriaComplete(1) &amp;&amp; IsScenarioCriteriaComplete(2)) || Me.InVehicle || Unit(92957, u =&gt; u.HasAura(184641)) != null" >
+							<CustomBehavior File="InteractWith" CollectionDistance="200" IgnoreLoSToTarget="true" PreInteractMountStrategy="Dismount" TerminateWhen="(IsScenarioCriteriaComplete(1) &amp;&amp; IsScenarioCriteriaComplete(2)) || Me.InVehicle || Unit(92957, u =&gt; u.HasAura(184641)) != null" >
 								<PursuitList>
-									<PursueUnit Id="92957" PursueWhen="UNIT.Z &gt;= 371" /> <!-- Only use the one the bot can easily navigate to -->
+									<PursueUnit Id="92957" PursueWhen="(UNIT.Z &gt;= 371 &amp;&amp; Me.Z &gt;= 160) || (UNIT.Z &gt; 141 &amp;&amp; Me.Z &lt; 160)" />
+									<!-- Only use the one the bot can easily navigate to.  The zeppelin-boat-thing slowly descends so we're detecting the two stop positions. -->
 								</PursuitList>
 							</CustomBehavior>
 							<CustomBehavior File="Vehicles\CannonControl" MobId="93113" VehicleId="92957" MinAngle="-0.0868" MaxAngle="1" Gravity="0.01" Velocity="200" Buttons="1,2" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2 || !Me.InVehicle" />
