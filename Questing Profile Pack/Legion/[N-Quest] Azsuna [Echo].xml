@@ -275,7 +275,7 @@ END INITORDER COMMENT -->
 						if (StyxWoW.Me.IsDead || StyxWoW.Me.IsGhost) return false;
 						if (StyxWoW.Me.IsActuallyInCombat) return false;
 
-						var treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.Name.Contains("Treasure") && obj.CanUse() && obj.DistanceSqr <= 40f*40f);
+						var treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.SubType == WoWGameObjectType.Chest && obj.CanUse() && obj.DistanceSqr <= 40f*40f);
 						if (treasurePoi == null || !treasurePoi.IsValid) return false;
 
 						if (Navigator.LookupPathInfo(treasurePoi).Navigability != PathNavigability.Navigable)
@@ -286,7 +286,7 @@ END INITORDER COMMENT -->
 						}
 						else if (!TreasureIsLogged)
 						{
-							bool TreasureIsLogged = true;
+							TreasureIsLogged = true;
 							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, $"[ProfileBase]: Treasure detected near us!\n	Name     :: {treasurePoi.Name}\n	Entry    :: {treasurePoi.Entry}\n	Location :: {treasurePoi.Location}");
 						}
 
@@ -912,8 +912,10 @@ END INITORDER COMMENT -->
 
 		<PickUp QuestName="Back from the Dead" QuestId="42694" GiverName="Olothil Starlance" GiverId="108328" X="-189.7396" Y="6313.207" Z="20.58716" />
 		<While Condition="DoQuest(42694)" >
-			<CustomBehavior File="InteractWith" MobId="251182" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="42694" QuestObjectiveIndex="1" X="-189.3819" Y="6311.526" Z="20.58729" />
-			<CustomBehavior File="WaitTimer" WaitTime="25000" QuestId="42694"/>
+			<If Condition="!IsObjectiveComplete(42694, 1)" > <!-- For the wait timer -->
+				<CustomBehavior File="InteractWith" MobId="251182" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="42694" QuestObjectiveIndex="1" X="-189.3819" Y="6311.526" Z="20.58729" />
+				<CustomBehavior File="WaitTimer" WaitTime="25000" QuestId="42694" />
+			</If>
 			<CustomBehavior File="KillUntilComplete" MobId="88086" QuestId="42694" QuestObjectiveIndex="4" X="-209.7847" Y="6198.627" Z="4.976766" />
 			<CustomBehavior File="KillUntilComplete" MobId="108441" QuestId="42694" QuestObjectiveIndex="3" X="-53.2309" Y="6129.452" Z="25.73073" />
 			<CustomBehavior File="KillUntilComplete" MobIds="88099, 88100, 88101" QuestId="42694" QuestObjectiveIndex="2" X="102.6458" Y="6211.512" Z="3.477443" />

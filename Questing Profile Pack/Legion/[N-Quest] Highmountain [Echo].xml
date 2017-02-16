@@ -373,7 +373,7 @@ END INITORDER COMMENT -->
 						if (StyxWoW.Me.IsDead || StyxWoW.Me.IsGhost) return false;
 						if (StyxWoW.Me.IsActuallyInCombat) return false;
 
-						var treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.Name.Contains("Treasure") && obj.CanUse() && obj.DistanceSqr <= 40f*40f);
+						var treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.SubType == WoWGameObjectType.Chest && obj.CanUse() && obj.DistanceSqr <= 40f*40f);
 						if (treasurePoi == null || !treasurePoi.IsValid) return false;
 
 						if (Navigator.LookupPathInfo(treasurePoi).Navigability != PathNavigability.Navigable)
@@ -384,7 +384,7 @@ END INITORDER COMMENT -->
 						}
 						else if (!TreasureIsLogged)
 						{
-							bool TreasureIsLogged = true;
+							TreasureIsLogged = true;
 							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, $"[ProfileBase]: Treasure detected near us!\n	Name     :: {treasurePoi.Name}\n	Entry    :: {treasurePoi.Entry}\n	Location :: {treasurePoi.Location}");
 						}
 
@@ -542,7 +542,7 @@ END INITORDER COMMENT -->
 			<While Condition="DoQuest(41094)" >
 				<CustomBehavior File="InteractWith" MobId="97925" Quest="41094" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="3811.76" Y="5414.135" Z="631.6297" TerminateWhen="Me.HasAura(203740) || Me.HasAura(203741)" />
 				<CustomBehavior File="RunCode"><![CDATA[
-						while (Me.Z > 360 && (Me.HasAura(203740) || Me.HasAura(203741)))
+						while (Me.Z > 365 && (Me.HasAura(203740) || Me.HasAura(203741)))
 						{
 							WoWUnit globePoi = ObjectManager.GetObjectsOfType<WoWUnit>().Where(x => x.Entry == 103076 && x.Z < Me.Z).OrderBy(x => x.Distance).FirstOrDefault();
 							while (globePoi != null && globePoi.Z < Me.Z && (Me.HasAura(203740) || Me.HasAura(203741)))
@@ -550,6 +550,12 @@ END INITORDER COMMENT -->
 								WoWMovement.ClickToMove(globePoi.Location);
 								await Coroutine.Yield();
 							}
+							await Coroutine.Yield();
+						}
+
+						while (Me.IsFalling)
+						{
+							WoWMovement.ClickToMove(new Vector3(3660.889f, 5523.938f, 305.7928f));
 							await Coroutine.Yield();
 						}
 					]]>

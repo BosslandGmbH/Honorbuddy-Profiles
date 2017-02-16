@@ -262,7 +262,7 @@ END INITORDER COMMENT -->
 						if (StyxWoW.Me.IsDead || StyxWoW.Me.IsGhost) return false;
 						if (StyxWoW.Me.IsActuallyInCombat) return false;
 
-						var treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.Name.Contains("Treasure") && obj.CanUse() && obj.DistanceSqr <= 40f*40f);
+						var treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.SubType == WoWGameObjectType.Chest && obj.CanUse() && obj.DistanceSqr <= 40f*40f);
 						if (treasurePoi == null || !treasurePoi.IsValid) return false;
 
 						if (Navigator.LookupPathInfo(treasurePoi).Navigability != PathNavigability.Navigable)
@@ -273,7 +273,7 @@ END INITORDER COMMENT -->
 						}
 						else if (!TreasureIsLogged)
 						{
-							bool TreasureIsLogged = true;
+							TreasureIsLogged = true;
 							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, $"[ProfileBase]: Treasure detected near us!\n	Name     :: {treasurePoi.Name}\n	Entry    :: {treasurePoi.Entry}\n	Location :: {treasurePoi.Location}");
 						}
 
