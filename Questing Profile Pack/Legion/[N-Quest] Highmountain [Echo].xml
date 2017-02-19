@@ -488,16 +488,71 @@ END INITORDER COMMENT -->
 				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Disabling custom anti-stuck measures until this quest is complete.&quot;);
 				UseAntiStuck = false;
 			" />
-			<!-- NOTE: <PerformanceIssue> : Bot must face lake prior to kicking(interacting) with the fish. Add custom code here. -->
-			<CustomBehavior File="InteractWith" MobIds="95148" InteractBlacklistTimeInSeconds="10" NumOfTimes="50" QuestId="39614" QuestObjectiveIndex="1" >
-				<HuntingGrounds>
-					<Hotspot X="4038.536" Y="4775.965" Z="623.6185" />
-					<Hotspot X="3985.755" Y="4902.08" Z="624.2513" />
-					<Hotspot X="3936.748" Y="4779.066" Z="625.9948" />
-					<Hotspot X="3936.509" Y="4943.055" Z="622.6791" />
-					<Hotspot X="3904.754" Y="5002.131" Z="627.1608" />
-				</HuntingGrounds>
+			<CustomBehavior File="RunCode" Type="Definition" ><![CDATA[
+					private Styx.TreeSharp.Composite _kickfishHook;
+					private WoWUnit _currentFish;
+
+					private List<Vector3> _riverLocations = new List<Vector3>
+					{
+						new Vector3(4014.781f, 4763.972f, 619.4549f),
+						new Vector3(4014.781f, 4763.972f, 619.4549f),
+						new Vector3(4014.781f, 4763.972f, 619.4549f),
+						new Vector3(3996.585f, 4834.041f, 620.6657f),
+						new Vector3(3971.376f, 4895.486f, 619.5482f),
+						new Vector3(3929.958f, 4968.265f, 621.6882f),
+						new Vector3(3921.046f, 4910.024f, 620.1015f),
+						new Vector3(3941.096f, 4835.551f, 619.4647f),
+						new Vector3(3981.717f, 4775.756f, 621.3079f)
+					};
+
+					private async Task<bool> KickFish()
+					{
+						if (QuestDone(39614)) return false;
+						if (_currentFish == null || !_currentFish.IsValid || _currentFish.Z < 620)
+						{
+							_currentFish = ObjectManager.GetObjectsOfType<WoWUnit>()
+								.Where(u => u.Entry == 95148 && u.Z >= 620  && !Blacklist.Contains(u, BlacklistFlags.Interact) && u.DistanceSqr < 60f*60f)
+								.OrderBy(u => u.DistanceSqr).FirstOrDefault();
+
+							if (_currentFish == null)
+								return false;
+						}
+
+						var moveToPoint = WoWMathHelper.CalculatePointFrom(GetBestRiverLocation(), _currentFish.Location, -3);
+
+						if (moveToPoint.DistanceSquared((WoWMovement.ActiveMover ?? StyxWoW.Me).Location) > 1 * 1)
+						{
+							TreeRoot.StatusText = "Moving to fish";
+							return (await CommonCoroutines.MoveTo(moveToPoint)).IsSuccessful();
+						}
+
+						TreeRoot.StatusText = "Kicking fish into water";
+
+						await CommonCoroutines.StopMoving();
+						Me.SetFacing(GetBestRiverLocation());
+						await Coroutine.Sleep(200);
+						_currentFish.Interact();
+						await Coroutine.Sleep(1500);
+
+						return true;
+					}
+
+					private Vector3 GetBestRiverLocation()
+					{
+						return _riverLocations.OrderBy(loc => Vector3Extensions.DistanceSquared(Me.Location, loc)).FirstOrDefault();
+					}
+				]]>
 			</CustomBehavior>
+
+			<CustomBehavior File="RunCode"><![CDATA[ TreeHooks.Instance.InsertHook("Questbot_Profile", 0, _kickfishHook ?? (_kickfishHook = new  CommonBehaviors.Actions.ActionRunCoroutine(ctx => KickFish()))); ]]></CustomBehavior>
+			<While Condition="DoQuest(39614)" >
+				<MoveTo X="4038.536" Y="4775.965" Z="623.6185" />
+				<MoveTo X="3985.755" Y="4902.08" Z="624.2513" />
+				<MoveTo X="3936.748" Y="4779.066" Z="625.9948" />
+				<MoveTo X="3936.509" Y="4943.055" Z="622.6791" />
+				<MoveTo X="3904.754" Y="5002.131" Z="627.1608" />
+			</While>
+			<CustomBehavior File="RunCode"><![CDATA[ TreeHooks.Instance.RemoveHook("Questbot_Profile", _kickfishHook); ]]></CustomBehavior>
 			<CustomBehavior File="RunCode" Code="
 				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Re-enabling custom anti-stuck measures.&quot;);
 				UseAntiStuck = true;
