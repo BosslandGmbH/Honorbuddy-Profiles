@@ -24,6 +24,9 @@
 	</AvoidMobs>
 
 	<Blackspots>
+		<Blackspot X="1937.373" Y="5390.136" Z="52.97282" Radius="30" />
+		<Blackspot X="1968.112" Y="5408.313" Z="46.54448" Radius="30" />
+		<Blackspot X="1907.289" Y="5381.913" Z="41.22046" Radius="30" />
 	</Blackspots>
 
 	<Blacklist>
@@ -237,22 +240,28 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="RunCode" Code="SpellManager.Cast(768);" />
 					<CustomBehavior File="WaitTimer" WaitTime="1000" />
 				</While>
-				<CustomBehavior File="InteractWith" WaitTime="6000" MobId="250824" X="2252.76" Y="5352.203" Z="36.24648" />
+				<CustomBehavior File="InteractWith" WaitTime="6000" NumOfTimes="10" MobId="250824" InteractBlacklistTimeInSeconds="1" X="2252.76" Y="5352.203" Z="36.24648" TerminateWhen="Me.InVehicle" />
 				<MoveTo X="2309.035" Y="5417.842" Z="14.83675" />
 				<CustomBehavior File="WaitTimer" WaitTime="6000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
 			</If>
 
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="EnterLocation" LogExecution="false" AllowUseWhileMounted="true" UseWhen="Me.Z &gt;= 40" >
+				<MoveTo X="2245.052" Y="5355.108" Z="37.02452" />
+				<While Condition="!Me.HasAura(768)" >
+					<!-- Player must be in cat form to interact with this next object. -->
+					<CustomBehavior File="RunCode" Code="SpellManager.Cast(768);" />
+					<CustomBehavior File="WaitTimer" WaitTime="1000" />
+				</While>
+				<CustomBehavior File="InteractWith" WaitTime="6000" NumOfTimes="10" MobId="250824" InteractBlacklistTimeInSeconds="1" X="2252.76" Y="5352.203" Z="36.24648" TerminateWhen="Me.InVehicle" />
+				<MoveTo X="2309.035" Y="5417.842" Z="14.83675" />
+			</CustomBehavior>
+
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
-				<!-- NOTE: <AddSupport:
-							 This NPC is hard to beat.  If the bot dies here, the player will be ported back to the beginning of the scenario.
-							If this happens, the sequence of events in  Strage 3 must be repeated for the player to get back to the boss fight location.
-						-->
 				<CustomBehavior File="KillUntilComplete" MobId="108003" X="2335.352" Y="5427.347" Z="13.95717" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
 			</If>
 
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
 				<MoveTo X="2111.239" Y="5488.263" Z="-19.57687" />
-				<!-- Could use a termination code instead of just going by QuestId -->
 				<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
 			</If>
 
@@ -269,6 +278,8 @@ END INITORDER COMMENT -->
 				<CustomBehavior File="WaitTimer" WaitTime="10000" />
 				<!-- Wait for little cinematic. -->
 			</If>
+
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="EnterLocation" Command="Remove" />
 
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8" >
 				<CustomBehavior File="InteractWith" MobId="108115" WaitTime="3000" X="2068.373" Y="5405.366" Z="-35.94217" />
