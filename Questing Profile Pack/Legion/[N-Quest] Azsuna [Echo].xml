@@ -1802,10 +1802,15 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Maritime Law" QuestId="37654" GiverName="Mr. Shackle" GiverId="91419" X="-812.4496" Y="6101.11" Z="7.006913" />
 		<PickUp QuestName="Making the World Safe for Profit" QuestId="37657" GiverName="Mr. Shackle" GiverId="91419" X="-812.4496" Y="6101.11" Z="7.006913" />
 
-		<If Condition="DoQuest(37657) &amp;&amp; SpellManager.HasSpell(155580)" >
-			<!-- Druid's Lunar Inspiration will bug out some CRs with this quest since the mob will be immune to attacks. -->
-			<MoveTo X="-820.9432" Y="6088.956" Z="2.937316" />
-			<CustomBehavior File="Misc\RunLua" Lua="LearnTalent(22363);" /> <!-- Learn Predator talent -->
+		<If Condition="DoQuest(37657) &amp;&amp; Me.Specialization == WoWSpec.DruidFeral" >
+			<If Condition="SpellManager.HasSpell(155580)" >
+				<!-- Druid's Lunar Inspiration will bug out some CRs with this quest since the mob will be immune to attacks. -->
+				<MoveTo X="-820.9432" Y="6088.956" Z="2.937316" />
+				<CustomBehavior File="Misc\RunLua" Lua="LearnTalent(22363);" /> <!-- Learn Predator talent -->
+			</If>
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="MoveFromOublion" AllowUseDuringCombat="true" UseWhen="Unit(89350, u =&gt; u.DistanceSqr &lt;= 10 &amp;&amp; u.IsAlive &amp;&amp; u.HasAura(178902)) != null"  >
+				<MoveTo X="-981.2" Y="5607.345" Z="6.729728" />
+			</CustomBehavior>
 		</If>
 
 		<If Condition="(Me.IsAlliance &amp;&amp; NeedsQuest(42220)) || (Me.IsHorde &amp;&amp; NeedsQuest(42268))" >
@@ -1848,7 +1853,6 @@ END INITORDER COMMENT -->
 						<PursueUnit Id="89283" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
 						<PursueUnit Id="89286" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
 						<PursueUnit Id="89053" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
-
 					</PursuitList>
 				</CustomBehavior>
 				<CustomBehavior File="InteractWith" MobId="89289" QuestId="42268" QuestObjectiveIndex="1" >
@@ -1915,6 +1919,7 @@ END INITORDER COMMENT -->
 				</CustomBehavior>
 
 				<CustomBehavior File="Hooks\DoWhen" ActivityName="TargetSwitcher" Command="Remove" />
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="MoveFromOublion" Command="Remove" />
 
 				<!-- Get out of cave -->
 				<MoveTo X="-975.3384" Y="5626.203" Z="4.710858" />
