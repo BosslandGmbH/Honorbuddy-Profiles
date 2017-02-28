@@ -288,7 +288,7 @@ END INITORDER COMMENT -->
 							if (Navigator.LookupPathInfo(_treasurePoi).Navigability != PathNavigability.Navigable)
 							{
 								_treasureBlacklist.Add(_treasurePoi.Guid);
-								Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, $"[ProfileBase]: Treasure detected near us, but we can't navigate to it!\n	Name     :: {_treasurePoi.Name}\n	Entry    :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}\n	DisplayID :: {_treasurePoi.DisplayId}");
+								Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, $"[ProfileBase]: Treasure detected near us, but we can't navigate to it!\n	Name     :: {_treasurePoi.Name}\n	Entry    :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
 								_treasurePoi = null;
 								return false;
 							}
@@ -1801,6 +1801,12 @@ END INITORDER COMMENT -->
 
 		<PickUp QuestName="Maritime Law" QuestId="37654" GiverName="Mr. Shackle" GiverId="91419" X="-812.4496" Y="6101.11" Z="7.006913" />
 		<PickUp QuestName="Making the World Safe for Profit" QuestId="37657" GiverName="Mr. Shackle" GiverId="91419" X="-812.4496" Y="6101.11" Z="7.006913" />
+
+		<If Condition="DoQuest(37657) &amp;&amp; SpellManager.HasSpell(155580)" >
+			<!-- Druid's Lunar Inspiration will bug out some CRs with this quest since the mob will be immune to attacks. -->
+			<MoveTo X="-820.9432" Y="6088.956" Z="2.937316" />
+			<CustomBehavior File="Misc\RunLua" Lua="LearnTalent(22363);" /> <!-- Learn Predator talent -->
+		</If>
 
 		<If Condition="(Me.IsAlliance &amp;&amp; NeedsQuest(42220)) || (Me.IsHorde &amp;&amp; NeedsQuest(42268))" >
 			<MoveTo X="-730.9786" Y="6006.806" Z="-0.4108924" />
