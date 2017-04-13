@@ -1,0 +1,353 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../Schemas/EchoSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by F'yari -->
+	<Name>Night Elf Starter ($Rev: 6041 $)</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<!-- INITORDER COMMENT 
+	<InitOrder>
+		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> Use LevelBot default
+	</InitOrder>
+END INITORDER COMMENT -->
+
+	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Hooks -->
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[ 
+					IEnumerable<WoWItem> GetExtraConsumables()
+					{
+						uint foodCount = 0;
+						uint drinkCount = 0;
+						// Skip conjured and buff comsumables.
+				
+						var extraConsumables = (from item in Me.BagItems
+										   where item != null && item.ItemInfo != null
+										   let isFood = Consumable.IsFood(item.ItemInfo)
+										   let isDrink = Consumable.IsDrink(item.ItemInfo)
+										   where (isFood || isDrink) && item.ItemInfo.SellPrice > 0 && item.Effects.Count == 1 && item.ItemInfo.RequiredLevel < Me.Level - 10                    
+										   select item).ToList();
+				
+				
+						var extraPotions = Me.BagItems
+							.Where(c => c != null && c.IsValid && c.ItemInfo != null && c.ItemInfo.SellPrice > 0 && c.Effects.Count == 1
+								&& (c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Potion
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Elixir
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Flask)
+								&& c.ItemInfo.RequiredLevel < Me.Level - 20);
+				
+						extraConsumables.AddRange(extraPotions);
+						return extraConsumables;
+					}
+					 
+					async Task SellExtraConsumables()
+					{
+						Logging.Write("Selling items in GetExtraConsumables()");
+						foreach (var item in GetExtraConsumables())
+						{
+							Logging.Write("Selling {0}.", item.Name);
+							item.UseContainerItem();
+							await Coroutine.Sleep(1337);
+						}
+					}
+				]]>
+			</CustomBehavior>
+			<CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+				<CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>
+			</CustomBehavior>
+		<!-- END Hooks -->
+
+		<PickUp QuestName="The Balance of Nature" QuestId="28713" GiverName="Ilthalaine" GiverId="2079" X="10314.78" Y="829.3983" Z="1326.403" />
+
+		<CustomBehavior File="KillUntilComplete" MobId="2031" QuestId="28713" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="10283.77" Y="817.0134" Z="1338.27" />
+				<Hotspot X="10310.9" Y="919.4872" Z="1332.381" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="The Balance of Nature" QuestId="28713" TurnInName="Ilthalaine" TurnInId="2079" X="10314.16" Y="832.374" Z="1326.42" />
+		<PickUp QuestName="Fel Moss Corruption" QuestId="28714" GiverName="Ilthalaine" GiverId="2079" X="10314.16" Y="832.374" Z="1326.42" />
+		<PickUp QuestName="Demonic Thieves" QuestId="28715" GiverName="Melithar Staghelm" GiverId="2077" X="10326.07" Y="826.6805" Z="1326.373" />
+
+		<CustomBehavior File="InteractWith" MobId="195074" GossipOptions="1" CollectionDistance="200" QuestId="28715" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="10270.1" Y="976.8225" Z="1341.535" />
+				<Hotspot X="10342.07" Y="1032.804" Z="1339.116" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" MobId="1989" QuestId="28714" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="10270.1" Y="976.8225" Z="1341.535" />
+				<Hotspot X="10342.07" Y="1032.804" Z="1339.116" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<PickUp QuestName="Fel Moss Corruption" QuestId="28714" GiverName="Melithar Staghelm" GiverId="2077" X="10314.16" Y="832.374" Z="1326.42" />
+		<PickUp QuestName="Priestess of the Moon" QuestId="28723" GiverName="Ilthalaine" GiverId="2079" X="10322.42" Y="823.4805" Z="1326.29" />
+		<TurnIn QuestName="Demonic Thieves" QuestId="28715" TurnInName="Melithar Staghelm" TurnInId="2077" X="10326.67" Y="824.7585" Z="1326.352" />
+		<TurnIn QuestName="Priestess of the Moon" QuestId="28723" TurnInName="Dentaria Silverglade" TurnInId="49479" X="10542.24" Y="875.2897" Z="1309.092" />
+		<PickUp QuestName="Iverron&apos;s Antidote" QuestId="28724" GiverName="Dentaria Silverglade" GiverId="49479" X="10542.24" Y="875.2897" Z="1309.092" />
+
+		<CustomBehavior File="InteractWith" MobId="207346" GossipOptions="1" CollectionDistance="200" QuestId="28724" QuestObjectiveIndex="1" X="10546.33" Y="873.9926" Z="1309.278" />
+
+		<TurnIn QuestName="Iverron&apos;s Antidote" QuestId="28724" TurnInName="Dentaria Silverglade" TurnInId="49479" X="10547.08" Y="877.0978" Z="1309.483" />
+		<PickUp QuestName="The Woodland Protector" QuestId="28725" GiverName="Dentaria Silverglade" GiverId="49479" X="10547.08" Y="877.0978" Z="1309.483" />
+		<TurnIn QuestName="The Woodland Protector" QuestId="28725" TurnInName="Tarindrella" TurnInId="49480" X="10744.03" Y="922.207" Z="1336.513" />
+		<PickUp QuestName="Webwood Corruption" QuestId="28726" GiverName="Tarindrella" GiverId="49480" X="10750.24" Y="925.3704" Z="1336.982" />
+
+		<CustomBehavior File="KillUntilComplete" MobId="1986" QuestId="28726" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="10782.84" Y="930.4689" Z="1338.148" />
+				<Hotspot X="10825.8" Y="936.0145" Z="1335.998" />
+				<Hotspot X="10870.77" Y="873.431" Z="1326.416" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Webwood Corruption" QuestId="28726" TurnInName="Tarindrella" TurnInId="49480" X="10885.19" Y="983.4595" Z="1336.933" />
+		<PickUp QuestName="Vile Touch" QuestId="28727" GiverName="Tarindrella" GiverId="49480" X="10957.22" Y="932.5278" Z="1340.603" />
+
+		<CustomBehavior File="KillUntilComplete" MobId="1994" QuestId="28727" QuestObjectiveIndex="1" X="10957.22" Y="932.5278" Z="1340.603" /> 
+
+		<TurnIn QuestName="Vile Touch" QuestId="28727" TurnInName="Tarindrella" TurnInId="49480" X="10945.86" Y="923.3483" Z="1340.87" />
+		<PickUp QuestName="Signs of Things to Come" QuestId="28728" GiverName="Tarindrella" TurnInId="49480" X="10945.86" Y="923.3483" Z="1340.87" />
+		<TurnIn QuestName="Signs of Things to Come" QuestId="28728" TurnInName="Dentaria Silverglade" TurnInId="49479" X="10548.04" Y="876.1609" Z="1309.746" />
+		<PickUp QuestName="Teldrassil: Crown of Azeroth" QuestId="28729" GiverName="Dentaria Silverglade" GiverId="49479" X="10548.04" Y="876.1609" Z="1309.746" />
+
+		<While Condition="DoQuest(28729)" >
+			<MoveTo X="10709.63" Y="763.5432" Z="1321.363" />
+			<CustomBehavior File="UseItem" ItemId="5185" QuestId="28729" />
+		</While>
+
+		<TurnIn QuestName="Teldrassil: Crown of Azeroth" QuestId="28729" TurnInName="Dentaria Silverglade" TurnInId="49479" X="10543.12" Y="872.4986" Z="1309.146" />
+		<PickUp QuestName="Precious Waters" QuestId="28730" GiverName="Dentaria Silverglade" GiverId="49479" X="10543.12" Y="872.4986" Z="1309.146" />
+		<TurnIn QuestName="Precious Waters" QuestId="28730" TurnInName="Tenaron Stormgrip" TurnInId="3514" X="10494.77" Y="804.8359" Z="1397.263" />
+		<PickUp QuestName="Teldrassil: Passing Awareness" QuestId="28731" GiverName="Tenaron Stormgrip" GiverId="3514" X="10494.77" Y="804.8359" Z="1397.263" />
+		<PickUp QuestName="Dolanaar Delivery" QuestId="2159" GiverName="Porthannius" GiverId="6780" X="10215.9" Y="699.6127" Z="1360.058" />
+
+		<!-- next zone at this point--> 
+
+		<PickUp QuestName="Zenn&apos;s Bidding" QuestId="488" GiverName="Zenn Foulhoof" GiverId="2150" X="9921.41" Y="735.9261" Z="1314.297" />
+
+		<CustomBehavior File="KillUntilComplete" MobId="2042" QuestId="488" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="9831.884" Y="668.5458" Z="1299.166" />
+				<Hotspot X="9774.599" Y="682.7844" Z="1300.277" />
+				<Hotspot X="9776.257" Y="705.1393" Z="1298.688" />
+				<Hotspot X="9766.894" Y="794.0034" Z="1298.96" />
+				<Hotspot X="9721.159" Y="516.3294" Z="1309.023" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" MobId="1995" QuestId="488" QuestObjectiveIndex="2" >
+			<HuntingGrounds>
+				<Hotspot X="9831.884" Y="668.5458" Z="1299.166" />
+				<Hotspot X="9774.599" Y="682.7844" Z="1300.277" />
+				<Hotspot X="9776.257" Y="705.1393" Z="1298.688" />
+				<Hotspot X="9766.894" Y="794.0034" Z="1298.96" />
+				<Hotspot X="9721.159" Y="516.3294" Z="1309.023" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" MobId="1998" QuestId="488" QuestObjectiveIndex="3" >
+			<HuntingGrounds>
+				<Hotspot X="9831.884" Y="668.5458" Z="1299.166" />
+				<Hotspot X="9774.599" Y="682.7844" Z="1300.277" />
+				<Hotspot X="9776.257" Y="705.1393" Z="1298.688" />
+				<Hotspot X="9766.894" Y="794.0034" Z="1298.96" />
+				<Hotspot X="9721.159" Y="516.3294" Z="1309.023" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Zenn&apos;s Bidding" QuestId="488" TurnInName="Zenn Foulhoof" TurnInId="2150" X="9923.463" Y="736.0999" Z="1315.017" />
+		<TurnIn QuestName="Dolanaar Delivery" QuestId="2159" TurnInName="Innkeeper Keldamyr" TurnInId="6736" X="9801.47" Y="980.6257" Z="1313.896" />
+		<PickUp QuestName="A Troubling Breeze" QuestId="475" GiverName="Athridas Bearmantle" GiverId="2078" X="9813.271" Y="963.3148" Z="1308.786" />
+		<PickUp QuestName="Seek Redemption!" QuestId="489" GiverName="Syral Bladeleaf" GiverId="2083" X="9869.837" Y="958.5612" Z="1307.402" />
+		<PickUp QuestName="The Emerald Dreamcatcher" QuestId="2438" GiverName="Tallonkai Swiftroot" GiverId="3567" X="9888.446" Y="970.251" Z="1313.84" />
+		<TurnIn QuestName="Teldrassil: Passing Awareness" QuestId="28731" TurnInName="Corithras Moonrage" TurnInId="3515" X="9738.321" Y="955.6551" Z="1293.842" />
+		<PickUp QuestName="Teldrassil: The Refusal of the Aspects" QuestId="929" GiverName="Corithras Moonrage" GiverId="3515" X="9738.321" Y="955.6551" Z="1293.842" />
+
+		<CustomBehavior File="InteractWith" MobId="1673" CollectionDistance="200" QuestId="489" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="9724.611" Y="1151.768" Z="1277.271" />
+				<Hotspot X="9681.112" Y="1090.057" Z="1275.201" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Seek Redemption!" QuestId="489" TurnInName="Zenn Foulhoof" TurnInId="2150" X="9917.069" Y="740.2102" Z="1313.217" />
+
+		<While Condition="DoQuest(929)" >
+			<MoveTo X="9860.526" Y="589.2429" Z="1300.683" />
+			<CustomBehavior File="UseItem" ItemId="5619" QuestId="929" />
+		</While>
+
+		<TurnIn QuestName="A Troubling Breeze" QuestId="475" TurnInName="Gaerolas Talvethren" TurnInId="2107" X="9842.974" Y="440.4915" Z="1317.183" />
+		<PickUp QuestName="Gnarlpine Corruption" QuestId="476" GiverName="Gaerolas Talvethren" GiverId="2107" X="9842.974" Y="440.4915" Z="1317.183" />
+
+		<CustomBehavior File="InteractWith" MobId="126158" InteractByLooting="true" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="2438" QuestObjectiveIndex="1" X="9806.739" Y="351.4219" Z="1308.459" />
+
+		<TurnIn QuestName="Teldrassil: The Refusal of the Aspects" QuestId="929" TurnInName="Corithras Moonrage" TurnInId="3515" X="9739.387" Y="956.5627" Z="1293.665" />
+		<TurnIn QuestName="Gnarlpine Corruption" QuestId="476" TurnInName="Athridas Bearmantle" TurnInId="2078" X="9812.509" Y="962.1174" Z="1308.788" />
+		<PickUp QuestName="The Relics of Wakening" QuestId="483" GiverName="Athridas Bearmantle" GiverId="2078" X="9812.509" Y="962.1174" Z="1308.788" />
+		<PickUp QuestName="Resident Danger" QuestId="13945" GiverName="Sentinel Kyra Starsong" GiverId="2081" X="9814.657" Y="964.9531" Z="1308.782" />
+		<PickUp QuestName="Nature&apos;s Reprisal" QuestId="13946" GiverName="Syral Bladeleaf" GiverId="2083" X="9871.675" Y="958.502" Z="1307.876" />
+		<TurnIn QuestName="The Emerald Dreamcatcher" QuestId="2438" TurnInName="Tallonkai Swiftroot" TurnInId="3567" X="9888.371" Y="970.3929" Z="1313.839" />
+		<PickUp QuestName="Ferocitas the Dream Eater" QuestId="2459" GiverName="Tallonkai Swiftroot" GiverId="3567" X="9888.371" Y="970.3929" Z="1313.839" />
+		<PickUp QuestName="Twisted Hatred" QuestId="932" GiverName="Tallonkai Swiftroot" GiverId="3567" X="9888.371" Y="970.3929" Z="1313.839" />
+
+		<CustomBehavior File="KillUntilComplete" MobId="7234" QuestId="2459" QuestObjectiveIndex="2" X="10005.97" Y="302.5307" Z="1321.044" /> 
+		<CustomBehavior File="KillUntilComplete" MobId="7235" QuestId="2459" QuestObjectiveIndex="1" X="10005.97" Y="302.5307" Z="1321.044" />
+
+		<TurnIn QuestName="Ferocitas the Dream Eater" QuestId="2459" TurnInName="Tallonkai Swiftroot" TurnInId="3567" X="9887.694" Y="970.7758" Z="1313.841" />
+
+		<CustomBehavior File="KillUntilComplete" MobId="2038" QuestId="932" QuestObjectiveIndex="1" X="10147.4" Y="1191.616" Z="1324.016" />
+
+		<CustomBehavior File="InteractWith" MobId="2002" Range="30" ProactiveCombatStrategy="NoClear" MobState="Alive" InteractByUsingItemId="46716" CollectionDistance="200" QuestId="13946" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="10147.4" Y="1191.616" Z="1324.016" />
+				<Hotspot X="10111.96" Y="1110.461" Z="1322.591" />
+				<Hotspot X="10081.24" Y="1034.146" Z="1329.244" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Nature&apos;s Reprisal" QuestId="13946" TurnInName="Syral Bladeleaf" TurnInId="2083" X="9871.913" Y="960.6805" Z="1308.075" />
+		<TurnIn QuestName="Twisted Hatred" QuestId="932" TurnInName="Tallonkai Swiftroot" TurnInId="3567" X="9887.759" Y="969.8649" Z="1313.836" />
+		<PickUp QuestName="The Sleeping Druid" QuestId="2541" GiverName="Oben Rageclaw" GiverId="7317" X="9753.535" Y="1587.174" Z="1300.955" />
+
+		<CustomBehavior File="InteractWith" MobId="2742" InteractByLooting="true" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="483" QuestObjectiveIndex="4" X="9740.531" Y="1526.504" Z="1280.314" />
+		<CustomBehavior File="InteractWith" MobId="2739" InteractByLooting="true" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="483" QuestObjectiveIndex="2" X="9712.68" Y="1537.5" Z="1255.213" />
+		<CustomBehavior File="InteractWith" MobId="3407" InteractByLooting="true" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="483" QuestObjectiveIndex="3" X="9839.16" Y="1545.602" Z="1258.634" />
+		<CustomBehavior File="InteractWith" MobId="3405" InteractByLooting="true" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="483" QuestObjectiveIndex="1" X="9882.001" Y="1490.065" Z="1278.748" />
+
+		<CustomBehavior File="KillUntilComplete" MobIds="2010, 2011, 2009" QuestId="13945" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="9740.531" Y="1526.504" Z="1280.314" />
+				<Hotspot X="9712.68" Y="1537.5" Z="1255.213" />
+				<Hotspot X="9839.16" Y="1545.602" Z="1258.634" />
+				<Hotspot X="9882.001" Y="1490.065" Z="1278.748" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" MobId="2009" QuestId="2541" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="9740.531" Y="1526.504" Z="1280.314" />
+				<Hotspot X="9712.68" Y="1537.5" Z="1255.213" />
+				<Hotspot X="9839.16" Y="1545.602" Z="1258.634" />
+				<Hotspot X="9882.001" Y="1490.065" Z="1278.748" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="The Sleeping Druid" QuestId="2541" TurnInName="Oben Rageclaw" TurnInId="7317" X="9754.145" Y="1587.283" Z="1300.964" />
+		<PickUp QuestName="Druid of the Claw" QuestId="2561" GiverName="Oben Rageclaw" GiverId="7317" X="9754.145" Y="1587.283" Z="1300.964" />
+
+		<CustomBehavior File="InteractWith" MobId="7318" MobState="Dead" InteractByUsingItemId="8149" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="2561" QuestObjectiveIndex="1" X="9783.169" Y="1560.818" Z="1299.991" />
+
+		<TurnIn QuestName="Druid of the Claw" QuestId="2561" TurnInName="Oben Rageclaw" TurnInId="7317" X="9753.079" Y="1587.785" Z="1300.988" />
+		<TurnIn QuestName="Resident Danger" QuestId="13945" TurnInName="Sentinel Kyra Starsong" TurnInId="2081" X="9813.745" Y="965.1014" Z="1308.781" />
+		<TurnIn QuestName="The Relics of Wakening" QuestId="483" TurnInName="Athridas Bearmantle" TurnInId="2078" X="9812.483" Y="964.6718" Z="1308.781" />
+		<PickUp QuestName="Reminders of Home" QuestId="6344" GiverName="Nyoma" GiverId="4265" X="9754.737" Y="903.3431" Z="1295.518" />
+		<TurnIn QuestName="Reminders of Home" QuestId="6344" TurnInName="Fidelio" TurnInId="40553" X="9871.914" Y="974.9136" Z="1309.787" />
+		<PickUp QuestName="To Darnassus" QuestId="6341" GiverName="Fidelio" GiverId="40553" X="9871.914" Y="974.9136" Z="1309.787" />
+
+		<If Condition="Me.ZoneId == 141" >
+			<CustomBehavior File="InteractWith" MobId="40553" NonCompeteDistance="0" X="9871.914" Y="974.9136" Z="1309.787" />
+			<CustomBehavior File="Misc\RunLua" Lua="TakeTaxiNode(36);" />
+		</If>
+
+	</QuestOrder>
+
+</HBProfile>

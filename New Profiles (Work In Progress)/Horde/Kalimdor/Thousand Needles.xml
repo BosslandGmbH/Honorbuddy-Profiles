@@ -1,0 +1,193 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../Schemas/EchoSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Thousand Needles ($Rev: 6041 $)</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<Blackspots>
+		<Blackspot X="106.3682" Y="-366.4266" Z="2.085551" Radius="35" /> <!-- Crundig Darkcloud -->
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<!-- INITORDER COMMENT 
+	<InitOrder>
+		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> Use LevelBot default
+	</InitOrder>
+END INITORDER COMMENT -->
+
+	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Hooks -->
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[ 
+					IEnumerable<WoWItem> GetExtraConsumables()
+					{
+						uint foodCount = 0;
+						uint drinkCount = 0;
+						// Skip conjured and buff comsumables.
+				
+						var extraConsumables = (from item in Me.BagItems
+										   where item != null && item.ItemInfo != null
+										   let isFood = Consumable.IsFood(item.ItemInfo)
+										   let isDrink = Consumable.IsDrink(item.ItemInfo)
+										   where (isFood || isDrink) && item.ItemInfo.SellPrice > 0 && item.Effects.Count == 1 && item.ItemInfo.RequiredLevel < Me.Level - 10                    
+										   select item).ToList();
+				
+				
+						var extraPotions = Me.BagItems
+							.Where(c => c != null && c.IsValid && c.ItemInfo != null && c.ItemInfo.SellPrice > 0 && c.Effects.Count == 1
+								&& (c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Potion
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Elixir
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Flask)
+								&& c.ItemInfo.RequiredLevel < Me.Level - 20);
+				
+						extraConsumables.AddRange(extraPotions);
+						return extraConsumables;
+					}
+					 
+					async Task SellExtraConsumables()
+					{
+						Logging.Write("Selling items in GetExtraConsumables()");
+						foreach (var item in GetExtraConsumables())
+						{
+							Logging.Write("Selling {0}.", item.Name);
+							item.UseContainerItem();
+							await Coroutine.Sleep(1337);
+						}
+					}
+				]]>
+			</CustomBehavior>
+			<CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+				<CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>
+			</CustomBehavior>
+		<!-- END Hooks -->
+
+		<If Condition="QuestDone(25478)" >
+			<TurnIn QuestName="To the Summit" QuestId="25478" TurnInName="Kanati Greycloud" TurnInId="39895" X="-4300.851" Y="-921.6107" Z="80.93874" />
+		</If>
+
+		<PickUp QuestName="The Grimtotem are Coming" QuestId="25487" GiverName="Kanati Greycloud" GiverId="39895" X="-4300.563" Y="-920.5148" Z="80.9181" />
+		<CustomBehavior File="KillUntilComplete" MobId="39947" QuestId="25487" >
+			<HuntingGrounds>
+				<Hotspot X="-4288.136" Y="-931.0222" Z="79.85339" />
+				<Hotspot X="-4134.751" Y="-1016.464" Z="86.34194" />
+			</HuntingGrounds>
+		</CustomBehavior>
+		<TurnIn QuestName="The Grimtotem are Coming" QuestId="25487" TurnInName="Motega Firemane" TurnInId="39963" X="-4219.215" Y="-896.3825" Z="0.1459213" />
+
+		<PickUp QuestName="Two If By Boat" QuestId="25489" GiverName="Motega Firemane" GiverId="39963" X="-4219.215" Y="-896.3825" Z="0.1459213" />
+		<If Condition="QuestDone(25489)" >
+			<CustomBehavior File="WaitTimer" WaitTime="140000" TerminateWhen="Me.IsOnTransport" />
+		</If>
+		<TurnIn QuestName="Two If By Boat" QuestId="25489" TurnInName="Pozzik" TurnInId="40028" X="-6155.723" Y="-3777.387" Z="33.57933" />
+
+		<PickUp QuestName="Do Me a Favor?" QuestId="25505" GiverName="Pozzik" GiverId="40028" X="-6155.723" Y="-3777.387" Z="33.57933" />
+		<TurnIn QuestName="Do Me a Favor?" QuestId="25505" TurnInName="Razzeric" TurnInId="40487" X="-6150.405" Y="-3825.654" Z="26.21966" />
+		<PickUp QuestName="Down in the Deeps" QuestId="25516" GiverName="Razzeric" GiverId="40487" X="-6150.405" Y="-3825.654" Z="26.21966" />
+
+		<PickUp QuestName="Bar Fight!" QuestId="25518" GiverName="Zamek" GiverId="40556" X="-6124.603" Y="-3868.882" Z="6.452078" />
+		<While Condition="DoQuest(25518)" >
+			<CustomBehavior File="InteractWith" MobId="40832" InteractByBuyingItemId="54747" QuestId="25518" QuestObjectiveIndex="1" X="-6159.005" Y="-3802.925" Z="6.203893" TerminateWhen="HasItem(54747)" />
+			<CustomBehavior File="InteractWith" MobId="40529" Range="2" InteractByUsingItemId="54747" QuestId="25518" QuestObjectiveIndex="1" X="-6159.005" Y="-3802.925" Z="6.203893" TerminateWhen="!HasItem(54747)" />			
+		</While>
+		<TurnIn QuestName="Bar Fight!" QuestId="25518" TurnInName="Zamek" TurnInId="40556" X="-6126.655" Y="-3865.557" Z="6.452705" />
+
+		<PickUp QuestName="In the Outhouse" QuestId="25526" GiverName="Submerged Outhouse" GiverId="202975" X="-6167.76" Y="-3934.115" Z="-68.0976" />
+
+
+		<CustomBehavior File="Message" Text="Under development." />
+		<CustomBehavior File="Halt" />
+
+
+	</QuestOrder>
+
+</HBProfile>

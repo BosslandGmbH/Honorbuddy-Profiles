@@ -1,0 +1,964 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../Schemas/EchoSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Borean Tundra ($Rev: 6041 $)</Name>
+
+	<DefaultNavType>Fly</DefaultNavType>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<Blackspots>
+		<Blackspot X="2334.069" Y="5269.208" Z="7.636464" Radius="2.049358" /> <!-- Forge in Valiance Keep -->
+		<Blackspot X="2938.661" Y="6478.956" Z="78.89586" Radius="11.01611" /> <!-- Large cart thing near Garrosh's Landing -->
+		<Blackspot X="2929.82" Y="6483.418" Z="83.24158" Radius="11.16186" /> <!-- Small path beside object blackspotted above which seems to be bugging out the Kodo transport quest. -->
+	</Blackspots>
+
+	<Blacklist>
+		<!--<Mob Name="Warsong Aberration" Id="25611" Flags="Pull" /> Another version of the below I found on WoWhead, but doesn't seem to be used in-game -->
+		<Mob Name="Warsong Aberration" Id="25625" Flags="Pull" />
+	</Blacklist>
+
+	<!-- INITORDER COMMENT 
+	<InitOrder>
+		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> Use LevelBot default
+	</InitOrder>
+END INITORDER COMMENT -->
+
+	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Hooks -->
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[ 
+					IEnumerable<WoWItem> GetExtraConsumables()
+					{
+						uint foodCount = 0;
+						uint drinkCount = 0;
+						// Skip conjured and buff comsumables.
+				
+						var extraConsumables = (from item in Me.BagItems
+										   where item != null && item.ItemInfo != null
+										   let isFood = Consumable.IsFood(item.ItemInfo)
+										   let isDrink = Consumable.IsDrink(item.ItemInfo)
+										   where (isFood || isDrink) && item.ItemInfo.SellPrice > 0 && item.Effects.Count == 1 && item.ItemInfo.RequiredLevel < Me.Level - 10                    
+										   select item).ToList();
+				
+				
+						var extraPotions = Me.BagItems
+							.Where(c => c != null && c.IsValid && c.ItemInfo != null && c.ItemInfo.SellPrice > 0 && c.Effects.Count == 1
+								&& (c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Potion
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Elixir
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Flask)
+								&& c.ItemInfo.RequiredLevel < Me.Level - 20);
+				
+						extraConsumables.AddRange(extraPotions);
+						return extraConsumables;
+					}
+					 
+					async Task SellExtraConsumables()
+					{
+						Logging.Write("Selling items in GetExtraConsumables()");
+						foreach (var item in GetExtraConsumables())
+						{
+							Logging.Write("Selling {0}.", item.Name);
+							item.UseContainerItem();
+							await Coroutine.Sleep(1337);
+						}
+					}
+				]]>
+			</CustomBehavior>
+			<CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+				<CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>
+			</CustomBehavior>
+		<!-- END Hooks -->
+
+		<PickUp QuestName="Hellscream&apos;s Vigil" QuestId="11585" GiverName="Warsong Recruitment Officer" GiverId="25273" X="2825.704" Y="6174.662" Z="121.9808" />
+		<TurnIn QuestName="Hellscream&apos;s Vigil" QuestId="11585" TurnInName="Garrosh Hellscream" TurnInId="25237" X="2835.299" Y="6184.626" Z="84.68388" />
+		<PickUp QuestName="The Defense of Warsong Hold" QuestId="11596" GiverName="High Overlord Saurfang" GiverId="25256" X="2832.648" Y="6183.504" Z="84.68388" />
+
+		<CustomBehavior File="SetHearthstone" MobId="25278" AreaId="4129" X="2801.066" Y="6152.445" Z="84.68898" />
+
+		<If Condition="!SpellManager.HasSpell(54197)" > <!-- Train Northrend flight training. -->
+			<CustomBehavior File="ForceTrainRiding" MobId="35135" X="2774.241" Y="6144.249" Z="208.7541" />
+		</If>
+
+		<TurnIn QuestName="The Defense of Warsong Hold" QuestId="11596" TurnInName="Overlord Razgor" TurnInId="25279" X="2781.76" Y="6076.724" Z="77.68889" />
+		<PickUp QuestName="Taking Back Mightstone Quarry" QuestId="11598" GiverName="Overlord Razgor" GiverId="25279" X="2781.76" Y="6076.724" Z="77.68889" />
+		<PickUp QuestName="Patience is a Virtue that We Don&apos;t Need" QuestId="11606" GiverName="Quartermaster Holgoth" GiverId="25327" X="2770.1" Y="6069.216" Z="77.36406" />
+		<PickUp QuestName="Taken by the Scourge" QuestId="11611" GiverName="Foreman Mortuus" GiverId="25280" X="2736.784" Y="6140.919" Z="77.37482" />
+
+		<CustomBehavior File="InteractWith" MobIds="187659, 187660, 187661" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="11606" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="2658.524" Y="6066.151" Z="53.87146" />
+				<Hotspot X="2600.515" Y="6088.505" Z="53.49519" />
+				<Hotspot X="2734.546" Y="6294.672" Z="63.13381" />
+				<Hotspot X="2964.372" Y="6143.426" Z="61.54293" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" MobId="25284" QuestId="11611" >
+			<HuntingGrounds>
+				<Hotspot X="2658.524" Y="6066.151" Z="53.87146" />
+				<Hotspot X="2600.515" Y="6088.505" Z="53.49519" />
+				<Hotspot X="2734.546" Y="6294.672" Z="63.13381" />
+				<Hotspot X="2964.372" Y="6143.426" Z="61.54293" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" MobIds="24562, 25294, 24566" QuestId="11598" >
+			<HuntingGrounds>
+				<Hotspot X="2658.524" Y="6066.151" Z="53.87146" />
+				<Hotspot X="2600.515" Y="6088.505" Z="53.49519" />
+				<Hotspot X="2734.546" Y="6294.672" Z="63.13381" />
+				<Hotspot X="2964.372" Y="6143.426" Z="61.54293" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Taken by the Scourge" QuestId="11611" TurnInName="Foreman Mortuus" TurnInId="25280" X="2737.703" Y="6139.276" Z="77.37816" />
+		<TurnIn QuestName="Patience is a Virtue that We Don&apos;t Need" QuestId="11606" TurnInName="Quartermaster Holgoth" TurnInId="25327" X="2766.948" Y="6071.784" Z="77.53091" />
+		<PickUp QuestName="Bury Those Cockroaches!" QuestId="11608" GiverName="Quartermaster Holgoth" GiverId="25327" X="2766.948" Y="6071.784" Z="77.53091" />
+		<TurnIn QuestName="Taking Back Mightstone Quarry" QuestId="11598" TurnInName="Overlord Razgor" TurnInId="25279" X="2781.649" Y="6077.223" Z="77.68913" />
+		<PickUp QuestName="Cutting Off the Source" QuestId="11602" GiverName="Overlord Razgor" GiverId="25279" X="2781.649" Y="6077.223" Z="77.68913" />
+		<PickUp QuestName="Untold Truths" QuestId="11614" GiverName="Shadowstalker Barthus" GiverId="25394" X="2781.649" Y="6077.223" Z="77.68913" />
+
+		<While Condition="DoQuest(11608)" >
+			<While Condition="!IsObjectiveComplete(2, 11608)" >
+				<MoveTo X="2716.988" Y="6020.98" Z="31.08645" />
+				<CustomBehavior File="UseItem" ItemId="34710" QuestId="11608" QuestObjectiveIndex="2" X="2716.988" Y="6020.98" Z="31.08645" />
+			</While>
+			<While Condition="!IsObjectiveComplete(1, 11608)" >
+				<MoveTo X="2657.18" Y="6171.173" Z="38.88707" />
+				<CustomBehavior File="UseItem" ItemId="34710" QuestId="11608" QuestObjectiveIndex="1" X="2657.18" Y="6171.173" Z="38.88707" />
+			</While>
+			<While Condition="!IsObjectiveComplete(3, 11608)" >
+				<MoveTo X="2877.023" Y="6276.647" Z="60.4672" />
+				<CustomBehavior File="UseItem" ItemId="34710" QuestId="11608" QuestObjectiveIndex="3" X="2877.023" Y="6276.647" Z="60.4672" />
+
+			</While>
+			<While Condition="!IsObjectiveComplete(4, 11608)" >
+				<MoveTo X="2963.111" Y="6188.073" Z="61.0947" />
+				<CustomBehavior File="UseItem" ItemId="34710" QuestId="11608" QuestObjectiveIndex="4" X="2963.111" Y="6188.073" Z="61.0947" />
+			</While>
+		</While>
+
+		<CustomBehavior File="InteractWith" MobId="187655" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="11602" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="2807.47" Y="5996.725" Z="108.8661" />
+				<Hotspot X="2605.171" Y="6059.562" Z="67.58102" />
+				<Hotspot X="2633.546" Y="6247.125" Z="86.43794" />
+				<Hotspot X="2756.365" Y="6316.334" Z="91.00394" />
+				<Hotspot X="2939.332" Y="6288.184" Z="93.6676" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Untold Truths" QuestId="11614" TurnInName="Shadowstalker Luther" TurnInId="25328" X="2898.851" Y="6259.525" Z="61.55386" />
+		<PickUp QuestName="Nerub&apos;ar Secrets" QuestId="11615" GiverName="Shadowstalker Luther" GiverId="25328" X="2898.851" Y="6259.525" Z="61.55386" />
+		<TurnIn QuestName="Bury Those Cockroaches!" QuestId="11608" TurnInName="Quartermaster Holgoth" TurnInId="25327" X="2769.618" Y="6070.363" Z="77.46119" />
+		<TurnIn QuestName="Nerub&apos;ar Secrets" QuestId="11615" TurnInName="Shadowstalker Barthus" TurnInId="25394" X="2781.445" Y="6077.941" Z="77.68895" />
+		<PickUp QuestName="Message to Hellscream" QuestId="11616" GiverName="Shadowstalker Barthus" GiverId="25394" X="2781.445" Y="6077.941" Z="77.68895" />
+		<TurnIn QuestName="Cutting Off the Source" QuestId="11602" TurnInName="Overlord Razgor" TurnInId="25279" X="2782.374" Y="6078.437" Z="77.68895" />
+		<PickUp QuestName="Wind Master To&apos;bor" QuestId="11634" GiverName="Overlord Razgor" GiverId="25279" X="2782.374" Y="6078.437" Z="77.68895" />
+		<PickUp QuestName="Wind Master To&apos;bor" QuestId="11634" GiverName="Overlord Razgor" GiverId="25279" X="2782.374" Y="6078.437" Z="77.68895" />
+		<TurnIn QuestName="Message to Hellscream" QuestId="11616" TurnInName="Garrosh Hellscream" TurnInId="25237" X="2835.963" Y="6185.127" Z="84.68286" />
+		<PickUp QuestName="Reinforcements Incoming..." QuestId="11618" GiverName="Garrosh Hellscream" GiverId="25237" X="2835.963" Y="6185.127" Z="84.68286" />
+		<TurnIn QuestName="Wind Master To&apos;bor" QuestId="11634" TurnInName="Wind Master To&apos;bor" TurnInId="25289" X="2796.395" Y="6148.836" Z="208.1241" />
+		<PickUp QuestName="Magic Carpet Ride" QuestId="11636" GiverName="Wind Master To&apos;bor" GiverId="25289" X="2796.395" Y="6148.836" Z="208.1241" />
+		<TurnIn QuestName="Reinforcements Incoming..." QuestId="11618" TurnInName="Shadowstalker Ickoris" TurnInId="25437" X="2875.822" Y="6373.514" Z="95.36335" />
+		<PickUp QuestName="The Warsong Farms" QuestId="11686" GiverName="Shadowstalker Ickoris" GiverId="25437" X="2875.822" Y="6373.514" Z="95.36335" />
+		<PickUp QuestName="Merciful Freedom" QuestId="11676" GiverName="Shadowstalker Canarius" GiverId="25438" X="2875.585" Y="6381.71" Z="94.09913" />
+		<PickUp QuestName="Damned Filthy Swine" QuestId="11688" GiverName="Farmer Torp" GiverId="25607" X="2884.272" Y="6386.078" Z="92.76123" />
+
+		<While Condition="DoQuest(11686)" >
+			<If Condition="!IsObjectiveComplete(2, 11686)" >
+				<MoveTo X="2882.444" Y="6452.498" Z="79.79348" />
+			</If>
+			<If Condition="!IsObjectiveComplete(1, 11686)" >
+				<MoveTo X="3077.206" Y="6294.339" Z="94.86068" />
+			</If>
+			<If Condition="!IsObjectiveComplete(3, 11686)" >
+				<MoveTo X="2795.452" Y="6562.396" Z="50.45901" />
+			</If>
+		</While>
+
+		<While Condition="DoQuest(11676)" >
+			<CustomBehavior File="InteractWith" MobIds="187854, 187855, 187856, 187857, 187860, 187862, 187871" CollectionDistance="200" PreInteractMountStrategy="Dismount" QuestId="11676" QuestObjectiveIndex="1" TerminateWhen="!HasItem(34908)" >
+				<HuntingGrounds>
+					<Hotspot X="2881.812" Y="6484.618" Z="79.13275" />
+					<Hotspot X="3007.632" Y="6499.476" Z="79.63396" />
+					<Hotspot X="3039.934" Y="6404.915" Z="89.58263" />
+					<Hotspot X="3113.882" Y="6337.12" Z="92.14065" />
+				</HuntingGrounds>
+			</CustomBehavior>
+
+			<CustomBehavior File="KillUntilComplete" MobId="25609" QuestId="11676" TerminateWhen="HasItem(34908)" >
+				<HuntingGrounds>
+					<Hotspot X="2881.812" Y="6484.618" Z="79.13275" />
+					<Hotspot X="3007.632" Y="6499.476" Z="79.63396" />
+					<Hotspot X="3039.934" Y="6404.915" Z="89.58263" />
+					<Hotspot X="3113.882" Y="6337.12" Z="92.14065" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<CustomBehavior File="KillUntilComplete" MobId="25600" QuestId="11688" >
+			<HuntingGrounds>
+				<Hotspot X="2849.93" Y="6468.854" Z="79.13358" />
+				<Hotspot X="2855.153" Y="6582.838" Z="54.42466" />
+				<Hotspot X="2997.628" Y="6512.751" Z="76.48145" />
+				<Hotspot X="3057.234" Y="6353.47" Z="95.02551" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Damned Filthy Swine" QuestId="11688" TurnInName="Farmer Torp" TurnInId="25607" X="2886.779" Y="6389.038" Z="92.58273" />
+		<PickUp QuestName="Bring &apos;Em Back Alive" QuestId="11690" GiverName="Farmer Torp" GiverId="25607" X="2886.779" Y="6389.038" Z="92.58273" />
+		<TurnIn QuestName="Merciful Freedom" QuestId="11676" TurnInName="Shadowstalker Canarius" TurnInId="25438" X="2879.267" Y="6387.195" Z="92.71486" />
+		<TurnIn QuestName="The Warsong Farms" QuestId="11686" TurnInName="Shadowstalker Ickoris" TurnInId="25437" X="2878.418" Y="6377.601" Z="94.64346" />
+		<PickUp QuestName="Get to Getry" QuestId="11703" GiverName="Shadowstalker Ickoris" GiverId="25437" X="2878.418" Y="6377.601" Z="94.64346" />
+
+		<While Condition="!IsQuestCompleted(11690)" >
+			<CustomBehavior File="AbandonQuest" QuestId="11690" Type="Failed" />
+			<PickUp QuestName="Bring &apos;Em Back Alive" QuestId="11690" GiverName="Farmer Torp" GiverId="25607" X="2886.779" Y="6389.038" Z="92.58273" />
+			<CustomBehavior File="InteractWith" CollectionDistance="200" InteractByUsingItemId="34954" PreInteractMountStrategy="Dismount" QuestId="11690" QuestObjectiveIndex="1" TerminateWhen="Me.HasAura(45875)" >
+				<HuntingGrounds>
+					<Hotspot X="2967.51" Y="6424.288" Z="88.96277" />
+					<Hotspot X="2962.362" Y="6550.023" Z="67.3009" />
+					<Hotspot X="2835.498" Y="6556.287" Z="55.15151" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueUnit Id="25596" PursueWhen="UNIT.HasAura(45771)" />
+				</PursuitList>
+			</CustomBehavior>
+
+			<While Condition="Me.HasAura(45875)" >
+				<DisableBehavior Name="All" />
+				<MoveTo X="2878.985" Y="6385.747" Z="92.97911" />
+				<CustomBehavior File="Misc\RunLua" Lua="OverrideActionBarButton2:Click();" />
+			</While>
+			<EnableBehavior Name="All" />
+		</While>
+
+		<TurnIn QuestName="Bring &apos;Em Back Alive" QuestId="11690" TurnInName="Farmer Torp" TurnInId="25607" X="2883.123" Y="6389.731" Z="92.5584" />
+		<TurnIn QuestName="Get to Getry" QuestId="11703" TurnInName="Shadowstalker Getry" TurnInId="25729" X="3116.425" Y="6575.736" Z="97.91401" />
+
+		<PickUp QuestName="Foolish Endeavors" QuestId="11705" GiverName="Shadowstalker Getry" GiverId="25729" X="3116.425" Y="6575.736" Z="97.91401" />
+		<CustomBehavior File="KillUntilComplete" MobId="25618" QuestId="11705" X="3128.887" Y="6568.34" Z="78.49284" />
+		<TurnIn QuestName="Foolish Endeavors" QuestId="11705" TurnInName="Garrosh Hellscream" TurnInId="25237" X="2836.174" Y="6183.738" Z="84.68135" />
+
+		<PickUp QuestName="Nork Bloodfrenzy&apos;s Charge" QuestId="11709" GiverName="Garrosh Hellscream" GiverId="25237" X="2836.174" Y="6183.738" Z="84.68135" />
+		<TurnIn QuestName="Nork Bloodfrenzy&apos;s Charge" QuestId="11709" TurnInName="Warden Nork Bloodfrenzy" TurnInId="25379" X="2802.817" Y="6047.984" Z="77.14684" />
+
+		<PickUp QuestName="Coward Delivery... Under 30 Minutes or it&apos;s Free" QuestId="11711" GiverName="Warden Nork Bloodfrenzy" GiverId="25379" X="2802.817" Y="6047.984" Z="77.14684" />
+		<While Condition="DoQuest(11711)" >
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepPrisonerClose" LogExecution="false" AllowUseDuringCombat="true" AllowUseWhileMounted="true" UseWhen="Unit(25761, u =&gt; u.OwnedByUnit == Me &amp;&amp; u.DistanceSqr &gt; 30f*30f) != null" >
+				<CustomBehavior File="Message" Text="Waiting for prisoner to catch up." />
+				<CustomBehavior File="RunCode" Code="await CommonCoroutines.StopMoving();" />
+				<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="Unit(25761, u =&gt; u.OwnedByUnit == Me &amp;&amp; u.DistanceSqr &lt;= 20f*20f) != null" />
+			</CustomBehavior>
+
+			<CustomBehavior File="ForcedDismount" />
+			<DisableBehavior Name="Pull, Loot, Vendor" />
+			<CustomBehavior File="InteractWith" MobId="25379" GossipOptions="1" NonCompeteDistance="0" QuestId="11711" X="2806.831" Y="6048.415" Z="77.14053" TerminateWhen="Me.HasAura(45957)" />
+			<CustomBehavior File="UseItem" ItemId="34971" QuestId="11711" MovementBy="NavigatorOnly" X="2947.133" Y="5379.978" Z="60.53853" TerminateWhen="Unit(25761, u =&gt; u.OwnedByUnit == Me) == null" />
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepPrisonerClose" Command="Remove" />
+			<EnableBehavior Name="Pull, Loot, Vendor" />
+		</While>
+
+		<TurnIn QuestName="Coward Delivery... Under 30 Minutes or it&apos;s Free" QuestId="11711" TurnInName="Scout Tungok" TurnInId="25440" X="2887.307" Y="5541.288" Z="57.25901" />
+		<PickUp QuestName="Vermin Extermination" QuestId="11714" GiverName="Scout Tungok" GiverId="25440" X="2887.307" Y="5541.288" Z="57.25901" />
+		<PickUp QuestName="The Wondrous Bloodspore" QuestId="11716" GiverName="Bloodmage Laurith" GiverId="25381" X="2882.484" Y="5571.022" Z="56.26738" />
+
+		<CustomBehavior File="InteractWith" MobId="187902" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="11716" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="2848.933" Y="5523.423" Z="55.67471" />
+				<Hotspot X="2780.582" Y="5643.833" Z="42.91646" />
+				<Hotspot X="2628.691" Y="5608.267" Z="41.05314" />
+				<Hotspot X="2468.234" Y="5587.447" Z="45.35559" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" QuestId="11714" >
+			<HuntingGrounds>
+				<Hotspot X="2848.933" Y="5523.423" Z="55.67471" />
+				<Hotspot X="2780.582" Y="5643.833" Z="42.91646" />
+				<Hotspot X="2628.691" Y="5608.267" Z="41.05314" />
+				<Hotspot X="2468.234" Y="5587.447" Z="45.35559" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="25467" PursueWhen="!IsObjectiveComplete(1, 11714)" />
+				<PursueUnit Id="25470" PursueWhen="!IsObjectiveComplete(2, 11714)" />
+				<PursueUnit Id="25468" PursueWhen="!IsObjectiveComplete(3, 11714)" />
+			</PursuitList>
+		</CustomBehavior>
+
+		<TurnIn QuestName="The Wondrous Bloodspore" QuestId="11716" TurnInName="Bloodmage Laurith" TurnInId="25381" X="2881.766" Y="5570.246" Z="56.30539" />
+		<PickUp QuestName="Pollen from the Source" QuestId="11717" GiverName="Bloodmage Laurith" GiverId="25381" X="2883.718" Y="5570.907" Z="56.22534" />
+		<TurnIn QuestName="Vermin Extermination" QuestId="11714" TurnInName="Scout Tungok" TurnInId="25440" X="2909.46" Y="5535.903" Z="51.43125" />
+
+		<CustomBehavior File="KillUntilComplete" MobId="25464" QuestId="11717" >
+			<HuntingGrounds>
+				<Hotspot X="2858.806" Y="5523.691" Z="57.05985" />
+				<Hotspot X="2788.723" Y="5625.186" Z="41.6568" />
+				<Hotspot X="2640.974" Y="5571.405" Z="41.55855" />
+				<Hotspot X="2484.942" Y="5611.157" Z="45.3817" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Pollen from the Source" QuestId="11717" TurnInName="Bloodmage Laurith" TurnInId="25381" X="2883.662" Y="5567.006" Z="56.44077" />
+
+		<PickUp QuestName="A Suitable Test Subject" QuestId="11719" GiverName="Bloodmage Laurith" GiverId="25381" X="2883.662" Y="5567.006" Z="56.44077" />
+		<While Condition="DoQuest(11719)" >
+			<CustomBehavior File="UseItem" ItemId="34978" QuestId="11719" QuestObjectiveIndex="1" X="2882.594" Y="5566.602" Z="56.45351" />
+		</While>
+		<TurnIn QuestName="A Suitable Test Subject" QuestId="11719" TurnInName="Bloodmage Laurith" TurnInId="25381" X="2882.594" Y="5566.602" Z="56.45351" />
+
+		<PickUp QuestName="The Invasion of Gammoth" QuestId="11720" GiverName="Bloodmage Laurith" GiverId="25381" X="2882.594" Y="5566.602" Z="56.45351" />
+		<TurnIn QuestName="The Invasion of Gammoth" QuestId="11720" TurnInName="Primal Mighthorn" TurnInId="25380" X="2868.733" Y="5558.314" Z="56.34658" />
+
+		<PickUp QuestName="Gammothra the Tormentor" QuestId="11721" GiverName="Primal Mighthorn" GiverId="25380" X="2868.733" Y="5558.314" Z="56.34658" />
+		<While Condition="DoQuest(11721)" >
+			<If Condition="!Me.IsIndoors" >
+				<MoveTo X="2653.266" Y="5718.065" Z="46.23993" />
+			</If>
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="WeakenMagnataur" LogExecution="false" AllowUseDuringCombat="true" UseWhen="ObjectManager.GetObjectsOfType&lt;WoWUnit&gt;().Any(u =&gt; (u.Entry == 24469 || u.Entry == 25789) &amp;&amp; u.Aggro &amp;&amp; !u.HasAura(46012) &amp;&amp; Me.CurrentTarget == u &amp;&amp; u.DistanceSqr &lt; 40f*40f)" >
+				<CustomBehavior File="RunCode" Code="Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 34979).Use(); await Coroutine.Sleep(650);" />
+				<CustomBehavior File="WaitTimer" WaitTime="5500" TerminateWhen="!Me.IsCasting" />
+			</CustomBehavior>
+			<CustomBehavior File="KillUntilComplete" MobId="25789" MovementBy="NavigatorOnly" QuestId="11721" X="2553.854" Y="5930.75" Z="-23.73151" />
+		</While>
+		<If Condition="QuestDone(11721)" >
+			<If Condition="Me.IsIndoors" >
+				<MoveTo Nav="Run" X="2653.266" Y="5718.065" Z="46.23993" />
+			</If>
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="WeakenMagnataur" Command="Remove" />
+		</If>
+		<TurnIn QuestName="Gammothra the Tormentor" QuestId="11721" TurnInName="Primal Mighthorn" TurnInId="25380" X="2868.346" Y="5559.275" Z="56.34436" />
+
+		<PickUp QuestName="Trophies of Gammoth" QuestId="11722" GiverName="Primal Mighthorn" GiverId="25380" X="2868.346" Y="5559.275" Z="56.34436" />
+		<PickUp QuestName="Massive Moth Omelet?" QuestId="11724" GiverName="Massive Glowing Egg" GiverId="187905" X="2631.78" Y="5771.02" Z="99.22629" />
+		<TurnIn QuestName="Massive Moth Omelet?" QuestId="11724" TurnInName="Bloodmage Laurith" TurnInId="25381" X="2878.27" Y="5574.126" Z="56.34412" />
+
+		<If Condition="QuestDone(11722) &amp;&amp; Me.HearthstoneAreaId == 4129 &amp;&amp; Unit(25381) != null" >
+			<CustomBehavior File="UseHearthstone" WaitForCd="false" />
+		</If>
+
+		<TurnIn QuestName="Trophies of Gammoth" QuestId="11722" TurnInName="Garrosh Hellscream" TurnInId="25237" X="2835.275" Y="6183.869" Z="84.6816" />
+		<TurnIn QuestName="Magic Carpet Ride" QuestId="11636" TurnInName="Garrosh Hellscream" TurnInId="25237" X="2835.275" Y="6183.869" Z="84.6816" />
+		<PickUp QuestName="Tank Ain&apos;t Gonna Fix Itself" QuestId="11642" GiverName="Gorge the Corpsegrinder" GiverId="25329" X="2815.882" Y="6712.431" Z="10.18057" />
+		<TurnIn QuestName="Tank Ain&apos;t Gonna Fix Itself" QuestId="11642" TurnInName="Mobu" TurnInId="25475" X="2807.925" Y="6721.465" Z="9.099375" />
+		<PickUp QuestName="Mobu&apos;s Pneumatic Tank Transjigamarig" QuestId="11643" GiverName="Mobu" GiverId="25475" X="2807.925" Y="6721.465" Z="9.099375" />
+		<PickUp QuestName="Super Strong Metal Plates!" QuestId="11644" GiverName="Mobu" GiverId="25475" X="2807.925" Y="6721.465" Z="9.099375" />
+		<PickUp QuestName="Into the Mist" QuestId="11655" GiverName="Waltor of Pal&apos;ea" GiverId="25476" X="2810.765" Y="6709.844" Z="10.04254" />
+		<PickUp QuestName="Horn of the Ancient Mariner" QuestId="11660" GiverName="Waltor of Pal&apos;ea" GiverId="25476" X="2810.765" Y="6709.844" Z="10.04254" />
+
+		<PickUp QuestName="Escaping the Mist" QuestId="11664" GiverName="Mootoo the Younger" GiverId="25504" X="2883.336" Y="6733.792" Z="32.88617" />
+		<While Condition="DoQuest(11664)" >
+			<CustomBehavior File="RunCode"><![CDATA[ TreeHooks.Instance.InsertHook("Questbot_Profile", 0, _ctmSimpleEscort ?? (_ctmSimpleEscort = new  CommonBehaviors.Actions.ActionRunCoroutine(ctx => CTMSimpleEscort()))); ]]></CustomBehavior>
+			<CustomBehavior File="ForcedDismount" />
+			<UseMount Value="false" />
+			<CustomBehavior File="RunCode" Type="Definition" ><![CDATA[
+					private Styx.TreeSharp.Composite _ctmSimpleEscort;
+					private WoWUnit _escortPoi;
+					private WoWGameObject _nearbyObjectPoi;
+					private Vector3 _antiThrottleCoordinate;
+					private Stopwatch _throttleTimer = new Stopwatch();
+					private Random rnd = new Random();
+
+					public async Task<bool> CTMSimpleEscort()
+					{
+						if (IsQuestCompleted(11664)) return false;
+						if (!_throttleTimer.IsRunning)
+							_throttleTimer.Start();
+						if (_nearbyObjectPoi != null && _nearbyObjectPoi.IsValid)
+						{
+							_nearbyObjectPoi.Interact();
+							await Coroutine.Wait(3000, () => !Me.IsCasting || LootFrame.Instance.IsVisible);
+							if (LootFrame.Instance.IsVisible)
+								LootFrame.Instance.LootAll();
+							return true;
+						}
+						if (_escortPoi == null || !_escortPoi.IsValid)
+						{
+							_escortPoi = ObjectManager.GetObjectsOfType<WoWUnit>().FirstOrDefault(unit => unit.Entry == 25504);
+							if (_escortPoi == null) return false;
+							_antiThrottleCoordinate = _escortPoi.Location;
+						}
+						if (_throttleTimer.Elapsed > TimeSpan.FromSeconds(3) && _antiThrottleCoordinate.DistanceSquared(_escortPoi.Location) > 4 * 4)
+						{
+							_throttleTimer.Restart();
+							_antiThrottleCoordinate = _escortPoi.Location;
+						}
+						if (_escortPoi.DistanceSqr > 13 * 13)
+						{
+							TreeRoot.StatusText = $"Moving to Mootoo the Younger";
+							return (await CommonCoroutines.MoveTo(_antiThrottleCoordinate)).IsSuccessful();
+						}
+						if ((_nearbyObjectPoi == null || !_nearbyObjectPoi.IsValid) && DoQuest(11644))
+							_nearbyObjectPoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => (obj.Entry == 187684 || obj.Entry == 187685 || obj.Entry == 187686 || obj.Entry == 187687) && obj.DistanceSqr <= 25f*25f && obj.InLineOfSight);
+						if (_escortPoi.DistanceSqr <= 13 * 13)
+						{
+							TreeRoot.StatusText = $"Following Mootoo the Younger";
+							if (!_escortPoi.IsMoving)
+							{
+								if (_escortPoi.CurrentTarget != null)
+								{
+									BotPoi.Current = new BotPoi(_escortPoi.CurrentTarget, PoiType.Kill);
+									return false;
+								}
+								return true;				
+							}
+							await Coroutine.Sleep(rnd.Next(500, 1500));
+							WoWMovement.ClickToMove(WoWMathHelper.CalculatePointBehind(_escortPoi.Location, _escortPoi.Rotation, 3f));
+							return true;
+						}
+						return true;
+					}
+			]]>
+			</CustomBehavior>
+			<If Condition="Unit(25504) == null" >
+				<CustomBehavior File="AbandonQuest" QuestId="11664" />
+				<PickUp QuestName="Escaping the Mist" QuestId="11664" GiverName="Mootoo the Younger" GiverId="25504" X="2883.336" Y="6733.792" Z="32.88617" />
+			</If>
+			<UseMount Value="true" />
+			<CustomBehavior File="WaitTimer" WaitTime="540000" QuestId="11664" TerminateWhen="Unit(25504) == null" />
+			<CustomBehavior File="RunCode"><![CDATA[ TreeHooks.Instance.RemoveHook("Questbot_Profile", _ctmSimpleEscort); ]]></CustomBehavior>
+		</While>
+		<TurnIn QuestName="Escaping the Mist" QuestId="11664" TurnInName="Elder Mootoo" TurnInId="25503" X="2809.431" Y="6748.243" Z="8.485601" />
+
+		<CustomBehavior File="InteractWith" MobId="187683" InteractByLooting="true" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="11643" QuestObjectiveIndex="1" X="3012.171" Y="6707.649" Z="12.92813" />
+
+		<CustomBehavior File="InteractWith" MobIds="187684, 187685, 187686, 187687" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="11644" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="2865.465" Y="6816.606" Z="2.565987" />
+				<Hotspot X="2979.917" Y="6799.649" Z="5.979406" />
+				<Hotspot X="3066.598" Y="6708.257" Z="6.008691" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" TerminateWhen="!DoQuest(11660, 11655)" >
+			<HuntingGrounds>
+				<Hotspot X="2865.465" Y="6816.606" Z="2.565987" />
+				<Hotspot X="2979.917" Y="6799.649" Z="5.979406" />
+				<Hotspot X="3066.598" Y="6708.257" Z="6.008691" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="25479" PursueWhen="DoQuest(11655)" />
+				<PursueUnit Id="25496" PursueWhen="DoQuest(11655)" />
+				<PursueUnit Id="25496" PursueWhen="DoQuest(11660)" />
+			</PursuitList>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Mobu&apos;s Pneumatic Tank Transjigamarig" QuestId="11643" TurnInName="Mobu" TurnInId="25475" X="2812.853" Y="6724.001" Z="9.209911" />
+		<TurnIn QuestName="Super Strong Metal Plates!" QuestId="11644" TurnInName="Mobu" TurnInId="25475" X="2812.853" Y="6724.001" Z="9.209911" />
+		<PickUp QuestName="Tanks a lot..." QuestId="11651" GiverName="Mobu" GiverId="25475" X="2812.853" Y="6724.001" Z="9.209911" />
+		<TurnIn QuestName="Tanks a lot..." QuestId="11651" TurnInName="Gorge the Corpsegrinder" TurnInId="25329" X="2816.933" Y="6714.446" Z="10.13338" />
+		<!-- <PickUp QuestName="The Plains of Nasam" QuestId="11652" GiverName="Gorge the Corpsegrinder" GiverId="25329" X="2816.933" Y="6714.446" Z="10.13338" /> Not worth it -->
+		<TurnIn QuestName="Into the Mist" QuestId="11655" TurnInName="Waltor of Pal&apos;ea" TurnInId="25476" X="2810.876" Y="6709.468" Z="10.0614" />
+		<PickUp QuestName="Burn in Effigy" QuestId="11656" GiverName="Waltor of Pal&apos;ea" GiverId="25476" X="2810.876" Y="6709.468" Z="10.0614" />
+		<TurnIn QuestName="Horn of the Ancient Mariner" QuestId="11660" TurnInName="Waltor of Pal&apos;ea" TurnInId="25476" X="2810.876" Y="6709.468" Z="10.0614" />
+		<PickUp QuestName="Orabus the Helmsman" QuestId="11661" GiverName="Waltor of Pal&apos;ea" GiverId="25476" X="2810.876" Y="6709.468" Z="10.0614" />
+
+		<While Condition="DoQuest(11656)" >
+			<While Condition="!IsObjectiveComplete(4, 11656)" >
+				<MoveTo X="2528.53" Y="6847.446" Z="0.3802547" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="34830" QuestId="11656" QuestObjectiveIndex="4" X="2528.53" Y="6847.446" Z="0.3802547" />
+			</While>
+			<While Condition="!IsObjectiveComplete(3, 11656)" >
+				<MoveTo X="2864.202" Y="6856.883" Z="0.04787594" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="34830" QuestId="11656" QuestObjectiveIndex="3" X="2864.202" Y="6856.883" Z="0.04787594" />
+			</While>
+			<While Condition="!IsObjectiveComplete(2, 11656)" >
+				<MoveTo X="3019.536" Y="6794.844" Z="0.8705435" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="34830" QuestId="11656" QuestObjectiveIndex="2" X="3019.536" Y="6794.844" Z="0.8705435" />
+			</While>
+			<While Condition="!IsObjectiveComplete(1, 11656)" >
+				<MoveTo X="3037.943" Y="6751.533" Z="3.021383" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="34830" QuestId="11656" QuestObjectiveIndex="1" X="3037.943" Y="6751.533" Z="3.021383" />
+			</While>
+		</While>
+
+		<While Condition="DoQuest(11661)" >
+			<MoveTo X="2798.459" Y="7031.048" Z="0.4973702" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="UseItem" ItemId="34844" QuestId="11661" X="2798.459" Y="7031.048" Z="0.4973702" TerminateWhen="Unit(32576, u =&gt; u.IsAlive) != null" />
+			<CustomBehavior File="KillUntilComplete" MobId="32576" QuestId="11661" X="2798.159" Y="7030.433" Z="0.8689199" TerminateWhen="Unit(32576, u =&gt; u.IsAlive) == null" />
+		</While>
+
+		<TurnIn QuestName="Burn in Effigy" QuestId="11656" TurnInName="Waltor of Pal&apos;ea" TurnInId="25476" X="2808.556" Y="6708.424" Z="10.17379" />
+		<TurnIn QuestName="Orabus the Helmsman" QuestId="11661" TurnInName="Waltor of Pal&apos;ea" TurnInId="25476" X="2808.556" Y="6708.424" Z="10.17379" />
+		<PickUp QuestName="Seek Out Karuk!" QuestId="11662" GiverName="Waltor of Pal&apos;ea" GiverId="25476" X="2808.556" Y="6708.424" Z="10.17379" />
+		<TurnIn QuestName="Seek Out Karuk!" QuestId="11662" TurnInName="Karuk" TurnInId="25435" X="1999.098" Y="5853.156" Z="35.97402" />
+
+		<PickUp QuestName="Karuk's Oath" QuestId="11613" GiverName="Karuk" GiverId="25435" X="1998.132" Y="5853.021" Z="35.95975" />
+		<CustomBehavior File="KillUntilComplete" QuestId="11613" >
+			<HuntingGrounds>
+				<Hotspot X="1897.409" Y="6036.105" Z="5.197063" />
+				<Hotspot X="1910.197" Y="5893.24" Z="13.22526" />
+				<Hotspot X="1888.43" Y="5710.324" Z="3.531722" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="25522" PursueWhen="!IsObjectiveComplete(1, 11613)" />
+				<PursueUnit Id="25521" PursueWhen="!IsObjectiveComplete(2, 11613)" />
+			</PursuitList>
+		</CustomBehavior>
+		<TurnIn QuestName="Karuk's Oath" QuestId="11613" TurnInName="Karuk" TurnInId="25435" X="1997.984" Y="5852.376" Z="35.94769" />
+
+		<PickUp QuestName="Gamel the Cruel" QuestId="11619" GiverName="Karuk" GiverId="25435" X="1997.984" Y="5852.376" Z="35.94769" />
+		<CustomBehavior File="KillUntilComplete" MobId="26449" QuestId="11619" X="1881.991" Y="5898.074" Z="-5.289617" />
+		<TurnIn QuestName="Gamel the Cruel" QuestId="11619" TurnInName="Karuk" TurnInId="25435" X="1999.714" Y="5853.289" Z="35.98417" />
+
+		<PickUp QuestName="A Father's Words" QuestId="11620" GiverName="Karuk" GiverId="25435" X="1999.714" Y="5853.289" Z="35.98417" />
+		<TurnIn QuestName="A Father's Words" QuestId="11620" TurnInName="Veehja" TurnInId="25450" X="1800.857" Y="6054.834" Z="2.896187" />
+
+		<PickUp QuestName="The Trident of Naz'jan" QuestId="11625" GiverName="Veehja" GiverId="25450" X="1800.857" Y="6054.834" Z="2.896187" />
+		<CustomBehavior File="KillUntilComplete" MobId="26451" QuestId="11625" X="1464.052" Y="5423.253" Z="35.48668" />
+		<TurnIn QuestName="The Trident of Naz'jan" QuestId="11625" TurnInName="Veehja" TurnInId="25450" X="1801.839" Y="6055.913" Z="3.00033" />
+
+		<PickUp QuestName="The Emissary" QuestId="11626" GiverName="Veehja" GiverId="25450" X="1801.839" Y="6055.913" Z="3.00033" />
+		<While Condition="DoQuest(11626)" >
+			<MoveTo X="1544.154" Y="5535.578" Z="-0.04163647" />
+			<CustomBehavior File="InteractWith" MobId="26452" MobState="Alive" MovementBy="ClickToMoveOnly" NonCompeteDistance="0" InteractByUsingItemId="35850" QuestId="11626" X="1531.039" Y="5548.779" Z="-27.97099" />
+			<CustomBehavior File="MyCTM" X="1535.525" Y="5557.158" Z="-2.201873" />
+			<CustomBehavior File="AscendInWater" />
+		</While>
+		<TurnIn QuestName="The Emissary" QuestId="11626" TurnInName="Karuk" TurnInId="25435" X="1998.538" Y="5851.443" Z="35.94291" />
+
+		<If Condition="NeedsQuest(11932) &amp;&amp; Me.HearthstoneAreaId == 4129 &amp;&amp; Unit(25435) != null" >
+			<CustomBehavior File="UseHearthstone" WaitForCD="false" />
+		</If>
+
+		<PickUp QuestName="Too Close For Comfort" QuestId="11574" GiverName="Endorah" GiverId="25247" X="2796.894" Y="6161.606" Z="85.05733" />
+		<PickUp QuestName="Reclaiming the Quarry" QuestId="11612" GiverName="Etaruk" GiverId="25292" X="3507.256" Y="5438.769" Z="54.30971" />
+		<PickUp QuestName="The Honored Ancestors" QuestId="11605" GiverName="Elder Atkanok" GiverId="187565" X="3525.11" Y="5415.146" Z="41.30281" />
+
+		<While Condition="DoQuest(11605)" >
+			<CustomBehavior File="InteractWith" MobId="187663" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="11605" QuestObjectiveIndex="2" X="3588.55" Y="5523.176" Z="26.93825" />
+			<CustomBehavior File="InteractWith" MobId="187664" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="11605" QuestObjectiveIndex="3" X="3698.238" Y="5557.177" Z="35.11781" />
+			<CustomBehavior File="InteractWith" MobId="187662" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="11605" QuestObjectiveIndex="1" X="3653.043" Y="5635.399" Z="34.51223" />
+		</While>
+
+		<CustomBehavior File="KillUntilComplete" MobId="25353" QuestId="11612" >
+			<HuntingGrounds>
+				<Hotspot X="3571.667" Y="5539.978" Z="27.1589" />
+				<Hotspot X="3614.136" Y="5493.238" Z="33.04959" />
+				<Hotspot X="3729.521" Y="5605.412" Z="37.03194" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Reclaiming the Quarry" QuestId="11612" TurnInName="Etaruk" TurnInId="25292" X="3505.942" Y="5439.393" Z="54.24461" />
+		<PickUp QuestName="Hampering Their Escape" QuestId="11617" GiverName="Etaruk" GiverId="25292" X="3505.942" Y="5439.393" Z="54.24461" />
+		<TurnIn QuestName="The Honored Ancestors" QuestId="11605" TurnInName="Elder Atkanok" TurnInId="187565" X="3523.875" Y="5416.487" Z="41.08683" />
+		<PickUp QuestName="The Lost Spirits" QuestId="11607" GiverName="Elder Atkanok" GiverId="187565" X="3523.875" Y="5416.487" Z="41.08683" />
+
+		<While Condition="DoQuest(11607)" >
+			<CustomBehavior File="KillUntilComplete" MobId="25355" QuestId="11607" TerminateWhen="HasItem(34711)" >
+				<HuntingGrounds>
+					<Hotspot X="3662.5" Y="5588.445" Z="32.71218" />
+					<Hotspot X="3557.899" Y="5475.711" Z="30.01125" />
+					<Hotspot X="3595.487" Y="5689.041" Z="66.36797" />
+				</HuntingGrounds>
+			</CustomBehavior>
+			<CustomBehavior File="InteractWith" MobState="Alive" CollectionDistance="200" PreInteractMountStrategy="Dismount" InteractByUsingItemId="34711" NumOfTimes="12" QuestId="11607" TerminateWhen="!HasItem(34711)" >
+				<HuntingGrounds>
+					<Hotspot X="3673.712" Y="5616.527" Z="32.69612" />
+					<Hotspot X="3586.883" Y="5497.985" Z="28.07533" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueUnit Id="25321" PursueWhen="!IsObjectiveComplete(1, 11607)" />
+					<PursueUnit Id="25322" PursueWhen="!IsObjectiveComplete(2, 11607)" />
+				</PursuitList>
+			</CustomBehavior>
+		</While>
+
+		<While Condition="DoQuest(11617)" >
+			<CustomBehavior File="KillUntilComplete" MobId="25449" QuestId="11617" TerminateWhen="GetItemCount(34772) &gt;= 3" >
+				<HuntingGrounds>
+					<Hotspot X="3662.5" Y="5588.445" Z="32.71218" />
+					<Hotspot X="3557.899" Y="5475.711" Z="30.01125" />
+					<Hotspot X="3595.487" Y="5689.041" Z="66.36797" />
+				</HuntingGrounds>
+			</CustomBehavior>
+
+			<If Condition="HasItem(34772) &amp;&amp; !IsObjectiveComplete(1, 11617)" >
+				<MoveTo X="3535.582" Y="5532.452" Z="65.24549" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="34772" QuestId="11617" QuestObjectiveIndex="1" X="3535.582" Y="5532.452" Z="65.24549" />
+			</If>
+			<If Condition="HasItem(34772) &amp;&amp; !IsObjectiveComplete(3, 11617)" >
+				<MoveTo X="3550.786" Y="5662.269" Z="62.64557" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="34772" QuestId="11617" QuestObjectiveIndex="3" X="3550.786" Y="5662.269" Z="62.64557" />
+			</If>
+			<If Condition="HasItem(34772) &amp;&amp; !IsObjectiveComplete(2, 11617)" >
+				<MoveTo X="3673.135" Y="5563.531" Z="33.9562" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="34772" QuestId="11617" QuestObjectiveIndex="2" X="3673.135" Y="5563.531" Z="33.9562" />
+			</If>
+		</While>
+
+		<TurnIn QuestName="The Lost Spirits" QuestId="11607" TurnInName="Elder Atkanok" TurnInId="187565" X="3525.863" Y="5423.396" Z="40.09393" />
+		<PickUp QuestName="Picking Up the Pieces" QuestId="11609" GiverName="Elder Atkanok" GiverId="187565" X="3525.863" Y="5423.396" Z="40.09393" />
+		<TurnIn QuestName="Hampering Their Escape" QuestId="11617" TurnInName="Etaruk" TurnInId="25292" X="3506.76" Y="5438.981" Z="54.28434" />
+		<PickUp QuestName="A Visit to the Curator" QuestId="11623" GiverName="Etaruk" GiverId="25292" X="3506.76" Y="5438.981" Z="54.28434" />
+
+		<CustomBehavior File="KillUntilComplete" MobId="25448" QuestId="11623" X="3620.3" Y="5684.008" Z="66.13593" />
+
+		<While Condition="DoQuest(11609)" >
+			<CustomBehavior File="InteractWith" MobIds="187670, 187671" InteractByLooting="true" PreInteractMountStrategy="Dismount" CollectionDistance="200" NumOfTimes="12" QuestId="11609" >
+				<HuntingGrounds>
+					<Hotspot X="3652.781" Y="5600.704" Z="33.84613" />
+					<Hotspot X="3573" Y="5474.668" Z="30.20776" />
+					<Hotspot X="3521.25" Y="5672.566" Z="62.00149" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<TurnIn QuestName="A Visit to the Curator" QuestId="11623" TurnInName="Etaruk" TurnInId="25292" X="3506.025" Y="5439.715" Z="54.28425" />
+		<TurnIn QuestName="Picking Up the Pieces" QuestId="11609" TurnInName="Elder Atkanok" TurnInId="187565" X="3527.292" Y="5422.982" Z="39.98851" />
+
+		<PickUp QuestName="Leading the Ancestors Home" QuestId="11610" GiverName="Elder Atkanok" GiverId="187565" X="3527.292" Y="5422.982" Z="39.98851" />
+		<While Condition="DoQuest(11610)" >
+			<If Condition="!IsObjectiveComplete(2, 11610)" >
+				<MoveTo X="3588.001" Y="5524.699" Z="26.9418" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="34715" QuestId="11610" QuestObjectiveIndex="2" X="3588.001" Y="5524.699" Z="26.9418" />
+			</If>
+			<If Condition="!IsObjectiveComplete(1, 11610)" >
+				<MoveTo X="3652.701" Y="5636.281" Z="34.58706" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="34715" QuestId="11610" QuestObjectiveIndex="1" X="3652.701" Y="5636.281" Z="34.58706" />
+			</If>
+			<If Condition="!IsObjectiveComplete(3, 11610)" >
+				<MoveTo X="3699.04" Y="5556.886" Z="35.17462" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="34715" QuestId="11610" QuestObjectiveIndex="3" X="3699.04" Y="5556.886" Z="35.17462" />
+			</If>
+			<MoveTo X="3527.371" Y="5420.785" Z="40.45501" />
+		</While>
+		<TurnIn QuestName="Leading the Ancestors Home" QuestId="11610" TurnInName="Elder Atkanok" TurnInId="187565" X="3527.292" Y="5422.982" Z="39.98851" />
+
+		<TurnIn QuestName="Too Close For Comfort" QuestId="11574" TurnInName="Librarian Donathan" TurnInId="25262" X="3612.49" Y="5959.298" Z="136.2173" />
+		<PickUp QuestName="Prison Break" QuestId="11587" GiverName="Librarian Donathan" GiverId="25262" X="3611.909" Y="5960.864" Z="136.2146" />
+		<PickUp QuestName="Monitoring the Rift: Cleftcliff Anomaly" QuestId="11576" GiverName="Librarian Garren" GiverId="25291" X="3613.106" Y="5976.967" Z="136.2146" />
+
+		<While Condition="DoQuest(11587)" >
+			<CustomBehavior File="KillUntilComplete" MobId="25585" QuestId="11587" TerminateWhen="HasItem(34688)" >
+				<HuntingGrounds>
+					<Hotspot X="3444.276" Y="6107.41" Z="68.24345" />
+					<Hotspot X="3416.325" Y="6225.988" Z="73.30324" />
+					<Hotspot X="3293.015" Y="6156.28" Z="73.06551" />
+				</HuntingGrounds>
+			</CustomBehavior>
+			<CustomBehavior File="InteractWith" MobIds="187561" CollectionDistance="200" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="11587" TerminateWhen="!HasItem(34688)" >
+				<HuntingGrounds>
+					<Hotspot X="3395.925" Y="6227.455" Z="75.5898" />
+					<Hotspot X="3270.887" Y="6162.573" Z="72.86103" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<While Condition="DoQuest(11576)" >
+			<MoveTo X="3289.196" Y="6596.709" Z="5.344682" />
+			<CustomBehavior File="UseItem" ItemId="34669" QuestId="11576" />
+		</While>
+
+		<TurnIn QuestName="Monitoring the Rift: Cleftcliff Anomaly" QuestId="11576" TurnInName="Librarian Garren" TurnInId="25291" X="3611.44" Y="5976.747" Z="136.2167" />
+		<PickUp QuestName="Monitoring the Rift: Sundered Chasm" QuestId="11582" GiverName="Librarian Garren" GiverId="25291" X="3611.44" Y="5976.747" Z="136.2167" />
+		<TurnIn QuestName="Prison Break" QuestId="11587" TurnInName="Librarian Donathan" TurnInId="25262" X="3613.348" Y="5963.655" Z="136.2167" />
+		<PickUp QuestName="Abduction" QuestId="11590" GiverName="Librarian Donathan" GiverId="25262" X="3613.348" Y="5963.655" Z="136.2167" />
+
+		<While Condition="DoQuest(11582)" >
+			<MoveTo X="3806.794" Y="6031.685" Z="-0.4620324" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="MyCTM" X="3806.756" Y="6035.791" Z="-127.173" />
+			<CustomBehavior File="UseItem" ItemId="34669" QuestId="11582" />
+			<CustomBehavior File="AscendInWater" />
+		</While>
+
+		<TurnIn QuestName="Monitoring the Rift: Sundered Chasm" QuestId="11582" TurnInName="Librarian Garren" TurnInId="25291" X="3613.458" Y="5975.375" Z="136.2167" />
+
+		<PickUp QuestName="Monitoring the Rift: Winterfin Cavern" QuestId="12728" GiverName="Librarian Garren" GiverId="25291" X="3613.458" Y="5975.375" Z="136.2167" />
+		<While Condition="DoQuest(12728)" >
+			<MoveTo X="4138.42" Y="6258.346" Z="28.65165" />
+			<CustomBehavior File="UseItem" ItemId="34669" QuestId="12728" X="4138.42" Y="6258.346" Z="28.65165" />
+		</While>
+		<TurnIn QuestName="Monitoring the Rift: Winterfin Cavern" QuestId="12728" TurnInName="Librarian Garren" TurnInId="25291" X="3613.365" Y="5976.493" Z="136.2164" />
+
+		<While Condition="DoQuest(11590)" >
+			<CustomBehavior File="CombatUseItemOnV2" QuestId="11590" ItemId="34691" MobId="25316" UseWhenMobHasHealthPercent="40" MaxRangeToUseItem="15" UseItemStrategy="UseItemContinuouslyOnTargetDontDefend" RecallPetAtMobPercentHealth="50" WaitTimeAfterItemUse="5000" CollectionDistance="200" X="3412.103" Y="6102.03" Z="66.76636" />
+		</While>
+
+		<TurnIn QuestName="Abduction" QuestId="11590" TurnInName="Librarian Donathan" TurnInId="25262" X="3613.176" Y="5963.637" Z="136.2176" />
+		<PickUp QuestName="The Borean Inquisition" QuestId="11646" GiverName="Librarian Donathan" GiverId="25262" X="3613.176" Y="5963.637" Z="136.2176" />
+		<TurnIn QuestName="The Borean Inquisition" QuestId="11646" TurnInName="Librarian Normantis" TurnInId="25480" X="3637.038" Y="5897.107" Z="150.438" />
+
+		<PickUp QuestName="The Art of Persuasion" QuestId="11648" GiverName="Librarian Normantis" GiverId="25480" X="3637.038" Y="5897.107" Z="150.438" />
+		<While Condition="DoQuest(11648)" >
+			<CustomBehavior File="RunCode" Code="Unit(25478).Target();" />
+			<CustomBehavior File="UseItem" ItemId="34811" QuestId="11648" X="3634.516" Y="5898.067" Z="150.4214" />
+		</While>
+		<TurnIn QuestName="The Art of Persuasion" QuestId="11648" TurnInName="Librarian Normantis" TurnInId="25480" X="3635.954" Y="5897.053" Z="150.4401" />
+
+		<PickUp QuestName="Sharing Intelligence" QuestId="11663" GiverName="Librarian Normantis" GiverId="25480" X="3635.954" Y="5897.053" Z="150.4401" />
+		<TurnIn QuestName="Sharing Intelligence" QuestId="11663" TurnInName="Librarian Donathan" TurnInId="25262" X="3614.162" Y="5960.115" Z="136.2151" />
+
+		<PickUp QuestName="A Race Against Time" QuestId="11671" GiverName="Librarian Donathan" GiverId="25262" X="3614.162" Y="5960.115" Z="136.2151" />
+		<While Condition="DoQuest(11671)" >
+			<MoveTo X="3393.827" Y="6161.038" Z="79.83264" />
+			<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Unit(25584, u =&gt; !u.IsDead) != null" />
+			<If Condition="Unit(25584, u =&gt; u.IsAlive &amp;&amp; u.HasAura(45775)) != null" >
+				<CustomBehavior File="UseItem" ItemId="34897" QuestId="11671" X="3393.827" Y="6161.038" Z="79.83264" TerminateWhen="!HasItem(34897) || Unit(25584, u =&gt; !u.HasAura(45775)) != null || Object(187875) != null" />
+			</If>
+			<CustomBehavior File="KillUntilComplete" MobId="25584" QuestId="11671" X="3393.827" Y="6161.038" Z="79.83264" TerminateWhen="Unit(25584) == null || Unit(25584, u =&gt; u.HasAura(45775)) != null || Object(187875) != null" />
+			<CustomBehavior File="InteractWith" MobId="187875" InteractByLooting="true" QuestId="11671" X="3397.444" Y="6159.465" Z="79.83185" TerminateWhen="Object(187875) == null" />
+		</While>
+		<TurnIn QuestName="A Race Against Time" QuestId="11671" TurnInName="Librarian Donathan" TurnInId="25262" X="3613.432" Y="5962.018" Z="136.2173" />
+
+		<PickUp QuestName="Reforging the Key" QuestId="11679" GiverName="Librarian Donathan" GiverId="25262" X="3613.432" Y="5962.018" Z="136.2173" />
+		<TurnIn QuestName="Reforging the Key" QuestId="11679" TurnInName="Surristrasz" TurnInId="24795" X="3585.088" Y="5959.052" Z="136.0704" />
+		<PickUp QuestName="Taking Wing" QuestId="11680" GiverName="Surristrasz" GiverId="24795" X="3585.088" Y="5959.052" Z="136.0704" />
+		<TurnIn QuestName="Taking Wing" QuestId="11680" TurnInName="Warmage Anzim" TurnInId="25356" X="3468.251" Y="5899.471" Z="144.548" />
+
+		<If Condition="NeedsQuest(11681)" >
+			<PickUp QuestName="Rescuing Evanor" QuestId="11681" GiverName="Warmage Anzim" GiverId="25356" X="3464.077" Y="5900.78" Z="145.9259" />
+			<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="Unit(25785) != null" /> <!-- Allow for teleportation -->
+		</If>
+		<TurnIn QuestName="Rescuing Evanor" QuestId="11681" TurnInName="Archmage Evanor" TurnInId="25785" X="3648.604" Y="5894.764" Z="174.5062" />
+
+		<PickUp QuestName="Dragonspeak" QuestId="11682" GiverName="Archmage Evanor" GiverId="25785" X="3648.638" Y="5894.661" Z="174.5062" />
+		<TurnIn QuestName="Dragonspeak" QuestId="11682" TurnInName="Surristrasz" TurnInId="24795" X="3582.403" Y="5951.035" Z="135.7179" />
+		<PickUp QuestName="Traversing the Rift" QuestId="11733" GiverName="Surristrasz" GiverId="24795" X="3592.669" Y="5995.261" Z="141.0082" />
+		<TurnIn QuestName="Traversing the Rift" QuestId="11733" TurnInName="Archmage Berinand" TurnInId="25314" X="3577.726" Y="6670.146" Z="195.1604" />
+		<PickUp QuestName="Reading the Meters" QuestId="11900" GiverName="Archmage Berinand" GiverId="25314" X="3577.729" Y="6670.116" Z="195.1599" />
+		<PickUp QuestName="Secrets of the Ancients" QuestId="11910" GiverName="Archmage Berinand" GiverId="25314" X="3577.729" Y="6670.116" Z="195.1599" />
+		<PickUp QuestName="Basic Training" QuestId="11918" GiverName="Raelorasz" GiverId="26117" X="3572.41" Y="6652.393" Z="195.1807" />
+		<PickUp QuestName="Nuts for Berries" QuestId="11912" GiverName="Librarian Serrah" GiverId="26110" X="3576.72" Y="6642.519" Z="195.1244" />
+
+		<While Condition="DoQuest(11900)" >
+			<CustomBehavior File="InteractWith" MobId="188101" NonCompeteDistance="0" QuestId="11900" QuestObjectiveIndex="2" X="3567.368" Y="6934.185" Z="171.0414" />
+			<CustomBehavior File="InteractWith" MobId="188100" NonCompeteDistance="0" QuestId="11900" QuestObjectiveIndex="1" X="3799.229" Y="6937.925" Z="107.2054" />
+			<CustomBehavior File="InteractWith" MobId="188102" NonCompeteDistance="0" QuestId="11900" QuestObjectiveIndex="3" X="4098.076" Y="6758.141" Z="171.6601" />
+			<CustomBehavior File="InteractWith" MobId="188103" NonCompeteDistance="0" QuestId="11900" QuestObjectiveIndex="4" X="3972.222" Y="7266.846" Z="176.2755" />
+		</While>
+
+		<While Condition="DoQuest(11912)" >
+			<CustomBehavior File="InteractWith" MobId="188113" CollectionDistance="200" PreInteractMountStrategy="Dismount" InteractByLooting="true" NumOfTimes="20" QuestId="11912" >
+				<HuntingGrounds>
+					<Hotspot X="4110.864" Y="7059.104" Z="166.3733" />
+					<Hotspot X="4071.091" Y="7155.975" Z="173.4717" />
+					<Hotspot X="4132.443" Y="6931.321" Z="167.3559" />
+					<Hotspot X="4007.22" Y="6631.284" Z="177.4668" />
+					<Hotspot X="3819.609" Y="6540.164" Z="173.0312" />
+					<Hotspot X="3718.003" Y="6590.576" Z="172.9007" />
+					<Hotspot X="3577.663" Y="7212.866" Z="225.818" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<CustomBehavior File="KillUntilComplete" QuestId="11910" >
+			<HuntingGrounds WaypointVisitStrategy="InOrder" >
+				<Hotspot X="3963.961" Y="6795.576" Z="156.5307" />
+				<Hotspot X="3578.77" Y="7085.731" Z="210.3212" />
+				<Hotspot X="3618.209" Y="7281.017" Z="223.2805" />
+				<Hotspot X="3868.667" Y="7259.01" Z="177.2144" />
+				<Hotspot X="4035.607" Y="7156.597" Z="171.4746" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="25709" PursueWhen="!IsObjectiveComplete(1, 11910)" />
+				<PursueUnit Id="25707" PursueWhen="!IsObjectiveComplete(2, 11910)" />
+			</PursuitList>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" MobId="25722" QuestId="11918" >
+			<HuntingGrounds>
+				<Hotspot X="3644.586" Y="6850.164" Z="160.7213" />
+				<Hotspot X="3707.042" Y="6762.645" Z="160.7865" />
+				<Hotspot X="3693.89" Y="6586.396" Z="182.0047" />
+				<Hotspot X="3786.273" Y="6556.17" Z="172.3185" />
+				<Hotspot X="3808.752" Y="6706.576" Z="150.6908" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" MobId="25719" X="3781.536" Y="6668.08" Z="151.1864" TerminateWhen="IsQuestCompleted(11941)" />
+
+		<TurnIn QuestName="Reading the Meters" QuestId="11900" TurnInName="Archmage Berinand" TurnInId="25314" X="3579.596" Y="6668.754" Z="195.1811" />
+		<TurnIn QuestName="Secrets of the Ancients" QuestId="11910" TurnInName="Archmage Berinand" TurnInId="25314" X="3579.596" Y="6668.754" Z="195.1811" />
+		<TurnIn QuestName="Basic Training" QuestId="11918" TurnInName="Raelorasz" TurnInId="26117" X="3573.638" Y="6652.156" Z="195.1834" />
+		<PickUp QuestName="Hatching a Plan" QuestId="11936" GiverName="Raelorasz" GiverId="26117" X="3573.638" Y="6652.156" Z="195.1834" />
+		<TurnIn QuestName="Puzzling..." QuestId="11941" TurnInName="Raelorasz" TurnInId="26117" X="3573.638" Y="6652.156" Z="195.1834" />
+		<PickUp QuestName="The Cell" QuestId="11943" GiverName="Raelorasz" GiverId="26117" X="3573.638" Y="6652.156" Z="195.1834" />
+		<TurnIn QuestName="Nuts for Berries" QuestId="11912" TurnInName="Librarian Serrah" TurnInId="26110" X="3577.053" Y="6644.174" Z="195.1815" />
+		<PickUp QuestName="Keep the Secret Safe" QuestId="11914" GiverName="Librarian Serrah" GiverId="26110" X="3577.053" Y="6644.174" Z="195.1815" />
+
+		<While Condition="DoQuest(11936)" >
+			<CustomBehavior File="KillUntilComplete" MobId="25728" QuestId="11936" TerminateWhen="GetItemCount(35586) &gt;= 5" >
+				<HuntingGrounds>
+					<Hotspot X="3722.93" Y="6879.325" Z="152.954" />
+					<Hotspot X="3650.779" Y="7006.727" Z="165.6669" />
+					<Hotspot X="3713.584" Y="6783.148" Z="160.9369" />
+					<Hotspot X="3833.506" Y="7129.255" Z="166.7025" />
+					<Hotspot X="3859.061" Y="7246.248" Z="173.6221" />
+				</HuntingGrounds>
+			</CustomBehavior>
+
+			<CustomBehavior File="InteractWith" MobId="188133" NumOfTimes="10" CollectionDistance="200" QuestId="11936" TerminateWhen="!HasItem(35586)" >
+				<HuntingGrounds>
+					<Hotspot X="3842.677" Y="7074.088" Z="104.0717" />
+					<Hotspot X="3970.121" Y="7013.269" Z="103.9604" />
+					<Hotspot X="3817.171" Y="6903.469" Z="104.0116" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<While Condition="DoQuest(11943)" >
+			<CustomBehavior File="KillUntilComplete" MobId="25712" QuestId="11943" QuestObjectiveIndex="1" X="3774.325" Y="7162.799" Z="161.6868" />
+			<CustomBehavior File="KillUntilComplete" MobId="25716" QuestId="11943" QuestObjectiveIndex="2" X="4094.852" Y="7005.29" Z="164.7127" />
+		</While>
+
+		<CustomBehavior File="KillUntilComplete" MobId="25721" QuestId="11914" >
+			<HuntingGrounds>
+				<Hotspot X="3861.501" Y="6878.996" Z="101.0208" />
+				<Hotspot X="3773.9" Y="6989.085" Z="103.864" />
+				<Hotspot X="3890.866" Y="7066.311" Z="105.2418" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<Checkpoint Level="71" />
+
+		<If Condition="QuestDone(11936)" >
+			<TurnIn QuestName="Hatching a Plan" QuestId="11936" TurnInName="Raelorasz" TurnInId="26117" X="3574.596" Y="6651.578" Z="195.1848" />
+		</If>
+		<If Condition="QuestDone(11943)" >
+			<TurnIn QuestName="The Cell" QuestId="11943" TurnInName="Raelorasz" TurnInId="26117" X="3574.596" Y="6651.578" Z="195.1848" />
+		</If>
+		<If Condition="QuestDone(11914)" >
+			<TurnIn QuestName="Keep the Secret Safe" QuestId="11914" TurnInName="Librarian Serrah" TurnInId="26110" X="3576.097" Y="6643.094" Z="195.1149" />
+		</If>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	</QuestOrder>
+</HBProfile>

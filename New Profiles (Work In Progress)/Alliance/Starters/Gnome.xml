@@ -1,0 +1,307 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../Schemas/EchoSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Gnome Starter ($Rev: 6041 $)</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<!-- INITORDER COMMENT 
+	<InitOrder>
+		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> Use LevelBot default
+	</InitOrder>
+END INITORDER COMMENT -->
+
+	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Hooks -->
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[ 
+					IEnumerable<WoWItem> GetExtraConsumables()
+					{
+						uint foodCount = 0;
+						uint drinkCount = 0;
+						// Skip conjured and buff comsumables.
+				
+						var extraConsumables = (from item in Me.BagItems
+										   where item != null && item.ItemInfo != null
+										   let isFood = Consumable.IsFood(item.ItemInfo)
+										   let isDrink = Consumable.IsDrink(item.ItemInfo)
+										   where (isFood || isDrink) && item.ItemInfo.SellPrice > 0 && item.Effects.Count == 1 && item.ItemInfo.RequiredLevel < Me.Level - 10                    
+										   select item).ToList();
+				
+				
+						var extraPotions = Me.BagItems
+							.Where(c => c != null && c.IsValid && c.ItemInfo != null && c.ItemInfo.SellPrice > 0 && c.Effects.Count == 1
+								&& (c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Potion
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Elixir
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Flask)
+								&& c.ItemInfo.RequiredLevel < Me.Level - 20);
+				
+						extraConsumables.AddRange(extraPotions);
+						return extraConsumables;
+					}
+					 
+					async Task SellExtraConsumables()
+					{
+						Logging.Write("Selling items in GetExtraConsumables()");
+						foreach (var item in GetExtraConsumables())
+						{
+							Logging.Write("Selling {0}.", item.Name);
+							item.UseContainerItem();
+							await Coroutine.Sleep(1337);
+						}
+					}
+				]]>
+			</CustomBehavior>
+			<CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+				<CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>
+			</CustomBehavior>
+		<!-- END Hooks -->
+
+		<PickUp QuestName="Pinned Down" QuestId="27670" GiverName="Nevin Twistwrench" GiverId="45966" X="-4983.824" Y="874.3564" Z="274.3096" />
+
+		<CustomBehavior File="KillUntilComplete" MobIds="46391, 46363" QuestId="27670" QuestObjectiveIndex="1" X="-4984.853" Y="825.4118" Z="276.2328" />
+
+		<TurnIn QuestName="Pinned Down" QuestId="27670" TurnInName="Nevin Twistwrench" TurnInId="45966" X="-4984.621" Y="872.8843" Z="274.5687" />
+		<PickUp QuestName="Report to Carvo Blastbolt" QuestId="28167" GiverName="Nevin Twistwrench" GiverId="45966" X="-4984.621" Y="872.8843" Z="274.5687" />
+		<TurnIn QuestName="Report to Carvo Blastbolt" QuestId="28167" TurnInName="Carvo Blastbolt" TurnInId="47250" X="-4982.907" Y="780.8576" Z="288.6367" />
+		<PickUp QuestName="See to the Survivors" QuestId="27671" GiverName="Carvo Blastbolt" GiverId="47250" X="-4982.907" Y="780.8576" Z="288.6367" />
+
+		<CustomBehavior File="InteractWith" MobId="46268" WaitTime="3000" InteractByUsingItemId="62057" CollectionDistance="200" QuestId="27671" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="-4998.944" Y="766.3658" Z="288.4861" />
+				<Hotspot X="-4995.895" Y="718.5426" Z="276.237" />
+				<Hotspot X="-4956.699" Y="747.2658" Z="276.2477" />
+				<Hotspot X="-4984.517" Y="814.1561" Z="276.2359" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="See to the Survivors" QuestId="27671" TurnInName="Carvo Blastbolt" TurnInId="47250" X="-4985.207" Y="780.3361" Z="288.4844" />
+		<TurnIn QuestName="Withdraw to the Loading Room!" QuestId="28169" TurnInName="Gaffer Coilspring" TurnInId="46274" X="-5172.518" Y="767.0413" Z="285.4739" />
+		<PickUp QuestName="Decontamination" QuestId="27635" GiverName="Gaffer Coilspring" GiverId="46274" X="-5173.695" Y="767.2145" Z="285.4739" />
+
+		<While Condition="DoQuest(27635)" >
+			<CustomBehavior File="27635" MobId="46185" PreInteractMountStrategy="Dismount" NonCompeteDistance="0" QuestId="27635" QuestObjectiveIndex="1" X="-5173.035" Y="734.7468" Z="287.3968" />
+			<CustomBehavior File="WaitTimer" WaitTime="24000" TerminateWhen="!Me.InVehicle" />
+		</While>
+
+		<TurnIn QuestName="Decontamination" QuestId="27635" TurnInName="Technician Braggle" TurnInId="46255" X="-5173.226" Y="691.4968" Z="288.0854" />
+		<PickUp QuestName="To the Surface" QuestId="27674" GiverName="Technician Braggle" GiverId="46255" X="-5173.226" Y="691.4968" Z="288.0854" />
+
+		<CustomBehavior File="InteractWith" MobId="46293" GossipOptions="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="27674" QuestObjectiveIndex="1" X="-5180.927" Y="686.3372" Z="287.7943" />
+
+		<TurnIn QuestName="To the Surface" QuestId="27674" TurnInName="Nevin Twistwrench" TurnInId="42396" X="-5200.896" Y="476.3752" Z="388.2964" />
+		<PickUp QuestName="The Future of Gnomeregan" VariantQuestIds="26203, 41217" GiverName="Nevin Twistwrench" GiverId="42396" X="-5200.154" Y="476.148" Z="388.3247" />
+		<TurnIn QuestName="The Future of Gnomeregan" VariantQuestIds="26203, 41217" TurnInName="Drill Sergeant Steamcrank" TurnInId="42324" X="-5171.555" Y="453.2145" Z="390.999" />
+		<PickUp QuestName="Meet the High Tinker" QuestId="26425" GiverName="Drill Sergeant Steamcrank" GiverId="42324" X="-5172.462" Y="454.1792" Z="390.6352" />
+		<TurnIn QuestName="Meet the High Tinker" QuestId="26425" TurnInName="High Tinker Mekkatorque" TurnInId="42317" X="-5132.171" Y="488.9808" Z="395.5446" />
+		<PickUp QuestName="The Fight Continues" QuestId="26208" GiverName="High Tinker Mekkatorque" GiverId="42317" X="-5132.171" Y="488.9808" Z="395.5446" />
+		<TurnIn QuestName="The Fight Continues" QuestId="26208" TurnInName="High Tinker Mekkatorque" TurnInId="42317" X="-5133.752" Y="491.2054" Z="395.5446" />
+		<PickUp QuestName="A Triumph of Gnomish Ingenuity" QuestId="26566" GiverName="High Tinker Mekkatorque" GiverId="42317" X="-5133.752" Y="491.2054" Z="395.5446" />
+		<TurnIn QuestName="A Triumph of Gnomish Ingenuity" QuestId="26566" TurnInName="Engineer Grindspark" TurnInId="42553" X="-5075.978" Y="455.7361" Z="410.4492" />
+		<PickUp QuestName="Scrounging for Parts" QuestId="26222" GiverName="Engineer Grindspark" GiverId="42553" X="-5075.978" Y="455.7361" Z="410.4492" />
+
+		<CustomBehavior File="InteractWith" MobIds="203965, 203966, 203967, 203964, 203968" InteractByLooting="true" PreInteractMountStrategy="Dismount" CollectionDistance="200" QuestId="26222" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="-5093.619" Y="488.985" Z="403.7388" />
+				<Hotspot X="-5131.075" Y="535.6282" Z="408.1685" />
+				<Hotspot X="-5175.512" Y="535.9797" Z="390.8282" />
+				<Hotspot X="-5208.22" Y="488.1683" Z="387.8988" />
+				<Hotspot X="-5191.16" Y="442.1217" Z="389.0717" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Scrounging for Parts" QuestId="26222" TurnInName="Engineer Grindspark" TurnInId="42553" X="-5074.167" Y="456.2047" Z="410.5501" />
+		<PickUp QuestName="A Job for the Multi-Bot" QuestId="26205" GiverName="Engineer Grindspark" GiverId="42553" X="-5074.167" Y="456.2047" Z="410.5501" />
+		<PickUp QuestName="What&apos;s Left Behind" QuestId="26264" GiverName="Tock Sprysprocket" GiverId="42611" X="-5056.628" Y="479.4086" Z="402.8972" />
+		<PickUp QuestName="Dealing with the Fallout" QuestId="26265" GiverName="Corporal Fizzwhistle" GiverId="42630" X="-5221.602" Y="497.8905" Z="387.4225" />
+
+		<CustomBehavior File="InteractWith" MobId="203975" CollectionDistance="200" QuestId="26205" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="-5363.459" Y="525.5584" Z="386.1424" />
+				<Hotspot X="-5384.262" Y="460.5241" Z="385.3507" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" MobId="42184" InteractByLooting="true" NonCompeteDistance="0" QuestId="26264" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="-5363.459" Y="525.5584" Z="386.1424" />
+				<Hotspot X="-5384.262" Y="460.5241" Z="385.3507" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" MobIds="43089, 42185" QuestId="26265" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="-5363.459" Y="525.5584" Z="386.1424" />
+				<Hotspot X="-5384.262" Y="460.5241" Z="385.3507" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Dealing with the Fallout" QuestId="26265" TurnInName="Corporal Fizzwhistle" TurnInId="42630" X="-5223.05" Y="498.2251" Z="387.2834" />
+		<TurnIn QuestName="What&apos;s Left Behind" QuestId="26264" TurnInName="Tock Sprysprocket" TurnInId="42611" X="-5055.857" Y="480.0555" Z="402.8947" />
+		<TurnIn QuestName="A Job for the Multi-Bot" QuestId="26205" TurnInName="Engineer Grindspark" TurnInId="42553" X="-5073.211" Y="456.1878" Z="410.6861" />
+		<PickUp QuestName="What&apos;s Keeping Jessup?" QuestId="26316" GiverName="Captain Tread Sparknozzle" GiverId="42489" X="-5141.082" Y="494.9262" Z="395.5449" />
+		<TurnIn QuestName="What&apos;s Keeping Jessup?" QuestId="26316" TurnInName="Jessup McCree" TurnInId="42708" X="-5532.179" Y="517.5947" Z="388.6922" />
+		<PickUp QuestName="Get Me Explosives Back!" QuestId="26285" GiverName="Jessup McCree" GiverId="42708" X="-5532.179" Y="517.5947" Z="388.6922" />
+		<PickUp QuestName="Missing in Action" QuestId="26284" GiverName="Jessup McCree" GiverId="42708" X="-5532.179" Y="517.5947" Z="388.6922" />
+
+		<CustomBehavior File="InteractWith" MobId="204019" AttemptCountMax="1" CollectionDistance="200" QuestId="26284" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="-5563.359" Y="521.9387" Z="381.7707" />
+				<Hotspot X="-5642.099" Y="517.0984" Z="387.4038" />
+				<Hotspot X="-5639.598" Y="448.0599" Z="383.4783" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Get Me Explosives Back!" QuestId="26285" TurnInName="Jessup McCree" TurnInId="42708" X="-5532.443" Y="514.4276" Z="388.6655" />
+		<TurnIn QuestName="Missing in Action" QuestId="26284" TurnInName="Jessup McCree" TurnInId="42708" X="-5532.443" Y="514.4276" Z="388.6655" />
+		<PickUp QuestName="Finishin&apos; the Job" QuestId="26318" GiverName="Jessup McCree" GiverId="42708" X="-5532.257" Y="514.6273" Z="388.6811" />
+
+		<CustomBehavior File="InteractWith" MobId="204042" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="26318" QuestObjectiveIndex="1" X="-5523.212" Y="708.6893" Z="376.9246" />
+		<CustomBehavior File="KillUntilComplete" MobId="42773" QuestId="26318" QuestObjectiveIndex="2" X="-5523.212" Y="708.6893" Z="376.9246" />
+
+		<TurnIn QuestName="Finishin&apos; the Job" QuestId="26318" TurnInName="Jessup McCree" TurnInId="42708" X="-5532.717" Y="517.2412" Z="388.6151" />
+		<PickUp QuestName="One More Thing" QuestId="26329" GiverName="Jessup McCree" GiverId="42708" X="-5532.717" Y="517.2412" Z="388.6151" />
+		<TurnIn QuestName="One More Thing" QuestId="26329" TurnInName="High Tinker Mekkatorque" TurnInId="42317" X="-5134.164" Y="490.9635" Z="395.5456" />
+		<PickUp QuestName="Crushcog&apos;s Minions" QuestId="26331" GiverName="High Tinker Mekkatorque" GiverId="42317" X="-5134.164" Y="490.9635" Z="395.5456" />
+		<PickUp QuestName="No Tanks!" QuestId="26333" GiverName="Hinkles Fastblast" GiverId="42491" X="-5142.204" Y="496.5671" Z="395.545" />
+
+		<CustomBehavior File="InteractWith" MobId="42224" MobState="Alive" PreInteractMountStrategy="Dismount" InteractByUsingItemId="58200" WaitTime="3000" CollectionDistance="200" QuestId="26333" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="-5037.861" Y="219.2898" Z="386.7672" />
+				<Hotspot X="-5009.558" Y="168.4879" Z="386.7674" />
+				<Hotspot X="-4987.409" Y="92.49973" Z="386.7676" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" MobIds="42223, 42226" QuestId="26331" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="-5037.861" Y="219.2898" Z="386.7672" />
+				<Hotspot X="-5009.558" Y="168.4879" Z="386.7674" />
+				<Hotspot X="-4987.409" Y="92.49973" Z="386.7676" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Crushcog&apos;s Minions" QuestId="26331" TurnInName="High Tinker Mekkatorque" TurnInId="42317" X="-5133.859" Y="489.8327" Z="395.5457" />
+		<TurnIn QuestName="No Tanks!" QuestId="26333" TurnInName="Hinkles Fastblast" TurnInId="42491" X="-5140.916" Y="496.4543" Z="395.5457" />
+		<PickUp QuestName="Staging in Brewnall" QuestId="26339" GiverName="Kelsey Steelspark" GiverId="42366" X="-5141.15" Y="500.9608" Z="395.645" />
+		<TurnIn QuestName="Staging in Brewnall" QuestId="26339" TurnInName="Jarvi Shadowstep" TurnInId="42353" X="-5378.039" Y="306.7578" Z="393.8352" />
+		<PickUp QuestName="Paint it Black" QuestId="26342" GiverName="Jarvi Shadowstep" GiverId="42353" X="-5378.039" Y="306.7578" Z="393.8352" />
+
+		<CustomBehavior File="InteractWith" MobId="42291" AttemptCountMax="1" Range="10" CollectionDistance="200" InteractByUsingItemId="58203" QuestId="26342" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="-5350.056" Y="208.0886" Z="386.1109" />
+				<Hotspot X="-5298.686" Y="203.6803" Z="386.1109" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Paint it Black" QuestId="26342" TurnInName="Jarvi Shadowstep" TurnInId="42353" X="-5377.241" Y="302.5698" Z="393.5606" />
+		<PickUp QuestName="Down with Crushcog!" QuestId="26364" GiverName="Jarvi Shadowstep" GiverId="42353" X="-5377.241" Y="302.5698" Z="393.5606" />
+
+		<CustomBehavior File="InteractWith" MobId="42849" GossipOptions="1" QuestId="26364" X="-5309.958" Y="146.1806" Z="389.4156" />
+
+		<CustomBehavior File="InteractWith" MobId="42839" InteractByUsingItemId="58253" InteractBlacklistTimeInSeconds="1" QuestId="26364" QuestObjectiveIndex="2" X="-5264.206" Y="122.6665" Z="393.8141" />
+
+		<TurnIn QuestName="Down with Crushcog!" QuestId="26364" TurnInName="Jarvi Shadowstep" TurnInId="42353" X="-5382.081" Y="306.9968" Z="393.8876" />
+		<PickUp QuestName="On to Kharanos" QuestId="26373" GiverName="Guarded Thunder Ale Barrel" GiverId="269" X="-5382.081" Y="306.9968" Z="393.8876" />
+
+		<Checkpoint Level="5" />
+
+		<CustomBehavior File="LoadProfile" ProfileName="..\Eastern Kingdoms\Dun Morogh.xml" RememberProfile="true" />
+
+		<!--end of questing in this zone-->
+	</QuestOrder>
+
+</HBProfile>

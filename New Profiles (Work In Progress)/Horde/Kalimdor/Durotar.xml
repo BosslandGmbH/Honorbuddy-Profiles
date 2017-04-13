@@ -1,0 +1,220 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../Schemas/EchoSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Durotar ($Rev: 6041 $)</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<Blackspots>
+		<Blackspot X="123.0346" Y="-4335.183" Z="39.52357" Radius="15" /> <!-- Razormane Scout in unnavable location -->
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<!-- INITORDER COMMENT 
+	<InitOrder>
+		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> Use LevelBot default
+	</InitOrder>
+END INITORDER COMMENT -->
+
+	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Hooks -->
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[ 
+					IEnumerable<WoWItem> GetExtraConsumables()
+					{
+						uint foodCount = 0;
+						uint drinkCount = 0;
+						// Skip conjured and buff comsumables.
+				
+						var extraConsumables = (from item in Me.BagItems
+										   where item != null && item.ItemInfo != null
+										   let isFood = Consumable.IsFood(item.ItemInfo)
+										   let isDrink = Consumable.IsDrink(item.ItemInfo)
+										   where (isFood || isDrink) && item.ItemInfo.SellPrice > 0 && item.Effects.Count == 1 && item.ItemInfo.RequiredLevel < Me.Level - 10                    
+										   select item).ToList();
+				
+				
+						var extraPotions = Me.BagItems
+							.Where(c => c != null && c.IsValid && c.ItemInfo != null && c.ItemInfo.SellPrice > 0 && c.Effects.Count == 1
+								&& (c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Potion
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Elixir
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Flask)
+								&& c.ItemInfo.RequiredLevel < Me.Level - 20);
+				
+						extraConsumables.AddRange(extraPotions);
+						return extraConsumables;
+					}
+					 
+					async Task SellExtraConsumables()
+					{
+						Logging.Write("Selling items in GetExtraConsumables()");
+						foreach (var item in GetExtraConsumables())
+						{
+							Logging.Write("Selling {0}.", item.Name);
+							item.UseContainerItem();
+							await Coroutine.Sleep(1337);
+						}
+					}
+				]]>
+			</CustomBehavior>
+			<CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+				<CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>
+			</CustomBehavior>
+		<!-- END Hooks -->
+
+		<Checkpoint Level="8" />
+
+		<PickUp QuestName="The Burning Blade" QuestId="25232" GiverName="Orgnil Soulscar" GiverId="3142" X="288.3329" Y="-4727.827" Z="12.55133" />
+
+		<PickUp QuestName="Lost in the Floods" QuestId="25187" GiverName="Thonk" GiverId="39323" X="394.9551" Y="-4582.44" Z="76.59322" />
+		<While Condition="DoQuest(25187)" >
+			<MoveTo X="393.3874" Y="-4581.685" Z="76.59281" />
+			<CustomBehavior File="UseItem" ItemId="52514" QuestId="25187" X="393.3874" Y="-4581.685" Z="76.59281" TerminateWhen="Bots.DungeonBuddy.Helpers.ScriptHelpers.InCinematic" />
+			<CustomBehavior File="WaitTimer" WaitTime="30000" QuestId="25187" TerminateWhen="!Bots.DungeonBuddy.Helpers.ScriptHelpers.InCinematic" />
+		</While>
+		<TurnIn QuestName="Lost in the Floods" QuestId="25187" TurnInName="Thonk" TurnInId="39323" X="390.9776" Y="-4581.806" Z="76.61802" />
+
+		<If Condition="!IsQuestCompleted(25192)" >
+			<PickUp QuestName="Watershed Patrol" QuestId="25188" GiverName="Thonk" GiverId="39323" X="390.9776" Y="-4581.806" Z="76.61802" />
+		</If>
+
+		<PickUp QuestName="Lost But Not Forgotten" QuestId="25193" GiverName="Misha Tor&apos;kren" GiverId="3193" X="725.0805" Y="-4259.535" Z="20.0992" />
+		<CustomBehavior File="KillUntilComplete" MobId="39452" QuestId="25193" >
+			<HuntingGrounds>
+				<Hotspot X="626.2142" Y="-4257.228" Z="15.89098" />
+				<Hotspot X="573.5645" Y="-4197.48" Z="15.97568" />
+				<Hotspot X="520.2295" Y="-4121.67" Z="17.00622" />
+				<Hotspot X="449.1795" Y="-4111.976" Z="17.69797" />
+			</HuntingGrounds>
+		</CustomBehavior>
+		<TurnIn QuestName="Lost But Not Forgotten" QuestId="25193" TurnInName="Misha Tor&apos;kren" TurnInId="3193" X="728.2195" Y="-4253.421" Z="19.88069" />
+
+		<PickUp QuestName="Raggaran&apos;s Rage" QuestId="25190" GiverName="Raggaran" GiverId="39326" X="51.09787" Y="-4222.216" Z="35.1847" />
+		<CustomBehavior File="KillUntilComplete" QuestId="25190" >
+			<HuntingGrounds>
+				<Hotspot X="83.05998" Y="-4278.209" Z="29.14359" />
+				<Hotspot X="55.76519" Y="-4307.87" Z="38.0656" />
+				<Hotspot X="80.85742" Y="-4478.182" Z="37.01527" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="3111" PursueWhen="!IsObjectiveComplete(1, 25190)" />
+				<PursueUnit Id="3112" PursueWhen="!IsObjectiveComplete(2, 25190)" />
+				<PursueUnit Id="5826" Priority="500" /> <!-- Rare spawn -->
+			</PursuitList>
+		</CustomBehavior>
+		<TurnIn QuestName="Raggaran&apos;s Rage" QuestId="25190" TurnInName="Raggaran" TurnInId="39326" X="51.35043" Y="-4224.708" Z="35.34327" />
+
+		<PickUp QuestName="Raggaran&apos;s Fury" QuestId="25192" GiverName="Raggaran" GiverId="39326" X="51.35043" Y="-4224.708" Z="35.34327" />
+		<CustomBehavior File="KillUntilComplete" QuestId="25192" >
+			<HuntingGrounds>
+				<Hotspot X="-47.91932" Y="-4065.591" Z="34.91591" />
+				<Hotspot X="-57.7879" Y="-4036.371" Z="28.73617" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="3113" PursueWhen="!IsObjectiveComplete(1, 25192)" />
+				<PursueUnit Id="3114" PursueWhen="!IsObjectiveComplete(2, 25192)" />
+			</PursuitList>
+		</CustomBehavior>
+		<TurnIn QuestName="Raggaran&apos;s Fury" QuestId="25192" TurnInName="Raggaran" TurnInId="39326" X="51.49988" Y="-4224.066" Z="35.27617" />
+
+		<If Condition="HasQuest(25188)" >
+			<CustomBehavior File="AbandonQuest" QuestId="25188" />
+		</If>
+
+		<Checkpoint Level="10" />
+
+		<CustomBehavior File="LoadProfile" ProfileName="Northern Barrens.xml" RememberProfile="true" />
+
+
+	</QuestOrder>
+
+</HBProfile>

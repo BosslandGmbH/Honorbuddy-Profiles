@@ -1,0 +1,229 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../Schemas/EchoSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Human Starter ($Rev: 6041 $)</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Mailboxes>
+		<Mailbox Name="Northsire" X="-8908.27" Y="-129.904" Z="80.91549" />
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<!-- INITORDER COMMENT 
+	<InitOrder>
+		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> Use LevelBot default
+	</InitOrder>
+END INITORDER COMMENT -->
+
+	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Hooks -->
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[ 
+					IEnumerable<WoWItem> GetExtraConsumables()
+					{
+						uint foodCount = 0;
+						uint drinkCount = 0;
+						// Skip conjured and buff comsumables.
+				
+						var extraConsumables = (from item in Me.BagItems
+										   where item != null && item.ItemInfo != null
+										   let isFood = Consumable.IsFood(item.ItemInfo)
+										   let isDrink = Consumable.IsDrink(item.ItemInfo)
+										   where (isFood || isDrink) && item.ItemInfo.SellPrice > 0 && item.Effects.Count == 1 && item.ItemInfo.RequiredLevel < Me.Level - 10                    
+										   select item).ToList();
+				
+				
+						var extraPotions = Me.BagItems
+							.Where(c => c != null && c.IsValid && c.ItemInfo != null && c.ItemInfo.SellPrice > 0 && c.Effects.Count == 1
+								&& (c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Potion
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Elixir
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Flask)
+								&& c.ItemInfo.RequiredLevel < Me.Level - 20);
+				
+						extraConsumables.AddRange(extraPotions);
+						return extraConsumables;
+					}
+					 
+					async Task SellExtraConsumables()
+					{
+						Logging.Write("Selling items in GetExtraConsumables()");
+						foreach (var item in GetExtraConsumables())
+						{
+							Logging.Write("Selling {0}.", item.Name);
+							item.UseContainerItem();
+							await Coroutine.Sleep(1337);
+						}
+					}
+				]]>
+			</CustomBehavior>
+			<CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+				<CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>
+			</CustomBehavior>
+		<!-- END Hooks -->
+		<!-- Variant Order: 1)NotHuman 2)Warrior 3)Hunter 4)Warlock 5)Rogue 6)Paladin 7)Priest 8)Mage 9)Monk -->
+		<PickUp QuestName="Beating Them Back!" VariantQuestIds="29078, 28765, 28766, 28767, 28764, 28762, 28763, 28757, 31139" GiverName="Marshal McBride" GiverId="197" X="-8913.424" Y="-137.5417" Z="80.80978" />
+			<CustomBehavior File="KillUntilComplete" MobId="49871" VariantQuestIds="29078, 28765, 28766, 28767, 28764, 28762, 28763, 28757, 31139" >
+				<HuntingGrounds>
+					<Hotspot X="-8845.634" Y="-104.9537" Z="82.17284" />
+					<Hotspot X="-8889.754" Y="-63.98954" Z="85.63864" />
+					<Hotspot X="-8930.753" Y="-58.64423" Z="89.80518" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		<TurnIn QuestName="Beating Them Back!" VariantQuestIds="29078, 28765, 28766, 28767, 28764, 28762, 28763, 28757, 31139" TurnInName="Marshal McBride" TurnInId="197" X="-8913.424" Y="-137.5417" Z="80.80978" />
+
+		<PickUp QuestName="Lions for Lambs" VariantQuestIds="29079, 28774, 28759, 28773, 28772, 28770, 28771, 28769, 31140" GiverName="Marshal McBride" GiverId="197" X="-8913.424" Y="-137.5417" Z="80.80978" />
+		<While Condition="DoQuest(29079, 28774, 28759, 28773, 28772, 28770, 28771, 28769, 31140)" >
+			<CustomBehavior File="KillUntilComplete" MobId="49874" VariantQuestIds="29079, 28774, 28759, 28773, 28772, 28770, 28771, 28769, 31140" >
+				<HuntingGrounds>
+					<Hotspot X="-8821.861" Y="-118.1839" Z="81.07479" />
+					<Hotspot X="-8791.521" Y="-78.24496" Z="89.06188" />
+					<Hotspot X="-8820.999" Y="-45.91148" Z="89.47006" />
+					<Hotspot X="-8915.696" Y="-65.0357" Z="87.42548" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+		<TurnIn QuestName="Lions for Lambs" VariantQuestIds="29079, 28774, 28759, 28773, 28772, 28770, 28771, 28769, 31140" TurnInName="Marshal McBride" TurnInId="197" X="-8913.424" Y="-137.5417" Z="80.80978" />
+
+		<PickUp QuestName="Join the Battle!" VariantQuestIds="29080, 28789, 28780, 28788, 28787, 28785, 28786, 28784, 31143" GiverName="Marshal McBride" GiverId="197" X="-8913.424" Y="-137.5417" Z="80.80978" />
+		<TurnIn QuestName="Join the Battle!" VariantQuestIds="29080, 28789, 28780, 28788, 28787, 28785, 28786, 28784, 31143" TurnInName="Sergeant Willem" TurnInId="823" X="-8827.837" Y="-158.6233" Z="79.85905" />
+
+		<PickUp QuestName="They Sent Assassins" VariantQuestIds="29081, 28797, 28791, 28796, 28795, 28793, 28794, 28792, 31144" GiverName="Sergeant Willem" GiverId="823" X="-8827.837" Y="-158.6233" Z="79.85905" />
+		<While Condition="DoQuest(29081, 28797, 28791, 28796, 28795, 28793, 28794, 28792, 31144)" >
+			<CustomBehavior File="KillUntilComplete" MobId="50039" VariantQuestIds="29081, 28797, 28791, 28796, 28795, 28793, 28794, 28792, 31144" >
+				<HuntingGrounds>
+					<Hotspot X="-8758.018" Y="-167.1537" Z="84.39441" />
+					<Hotspot X="-8737.729" Y="-201.1385" Z="87.76439" />
+					<Hotspot X="-8793.842" Y="-210.241" Z="82.7071" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+		<TurnIn QuestName="They Sent Assassins" VariantQuestIds="29081, 28797, 28791, 28796, 28795, 28793, 28794, 28792, 31144" TurnInName="Sergeant Willem" TurnInId="823" X="-8827.837" Y="-158.6233" Z="79.85905" />
+
+		<PickUp QuestName="The Rear is Clear" VariantQuestIds="29083, 28823, 28817, 28822, 28821, 28819, 28820, 28818, 31145" GiverName="Sergeant Willem" GiverId="823" X="-8827.837" Y="-158.6233" Z="79.85905" />
+		<TurnIn QuestName="The Rear is Clear" VariantQuestIds="29083, 28823, 28817, 28822, 28821, 28819, 28820, 28818, 31145" TurnInName="Marshal McBride" TurnInId="197" X="-8913.424" Y="-137.5417" Z="80.80978" />
+
+		<PickUp QuestName="Blackrock Invasion" QuestId="26389" GiverName="Marshal McBride" GiverId="197" X="-8827.837" Y="-158.6233" Z="79.85905" />
+		<PickUp QuestName="Extinguishing Hope" QuestId="26391" GiverName="Milly Osworth" GiverId="9296" X="-8923.88" Y="-135.8889" Z="81.02888" />
+
+		<While Condition="DoQuest(26391)" >
+			<CustomBehavior File="InteractWith" MobId="42940" Range="10" InteractByUsingItemId="58362" NumOfTimes="500" CollectionDistance="500" QuestId="26391" ProactiveCombatStrategy="ClearAll" X="-9063.322" Y="-277.0595" Z="73.64384" TerminateWhen="IsQuestCompleted(26389)" />
+			<CustomBehavior File="InteractWith" MobId="42940" Range="10" InteractByUsingItemId="58362" NumOfTimes="500" CollectionDistance="500" QuestId="26391" ProactiveCombatStrategy="ClearMobsTargetingUs" X="-9063.322" Y="-277.0595" Z="73.64384" />
+		</While>
+		<While Condition="DoQuest(26389)" >
+			<CustomBehavior File="KillUntilComplete" MobId="42937" QuestId="26389" >
+				<HuntingGrounds>
+					<Hotspot X="-9040.773" Y="-285.641" Z="74.41951" />
+					<Hotspot X="-9086.801" Y="-307.1897" Z="73.33006" />
+					<Hotspot X="-9093.738" Y="-376.7223" Z="73.97292" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<TurnIn QuestName="Extinguishing Hope" QuestId="26391" TurnInName="Milly Osworth" TurnInId="9296" X="-8923.88" Y="-135.8889" Z="81.02888" />
+		<TurnIn QuestName="Blackrock Invasion" QuestId="26389" TurnInName="Marshal McBride" TurnInId="197" X="-8913.424" Y="-137.5417" Z="80.81001" />
+
+		<PickUp QuestName="Ending the Invasion!" QuestId="26390" GiverName="Marshal McBride" GiverId="197" X="-8913.424" Y="-137.5417" Z="80.81001" />
+		<While Condition="DoQuest(26390)" >
+			<CustomBehavior File="KillUntilComplete" MobId="42938" QuestId="26390" X="-8883.111" Y="-442.0399" Z="68.05946" />
+		</While>
+		<TurnIn QuestName="Ending the Invasion!" QuestId="26390" TurnInName="Marshal McBride" TurnInId="197" X="-8913.424" Y="-137.5417" Z="80.80973" />
+
+		<PickUp QuestName="Report to Goldshire" QuestId="54" GiverName="Marshal McBride" GiverId="197" X="-8913.424" Y="-137.5417" Z="80.80973" />
+
+		<Checkpoint Level="5" /> <!-- Goldshire -->
+
+		<CustomBehavior File="LoadProfile" ProfileName="..\Eastern Kingdoms\Elwynn Forest.xml" RememberProfile="true" />
+
+	</QuestOrder>
+
+</HBProfile>
