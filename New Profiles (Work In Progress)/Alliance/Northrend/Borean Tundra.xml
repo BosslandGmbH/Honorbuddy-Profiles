@@ -374,7 +374,7 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Gamel the Cruel" QuestId="11619" GiverName="Karuk" GiverId="25435" X="1997.984" Y="5852.376" Z="35.94769" />
 		<CustomBehavior File="KillUntilComplete" MobId="26449" QuestId="11619" X="1881.991" Y="5898.074" Z="-5.289617" />
 		<TurnIn QuestName="Gamel the Cruel" QuestId="11619" TurnInName="Karuk" TurnInId="25435" X="1999.714" Y="5853.289" Z="35.98417" />
-		
+
 		<PickUp QuestName="A Father's Words" QuestId="11620" GiverName="Karuk" GiverId="25435" X="1999.714" Y="5853.289" Z="35.98417" />
 		<TurnIn QuestName="A Father's Words" QuestId="11620" TurnInName="Veehja" TurnInId="25450" X="1800.857" Y="6054.834" Z="2.896187" />
 
@@ -677,15 +677,13 @@ END INITORDER COMMENT -->
 		<TurnIn QuestName="Lupus Pupus" QuestId="11728" TurnInName="Iggy &quot;Tailspin&quot; Cogtoggle" TurnInId="25807" X="3523.313" Y="5018.173" Z="-1.041184" />
 
 		<PickUp QuestName="Emergency Protocol: Section 8.2, Paragraph C" QuestId="11795" GiverName="Iggy &quot;Tailspin&quot; Cogtoggle" GiverId="25807" X="3523.313" Y="5018.173" Z="-1.041184" />
-		<While Condition="DoQuest(11795)" >
-			<CustomBehavior File="InteractWith" MobId="25841" CollectionDistance="200" ProactiveCombatStrategy="NoClear" GossipOptions="1" NumOfTimes="12" QuestId="11795" >
-				<HuntingGrounds>
-					<Hotspot X="3516.759" Y="5089.068" Z="14.51543" />
-					<Hotspot X="3521.052" Y="4895.401" Z="15.69213" />
-					<Hotspot X="3667.306" Y="4953.652" Z="-0.4130403" />
-				</HuntingGrounds>
-			</CustomBehavior>
-		</While>
+		<CustomBehavior File="InteractWith" MobId="25841" CollectionDistance="200" ProactiveCombatStrategy="NoClear" GossipOptions="1" QuestId="11795" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="3516.759" Y="5089.068" Z="14.51543" />
+				<Hotspot X="3521.052" Y="4895.401" Z="15.69213" />
+				<Hotspot X="3667.306" Y="4953.652" Z="-0.4130403" />
+			</HuntingGrounds>
+		</CustomBehavior>
 		<TurnIn QuestName="Emergency Protocol: Section 8.2, Paragraph C" QuestId="11795" TurnInName="Iggy &quot;Tailspin&quot; Cogtoggle" TurnInId="25807" X="3525.284" Y="5012.215" Z="-1.076811" />
 
 		<PickUp QuestName="Emergency Protocol: Section 8.2, Paragraph D" QuestId="11796" GiverName="Iggy &quot;Tailspin&quot; Cogtoggle" GiverId="25807" X="3523.987" Y="5014.74" Z="-1.013634" />
@@ -715,10 +713,17 @@ END INITORDER COMMENT -->
 		<!--<PickUp QuestName="Adopt a Tadpole" QuestId="46061" GiverName="King Mrgl-Mrgl" GiverId="25197" X="4363.955" Y="6061.269" Z="0.223889" /> Micro holiday quest -->
 
 		<While Condition="DoQuest(11571)" >
-			<MoveTo X="4281.813" Y="6100.207" Z="-2.751409" />
+			<If Condition="!Me.IsSwimming" >
+				<MoveTo X="4281.813" Y="6100.207" Z="-2.751409" />
+			</If>
 			<CustomBehavior File="MyCTM" X="4283.033" Y="6126.015" Z="-101.2638" TerminateWhen="Unit(25226, u =&gt; u.DistanceSqr &lt; 40f*40f) != null" />
-			<CustomBehavior File="KillUntilComplete" MobId="25226" MovementBy="ClickToMoveOnly" QuestId="11571" X="4283.033" Y="6126.015" Z="-101.2638" TerminateWhen="Unit(25226, u =&gt; u.IsDead) != null" />
-			<CustomBehavior File="InteractWith" MobId="25226" MovementBy="ClickToMoveOnly" CollectionDistance="200" InteractByUsingItemId="34598" MobState="Dead" QuestId="11571" X="4283.033" Y="6126.015" Z="-101.2638" TerminateWhen="Unit(25226, u =&gt; u.IsAlive) != null" />
+
+			<CustomBehavior File="InteractWith" MobId="25226" MovementBy="ClickToMoveOnly" CollectionDistance="200" InteractByUsingItemId="34598" MobState="Dead" QuestId="11571" X="4283.033" Y="6126.015" Z="-101.2638" >
+				<HuntingGrounds>
+					<Hotspot X="4311.09" Y="6135.443" Z="-122.2598" />
+					<Hotspot X="4223.335" Y="6098.746" Z="-128.8798" />
+				</HuntingGrounds>
+			</CustomBehavior>
 			<CustomBehavior File="AscendInWater" />
 		</While>
 
@@ -751,7 +756,7 @@ END INITORDER COMMENT -->
 					<Hotspot X="4172.124" Y="6187.275" Z="9.253353" />
 				</HuntingGrounds>
 				<PursuitList>
-					<PursueGameObject Id="187373" PursueWhen="Unit(25201).Location.DistanceSqr(GAMEOBJECT.Location) &lt;= 10f*10f" />	<!-- Only open cages with tadpoles in it. -->
+					<PursueGameObject Id="187373" PursueWhen="Unit(25201) != null &amp;&amp; Unit(25201).Location.DistanceSqr(GAMEOBJECT.Location) &lt;= 10f*10f" />	<!-- Only open cages with tadpoles in it. -->
 				</PursuitList>
 			</CustomBehavior>
 		</While>
@@ -849,9 +854,11 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="The Nefarious Clam Master..." QuestId="11872" GiverName="Hierophant Liandra" GiverId="25838" X="2780.505" Y="5242.422" Z="38.10355" />
 		<While Condition="DoQuest(11872)" >
 			<MoveTo X="2341.666" Y="5048.311" Z="-3.778568" />
+			<DefaultNavType Value="Run" />
 			<CustomBehavior File="MyCTM" X="2329.722" Y="5020.807" Z="-17.98564" />
-			<CustomBehavior File="KillUntilComplete" MobId="25800" QuestId="11872" X="2347.669" Y="5004.852" Z="-32.07976" />
+			<CustomBehavior File="KillUntilComplete" MobId="25800" MovementBy="ClickToMoveOnly" QuestId="11872" X="2347.669" Y="5004.852" Z="-32.07976" />
 			<CustomBehavior File="AscendInWater" />
+			<DefaultNavType Value="Fly" />
 		</While>
 
 		<If Condition="DoQuest(11866) &amp;&amp; Me.IsSwimming" >
