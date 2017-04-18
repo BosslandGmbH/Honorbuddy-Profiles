@@ -316,7 +316,7 @@ END INITORDER COMMENT -->
 			</HuntingGrounds>
 		</CustomBehavior>
 
-		<CustomBehavior File="KillUntilComplete" MobIds="6010, 6011, 41253" QuestId="25694" >
+		<CustomBehavior File="KillUntilComplete" MobIds="6010, 6011, 41253" QuestId="25692" >
 			<HuntingGrounds>
 				<Hotspot X="-11753.5" Y="-3326.55" Z="10.4488" />
 				<Hotspot X="-11674.86" Y="-3199.329" Z="14.64489" />
@@ -330,7 +330,11 @@ END INITORDER COMMENT -->
 		<TurnIn QuestName="Protecting Our Rear" QuestId="25694" TurnInName="Warlord Dar&apos;toon" TurnInId="19254" X="-11815.11" Y="-3186.479" Z="-30.59617" />
 
 		<PickUp QuestName="Watching Our Back" QuestId="25695" GiverName="Warlord Dar&apos;toon" GiverId="19254" X="-11815.11" Y="-3186.479" Z="-30.59617" />
-		<CustomBehavior File="InteractWith" MobId="203226" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="25695" QuestObjectiveIndex="1" X="-11809.41" Y="-3225.176" Z="-30.6651" />
+		<While Condition="DoQuest(25695)" >
+			<CustomBehavior File="InteractWith" MobId="203226" MovementBy="None" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="25695" QuestObjectiveIndex="1" X="-11807.82" Y="-3231.535" Z="-30.10377" TerminateWhen="Object(203226, u =&gt; u.DistanceSqr &gt; 3f*3f) != null" />
+			<MoveTo X="-11807.82" Y="-3231.535" Z="-30.10377" />
+			<CustomBehavior File="ForcedDismount" />
+		</While>
 		<TurnIn QuestName="Watching Our Back" QuestId="25695" TurnInName="Warlord Dar&apos;toon" TurnInId="19254" X="-11820.59" Y="-3188.565" Z="-30.72888" />
 
 		<PickUp QuestName="The Sunveil Excursion" QuestId="25696" GiverName="Warlord Dar&apos;toon" GiverId="19254" X="-11820.59" Y="-3188.565" Z="-30.72888" />
@@ -503,8 +507,8 @@ END INITORDER COMMENT -->
 
 		<PickUp QuestName="The Downfall of Marl Wormthorn" QuestId="25720" GiverName="Rohan Sunveil" GiverId="42344" X="-12330.98" Y="-3015.659" Z="88.2173" />
 		<While Condition="DoQuest(25720)" >
-			<CustomBehavior File="UseItemTargetLocation" QuestId="25720" ItemId="57185" UseType="ToObject" WaitTime="4000" MobId="42334" MinRange="2" Range="6" X="-12238.83" Y="-2464.189" Z="38.91131" />
-			<CustomBehavior File="KillUntilComplete" MobIds="41471, 42334" QuestId="25720" X="-12245.26" Y="-2493.646" Z="37.0256" />
+			<CustomBehavior File="UseItemTargetLocation" QuestId="25720" ItemId="57185" UseType="ToObject" WaitTime="4000" MobId="42334" MinRange="2" Range="6" X="-12238.83" Y="-2464.189" Z="38.91131" TerminateWhen="Unit(42334, u =&gt; !u.HasAura(78986)) != null" />
+			<CustomBehavior File="KillUntilComplete" MobId="42334" QuestId="25720" X="-12245.26" Y="-2493.646" Z="37.0256" TerminateWhen="Unit(42334, u =&gt; u.HasAura(78986)) != null" />
 		</While>
 		<TurnIn QuestName="The Downfall of Marl Wormthorn" QuestId="25720" TurnInName="Rohan Sunveil" TurnInId="42344" X="-12331.41" Y="-3015.236" Z="88.21734" />
 
