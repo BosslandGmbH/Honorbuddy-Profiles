@@ -201,7 +201,7 @@ END INITORDER COMMENT -->
 						if (_currentTarget == null || !_currentTarget.IsValid || !_currentTarget.IsAlive)
 						{
 							_currentTarget = ObjectManager.GetObjectsOfType<WoWUnit>()
-								.Where(u => u.IsAlive && u.Entry == 44284 && !Blacklist.Contains(u, BlacklistFlags.Interact))
+								.Where(u => !Blacklist.Contains(u, BlacklistFlags.Interact) && u.IsAlive && u.Entry == 44284 && u.X < 2430)
 								.OrderBy(u => u.DistanceSqr).FirstOrDefault();
 
 							if (_currentTarget == null)
@@ -218,7 +218,7 @@ END INITORDER COMMENT -->
 
 						TreeRoot.StatusText = "Scaring spider towards lumber mill";
 
-						var moveToPoint = WoWMathHelper.CalculatePointFrom(_lumberMillLocation, _currentTarget.Location, -6);
+						var moveToPoint = WoWMathHelper.CalculatePointFrom(_lumberMillLocation, _currentTarget.Location, -5);
 
 						if (moveToPoint.DistanceSquared((WoWMovement.ActiveMover ?? StyxWoW.Me).Location) > 4 * 4)
 							return (await CommonCoroutines.MoveTo(moveToPoint)).IsSuccessful();
@@ -699,7 +699,7 @@ END INITORDER COMMENT -->
 		</While>
 
 		<While Condition="DoQuest(27055)" >
-			<CustomBehavior File="KillUntilComplete" QuestId="27055" >
+			<CustomBehavior File="KillUntilComplete" TerminateWhen="!DoQuest(927055) &amp;&amp; (Me.Level == 38 ? Me.Experience &gt;= 53500 : true)" >
 				<HuntingGrounds>
 					<Hotspot X="2209.334" Y="-2405.615" Z="59.92143" />
 					<Hotspot X="2427.023" Y="-2330.601" Z="53.89402" />
@@ -716,6 +716,20 @@ END INITORDER COMMENT -->
 			<CustomBehavior File="InteractWith" MobId="37888" NonCompeteDistance="0" X="1939.44" Y="-2694.39" Z="62.06395" />
 			<CustomBehavior File="Misc\RunLua" Lua="TakeTaxiNode(57);" />
 		</While>
+
+		<CustomBehavior File="KillUntilComplete" TerminateWhen="(Me.Level == 38 ? Me.Experience &gt;= 53500 : true)" >
+			<HuntingGrounds>
+				<Hotspot X="2209.334" Y="-2405.615" Z="59.92143" />
+				<Hotspot X="2427.023" Y="-2330.601" Z="53.89402" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="44486" PursueWhen="!IsObjectiveComplete(4, 27055)" />
+				<PursueUnit Id="44485" PursueWhen="!IsObjectiveComplete(3, 27055)" />
+				<PursueUnit Id="44484" PursueWhen="!IsObjectiveComplete(2, 27055)" />
+				<PursueUnit Id="44445" PursueWhen="!IsObjectiveComplete(1, 27055)" />
+			</PursuitList>
+		</CustomBehavior>
+
 
 		<TurnIn QuestName="Students of Krastinov" QuestId="27055" TurnInName="Field Agent Kaartish" TurnInId="44454" X="1794.991" Y="-1703.908" Z="60.17009" />
 		<TurnIn QuestName="Zen'Kiki and the Cultists" QuestId="26955" TurnInName="Adrine Towhide" TurnInId="44456" X="1797.761" Y="-1687.829" Z="60.2818" />
