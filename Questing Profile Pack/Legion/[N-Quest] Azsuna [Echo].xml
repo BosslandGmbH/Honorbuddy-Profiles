@@ -18,6 +18,7 @@
 	<MailPurple>true</MailPurple>
 
 	<TargetElites>true</TargetElites>
+	<DefaultNavType>Fly</DefaultNavType>
 
 	<AvoidMobs>
 		<Mob Name="Blerg" Entry="106629" />
@@ -49,21 +50,14 @@
 	<Blackspots>
 		<Blackspot X="-8855.167" Y="651.3267" Z="96.37325" Radius="1.491184" />
 
-		<Blackspot X="-136.9882" Y="6983.85" Z="8.050956" Radius="4.494911" />
-		<!-- Soul Shooter object thing near Illidari Stand -->
-		<Blackspot X="-235.3848" Y="7039.291" Z="3.527598" Radius="3.520475" />
-		<!-- Another Soul Shooter object near Illidari Stand -->
-		<Blackspot X="-169.2355" Y="7075.309" Z="4.5437" Radius="3.424523" />
-		<!-- Another Soul Shooter object near Illidari Stand -->
-
-		<Blackspot X="-93.79848" Y="6982.305" Z="12.39837" Radius="3.731443" />
-		<!-- GameObjects near Allari the Souleater in Illidari Stand -->
-		<Blackspot X="-376.3742" Y="6675.382" Z="4.599216" Radius="23.31855" />
-		<!-- Bad navigation spot. -->
-		<Blackspot X="-913.1205" Y="6648.009" Z="1.293812" Radius="15.1874" />
-		<!-- Oceanus Cove, weapon rack bot likes to get stuck on. -->
-		<Blackspot X="-885.5005" Y="6459.92" Z="2.451694" Radius="5.491374" />
-		<!-- Oceanus Cove, another weapon rack. -->
+		<Blackspot X="-136.9882" Y="6983.85" Z="8.050956" Radius="4.494911" /> <!-- Soul Shooter object thing near Illidari Stand -->
+		<Blackspot X="-235.3848" Y="7039.291" Z="3.527598" Radius="3.520475" /> <!-- Another Soul Shooter object near Illidari Stand -->
+		<Blackspot X="-169.2355" Y="7075.309" Z="4.5437" Radius="3.424523" /> <!-- Another Soul Shooter object near Illidari Stand -->
+		<Blackspot X="-93.79848" Y="6982.305" Z="12.39837" Radius="3.731443" /> <!-- GameObjects near Allari the Souleater in Illidari Stand -->
+		<Blackspot X="-376.3742" Y="6675.382" Z="4.599216" Radius="23.31855" /> <!-- Bad navigation spot. -->
+		<Blackspot X="-913.1205" Y="6648.009" Z="1.293812" Radius="15.1874" /> <!-- Oceanus Cove, weapon rack bot likes to get stuck on. -->
+		<Blackspot X="-885.5005" Y="6459.92" Z="2.451694" Radius="5.491374" /> <!-- Oceanus Cove, another weapon rack. -->
+		<Blackspot X="-183.5051" Y="6310.573" Z="33.68592" Radius="10" /> <!-- Ruins of Nar'thalas - roof stuck area -->
 	</Blackspots>
 
 	<Blacklist>
@@ -913,9 +907,12 @@ END INITORDER COMMENT -->
 
 		<PickUp QuestName="Back from the Dead" QuestId="42694" GiverName="Olothil Starlance" GiverId="108328" X="-189.7396" Y="6313.207" Z="20.58716" />
 		<While Condition="DoQuest(42694)" >
-			<If Condition="!IsObjectiveComplete(42694, 1)" > <!-- For the wait timer -->
+			<If Condition="!IsObjectiveComplete(1, 42694)" > <!-- For the wait timer -->
 				<CustomBehavior File="InteractWith" MobId="251182" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="42694" QuestObjectiveIndex="1" X="-189.3819" Y="6311.526" Z="20.58729" />
 				<CustomBehavior File="WaitTimer" WaitTime="25000" QuestId="42694" />
+			</If>
+			<If Condition="SpellManager.HasSpell(233368) &amp;&amp; Unit(108328, u =&gt; u.DistanceSqr &lt; 15f*15f) != null" >
+				<MoveTo X="-171.4103" Y="6334.366" Z="15.90906" />
 			</If>
 			<CustomBehavior File="KillUntilComplete" MobId="88086" QuestId="42694" QuestObjectiveIndex="4" X="-209.7847" Y="6198.627" Z="4.976766" />
 			<CustomBehavior File="KillUntilComplete" MobId="108441" QuestId="42694" QuestObjectiveIndex="3" X="-53.2309" Y="6129.452" Z="25.73073" />
