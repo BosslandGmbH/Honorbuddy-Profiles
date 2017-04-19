@@ -1729,18 +1729,28 @@ END INITORDER COMMENT -->
 		<TurnIn QuestName="Morale Booster" QuestId="37536" TurnInName="Sternfathom" TurnInId="89048" X="-334.2882" Y="6674.679" Z="3.734171" />
 
 		<PickUp QuestName="Round 1, Fight!" QuestId="37538" GiverName="Sternfathom" GiverId="89048" X="-330.7951" Y="6673.232" Z="4.497787" />
-		<While Condition="DoQuest(37538)" >
-			<CustomBehavior File="InteractWith" MobId="89048" GossipOptions="1" NumOfTimes="10" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="37538" X="-330.7951" Y="6673.232" Z="4.49795" TerminateWhen="Me.InVehicle" />
-			<CustomBehavior File="KillUntilComplete" MobIds="89050" QuestId="37538" QuestObjectiveIndex="2" X="-351.4099" Y="6658.224" Z="0.8298512" TerminateAtMaxRunTimeSecs="200" />
-			<MoveTo X="-376.7884" Y="6610.452" Z="0.1315838" />
-		</While>
+		<If Condition="DoQuest(37538)" >
+			<CustomBehavior File="RunCode" Code="
+				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Disabling custom anti-stuck measures until this quest is complete.&quot;);
+				UseAntiStuck = false;
+			" />
+			<While Condition="DoQuest(37538)" >
+				<CustomBehavior File="InteractWith" MobId="89048" GossipOptions="1" NumOfTimes="10" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="37538" X="-330.7951" Y="6673.232" Z="4.49795" TerminateWhen="Me.InVehicle" />
+				<CustomBehavior File="KillUntilComplete" MobId="89050" MovementBy="NavigatorOnly" QuestId="37538" QuestObjectiveIndex="2" X="-351.4099" Y="6658.224" Z="0.8298512" TerminateAtMaxRunTimeSecs="200" />
+				<MoveTo X="-376.7884" Y="6610.452" Z="0.1315838" />
+			</While>
+			<CustomBehavior File="RunCode" Code="
+				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Disabling custom anti-stuck measures until this quest is complete.&quot;);
+				UseAntiStuck = true;
+			" />
+		</If>
 		<TurnIn QuestName="Round 1, Fight!" QuestId="37538" TurnInType="Object" TurnInName="Okuna Longtusk's Pack" TurnInId="239120" X="-482.0625" Y="6676.999" Z="-2.054145" />
 
 		<PickUp QuestName="The Right Weapon for the Job" QuestId="37565" GiverName="Okuna Longtusk's Pack" GiverId="239120" X="-482.0625" Y="6676.999" Z="-2.054145" />
 		<!-- NOTE: <AddAvoidNPC> Need to keep the bot away from <Mob Name="Cove Skrog" Entry="89097" /> -->
 		<CustomBehavior File="Hooks\Avoid" AvoidName="AvoidSkrog" IgnoreLootInAvoid="true" Command="Add" ObjectId="89097" Radius="20" AvoidWhen="!UNIT.Aggro &amp;&amp; UNIT.IsAlive" />
 		<While Condition="DoQuest(37565)" >
-			<CustomBehavior File="InteractWith" ObjectType="Npc" MobState="AliveNotInCombat" InteractByUsingItemId="118330" QuestId="37565" QuestObjectiveIndex="1" >
+			<CustomBehavior File="InteractWith" ObjectType="Npc" MobState="AliveNotInCombat" InteractByUsingItemId="118330" PreInteractMountStrategy="Dismount" QuestId="37565" QuestObjectiveIndex="1" >
 				<!-- ObjectType is legitimately needed here as npc:89112 shares the same ID as Mote of Harmony, and there could be a chance the player has this item in their bags. -->
 				<HuntingGrounds>
 					<Hotspot X="-536.6754" Y="6738.65" Z="-2.794719" />
