@@ -249,17 +249,14 @@ END INITORDER COMMENT -->
 
 		<PickUp QuestName="Shatter Point" QuestId="10340" GiverName="Forward Commander Kingston" GiverId="19310" X="-675.445" Y="1856.226" Z="66.90974" />
 		<If Condition="QuestDone(10340) &amp;&amp; Unit(20234) == null" >
+			<DisableBehavior Name="FlightPath" />
 			<CustomBehavior File="InteractWith" MobId="19409" GossipOptions="1" X="-670.3308" Y="1854.824" Z="66.91754" TerminateWhen="Me.OnTaxi" />
 		</If>
-		<If Condition="QuestDone(10340)" >
-			<CustomBehavior File="RunCode" Code="FlightMapFrame.Instance.Close();" /> <!-- Bot opens this while discovering FPS -->
-			<TurnIn QuestName="Shatter Point" QuestId="10340" TurnInName="Runetog Wildhammer" TurnInId="20234" X="276.2128" Y="1488.461" Z="-15.48983" />
-		</If>
+		<TurnIn QuestName="Shatter Point" QuestId="10340" TurnInName="Runetog Wildhammer" TurnInId="20234" X="276.2128" Y="1488.461" Z="-15.48983" />
 
 		<If Condition="NeedsQuest(10344)" >
-			<MoveTo X="269.8367" Y="1474.448" Z="-15.46332" /> <!-- Pull away from flight master -->
-			<CustomBehavior File="RunCode" Code="FlightMapFrame.Instance.Close();" /> <!-- Bot opens this while discovering FPS -->
 			<PickUp QuestName="Wing Commander Gryphongar" QuestId="10344" GiverName="Runetog Wildhammer" GiverId="20234" X="276.2128" Y="1488.461" Z="-15.48983" />
+			<EnableBehavior Name="FlightPath" />
 		</If>
 		<TurnIn QuestName="Wing Commander Gryphongar" QuestId="10344" TurnInName="Wing Commander Gryphongar" TurnInId="20232" X="313.3695" Y="1444.015" Z="0.4891495" />
 
@@ -436,6 +433,7 @@ END INITORDER COMMENT -->
 		<CustomBehavior File="KillUntilComplete" MobId="16964" QuestId="10485" X="-1156.489" Y="1909.542" Z="81.49869" />
 		<TurnIn QuestName="Warlord of the Bleeding Hollow" QuestId="10485" TurnInName="Corporal Ironridge" TurnInId="21133" X="-703.0015" Y="1876.612" Z="63.22922" />
 		<!-- <PickUp QuestName="Looking to the Leadership" QuestId="10057" GiverName="Corporal Ironridge" GiverId="21133" X="-703.0015" Y="1876.612" Z="63.22922" /> -->
+		<PickUp QuestName="Return to Honor Hold" QuestId="10903" GiverName="Corporal Ironridge" GiverId="21133" X="-703.0015" Y="1876.612" Z="63.22922" />
 		<TurnIn QuestName="Zeth'Gor Must Burn!" QuestId="10895" TurnInName="Wing Commander Dabir'ee" TurnInId="19409" X="-670.3726" Y="1853.557" Z="66.91111" />
 
 		<If Condition="QuestDone(9373) &amp;&amp; Me.HearthstoneAreaId == 3538 &amp;&amp; Unit(19409) != null" >
@@ -445,10 +443,16 @@ END INITORDER COMMENT -->
 		<TurnIn QuestName="Return to Honor Hold" QuestId="10903" TurnInName="Assistant Klatu" TurnInId="22430" X="-707.8792" Y="2732.533" Z="101.5916" />
 
 		<PickUp QuestName="Digging for Prayer Beads" QuestId="10916" GiverName="Assistant Klatu" GiverId="22430" X="-707.8792" Y="2732.533" Z="101.5916" />
-		<CustomBehavior File="InteractWith" MobId="185302" InteractByLooting="true" NonCompeteDistance="0" QuestId="10916" X="-698.2369" Y="2743.814" Z="94.02005" />
+		<CustomBehavior File="InteractWith" MobId="185302" InteractByLooting="true" NonCompeteDistance="0" QuestId="10916" QuestObjectiveIndex="1" X="-698.2369" Y="2743.814" Z="94.02005" />
 		<TurnIn QuestName="Digging for Prayer Beads" QuestId="10916" TurnInName="Assistant Klatu" TurnInId="22430" X="-708.5659" Y="2732.77" Z="101.5916" />
 
-
+		<CustomBehavior File="KillUntilComplete" MobIds="16904, 16905, 16906" TerminateWhen="Me.Level &gt;= 60" >
+			<HuntingGrounds>
+				<Hotspot X="-1213.677" Y="2714.647" Z="-6.733519" />
+				<Hotspot X="-1367.958" Y="2727.479" Z="-26.92257" />
+				<Hotspot X="-1354.038" Y="2759.191" Z="-32.43863" />
+			</HuntingGrounds>
+		</CustomBehavior>
 
 		<Checkpoint Level="60" />
 		<If Condition="Me.Y &lt;= 2300 &amp;&amp; Me.HearthstoneAreaId == 3538" >
@@ -588,16 +592,21 @@ END INITORDER COMMENT -->
 
 		<CustomBehavior File="KillUntilComplete" MobId="17057" QuestId="9490" X="-758.9781" Y="3815.764" Z="19.95012" />
 
-		<CustomBehavior File="KillUntilComplete" QuestId="9398" >
-			<HuntingGrounds>
-				<Hotspot X="-640.1154" Y="3774.862" Z="27.9747" />
-				<Hotspot X="-627.6509" Y="3621.336" Z="28.99513" />
-			</HuntingGrounds>
-			<PursuitList>
-				<PursueUnit Id="16927" PursueWhen="!IsObjectiveComplete(1, 9398)" />
-				<PursueUnit Id="16929" PursueWhen="!IsObjectiveComplete(2, 9398)" />
-			</PursuitList>
-		</CustomBehavior>
+		<While Condition="DoQuest(9398)" >
+			<If Condition="Unit(16927) == null" >
+				<MoveTo X="-640.1154" Y="3774.862" Z="27.9747" />
+			</If>
+			<CustomBehavior File="KillUntilComplete" MovementBy="NavigatorOnly" QuestId="9398" >
+				<HuntingGrounds>
+					<Hotspot X="-640.1154" Y="3774.862" Z="27.9747" />
+					<Hotspot X="-627.6509" Y="3621.336" Z="28.99513" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueUnit Id="16927" PursueWhen="!IsObjectiveComplete(1, 9398)" />
+					<PursueUnit Id="16929" PursueWhen="!IsObjectiveComplete(2, 9398)" />
+				</PursuitList>
+			</CustomBehavior>
+		</While>
 
 		<If Condition="QuestDone(9490) &amp;&amp; Unit(17057) != null" >
 			<CustomBehavior File="UseHearthstone" WaitForCd="false" />

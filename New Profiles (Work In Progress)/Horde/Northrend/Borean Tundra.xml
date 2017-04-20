@@ -34,6 +34,7 @@
 		<Blackspot X="2334.069" Y="5269.208" Z="7.636464" Radius="2.049358" /> <!-- Forge in Valiance Keep -->
 		<Blackspot X="2938.661" Y="6478.956" Z="78.89586" Radius="11.01611" /> <!-- Large cart thing near Garrosh's Landing -->
 		<Blackspot X="2929.82" Y="6483.418" Z="83.24158" Radius="11.16186" /> <!-- Small path beside object blackspotted above which seems to be bugging out the Kodo transport quest. -->
+		<Blackspot X="3512.959" Y="5446.65" Z="54.97598" Radius="3.832434" /> <!-- Tent behind Etaruk -->
 	</Blackspots>
 
 	<Blacklist>
@@ -427,7 +428,7 @@ END INITORDER COMMENT -->
 		</If>
 
 		<TurnIn QuestName="Trophies of Gammoth" QuestId="11722" TurnInName="Garrosh Hellscream" TurnInId="25237" X="2835.275" Y="6183.869" Z="84.6816" />
-		<TurnIn QuestName="Magic Carpet Ride" QuestId="11636" TurnInName="Garrosh Hellscream" TurnInId="25237" X="2835.275" Y="6183.869" Z="84.6816" />
+		<TurnIn QuestName="Magic Carpet Ride" QuestId="11636" TurnInName="Gorge the Corpsegrinder" TurnInId="25329" X="2815.882" Y="6712.431" Z="10.18057" />
 		<PickUp QuestName="Tank Ain&apos;t Gonna Fix Itself" QuestId="11642" GiverName="Gorge the Corpsegrinder" GiverId="25329" X="2815.882" Y="6712.431" Z="10.18057" />
 		<TurnIn QuestName="Tank Ain&apos;t Gonna Fix Itself" QuestId="11642" TurnInName="Mobu" TurnInId="25475" X="2807.925" Y="6721.465" Z="9.099375" />
 		<PickUp QuestName="Mobu&apos;s Pneumatic Tank Transjigamarig" QuestId="11643" GiverName="Mobu" GiverId="25475" X="2807.925" Y="6721.465" Z="9.099375" />
@@ -795,6 +796,7 @@ END INITORDER COMMENT -->
 			<MoveTo X="3393.827" Y="6161.038" Z="79.83264" />
 			<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Unit(25584, u =&gt; !u.IsDead) != null" />
 			<If Condition="Unit(25584, u =&gt; u.IsAlive &amp;&amp; u.HasAura(45775)) != null" >
+				<CustomBehavior File="Halt" />
 				<CustomBehavior File="UseItem" ItemId="34897" QuestId="11671" X="3393.827" Y="6161.038" Z="79.83264" TerminateWhen="!HasItem(34897) || Unit(25584, u =&gt; !u.HasAura(45775)) != null || Object(187875) != null" />
 			</If>
 			<CustomBehavior File="KillUntilComplete" MobId="25584" QuestId="11671" X="3393.827" Y="6161.038" Z="79.83264" TerminateWhen="Unit(25584) == null || Unit(25584, u =&gt; u.HasAura(45775)) != null || Object(187875) != null" />
@@ -1213,7 +1215,7 @@ END INITORDER COMMENT -->
 		</While>
 
 		<While Condition="DoQuest(11881)" >
-			<If Condition="Unit(25969, u=&gt; u.CreatedByUnit == Me) != null" >
+			<If Condition="Unit(25969, u=&gt; u.CreatedByUnit == Me) == null" >
 				<MoveTo X="3479.898" Y="4912.795" Z="12.71638" />
 				<CustomBehavior File="ForcedDismount" />
 				<CustomBehavior File="UseItem" ItemId="35272" QuestId="11881" TerminateWhen="Unit(25969, u=&gt; u.CreatedByUnit == Me) != null" />
@@ -1342,6 +1344,7 @@ END INITORDER COMMENT -->
 
 		<Checkpoint Level="71.22" />
 
+		<CustomBehavior File="RunCode"><![CDATA[ TreeHooks.Instance.RemoveHook("Questbot_Main", _windsoulLogic); ]]></CustomBehavior>
 		<CustomBehavior File="DeleteItems" Ids="35188, 35671" />
 
 		<CustomBehavior File="LoadProfile" ProfileName="Dragonblight.xml" RememberProfile="true" />

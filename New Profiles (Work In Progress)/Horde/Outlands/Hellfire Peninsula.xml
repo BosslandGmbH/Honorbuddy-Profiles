@@ -375,23 +375,7 @@ END INITORDER COMMENT -->
 		<CustomBehavior File="KillUntilComplete" MobId="19442" QuestId="10809" X="-1046.307" Y="2017.464" Z="66.94019" />
 
 		<While Condition="DoQuest(10538)" >
-			<If Condition="HasItem(30425)" >
-				<MoveTo X="-978.1862" Y="2175.302" Z="15.36683" />
-				<CustomBehavior File="RunCode"><![CDATA[
-						while (DoQuest(10538) && HasItem(30425))
-						{
-							var cauldronPoi = Object(184715);
-							while (cauldronPoi != null && HasItem(30425))
-							{
-								cauldronPoi.Interact();
-								await Coroutine.Wait(3000, () => !Me.IsCasting);
-								await Coroutine.Yield();
-							}
-							await Coroutine.Yield();
-						}
-					]]>
-				</CustomBehavior>
-			</If>
+			<CustomBehavior File="InteractWith" MobId="184715" NonCompeteDistance="0" NumOfTimes="12" InteractBlacklistTimeInSeconds="1" QuestId="10538" QuestObjectiveIndex="1" X="-978.1862" Y="2175.302" Z="15.36683" TerminateWhen="!HasItem(30425)" />
 
 			<CustomBehavior File="KillUntilComplete" MobIds="16871, 19422, 19424" QuestId="10538" TerminateWhen="GetItemCount(30425) &gt;= 12" >
 				<HuntingGrounds>
@@ -617,7 +601,7 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Shizz Work" QuestId="10629" GiverName="Foreman Razelcraz" GiverId="16915" X="428.0803" Y="2887.949" Z="52.19127" />
 		<While Condition="DoQuest(10629)" >
 			<CustomBehavior File="ForcedDismount" TerminateWhen="Unit(21847, u =&gt; u.CreatedByUnit == Me) != null" />
-			<CustomBehavior File="UseItem" ItemId="30803" TerminateWhen="Unit(21847, u =&gt; u.CreatedByUnit == Me) != null" />
+			<CustomBehavior File="UseItem" ItemId="30803" TerminateWhen="Unit(21847, u =&gt; u.CreatedByUnit == Me) != null" X="428.0803" Y="2887.949" Z="52.19127" />
 			<CustomBehavior File="KillUntilComplete" MobId="16863" QuestId="10629" TerminateWhen="Object(184980) != null || Unit(21847, u =&gt; u.CreatedByUnit == Me) == null" >
 				<HuntingGrounds>
 					<Hotspot X="492.1641" Y="2923.299" Z="37.79787" />
@@ -682,16 +666,21 @@ END INITORDER COMMENT -->
 
 		<CustomBehavior File="KillUntilComplete" MobId="17057" QuestId="9466" X="-758.9781" Y="3815.764" Z="19.95012" />
 
-		<CustomBehavior File="KillUntilComplete" QuestId="9340" >
-			<HuntingGrounds>
-				<Hotspot X="-640.1154" Y="3774.862" Z="27.9747" />
-				<Hotspot X="-627.6509" Y="3621.336" Z="28.99513" />
-			</HuntingGrounds>
-			<PursuitList>
-				<PursueUnit Id="16927" PursueWhen="!IsObjectiveComplete(1, 9340)" />
-				<PursueUnit Id="16929" PursueWhen="!IsObjectiveComplete(2, 9340)" />
-			</PursuitList>
-		</CustomBehavior>
+		<While Condition="DoQuest(9340)" >
+			<If Condition="Unit(16927) == null" >
+				<MoveTo X="-640.1154" Y="3774.862" Z="27.9747" />
+			</If>
+			<CustomBehavior File="KillUntilComplete" MovementBy="NavigatorOnly" QuestId="9340" >
+				<HuntingGrounds>
+					<Hotspot X="-640.1154" Y="3774.862" Z="27.9747" />
+					<Hotspot X="-627.6509" Y="3621.336" Z="28.99513" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueUnit Id="16927" PursueWhen="!IsObjectiveComplete(1, 9340)" />
+					<PursueUnit Id="16929" PursueWhen="!IsObjectiveComplete(2, 9340)" />
+				</PursuitList>
+			</CustomBehavior>
+		</While>
 
 		<TurnIn QuestName="Wanted: Blacktalon the Savage" QuestId="9466" TurnInName="Ranger Captain Venn&apos;ren" TurnInId="16789" X="-590.4211" Y="4069.188" Z="143.2588" />
 		<TurnIn QuestName="The Great Fissure" QuestId="9340" TurnInName="Ranger Captain Venn&apos;ren" TurnInId="16789" X="-590.4211" Y="4069.188" Z="143.2588" />
