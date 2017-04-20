@@ -258,11 +258,11 @@ END INITORDER COMMENT -->
 		<TurnIn QuestName="Cutting Off the Source" QuestId="11602" TurnInName="Overlord Razgor" TurnInId="25279" X="2782.374" Y="6078.437" Z="77.68895" />
 		<PickUp QuestName="Wind Master To&apos;bor" QuestId="11634" GiverName="Overlord Razgor" GiverId="25279" X="2782.374" Y="6078.437" Z="77.68895" />
 		<PickUp QuestName="Wind Master To&apos;bor" QuestId="11634" GiverName="Overlord Razgor" GiverId="25279" X="2782.374" Y="6078.437" Z="77.68895" />
-		<TurnIn QuestName="Message to Hellscream" QuestId="11616" TurnInName="Garrosh Hellscream" TurnInId="25237" X="2835.963" Y="6185.127" Z="84.68286" />
+		<TurnIn Nav="Run" QuestName="Message to Hellscream" QuestId="11616" TurnInName="Garrosh Hellscream" TurnInId="25237" X="2835.963" Y="6185.127" Z="84.68286" />
 		<PickUp QuestName="Reinforcements Incoming..." QuestId="11618" GiverName="Garrosh Hellscream" GiverId="25237" X="2835.963" Y="6185.127" Z="84.68286" />
 		<TurnIn QuestName="Wind Master To&apos;bor" QuestId="11634" TurnInName="Wind Master To&apos;bor" TurnInId="25289" X="2796.395" Y="6148.836" Z="208.1241" />
 		<PickUp QuestName="Magic Carpet Ride" QuestId="11636" GiverName="Wind Master To&apos;bor" GiverId="25289" X="2796.395" Y="6148.836" Z="208.1241" />
-		<TurnIn QuestName="Reinforcements Incoming..." QuestId="11618" TurnInName="Shadowstalker Ickoris" TurnInId="25437" X="2875.822" Y="6373.514" Z="95.36335" />
+		<TurnIn Nav="Run" QuestName="Reinforcements Incoming..." QuestId="11618" TurnInName="Shadowstalker Ickoris" TurnInId="25437" X="2875.822" Y="6373.514" Z="95.36335" />
 		<PickUp QuestName="The Warsong Farms" QuestId="11686" GiverName="Shadowstalker Ickoris" GiverId="25437" X="2875.822" Y="6373.514" Z="95.36335" />
 		<PickUp QuestName="Merciful Freedom" QuestId="11676" GiverName="Shadowstalker Canarius" GiverId="25438" X="2875.585" Y="6381.71" Z="94.09913" />
 		<PickUp QuestName="Damned Filthy Swine" QuestId="11688" GiverName="Farmer Torp" GiverId="25607" X="2884.272" Y="6386.078" Z="92.76123" />
@@ -1021,10 +1021,10 @@ END INITORDER COMMENT -->
 	
 		<!-- Checkpoint Level="70" /> -->
 
-		<If Condition="!IsQuestCompleted(11864)" >
+		<While Condition="!IsQuestCompleted(11864)" >
 			<CustomBehavior File="InteractWith" MobId="25809" NonCompeteDistance="0" X="3196.201" Y="5280.651" Z="47.68393" TerminateWhen="IsQuestCompleted(11864)" />
 			<CustomBehavior File="RunCode" Code="QuestFrame.Instance.CompleteQuest();" />
-		</If>
+		</While>
 
 		<PickUp QuestName="Help Those That Cannot Help Themselves" QuestId="11876" GiverName="Archdruid Lathorius" GiverId="25809" X="3196.619" Y="5280.756" Z="47.56306" />
 		<PickUp QuestName="Ears of Our Enemies" QuestId="11866" GiverName="Archdruid Lathorius" GiverId="25809" X="3196.619" Y="5280.756" Z="47.56306" />
@@ -1332,7 +1332,11 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="The Doctor and the Lich-Lord" QuestId="11687" GiverName="Longrunner Bristlehorn" GiverId="25658" X="4410.993" Y="4549.382" Z="24.87255" />
 
 		<While Condition="DoQuest(11687, 11683)" >
-			<CustomBehavior File="KillUntilComplete" MobId="25678" QuestId="11687" QuestObjectiveIndex="1" X="4389.216" Y="4554.45" Z="88.75399" />
+			<While Condition="DoQuest(11687)" >
+				<MoveTo X="4389.216" Y="4554.45" Z="88.75399" />
+				<CustomBehavior File="ForcedDismount" />  <!-- In case KUC tries blacklisting this guy for pull - which it likes to do for whatever reason. -->
+				<CustomBehavior File="KillUntilComplete" MobId="25678" QuestId="11687" QuestObjectiveIndex="1" X="4389.216" Y="4554.45" Z="88.75399" />
+			</While>
 
 			<CustomBehavior File="KillUntilComplete" MobId="25682" QuestId="11687" QuestObjectiveIndex="2" X="4364.976" Y="4556.35" Z="122.2428" />
 

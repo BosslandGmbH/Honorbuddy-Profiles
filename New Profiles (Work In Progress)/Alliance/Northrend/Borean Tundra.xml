@@ -642,7 +642,11 @@ END INITORDER COMMENT -->
 				</HuntingGrounds>
 			</CustomBehavior>
 
-			<CustomBehavior File="KillUntilComplete" MobId="25678" QuestId="11699" TerminateWhen="HasItem(34958)" X="4389.216" Y="4554.45" Z="88.75399" />
+			<While Condition="DoQuest(11699)" >
+				<MoveTo X="4389.216" Y="4554.45" Z="88.75399" />
+				<CustomBehavior File="ForcedDismount" />  <!-- In case KUC tries blacklisting this guy for pull - which it likes to do for whatever reason. -->
+				<CustomBehavior File="KillUntilComplete" MobId="25678" QuestId="11699" TerminateWhen="HasItem(34958)" X="4389.216" Y="4554.45" Z="88.75399" />
+			</While>
 
 			<CustomBehavior File="KillUntilComplete" MobId="25682" QuestId="11699" TerminateWhen="HasItem(34959)" X="4364.976" Y="4556.35" Z="122.2428" />
 		</While>
@@ -781,12 +785,119 @@ END INITORDER COMMENT -->
 		<TurnIn QuestName="Them!" QuestId="11561" TurnInName="Brglmurgl" TurnInId="25199" X="4373.527" Y="6098.134" Z="0.365572" />
 		<TurnIn QuestName="I&apos;m Being Blackmailed By My Cleaner" QuestId="11562" TurnInName="Mrmrglmr" TurnInId="25205" X="4405.532" Y="6148.048" Z="0.8523058" />
 
-		<Checkpoint Level="70" />
-
-		<If Condition="!IsQuestCompleted(11864)" >
+		<While Condition="!IsQuestCompleted(11864)" >
 			<CustomBehavior File="InteractWith" MobId="25809" NonCompeteDistance="0" X="3196.201" Y="5280.651" Z="47.68393" TerminateWhen="IsQuestCompleted(11864)" />
 			<CustomBehavior File="RunCode" Code="QuestFrame.Instance.CompleteQuest();" />
-		</If>
+		</While>
+
+		<PickUp QuestName="Reclaiming the Quarry" QuestId="11612" GiverName="Etaruk" GiverId="25292" X="3507.256" Y="5438.769" Z="54.30971" />
+		<PickUp QuestName="The Honored Ancestors" QuestId="11605" GiverName="Elder Atkanok" GiverId="187565" X="3525.11" Y="5415.146" Z="41.30281" />
+
+		<While Condition="DoQuest(11605)" >
+			<CustomBehavior File="InteractWith" MobId="187663" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="11605" QuestObjectiveIndex="2" X="3588.55" Y="5523.176" Z="26.93825" />
+			<CustomBehavior File="InteractWith" MobId="187664" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="11605" QuestObjectiveIndex="3" X="3698.238" Y="5557.177" Z="35.11781" />
+			<CustomBehavior File="InteractWith" MobId="187662" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="11605" QuestObjectiveIndex="1" X="3653.043" Y="5635.399" Z="34.51223" />
+		</While>
+
+		<CustomBehavior File="KillUntilComplete" MobId="25353" QuestId="11612" >
+			<HuntingGrounds>
+				<Hotspot X="3571.667" Y="5539.978" Z="27.1589" />
+				<Hotspot X="3614.136" Y="5493.238" Z="33.04959" />
+				<Hotspot X="3729.521" Y="5605.412" Z="37.03194" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Reclaiming the Quarry" QuestId="11612" TurnInName="Etaruk" TurnInId="25292" X="3505.942" Y="5439.393" Z="54.24461" />
+		<PickUp QuestName="Hampering Their Escape" QuestId="11617" GiverName="Etaruk" GiverId="25292" X="3505.942" Y="5439.393" Z="54.24461" />
+		<TurnIn QuestName="The Honored Ancestors" QuestId="11605" TurnInName="Elder Atkanok" TurnInId="187565" X="3523.875" Y="5416.487" Z="41.08683" />
+		<PickUp QuestName="The Lost Spirits" QuestId="11607" GiverName="Elder Atkanok" GiverId="187565" X="3523.875" Y="5416.487" Z="41.08683" />
+
+		<While Condition="DoQuest(11607)" >
+			<CustomBehavior File="KillUntilComplete" MobId="25355" QuestId="11607" TerminateWhen="HasItem(34711)" >
+				<HuntingGrounds>
+					<Hotspot X="3662.5" Y="5588.445" Z="32.71218" />
+					<Hotspot X="3557.899" Y="5475.711" Z="30.01125" />
+					<Hotspot X="3595.487" Y="5689.041" Z="66.36797" />
+				</HuntingGrounds>
+			</CustomBehavior>
+			<CustomBehavior File="InteractWith" MobState="Alive" CollectionDistance="200" PreInteractMountStrategy="Dismount" InteractByUsingItemId="34711" NumOfTimes="12" QuestId="11607" TerminateWhen="!HasItem(34711)" >
+				<HuntingGrounds>
+					<Hotspot X="3673.712" Y="5616.527" Z="32.69612" />
+					<Hotspot X="3586.883" Y="5497.985" Z="28.07533" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueUnit Id="25321" PursueWhen="!IsObjectiveComplete(1, 11607)" />
+					<PursueUnit Id="25322" PursueWhen="!IsObjectiveComplete(2, 11607)" />
+				</PursuitList>
+			</CustomBehavior>
+		</While>
+
+		<While Condition="DoQuest(11617)" >
+			<CustomBehavior File="KillUntilComplete" MobId="25449" QuestId="11617" TerminateWhen="GetItemCount(34772) &gt;= 3" >
+				<HuntingGrounds>
+					<Hotspot X="3662.5" Y="5588.445" Z="32.71218" />
+					<Hotspot X="3557.899" Y="5475.711" Z="30.01125" />
+					<Hotspot X="3595.487" Y="5689.041" Z="66.36797" />
+				</HuntingGrounds>
+			</CustomBehavior>
+
+			<If Condition="HasItem(34772) &amp;&amp; !IsObjectiveComplete(1, 11617)" >
+				<MoveTo X="3535.582" Y="5532.452" Z="65.24549" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="34772" QuestId="11617" QuestObjectiveIndex="1" X="3535.582" Y="5532.452" Z="65.24549" />
+			</If>
+			<If Condition="HasItem(34772) &amp;&amp; !IsObjectiveComplete(3, 11617)" >
+				<MoveTo X="3550.786" Y="5662.269" Z="62.64557" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="34772" QuestId="11617" QuestObjectiveIndex="3" X="3550.786" Y="5662.269" Z="62.64557" />
+			</If>
+			<If Condition="HasItem(34772) &amp;&amp; !IsObjectiveComplete(2, 11617)" >
+				<MoveTo X="3673.135" Y="5563.531" Z="33.9562" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="34772" QuestId="11617" QuestObjectiveIndex="2" X="3673.135" Y="5563.531" Z="33.9562" />
+			</If>
+		</While>
+
+		<TurnIn QuestName="The Lost Spirits" QuestId="11607" TurnInName="Elder Atkanok" TurnInId="187565" X="3525.863" Y="5423.396" Z="40.09393" />
+		<PickUp QuestName="Picking Up the Pieces" QuestId="11609" GiverName="Elder Atkanok" GiverId="187565" X="3525.863" Y="5423.396" Z="40.09393" />
+		<TurnIn QuestName="Hampering Their Escape" QuestId="11617" TurnInName="Etaruk" TurnInId="25292" X="3506.76" Y="5438.981" Z="54.28434" />
+		<PickUp QuestName="A Visit to the Curator" QuestId="11623" GiverName="Etaruk" GiverId="25292" X="3506.76" Y="5438.981" Z="54.28434" />
+
+		<CustomBehavior File="KillUntilComplete" MobId="25448" QuestId="11623" X="3620.3" Y="5684.008" Z="66.13593" />
+
+		<While Condition="DoQuest(11609)" >
+			<CustomBehavior File="InteractWith" MobIds="187670, 187671" InteractByLooting="true" PreInteractMountStrategy="Dismount" CollectionDistance="200" NumOfTimes="12" QuestId="11609" >
+				<HuntingGrounds>
+					<Hotspot X="3652.781" Y="5600.704" Z="33.84613" />
+					<Hotspot X="3573" Y="5474.668" Z="30.20776" />
+					<Hotspot X="3521.25" Y="5672.566" Z="62.00149" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<TurnIn QuestName="A Visit to the Curator" QuestId="11623" TurnInName="Etaruk" TurnInId="25292" X="3506.025" Y="5439.715" Z="54.28425" />
+		<TurnIn QuestName="Picking Up the Pieces" QuestId="11609" TurnInName="Elder Atkanok" TurnInId="187565" X="3527.292" Y="5422.982" Z="39.98851" />
+
+		<PickUp QuestName="Leading the Ancestors Home" QuestId="11610" GiverName="Elder Atkanok" GiverId="187565" X="3527.292" Y="5422.982" Z="39.98851" />
+		<While Condition="DoQuest(11610)" >
+			<If Condition="!IsObjectiveComplete(2, 11610)" >
+				<MoveTo X="3588.001" Y="5524.699" Z="26.9418" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="34715" QuestId="11610" QuestObjectiveIndex="2" X="3588.001" Y="5524.699" Z="26.9418" />
+			</If>
+			<If Condition="!IsObjectiveComplete(1, 11610)" >
+				<MoveTo X="3652.701" Y="5636.281" Z="34.58706" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="34715" QuestId="11610" QuestObjectiveIndex="1" X="3652.701" Y="5636.281" Z="34.58706" />
+			</If>
+			<If Condition="!IsObjectiveComplete(3, 11610)" >
+				<MoveTo X="3699.04" Y="5556.886" Z="35.17462" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="34715" QuestId="11610" QuestObjectiveIndex="3" X="3699.04" Y="5556.886" Z="35.17462" />
+			</If>
+			<MoveTo X="3527.371" Y="5420.785" Z="40.45501" />
+		</While>
+		<TurnIn QuestName="Leading the Ancestors Home" QuestId="11610" TurnInName="Elder Atkanok" TurnInId="187565" X="3527.292" Y="5422.982" Z="39.98851" />
 
 		<PickUp QuestName="Help Those That Cannot Help Themselves" QuestId="11876" GiverName="Archdruid Lathorius" GiverId="25809" X="3196.619" Y="5280.756" Z="47.56306" />
 		<PickUp QuestName="Ears of Our Enemies" QuestId="11866" GiverName="Archdruid Lathorius" GiverId="25809" X="3196.619" Y="5280.756" Z="47.56306" />
@@ -905,115 +1016,6 @@ END INITORDER COMMENT -->
 
 		<TurnIn QuestName="Khu&apos;nok Will Know" QuestId="11878" TurnInName="Khu&apos;nok the Behemoth" TurnInId="25862" X="3721.658" Y="5151.915" Z="24.58073" />
 		<!-- <PickUp QuestName="Kaw the Mammoth Destroyer" QuestId="11879" GiverName="Khu&apos;nok the Behemoth" GiverId="25862" X="3721.658" Y="5151.915" Z="24.58073" /> Not worth doing -->
-
-		<PickUp QuestName="Reclaiming the Quarry" QuestId="11612" GiverName="Etaruk" GiverId="25292" X="3507.256" Y="5438.769" Z="54.30971" />
-		<PickUp QuestName="The Honored Ancestors" QuestId="11605" GiverName="Elder Atkanok" GiverId="187565" X="3525.11" Y="5415.146" Z="41.30281" />
-
-		<While Condition="DoQuest(11605)" >
-			<CustomBehavior File="InteractWith" MobId="187663" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="11605" QuestObjectiveIndex="2" X="3588.55" Y="5523.176" Z="26.93825" />
-			<CustomBehavior File="InteractWith" MobId="187664" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="11605" QuestObjectiveIndex="3" X="3698.238" Y="5557.177" Z="35.11781" />
-			<CustomBehavior File="InteractWith" MobId="187662" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="11605" QuestObjectiveIndex="1" X="3653.043" Y="5635.399" Z="34.51223" />
-		</While>
-
-		<CustomBehavior File="KillUntilComplete" MobId="25353" QuestId="11612" >
-			<HuntingGrounds>
-				<Hotspot X="3571.667" Y="5539.978" Z="27.1589" />
-				<Hotspot X="3614.136" Y="5493.238" Z="33.04959" />
-				<Hotspot X="3729.521" Y="5605.412" Z="37.03194" />
-			</HuntingGrounds>
-		</CustomBehavior>
-
-		<TurnIn QuestName="Reclaiming the Quarry" QuestId="11612" TurnInName="Etaruk" TurnInId="25292" X="3505.942" Y="5439.393" Z="54.24461" />
-		<PickUp QuestName="Hampering Their Escape" QuestId="11617" GiverName="Etaruk" GiverId="25292" X="3505.942" Y="5439.393" Z="54.24461" />
-		<TurnIn QuestName="The Honored Ancestors" QuestId="11605" TurnInName="Elder Atkanok" TurnInId="187565" X="3523.875" Y="5416.487" Z="41.08683" />
-		<PickUp QuestName="The Lost Spirits" QuestId="11607" GiverName="Elder Atkanok" GiverId="187565" X="3523.875" Y="5416.487" Z="41.08683" />
-
-		<While Condition="DoQuest(11607)" >
-			<CustomBehavior File="KillUntilComplete" MobId="25355" QuestId="11607" TerminateWhen="HasItem(34711)" >
-				<HuntingGrounds>
-					<Hotspot X="3662.5" Y="5588.445" Z="32.71218" />
-					<Hotspot X="3557.899" Y="5475.711" Z="30.01125" />
-					<Hotspot X="3595.487" Y="5689.041" Z="66.36797" />
-				</HuntingGrounds>
-			</CustomBehavior>
-			<CustomBehavior File="InteractWith" MobState="Alive" CollectionDistance="200" PreInteractMountStrategy="Dismount" InteractByUsingItemId="34711" NumOfTimes="12" QuestId="11607" TerminateWhen="!HasItem(34711)" >
-				<HuntingGrounds>
-					<Hotspot X="3673.712" Y="5616.527" Z="32.69612" />
-					<Hotspot X="3586.883" Y="5497.985" Z="28.07533" />
-				</HuntingGrounds>
-				<PursuitList>
-					<PursueUnit Id="25321" PursueWhen="!IsObjectiveComplete(1, 11607)" />
-					<PursueUnit Id="25322" PursueWhen="!IsObjectiveComplete(2, 11607)" />
-				</PursuitList>
-			</CustomBehavior>
-		</While>
-
-		<While Condition="DoQuest(11617)" >
-			<CustomBehavior File="KillUntilComplete" MobId="25449" QuestId="11617" TerminateWhen="GetItemCount(34772) &gt;= 3" >
-				<HuntingGrounds>
-					<Hotspot X="3662.5" Y="5588.445" Z="32.71218" />
-					<Hotspot X="3557.899" Y="5475.711" Z="30.01125" />
-					<Hotspot X="3595.487" Y="5689.041" Z="66.36797" />
-				</HuntingGrounds>
-			</CustomBehavior>
-
-			<If Condition="HasItem(34772) &amp;&amp; !IsObjectiveComplete(1, 11617)" >
-				<MoveTo X="3535.582" Y="5532.452" Z="65.24549" />
-				<CustomBehavior File="ForcedDismount" />
-				<CustomBehavior File="UseItem" ItemId="34772" QuestId="11617" QuestObjectiveIndex="1" X="3535.582" Y="5532.452" Z="65.24549" />
-			</If>
-			<If Condition="HasItem(34772) &amp;&amp; !IsObjectiveComplete(3, 11617)" >
-				<MoveTo X="3550.786" Y="5662.269" Z="62.64557" />
-				<CustomBehavior File="ForcedDismount" />
-				<CustomBehavior File="UseItem" ItemId="34772" QuestId="11617" QuestObjectiveIndex="3" X="3550.786" Y="5662.269" Z="62.64557" />
-			</If>
-			<If Condition="HasItem(34772) &amp;&amp; !IsObjectiveComplete(2, 11617)" >
-				<MoveTo X="3673.135" Y="5563.531" Z="33.9562" />
-				<CustomBehavior File="ForcedDismount" />
-				<CustomBehavior File="UseItem" ItemId="34772" QuestId="11617" QuestObjectiveIndex="2" X="3673.135" Y="5563.531" Z="33.9562" />
-			</If>
-		</While>
-
-		<TurnIn QuestName="The Lost Spirits" QuestId="11607" TurnInName="Elder Atkanok" TurnInId="187565" X="3525.863" Y="5423.396" Z="40.09393" />
-		<PickUp QuestName="Picking Up the Pieces" QuestId="11609" GiverName="Elder Atkanok" GiverId="187565" X="3525.863" Y="5423.396" Z="40.09393" />
-		<TurnIn QuestName="Hampering Their Escape" QuestId="11617" TurnInName="Etaruk" TurnInId="25292" X="3506.76" Y="5438.981" Z="54.28434" />
-		<PickUp QuestName="A Visit to the Curator" QuestId="11623" GiverName="Etaruk" GiverId="25292" X="3506.76" Y="5438.981" Z="54.28434" />
-
-		<CustomBehavior File="KillUntilComplete" MobId="25448" QuestId="11623" X="3620.3" Y="5684.008" Z="66.13593" />
-
-		<While Condition="DoQuest(11609)" >
-			<CustomBehavior File="InteractWith" MobIds="187670, 187671" InteractByLooting="true" PreInteractMountStrategy="Dismount" CollectionDistance="200" NumOfTimes="12" QuestId="11609" >
-				<HuntingGrounds>
-					<Hotspot X="3652.781" Y="5600.704" Z="33.84613" />
-					<Hotspot X="3573" Y="5474.668" Z="30.20776" />
-					<Hotspot X="3521.25" Y="5672.566" Z="62.00149" />
-				</HuntingGrounds>
-			</CustomBehavior>
-		</While>
-
-		<TurnIn QuestName="A Visit to the Curator" QuestId="11623" TurnInName="Etaruk" TurnInId="25292" X="3506.025" Y="5439.715" Z="54.28425" />
-		<TurnIn QuestName="Picking Up the Pieces" QuestId="11609" TurnInName="Elder Atkanok" TurnInId="187565" X="3527.292" Y="5422.982" Z="39.98851" />
-
-		<PickUp QuestName="Leading the Ancestors Home" QuestId="11610" GiverName="Elder Atkanok" GiverId="187565" X="3527.292" Y="5422.982" Z="39.98851" />
-		<While Condition="DoQuest(11610)" >
-			<If Condition="!IsObjectiveComplete(2, 11610)" >
-				<MoveTo X="3588.001" Y="5524.699" Z="26.9418" />
-				<CustomBehavior File="ForcedDismount" />
-				<CustomBehavior File="UseItem" ItemId="34715" QuestId="11610" QuestObjectiveIndex="2" X="3588.001" Y="5524.699" Z="26.9418" />
-			</If>
-			<If Condition="!IsObjectiveComplete(1, 11610)" >
-				<MoveTo X="3652.701" Y="5636.281" Z="34.58706" />
-				<CustomBehavior File="ForcedDismount" />
-				<CustomBehavior File="UseItem" ItemId="34715" QuestId="11610" QuestObjectiveIndex="1" X="3652.701" Y="5636.281" Z="34.58706" />
-			</If>
-			<If Condition="!IsObjectiveComplete(3, 11610)" >
-				<MoveTo X="3699.04" Y="5556.886" Z="35.17462" />
-				<CustomBehavior File="ForcedDismount" />
-				<CustomBehavior File="UseItem" ItemId="34715" QuestId="11610" QuestObjectiveIndex="3" X="3699.04" Y="5556.886" Z="35.17462" />
-			</If>
-			<MoveTo X="3527.371" Y="5420.785" Z="40.45501" />
-		</While>
-		<TurnIn QuestName="Leading the Ancestors Home" QuestId="11610" TurnInName="Elder Atkanok" TurnInId="187565" X="3527.292" Y="5422.982" Z="39.98851" />
 
 		<PickUp QuestName="Prison Break" QuestId="11587" GiverName="Librarian Donathan" GiverId="25262" X="3611.909" Y="5960.864" Z="136.2146" />
 		<PickUp QuestName="Monitoring the Rift: Cleftcliff Anomaly" QuestId="11576" GiverName="Librarian Garren" GiverId="25291" X="3613.106" Y="5976.967" Z="136.2146" />
