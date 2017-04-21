@@ -324,18 +324,26 @@ END INITORDER COMMENT -->
 
 		<PickUp QuestName="The Denouncement" QuestId="12273" GiverName="High Executor Wroth" GiverId="27243" X="3212.485" Y="-680.3422" Z="167.5352" />
 		<While Condition="DoQuest(12273)" > <!-- Aura item applies: 48714 -->
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="UseRodOfCompulsion" LogExecution="false" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.IsAlive &amp;&amp; !Me.CurrentTarget.HasAura(48714) &amp;&amp; (Me.CurrentTarget.Entry == 27234 || Me.CurrentTarget.Entry == 27237 || Me.CurrentTarget.Entry == 27236 || Me.CurrentTarget.Entry == 27235) &amp;&amp; Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 37438).CooldownTimeLeft == TimeSpan.Zero" >
+				<DisableBehavior Name="Combat" />
+				<CustomBehavior File="RunCode" Code="Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 37438).Use();" />
+				<CustomBehavior File="WaitTimer" WaitTime="750" />
+				<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="!Me.IsCasting" />
+				<EnableBehavior Name="Combat" />
+			</CustomBehavior>
+
 			<While Condition="!IsObjectiveComplete(3, 12273)" >
 				<MoveTo X="2929.694" Y="-319.8865" Z="112.6787" /> <!-- Avoid landing on the roof -->
-				<CustomBehavior File="CombatUseItemOnV2" QuestId="12273" QuestObjectiveIndex="3" ItemId="37438" NonCompeteDistance="0" MobId="27234" UseWhenMobHasHealthPercent="100" MaxRangeToUseItem="10" UseWhenMobMissingAuraId="48714" UseItemStrategy="UseItemContinuouslyOnTargetDontDefend" RecallPetAtMobPercentHealth="100" X="2937.17" Y="-346.7527" Z="114.6206" />
+				<CustomBehavior File="KillUntilComplete" MobId="27234" QuestId="12273" QuestObjectiveIndex="3" X="2937.17" Y="-346.7527" Z="114.6206" />
 			</While>
 
+			<CustomBehavior File="KillUntilComplete" MobId="27237" QuestId="12273" QuestObjectiveIndex="1" X="2885.095" Y="-292.8757" Z="127.9585" />
 
-				<CustomBehavior File="CombatUseItemOnV2" QuestId="12273" QuestObjectiveIndex="1" ItemId="37438" NonCompeteDistance="0" MobId="27237" UseWhenMobHasHealthPercent="100" MaxRangeToUseItem="10" UseWhenMobMissingAuraId="48714" UseItemStrategy="UseItemContinuouslyOnTargetDontDefend" RecallPetAtMobPercentHealth="100" X="2885.095" Y="-292.8757" Z="127.9585" />
+			<CustomBehavior File="KillUntilComplete" MobId="27236" QuestId="12273" QuestObjectiveIndex="4" X="2743.768" Y="-194.7514" Z="138.7812" />
 
-				<CustomBehavior File="CombatUseItemOnV2" QuestId="12273" QuestObjectiveIndex="4" ItemId="37438" NonCompeteDistance="0" MobId="27236" UseWhenMobHasHealthPercent="100" MaxRangeToUseItem="10" UseWhenMobMissingAuraId="48714" UseItemStrategy="UseItemContinuouslyOnTargetDontDefend" RecallPetAtMobPercentHealth="100" X="2743.768" Y="-194.7514" Z="138.7812" />
+			<CustomBehavior File="KillUntilComplete" MobId="27235" QuestId="12273" QuestObjectiveIndex="2" X="2670.041" Y="-469.1947" Z="50.056" />
 
-				<CustomBehavior File="CombatUseItemOnV2" QuestId="12273" QuestObjectiveIndex="2" ItemId="37438" NonCompeteDistance="0" MobId="27235" UseWhenMobHasHealthPercent="100" MaxRangeToUseItem="10" UseWhenMobMissingAuraId="48714" UseItemStrategy="UseItemContinuouslyOnTargetDontDefend" RecallPetAtMobPercentHealth="100" X="2670.041" Y="-469.1947" Z="50.056" />
-
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="UseRodOfCompulsion" Command="Remove" />
 		</While>
 
 		<If Condition="QuestDone(12273) &amp;&amp; Me.HearthstoneAreaId == 4186 &amp;&amp; Unit(27235) != null" >
