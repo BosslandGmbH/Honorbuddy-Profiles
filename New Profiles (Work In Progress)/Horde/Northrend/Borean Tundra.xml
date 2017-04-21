@@ -35,6 +35,8 @@
 		<Blackspot X="2938.661" Y="6478.956" Z="78.89586" Radius="11.01611" /> <!-- Large cart thing near Garrosh's Landing -->
 		<Blackspot X="2929.82" Y="6483.418" Z="83.24158" Radius="11.16186" /> <!-- Small path beside object blackspotted above which seems to be bugging out the Kodo transport quest. -->
 		<Blackspot X="3512.959" Y="5446.65" Z="54.97598" Radius="3.832434" /> <!-- Tent behind Etaruk -->
+		<Blackspot X="3565.045" Y="6648.608" Z="195.371" Radius="4.561913" /> <!-- Building behind Raelorasz -->
+		<Blackspot X="3575.226" Y="6671.963" Z="195.1052" Radius="8" /> <!-- Blackspotting Archmage Berinand because bot likes to get stuck in the roof of the building he is in --> 
 	</Blackspots>
 
 	<Blacklist>
@@ -797,6 +799,7 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="The Art of Persuasion" QuestId="11648" GiverName="Librarian Normantis" GiverId="25480" X="3637.038" Y="5897.107" Z="150.438" />
 		<While Condition="DoQuest(11648)" >
 			<CustomBehavior File="RunCode" Code="Unit(25478).Target();" />
+			<CustomBehavior File="RunCode" Code="QuestFrame.Instance.Close();" /> <!-- Sometimes it sticks -->
 			<CustomBehavior File="UseItem" ItemId="34811" QuestId="11648" X="3634.516" Y="5898.067" Z="150.4214" />
 		</While>
 		<TurnIn QuestName="The Art of Persuasion" QuestId="11648" TurnInName="Librarian Normantis" TurnInId="25480" X="3635.954" Y="5897.053" Z="150.4401" />
@@ -809,7 +812,7 @@ END INITORDER COMMENT -->
 			<MoveTo X="3393.827" Y="6161.038" Z="79.83264" />
 			<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Unit(25584, u =&gt; !u.IsDead) != null" />
 			<If Condition="Unit(25584, u =&gt; u.IsAlive &amp;&amp; u.HasAura(45775)) != null" >
-				<CustomBehavior File="Halt" />
+				<CustomBehavior File="RunCode" Code="Me.SetFacing(Unit(25584).Location);" />
 				<CustomBehavior File="UseItem" ItemId="34897" QuestId="11671" X="3393.827" Y="6161.038" Z="79.83264" TerminateWhen="!HasItem(34897) || Unit(25584, u =&gt; !u.HasAura(45775)) != null || Object(187875) != null" />
 			</If>
 			<CustomBehavior File="KillUntilComplete" MobId="25584" QuestId="11671" X="3393.827" Y="6161.038" Z="79.83264" TerminateWhen="Unit(25584) == null || Unit(25584, u =&gt; u.HasAura(45775)) != null || Object(187875) != null" />

@@ -378,16 +378,16 @@ END INITORDER COMMENT -->
 		</While>
 
 		<If Condition="NeedsQuest(12530)" >
-			<If Condition="Unit(28214) == null" >
+			<While Condition="Unit(28214, u =&gt; u.CreatedByUnit == Me) == null" >
 				<CustomBehavior File="ForcedDismount" />
-				<CustomBehavior File="UseItem" ItemId="38619" TerminateWhen="!HasItem(38619)" />
-			</If>
+				<CustomBehavior File="UseItem" ItemId="38619" TerminateWhen="!HasItem(38619) || Unit(28214, u =&gt; u.CreatedByUnit == Me) != null" />
+			</While>
 			<PickUp QuestName="Tormenting the Softknuckles" QuestId="12530" GiverName="Goregek the Gorilla Hunter" GiverId="28214" X="5269.529" Y="4518.748" Z="-83.98974" />
 		</If>
 
 		<While Condition="DoQuest(12530)" >
 			<CustomBehavior File="InteractWith" MobId="28127" InteractByUsingItemId="38467" PreInteractMountStrategy="Dismount" CollectionDistance="200" NumOfTimes="20" QuestId="12530" X="5134.74" Y="4007.375" Z="-61.68164" TerminateWhen="Unit(28213) != null" />
-			<CustomBehavior File="KillUntilComplete" MobId="28213" QuestId="12530" X="5146.016" Y="3993.578" Z="-61.86334" />
+			<CustomBehavior File="KillUntilComplete" MobId="28213" QuestId="12530" X="5146.016" Y="3993.578" Z="-61.86334" TerminateWhen="Unit(28213, u =&gt; u.IsAlive) == null" />
 		</While>
 
 		<CustomBehavior File="KillUntilComplete" QuestId="12529" >
