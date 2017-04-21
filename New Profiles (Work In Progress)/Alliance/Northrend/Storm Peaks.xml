@@ -701,7 +701,7 @@ END INITORDER COMMENT -->
 
 		<CustomBehavior File="InteractWith" MobId="29811" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" GossipOptions="1,1,1" CollectionDistance="200" QuestId="12864" QuestObjectiveIndex="1" X="6534.012" Y="-747.4825" Z="610.587" />
 
-		<CustomBehavior File="InteractWith" MobId="191708" InteractByLooting="true" InteractBlacklistTimeInSeconds="1" QuestId="12854" QuestObjectiveIndex="1" X="7158.884" Y="-725.8159" Z="893.7598" />
+		<CustomBehavior File="InteractWith" MobId="191708" InteractByLooting="true" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="12854" QuestObjectiveIndex="1" X="7158.884" Y="-725.8159" Z="893.7598" />
 
 		<While Condition="DoQuest(12865)" >
 			<CustomBehavior File="KillUntilComplete" MobIds="30445, 29469" QuestId="12865" TerminateWhen="GetItemCount(41340) &gt;= 8" >
@@ -764,9 +764,9 @@ END INITORDER COMMENT -->
 
 						dwarfAgressor.Target();
 
-						if (dwarfAgressor != null &amp;&amp; Lua.GetReturnVal&lt;bool&gt;(&quot;return GetPetActionCooldown(1) == 0;&quot;, 0))
+						if (dwarfAgressor != null &amp;&amp; dwarfAgressor.IsValid &amp;&amp; Lua.GetReturnVal&lt;bool&gt;(&quot;return GetPetActionCooldown(1) == 0;&quot;, 0))
 							Lua.DoString(&quot;CastPetAction(1);&quot;);
-						if (dwarfAgressor != null &amp;&amp; dwarfAgressor.DistanceSqr &lt; 30f*30f &amp;&amp; Lua.GetReturnVal&lt;bool&gt;(&quot;return GetPetActionCooldown(2) == 0;&quot;, 0))
+						if (dwarfAgressor != null &amp;&amp; dwarfAgressor.IsValid &amp;&amp; dwarfAgressor.DistanceSqr &lt; 30f*30f &amp;&amp; Lua.GetReturnVal&lt;bool&gt;(&quot;return GetPetActionCooldown(2) == 0;&quot;, 0))
 						{
 							Lua.DoString(&quot;CastPetAction(2);&quot;);
 							SpellManager.ClickRemoteLocation(WoWMathHelper.CalculatePointInFront(dwarfAgressor.Location, dwarfAgressor.Rotation, 3));
@@ -1135,8 +1135,6 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Destroy the Forges!" QuestId="12988" GiverName="Bouldercrag the Rockshaper" GiverId="29801" X="8395.758" Y="-389.5689" Z="902.9873" />
 		<PickUp QuestName="Hit Them Where it Hurts" QuestId="12991" GiverName="Bruor Ironbane" GiverId="30152" X="8391.063" Y="-383.4203" Z="903.1188" />
 
-
-
 		<While Condition="DoQuest(12988)" >
 			<If Condition="!IsObjectiveComplete(1, 12988)" >
 				<MoveTo X="8029.706" Y="-223.4491" Z="847.4165" />
@@ -1179,15 +1177,17 @@ END INITORDER COMMENT -->
 			<If Condition="DoQuest(12998) &amp;&amp; Unit(29801) != null" >
 				<CustomBehavior File="FlyTo" X="8494.334" Y="-374.1659" Z="946.7888" />
 			</If>
-			<CustomBehavior File="FlyTo" X="7155.379" Y="-463.5214" Z="954.6254" />
-			<CustomBehavior File="MyCTM" X="7234.437" Y="-460.9258" Z="954.8806" />
-			<CustomBehavior File="MyCTM" X="7310.001" Y="-454.9555" Z="900.7285" />
-			<CustomBehavior File="MyCTM" X="7308.646" Y="-596.1565" Z="785.4083" />
-			<CustomBehavior File="MyCTM" X="7309.023" Y="-724.2565" Z="791.6111" />
+			<If Condition="Object(192181) == null" >
+				<CustomBehavior File="FlyTo" X="7155.379" Y="-463.5214" Z="954.6254" />
+				<CustomBehavior File="MyCTM" X="7234.437" Y="-460.9258" Z="954.8806" />
+				<CustomBehavior File="MyCTM" X="7310.001" Y="-454.9555" Z="900.7285" />
+				<CustomBehavior File="MyCTM" X="7308.646" Y="-596.1565" Z="785.4083" />
+				<CustomBehavior File="MyCTM" X="7309.023" Y="-724.2565" Z="791.6111" />
+			</If>
 			<CustomBehavior File="InteractWith" MobId="192181" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="12998" QuestObjectiveIndex="1" X="7309.023" Y="-724.2565" Z="791.6111" />
 		</While>
 
-		<If Condition="QuestDone(12998) &amp;&amp; DistanceTo(7309.333f, -721.2963f, 791.6102f) &lt;= 200" >
+		<If Condition="DistanceTo(7309.333f, -721.2963f, 791.6102f) &lt;= 200" >
 			<If Condition="Me.HearthstoneAreaId == 4484" >
 				<CustomBehavior File="UseHearthstone" WaitForCD="false" />
 			</If>

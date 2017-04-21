@@ -514,8 +514,20 @@ END INITORDER COMMENT -->
 		<TurnIn QuestName="Hoofing It" QuestId="12539" TurnInName="High-Shaman Rakjak" TurnInId="28082" X="5277.475" Y="4531.014" Z="-81.28402" />
 
 		<PickUp QuestName="Just Following Orders" QuestId="12540" GiverName="High-Shaman Rakjak" GiverId="28082" X="5278.987" Y="4531.914" Z="-80.71124" />
-		<CustomBehavior File="InteractWith" MobId="28217" GossipOptions="1" CollectionDistance="200" QuestId="12540" QuestObjectiveIndex="1" X="5412.318" Y="4574.35" Z="-129.3929" />
-		<TurnIn QuestName="Just Following Orders" QuestId="12540" TurnInName="Injured Rainspeaker Oracle" TurnInId="28217" X="5412.318" Y="4574.35" Z="-129.3929" />
+		<While Condition="HasQuest(12540)" >
+			<CustomBehavior File="InteractWith" WaitForNpcs="false" CollectionDistance="200" NonCompeteDistance="0" >
+				<PursuitList>
+					<PursueUnit Id="28217" PursueWhen="UNIT.QuestGiverStatus == QuestGiverStatus.TurnIn" />
+				</PursuitList>
+			</CustomBehavior>
+			<If Condition="QuestFrame.Instance.IsVisible" >
+				<CustomBehavior File="RunCode" Code="QuestFrame.Instance.CompleteQuest();" />
+				<!-- <TurnIn QuestName="Just Following Orders" QuestId="12540" TurnInName="Injured Rainspeaker Oracle" TurnInId="28217" />-->
+			</If>
+
+			<CustomBehavior File="InteractWith" MobId="28217" GossipOptions="1" CollectionDistance="200" X="5412.318" Y="4574.35" Z="-129.3929" TerminateWhen="!HasQuest(12540) || Unit(8217, u =&gt; u.QuestGiverStatus == QuestGiverStatus.TurnIn) != null" />
+			<CustomBehavior File="Misc\RunLua" QuestId="12540" WaitTime="1000" Lua="ReloadUI();" /> <!-- Fixes interface bug -->
+		</While>
 
 		<PickUp QuestName="Fortunate Misunderstandings" QuestId="12570" GiverName="Injured Rainspeaker Oracle" GiverId="28217" X="5412.318" Y="4574.35" Z="-129.3929" />
 		<While Condition="DoQuest(12570)" >
