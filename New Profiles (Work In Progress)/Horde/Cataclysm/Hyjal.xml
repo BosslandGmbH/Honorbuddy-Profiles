@@ -1,0 +1,848 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../Schemas/EchoSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Hyjal ($Rev: 6041 $)</Name>
+
+	<DefaultNavType>Fly</DefaultNavType>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+		<Mob Name="Blazebound Elemental" Id="38896" Flags="Pull" />
+		<Mob Name="Baaron Geddon" Id="40147" Flags="Combat" />
+		<Mob Name="41031" Id="41031" Flags="Pull" />
+	</Blacklist>
+
+	<!-- INITORDER COMMENT 
+	<InitOrder>
+		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> Use LevelBot default
+	</InitOrder>
+END INITORDER COMMENT -->
+
+	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
+		<!-- RunCode Methods -->
+			<!--<CustomBehavior File="RunCode" Type="Definition">
+			<![CDATA[
+				public __CompiledBatchClass__()
+				{
+					Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
+					Lua.DoString("SetCVar('AutoLootDefault', 1);");
+					CharacterSettings.Instance.LootMobs = true;
+					CharacterSettings.Instance.Save();
+					Lua.DoString("for i=1,GetNumAddOns() do DisableAddOn(i) end ReloadUI();");
+					Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
+				}
+			]]>
+			</CustomBehavior> -->
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Hooks -->
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[ 
+					IEnumerable<WoWItem> GetExtraConsumables()
+					{
+						uint foodCount = 0;
+						uint drinkCount = 0;
+						// Skip conjured and buff comsumables.
+				
+						var extraConsumables = (from item in Me.BagItems
+										   where item != null && item.ItemInfo != null
+										   let isFood = Consumable.IsFood(item.ItemInfo)
+										   let isDrink = Consumable.IsDrink(item.ItemInfo)
+										   where (isFood || isDrink) && item.ItemInfo.SellPrice > 0 && item.Effects.Count == 1 && item.ItemInfo.RequiredLevel < Me.Level - 10                    
+										   select item).ToList();
+				
+				
+						var extraPotions = Me.BagItems
+							.Where(c => c != null && c.IsValid && c.ItemInfo != null && c.ItemInfo.SellPrice > 0 && c.Effects.Count == 1
+								&& (c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Potion
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Elixir
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Flask)
+								&& c.ItemInfo.RequiredLevel < Me.Level - 20);
+				
+						extraConsumables.AddRange(extraPotions);
+						return extraConsumables;
+					}
+					 
+					async Task SellExtraConsumables()
+					{
+						Logging.Write("Selling items in GetExtraConsumables()");
+						foreach (var item in GetExtraConsumables())
+						{
+							Logging.Write("Selling {0}.", item.Name);
+							item.UseContainerItem();
+							await Coroutine.Sleep(1337);
+						}
+					}
+				]]>
+			</CustomBehavior>
+			<CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+				<CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>
+			</CustomBehavior>
+		<!-- END Hooks -->
+
+		<If Condition="HasQuest(28790)" >
+			<TurnIn QuestName="A Personal Summons" QuestId="28790" TurnInName="Farseer Krogar" TurnInId="45244" X="2042.595" Y="-4380.171" Z="99.21484" />
+		</If>
+
+		<If Condition="Me.ZoneId != 616" > <!-- Go into Hyjal -->
+			<CustomBehavior File="InteractWith" MobId="207688" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="2040.627" Y="-4392.344" Z="98.04846" />
+		</If>
+
+		<PickUp QuestName="Protect the World Tree" QuestId="25317" GiverName="Ysera" GiverId="40289" X="5493.15" Y="-3566.431" Z="1569.249" />
+		<PickUp QuestName="The Earth Rises" QuestId="25460" GiverName="Anren Shadowseeker" GiverId="39925" X="5556.335" Y="-3643.402" Z="1567.198" />
+		<PickUp QuestName="Inciting the Elements" QuestId="25370" GiverName="Tholo Whitehoof" GiverId="40278" X="5557.374" Y="-3645.99" Z="1567.397" />
+
+		<While Condition="DoQuest(25370)" >
+			<CustomBehavior File="KillUntilComplete" MobId="39926" MovementBy="NavigatorOnly" QuestId="25370" QuestObjectiveIndex="1" TerminateWhen="Unit(39926, u =&gt; u.Aggro) == null" />
+			<CustomBehavior File="InteractWith" MobId="39921" CollectionDistance="200" InteractByUsingItemId="53009" PreInteractMountStrategy="Dismount" MovementBy="NavigatorOnly" QuestId="25370" QuestObjectiveIndex="1" TerminateWhen="!HasItem(53009)" >
+				<HuntingGrounds>
+					<Hotspot X="5645.777" Y="-3683.567" Z="1582.234" />
+					<Hotspot X="5473.502" Y="-3742.727" Z="1584.101" />
+					<Hotspot X="5530.123" Y="-3467.527" Z="1563.985" />
+				</HuntingGrounds>
+			</CustomBehavior>
+			<CustomBehavior File="InteractWith" MobId="202754" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" MovementBy="NavigatorOnly" QuestId="25370" QuestObjectiveIndex="1" TerminateWhen="GetItemCount(53009) &gt;= 4" >
+				<HuntingGrounds>
+					<Hotspot X="5645.777" Y="-3683.567" Z="1582.234" />
+					<Hotspot X="5473.502" Y="-3742.727" Z="1584.101" />
+					<Hotspot X="5530.123" Y="-3467.527" Z="1563.985" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<CustomBehavior File="KillUntilComplete" MobId="40229" QuestId="25460" >
+			<HuntingGrounds>
+				<Hotspot X="5557.279" Y="-3692.312" Z="1569.09" />
+				<Hotspot X="5602.181" Y="-3767.05" Z="1593.857" />
+				<Hotspot X="5502.071" Y="-3807.771" Z="1594.041" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Inciting the Elements" QuestId="25370" TurnInName="Tholo Whitehoof" TurnInId="40278" X="5557.234" Y="-3653.66" Z="1567.235" />
+		<PickUp QuestName="Flames from Above" QuestId="25574" GiverName="Tholo Whitehoof" GiverId="40278" X="5557.234" Y="-3653.66" Z="1567.235" />
+		<TurnIn QuestName="The Earth Rises" QuestId="25460" TurnInName="Anren Shadowseeker" TurnInId="39925" X="5553.191" Y="-3648.92" Z="1567.071" />
+
+		<While Condition="DoQuest(25574)" >
+			<MoveTo X="5764.709" Y="-3296.436" Z="1604.599" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="UseItem" ItemId="55122" QuestId="25574" QuestObjectiveIndex="1" X="5764.709" Y="-3296.436" Z="1604.599" />
+		</While>
+
+		<TurnIn QuestName="Flames from Above" QuestId="25574" TurnInName="Tholo Whitehoof" TurnInId="40278" X="5557.417" Y="-3649.94" Z="1567.554" />
+		<TurnIn QuestName="Protect the World Tree" QuestId="25317" TurnInName="Malfurion Stormrage" TurnInId="39857" X="5195.195" Y="-2956.777" Z="1560.897" />
+		<PickUp QuestName="War on the Twilight&apos;s Hammer" QuestId="25319" GiverName="Malfurion Stormrage" GiverId="39857" X="5195.195" Y="-2956.777" Z="1560.897" />
+		<PickUp QuestName="The Flameseer&apos;s Staff" QuestId="25472" GiverName="Windspeaker Tamila" GiverId="39869" X="5195.499" Y="-2955.86" Z="1560.914" />
+
+		<CustomBehavior File="InteractWith" MobId="202846" CollectionDistance="200" InteractByLooting="true"  PreInteractMountStrategy="Dismount" QuestId="25472" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="5357.832" Y="-2975.76" Z="1548.024" />
+				<Hotspot X="5264.513" Y="-2812.49" Z="1527.025" />
+				<Hotspot X="5570.393" Y="-2903.164" Z="1525.974" />
+			</HuntingGrounds>
+			<Blackspots>
+				<Blackspot X="5434.25" Y="-2800.19" Z="1516.193" Radius="40" />
+			</Blackspots>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" QuestId="25319" >
+			<HuntingGrounds>
+				<Hotspot X="5357.832" Y="-2975.76" Z="1548.024" />
+				<Hotspot X="5264.513" Y="-2812.49" Z="1527.025" />
+				<Hotspot X="5570.393" Y="-2903.164" Z="1525.974" />
+			</HuntingGrounds>
+			<Blackspots>
+				<Blackspot X="5434.25" Y="-2800.19" Z="1516.193" Radius="40" />
+			</Blackspots>
+			<PursuitList>
+				<PursueUnit Id="38926" PursueWhen="!IsObjectiveComplete(1, 25319)" />
+				<PursueUnit Id="38913" PursueWhen="!IsObjectiveComplete(2, 25319)" />
+			</PursuitList>
+		</CustomBehavior>
+
+		<TurnIn QuestName="War on the Twilight&apos;s Hammer" QuestId="25319" TurnInName="Malfurion Stormrage" TurnInId="39857" X="5193.681" Y="-2956.133" Z="1560.822" />
+		<TurnIn QuestName="The Flameseer&apos;s Staff" QuestId="25472" TurnInName="Malfurion Stormrage" TurnInId="39857" X="5193.681" Y="-2956.133" Z="1560.822" />
+		<PickUp QuestName="Flamebreaker" QuestId="25323" GiverName="Malfurion Stormrage" GiverId="39857" X="5193.681" Y="-2956.133" Z="1560.822" />
+
+		<CustomBehavior File="InteractWith" MobId="38896" MobState="Alive" CollectionDistance="200" InteractByUsingItemId="53107" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="5" KeepTargetSelected="true" WaitTime="5000" QuestId="25323" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="5364.37" Y="-2965.962" Z="1546.726" />
+				<Hotspot X="5535.794" Y="-2982.301" Z="1540.064" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Flamebreaker" QuestId="25323" TurnInName="Malfurion Stormrage" TurnInId="39857" X="5193.351" Y="-2956.294" Z="1560.822" />
+
+		<PickUp QuestName="The Return of Baron Geddon" QuestId="25464" GiverName="Malfurion Stormrage" GiverId="39857" X="5193.351" Y="-2956.294" Z="1560.822" />
+		<While Condition="DoQuest(25464)" >
+			<DisableBehavior Name="Rest" />
+			<CustomBehavior File="RunCode" Type="Definition" >
+			<![CDATA[
+				private WoWUnit _baaronGeddon;
+				private WoWItem _flamestaffItem;
+				private Styx.TreeSharp.Composite _baaronGeddonHook;
+				private async Task<bool> BaaronGeddonHook()
+				{
+					if (Me.HasAura(92924) && Me.Combat)
+					{
+						WoWMovement.ClickToMove(new Vector3(5389.462f, -2825.282f, 1517.21f));
+						return true;
+					}
+					if (QuestDone(25464))
+						return false;
+					if (Me.IsDead)
+						return false;
+					if (_baaronGeddon == null || !_baaronGeddon.IsValid)
+					{
+						_baaronGeddon = ObjectManager.GetObjectsOfType<WoWUnit>().FirstOrDefault(u => u.Entry == 40147);
+						return false;
+					}
+					if (_flamestaffItem == null || !_flamestaffItem.IsValid)
+					{
+						_flamestaffItem = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 54463);
+						return false;
+					}
+					if (_baaronGeddon.HasAura(74813))
+					{
+						return (await CommonCoroutines.MoveTo(new Vector3(5410.585f, -2807.549f, 1515.635f))).IsSuccessful();
+						return false;
+					}
+
+					if (_baaronGeddon.Location.DistanceSquared((WoWMovement.ActiveMover ?? StyxWoW.Me).Location) > 19f*19f)
+					{
+						TreeRoot.StatusText = "Moving to Baaron Geddon";
+						return (await CommonCoroutines.MoveTo(new Vector3(5418.382f, -2805.072f, 1516.245f))).IsSuccessful();
+					}
+
+					if (!Me.IsCasting)
+					{
+						_baaronGeddon.Target();
+						TreeRoot.StatusText = "Using staff on Baaron Geddon.";
+						await CommonCoroutines.StopMoving();
+						Me.SetFacing(_baaronGeddon.Location);
+						_flamestaffItem.Use();
+						return true;
+					}
+
+					if (Me.IsCasting) return true;
+
+					return false;
+				}
+			]]>
+			</CustomBehavior>
+			<CustomBehavior File="RunCode"><![CDATA[ TreeHooks.Instance.InsertHook("Questbot_Main", 0, _baaronGeddonHook ?? (_baaronGeddonHook = new  CommonBehaviors.Actions.ActionRunCoroutine(ctx => BaaronGeddonHook()))); ]]></CustomBehavior>
+			<MoveTo QuestId="25464" X="5410.501" Y="-2809.085" Z="1515.729" />
+			<CustomBehavior File="ForcedDismount" QuestId="25464" />
+			<CustomBehavior File="WaitTimer" WaitTime="10000" QuestId="25464" TerminateWhen="Unit(40147, u =&gt; !u.HasAura(74813)) != null" />
+
+			<If Condition="QuestDone(25464)" >
+				<MoveTo Nav="Run" X="5207.925" Y="-2959.528" Z="1561.417" />
+				<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="!Me.HasAura(92924)" />
+				<CustomBehavior File="RunCode"><![CDATA[ TreeHooks.Instance.RemoveHook("Questbot_Main", _baaronGeddonHook); ]]></CustomBehavior>
+				<EnableBehavior Name="Rest" />
+			</If>
+		</While>
+		<TurnIn QuestName="The Return of Baron Geddon" QuestId="25464" TurnInName="Malfurion Stormrage" TurnInId="39857" X="5193.62" Y="-2956.696" Z="1560.821" />
+
+		<PickUp QuestName="Emerald Allies" QuestId="25430" GiverName="Windspeaker Tamila" GiverId="39869" X="5195.601" Y="-2956.673" Z="1560.983" />
+		<TurnIn QuestName="Emerald Allies" QuestId="25430" TurnInName="Alysra" TurnInId="38917" X="5657.758" Y="-2987.783" Z="1560.7" />
+		<PickUp QuestName="The Captured Scout" QuestId="25320" GiverName="Alysra" GiverId="38917" X="5657.758" Y="-2987.783" Z="1560.7" />
+		<TurnIn QuestName="The Captured Scout" QuestId="25320" TurnInName="Scout Larandia" TurnInId="40096" X="5658.273" Y="-2816.059" Z="1524.303" />
+
+		<PickUp QuestName="Twilight Captivity" QuestId="25321" GiverName="Scout Larandia" GiverId="40096" X="5658.273" Y="-2816.059" Z="1524.303" />
+		<CustomBehavior File="KillUntilComplete" MobId="40123" QuestId="25321" X="5586.868" Y="-2829.435" Z="1515.426" />
+		<TurnIn QuestName="Twilight Captivity" QuestId="25321" TurnInName="Scout Larandia" TurnInId="40096" X="5659.319" Y="-2816.973" Z="1524.307" />
+
+		<PickUp QuestName="Return to Alysra" QuestId="25424" GiverName="Scout Larandia" GiverId="40096" X="5659.319" Y="-2816.973" Z="1524.307" />
+		<TurnIn QuestName="Return to Alysra" QuestId="25424" TurnInName="Alysra" TurnInId="38917" X="5654.437" Y="-2987.736" Z="1560.701" />
+
+		<PickUp QuestName="A Prisoner of Interest" QuestId="25324" GiverName="Alysra" GiverId="38917" X="5654.437" Y="-2987.736" Z="1560.701" />
+		<If Condition="QuestDone(25324)" >
+			<If Condition="!Me.IsIndoors" >
+				<MoveTo X="5704.379" Y="-3156.216" Z="1595.35" />
+			</If>
+			<TurnIn Nav="Run" QuestName="A Prisoner of Interest" QuestId="25324" TurnInName="Captain Saynna Stormrunner" TurnInId="40139" X="5662.38" Y="-3334.764" Z="1555.62" />
+		</If>
+
+		<If Condition="NeedsQuest(25324)" >
+			<If Condition="!Me.IsIndoors" >
+				<MoveTo X="5704.379" Y="-3156.216" Z="1595.35" />
+			</If>
+			<PickUp Nav="Run" QuestName="Through the Dream" QuestId="25325" GiverName="Captain Saynna Stormrunner" GiverId="40139" X="5662.38" Y="-3334.764" Z="1555.62" />
+		</If>
+		<TurnIn QuestName="Through the Dream" QuestId="25325" TurnInName="Alysra" TurnInId="40178" X="5702.888" Y="-3145.388" Z="1590.979" />
+
+		<PickUp QuestName="Return to Nordrassil" QuestId="25578" GiverName="Alysra" GiverId="40178" X="5702.888" Y="-3145.388" Z="1590.979" />
+		<TurnIn QuestName="Return to Nordrassil" QuestId="25578" TurnInName="Ysera" TurnInId="40289" X="5493.337" Y="-3566.69" Z="1569.25" />
+		<PickUp QuestName="The Return of the Ancients" QuestId="25584" GiverName="Ysera" GiverId="40289" X="5493.337" Y="-3566.69" Z="1569.25" />
+		<TurnIn QuestName="The Return of the Ancients" QuestId="25584" TurnInName="Oomla Whitehorn" TurnInId="39429" X="5641.936" Y="-2445.057" Z="1527.108" />
+		<PickUp QuestName="Harrying the Hunters" QuestId="25255" GiverName="Oomla Whitehorn" GiverId="39429" X="5641.936" Y="-2445.057" Z="1527.108" />
+		<PickUp QuestName="End of the Supply Line" QuestId="25233" GiverName="Jadi Falaryn" GiverId="39427" X="5637.066" Y="-2445.371" Z="1526.5" />
+		<PickUp QuestName="In the Rear With the Gear" QuestId="25234" GiverName="Jadi Falaryn" GiverId="39427" X="5637.066" Y="-2445.371" Z="1526.5" />
+
+		<While Condition="DoQuest(25234)" >
+			<CustomBehavior File="KillUntilComplete" MobIds="39436, 39438" QuestId="25234" TerminateWhen="Object(202652) != null" >
+				<HuntingGrounds>
+					<Hotspot X="5541.057" Y="-2588.818" Z="1481.118" />
+					<Hotspot X="5537.449" Y="-2442.275" Z="1471.538" />
+					<Hotspot X="5442.055" Y="-2291.497" Z="1457.889" />
+				</HuntingGrounds>
+			</CustomBehavior>
+			<CustomBehavior File="InteractWith" MobId="202652" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="25234" QuestObjectiveIndex="1" TerminateWhen="Object(202652) == null" />
+		</While>
+
+		<CustomBehavior File="KillUntilComplete" MobId="39436" QuestId="25233" >
+			<HuntingGrounds>
+				<Hotspot X="5541.057" Y="-2588.818" Z="1481.118" />
+				<Hotspot X="5537.449" Y="-2442.275" Z="1471.538" />
+				<Hotspot X="5442.055" Y="-2291.497" Z="1457.889" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" MobId="39437" QuestId="25255" >
+			<HuntingGrounds>
+				<Hotspot X="5458.12" Y="-2380.331" Z="1463.643" />
+				<Hotspot X="5512.35" Y="-2497.237" Z="1476.76" />
+				<Hotspot X="5572.389" Y="-2606.582" Z="1489.609" />
+				<Hotspot X="5492.807" Y="-2681.096" Z="1484.043" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="End of the Supply Line" QuestId="25233" TurnInName="Jadi Falaryn" TurnInId="39427" X="5638.102" Y="-2444.083" Z="1526.296" />
+		<TurnIn QuestName="In the Rear With the Gear" QuestId="25234" TurnInName="Jadi Falaryn" TurnInId="39427" X="5638.102" Y="-2444.083" Z="1526.296" />
+		<TurnIn QuestName="Harrying the Hunters" QuestId="25255" TurnInName="Oomla Whitehorn" TurnInId="39429" X="5642.286" Y="-2444.319" Z="1527.068" />
+
+		<!-- HORDE SECTION BELOW -->
+		<PickUp QuestName="The Voice of Lo&apos;Gosh" QuestId="25269" GiverName="Oomla Whitehorn" GiverId="39429" X="5642.286" Y="-2444.319" Z="1527.068" />
+		<TurnIn QuestName="The Voice of Lo&apos;Gosh" QuestId="25269" TurnInName="Takrik Ragehowl" TurnInId="39432" X="5297.794" Y="-2206.328" Z="1263.7" />
+
+		<PickUp QuestName="Howling Mad" QuestId="25270" GiverName="Takrik Ragehowl" GiverId="39432" X="5297.794" Y="-2206.328" Z="1263.7" />
+		<CustomBehavior File="KillUntilComplete" MobId="39445" QuestId="25270" >
+			<HuntingGrounds>
+				<Hotspot X="5254.028" Y="-2217.693" Z="1261.209" />
+				<Hotspot X="5294.936" Y="-2098.445" Z="1270.565" />
+				<Hotspot X="5346.566" Y="-2139.729" Z="1280.52" />
+			</HuntingGrounds>
+		</CustomBehavior>
+		<TurnIn QuestName="Howling Mad" QuestId="25270" TurnInName="Takrik Ragehowl" TurnInId="39432" X="5298.992" Y="-2207.576" Z="1263.701" />
+
+		<PickUp QuestName="Lycanthoth the Corruptor" QuestId="25272" GiverName="Takrik Ragehowl" GiverId="39432" X="5298.992" Y="-2207.576" Z="1263.701" />
+		<While Condition="DoQuest(25272)" >
+			<MoveTo X="5144.428" Y="-2301.599" Z="1278.55" />
+			<CustomBehavior File="UseItem" ItemId="52682" QuestId="25272" QuestObjectiveIndex="1" X="5146.545" Y="-2299.948" Z="1279.079" TerminateWhen="Me.InVehicle" />
+			<CustomBehavior File="KillUntilComplete" MobId="39446" QuestId="25272" X="5146.545" Y="-2299.948" Z="1279.079" />
+		</While>
+		<If Condition="QuestDone(25272)" >
+			<TurnIn QuestName="Lycanthoth the Corruptor" QuestId="25272" TurnInName="Spirit of Lo&apos;Gosh" TurnInId="39622" X="5147.293" Y="-2299.378" Z="1279.12" />
+			<CustomBehavior File="WaitTimer" WaitTime="70000" TerminateWhen="!Me.InVehicle" />
+		</If>
+
+		<PickUp QuestName="The Shrine Reclaimed" QuestId="25279" GiverName="Spirit of Lo&apos;Gosh" GiverId="39622" X="5363.046" Y="-2186.674" Z="1289.629" />
+		<PickUp QuestName="Cleaning House" QuestId="25277" GiverName="Takrik Ragehowl" GiverId="39432" X="5345.703" Y="-2139.466" Z="1280.52" />
+		<PickUp QuestName="The Eye of Twilight" QuestId="25300" GiverName="Royce Duskwhisper" GiverId="39435" X="5346.223" Y="-2133.912" Z="1280.52" />
+		<PickUp QuestName="From the Mouth of Madness" QuestId="25297" GiverName="Rio Duran" GiverId="39434" X="5348.019" Y="-2126.521" Z="1280.52" />
+
+		<CustomBehavior File="InteractWith" MobId="202703" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="25297" QuestObjectiveIndex="2" X="5283.127" Y="-2167.165" Z="1257.93" />
+		<CustomBehavior File="InteractWith" MobId="202702" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="25297" QuestObjectiveIndex="1" X="5206.355" Y="-2058.06" Z="1281.764" />
+
+		<TurnIn QuestName="The Eye of Twilight" QuestId="25300" TurnInName="Eye of Twilight" TurnInId="202697" X="5201.822" Y="-2080.306" Z="1281.333" />
+		<PickUp QuestName="Mastering Puppets" QuestId="25301" GiverName="Eye of Twilight" GiverId="202697" X="5201.822" Y="-2080.306" Z="1281.333" />
+
+		<CustomBehavior File="InteractWith" MobId="202705" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="25297" QuestObjectiveIndex="3" X="5181.809" Y="-2132.639" Z="1277.844" />
+
+		<TurnIn QuestName="From the Mouth of Madness" QuestId="25297" TurnInName="Twilight Cauldron" TurnInId="202706" X="5167.83" Y="-2134.766" Z="1277.845" />
+		<PickUp QuestName="Free Your Mind, the Rest Follows" QuestId="25298" GiverName="Twilight Cauldron" GiverId="202706" X="5167.83" Y="-2134.766" Z="1277.845" />
+
+		<CustomBehavior File="InteractWith" MobId="39644" CollectionDistance="200" GossipOptions="1" MovementBy="NavigatorOnly" QuestId="25298" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="5138.965" Y="-2072" Z="1276.925" />
+				<Hotspot X="5044.892" Y="-2039.768" Z="1268.653" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Mastering Puppets" QuestId="25301" TurnInName="The Twilight Apocrypha" TurnInId="202712" X="5019.778" Y="-2025.75" Z="1269.731" />
+		<PickUp QuestName="Elementary!" QuestId="25303" GiverName="The Twilight Apocrypha" GiverId="202712" X="5019.778" Y="-2025.75" Z="1269.731" />
+
+		<While Condition="DoQuest(25303)" >
+			<CustomBehavior File="InteractWith" MobId="39730" NonCompeteDistance="0" MovementBy="NavigatorOnly" QuestId="25303" X="5013.671" Y="-2027.11" Z="1270.195" />
+			<CustomBehavior File="InteractWith" MobId="39737" NonCompeteDistance="0" MovementBy="NavigatorOnly" QuestId="25303" X="5013.671" Y="-2027.11" Z="1270.195" />
+			<CustomBehavior File="InteractWith" MobId="39736" NonCompeteDistance="0" MovementBy="NavigatorOnly" QuestId="25303" X="5013.671" Y="-2027.11" Z="1270.195" />
+			<CustomBehavior File="InteractWith" MobId="39738" NonCompeteDistance="0" MovementBy="NavigatorOnly" QuestId="25303" X="5013.671" Y="-2027.11" Z="1270.195" />
+		</While>
+
+		<TurnIn QuestName="Elementary!" QuestId="25303" TurnInName="The Twilight Apocrypha" TurnInId="202712" X="5018.28" Y="-2023.737" Z="1269.742" />
+		<PickUp QuestName="Return to Duskwhisper" QuestId="25312" GiverName="The Twilight Apocrypha" GiverId="202712" X="5018.28" Y="-2023.737" Z="1269.742" />
+		<PickUp QuestName="Gar&apos;gol&apos;s Gotta Go" QuestId="25328" GiverName="Kristoff Manheim" GiverId="39640" X="5041.848" Y="-2086.297" Z="1274.603" />
+
+		<CustomBehavior File="InteractWith" MobId="204580" NonCompeteDistance="0" InteractByLooting="true" InteractBlacklistTimeInSeconds="1" QuestId="25328" QuestObjectiveIndex="1" X="5104.006" Y="-2051.705" Z="1275.561" />
+
+		<TurnIn QuestName="Gar&apos;gol&apos;s Gotta Go" QuestId="25328" TurnInName="Kristoff Manheim" TurnInId="39640" X="5042.376" Y="-2085.882" Z="1274.546" />
+		<PickUp QuestName="Get Me Outta Here!" QuestId="25332" GiverName="Kristoff Manheim" GiverId="39640" X="5042.376" Y="-2085.882" Z="1274.546" />
+
+		<CustomBehavior File="KillUntilComplete" MobIds="39642, 39643" QuestId="25277" >
+			<HuntingGrounds>
+				<Hotspot X="5138.965" Y="-2072" Z="1276.925" />
+				<Hotspot X="5044.892" Y="-2039.768" Z="1268.653" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<MoveTo QuestId="25332" X="5179.585" Y="-2080.472" Z="1282.157" /> <!-- Get Me Outta Here! -->
+
+		<TurnIn QuestName="Free Your Mind, the Rest Follows" QuestId="25298" TurnInName="Rio Duran" TurnInId="39434" X="5345.638" Y="-2123.625" Z="1280.52" />
+		<TurnIn QuestName="Return to Duskwhisper" QuestId="25312" TurnInName="Royce Duskwhisper" TurnInId="39435" X="5344.97" Y="-2130.796" Z="1280.52" />
+		<TurnIn QuestName="Get Me Outta Here!" QuestId="25332" TurnInName="Royce Duskwhisper" TurnInId="39435" X="5344.97" Y="-2130.796" Z="1280.52" />
+		<TurnIn QuestName="Cleaning House" QuestId="25277" TurnInName="Takrik Ragehowl" TurnInId="39432" X="5346.72" Y="-2136.977" Z="1280.52" />
+		<PickUp QuestName="Sweeping the Shelf" QuestId="25354" GiverName="Takrik Ragehowl" GiverId="39432" X="5346.72" Y="-2136.977" Z="1280.52" />
+		<PickUp QuestName="Lightning in a Bottle" QuestId="25355" GiverName="Takrik Ragehowl" GiverId="39432" X="5346.72" Y="-2136.977" Z="1280.52" />
+
+		<CustomBehavior File="InteractWith" MobId="202731" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="25355" QuestObjectiveIndex="1" X="5076.472" Y="-2092.938" Z="1370.814" />
+
+		<While Condition="QuestDone(25355)" >
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="UseItem" ItemId="52854" TerminateWhen="Unit(39622, u =&gt; u.DistanceSqr &lt; 60f*60f) != null" />
+			<TurnIn QuestName="Lightning in a Bottle" QuestId="25355" TurnInName="Spirit of Lo&apos;Gosh" TurnInId="39622" X="5066.908" Y="-2125.717" Z="1375.381" />
+		</While>
+		<PickUp QuestName="Into the Maw!" QuestId="25617" GiverName="Spirit of Lo&apos;Gosh" GiverId="39622" X="5066.908" Y="-2125.717" Z="1375.381" />
+
+		<TurnIn QuestName="Into the Maw!" QuestId="25617" TurnInName="Jordan Olafson" TurnInId="40834" X="5012.622" Y="-2041.206" Z="1148.975" />
+		<PickUp QuestName="Forged of Shadow and Flame" QuestId="25575" GiverName="Jordan Olafson" GiverId="40834" X="5011.949" Y="-2039.236" Z="1148.975" />
+		<PickUp QuestName="Crushing the Cores" QuestId="25577" GiverName="Jordan Olafson" GiverId="40834" X="5011.949" Y="-2039.236" Z="1148.975" />
+		<PickUp QuestName="Rage of the Wolf Ancient" QuestId="25576" GiverName="Yargra Blackscar" GiverId="40837" X="5010.66" Y="-2044.97" Z="1148.975" />
+
+		<CustomBehavior File="InteractWith" MobId="203066" CollectionDistance="200" InteractByLooting="true" QuestId="25575" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="5031.458" Y="-2124.119" Z="1138.846" />
+				<Hotspot X="5068.989" Y="-2185.307" Z="1136.507" />
+				<Hotspot X="4939.844" Y="-2203.525" Z="1116.035" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<While Condition="DoQuest(25577)" >
+			<CustomBehavior File="KillUntilComplete" MobId="40841" QuestId="25577" TerminateWhen="GetItemCount(55123) &gt;= 8" >
+				<HuntingGrounds>
+					<Hotspot X="5031.458" Y="-2124.119" Z="1138.846" />
+					<Hotspot X="5068.989" Y="-2185.307" Z="1136.507" />
+					<Hotspot X="4939.844" Y="-2203.525" Z="1116.035" />
+				</HuntingGrounds>
+			</CustomBehavior>
+			<While Condition="HasItem(55123)" >
+				<MoveTo X="5087.023" Y="-2139.631" Z="1136.573" />
+				<CustomBehavior File="UseItem" ItemId="55123" QuestId="25577" X="5087.023" Y="-2139.631" Z="1136.573" TerminateWhen="!HasItem(55123)" />
+			</While>
+		</While>
+
+		<CustomBehavior File="KillUntilComplete" MobId="40838" QuestId="25576" >
+			<HuntingGrounds>
+				<Hotspot X="5031.458" Y="-2124.119" Z="1138.846" />
+				<Hotspot X="5068.989" Y="-2185.307" Z="1136.507" />
+				<Hotspot X="4939.844" Y="-2203.525" Z="1116.035" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Rage of the Wolf Ancient" QuestId="25576" TurnInName="Yargra Blackscar" TurnInId="40837" X="5008.921" Y="-2049.334" Z="1148.975" />
+		<TurnIn QuestName="Forged of Shadow and Flame" QuestId="25575" TurnInName="Jordan Olafson" TurnInId="40834" X="5010.755" Y="-2047.114" Z="1148.975" />
+		<TurnIn QuestName="Crushing the Cores" QuestId="25577" TurnInName="Jordan Olafson" TurnInId="40834" X="5010.755" Y="-2047.114" Z="1148.975" />
+
+		<PickUp QuestName="Cindermaul, the Portal Master" QuestId="25599" GiverName="Jordan Olafson" GiverId="40834" X="5010.755" Y="-2047.114" Z="1148.975" />
+		<CustomBehavior File="KillUntilComplete" MobId="40844" QuestId="25599" X="5013.474" Y="-2213.736" Z="1128.732" />
+		<TurnIn QuestName="Cindermaul, the Portal Master" QuestId="25599" TurnInName="Jordan Olafson" TurnInId="40834" X="5010.951" Y="-2047.515" Z="1148.976" />
+
+		<PickUp QuestName="Forgemaster Pyrendius" QuestId="25600" GiverName="Jordan Olafson" GiverId="40834" X="5010.951" Y="-2047.515" Z="1148.976" />
+		<CustomBehavior File="KillUntilComplete" MobId="40845" QuestId="25600" X="4896.038" Y="-2267.423" Z="1117.319" />
+		<TurnIn QuestName="Forgemaster Pyrendius" QuestId="25600" TurnInName="Jordan Olafson" TurnInId="40834" X="5011.453" Y="-2048.038" Z="1148.976" />
+
+		<PickUp QuestName="Return from the Firelands" QuestId="25612" GiverName="Jordan Olafson" GiverId="40834" X="5011.453" Y="-2048.038" Z="1148.976" />
+
+		<CustomBehavior File="KillUntilComplete" QuestId="25354" >
+			<HuntingGrounds>
+				<Hotspot X="5083.037" Y="-2243.964" Z="1391.793" />
+				<Hotspot X="5074.948" Y="-2130.947" Z="1375.206" />
+				<Hotspot X="5113.096" Y="-2046.354" Z="1366.145" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="39843" PursueWhen="!IsObjectiveComplete(1, 25354)" />
+				<PursueUnit Id="39844" PursueWhen="!IsObjectiveComplete(2, 25354)" />
+			</PursuitList>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Sweeping the Shelf" QuestId="25354" TurnInName="Takrik Ragehowl" TurnInId="39432" X="5347.805" Y="-2134.311" Z="1280.521" />
+		<TurnIn QuestName="Return from the Firelands" QuestId="25612" TurnInName="Takrik Ragehowl" TurnInId="39432" X="5347.805" Y="-2134.311" Z="1280.521" />
+		<PickUp QuestName="Aviana&apos;s Legacy" QuestId="27874" GiverName="Vision of Ysera" GiverId="46987" X="5349.833" Y="-2133.626" Z="1280.521" />
+		<PickUp QuestName="The Fires of Mount Hyjal" QuestId="25630" GiverName="Rio Duran" GiverId="39434" X="5347.049" Y="-2127.255" Z="1280.521" />
+		<TurnIn QuestName="The Fires of Mount Hyjal" QuestId="25630" TurnInName="Laina Nightsky" TurnInId="39927" X="5035.127" Y="-1739.017" Z="1322.5" />
+		<PickUp QuestName="Fighting Fire With ... Anything" QuestId="25381" GiverName="Laina Nightsky" GiverId="39927" X="5035.127" Y="-1739.017" Z="1322.5" />
+		<PickUp QuestName="Disrupting the Rituals" QuestId="25382" GiverName="Laina Nightsky" GiverId="39927" X="5035.127" Y="-1739.017" Z="1322.5" />
+		<PickUp QuestName="Save the Wee Animals" QuestId="25385" GiverName="Mylune" GiverId="39930" X="5121.018" Y="-1746.215" Z="1334.37" />
+		<PickUp QuestName="If You&apos;re Not Against Us..." QuestId="25404" GiverName="Matoclaw" GiverId="39928" X="5145.289" Y="-1738.717" Z="1336.406" />
+
+		<CustomBehavior File="InteractWith" MobId="39933" GossipOptions="1,1,1,1" InteractBlacklistTimeInSeconds="1" QuestId="25404" QuestObjectiveIndex="1" X="4924.037" Y="-1871.823" Z="1334.616" />
+
+		<TurnIn QuestName="If You&apos;re Not Against Us..." QuestId="25404" TurnInName="Tyrus Blackhorn" TurnInId="39933" X="4923.325" Y="-1871.008" Z="1334.538" />
+
+		<PickUp QuestName="Seeds of Their Demise" QuestId="25408" GiverName="Tyrus Blackhorn" GiverId="39933" X="4923.325" Y="-1871.008" Z="1334.538" />
+		<CustomBehavior File="KillUntilComplete" MobId="40066" QuestId="25408" X="4976.093" Y="-1847.465" Z="1322.867" />
+		<TurnIn QuestName="Seeds of Their Demise" QuestId="25408" TurnInName="Tyrus Blackhorn" TurnInId="39933" X="4923.466" Y="-1871.224" Z="1334.567" />
+
+		<PickUp QuestName="A New Master" QuestId="25411" GiverName="Tyrus Blackhorn" GiverId="39933" X="4923.466" Y="-1871.224" Z="1334.567" />
+		<CustomBehavior File="InteractWith" MobId="39974" MobState="Dead" InteractByUsingItemId="53120" QuestId="25411" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="4898.894" Y="-1538.383" Z="1335.33" />
+				<Hotspot X="5023.818" Y="-1440.688" Z="1334.552" />
+				<Hotspot X="5165.404" Y="-1358.883" Z="1357.905" />
+			</HuntingGrounds>
+		</CustomBehavior>
+		<TurnIn QuestName="A New Master" QuestId="25411" TurnInName="Subjugated Inferno Lord" TurnInId="40093" X="5099.992" Y="-1365.292" Z="1349.082" />
+
+		<PickUp QuestName="The Name Never Spoken" QuestId="25412" GiverName="Subjugated Inferno Lord" GiverId="40093" X="5099.992" Y="-1365.292" Z="1349.082" />
+
+		<CustomBehavior File="InteractWith" MobId="202765" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="25412" QuestObjectiveIndex="1" X="5164.239" Y="-1342.577" Z="1358.874" />
+		<CustomBehavior File="InteractWith" MobId="202764" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="25412" QuestObjectiveIndex="2" X="5024.204" Y="-1425.404" Z="1335.146" />
+		<CustomBehavior File="InteractWith" MobId="202763" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="25412" QuestObjectiveIndex="3" X="4914.107" Y="-1536.85" Z="1333.729" />
+
+		<CustomBehavior File="InteractWith" MobId="39998" CollectionDistance="200" QuestId="25385" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="4928.127" Y="-1519.443" Z="1334.145" />
+				<Hotspot X="5058.602" Y="-1441.618" Z="1337.848" />
+				<Hotspot X="5182.121" Y="-1438.442" Z="1353.508" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" MobId="39939" QuestId="25381" >
+			<HuntingGrounds>
+				<Hotspot X="4928.127" Y="-1519.443" Z="1334.145" />
+				<Hotspot X="5058.602" Y="-1441.618" Z="1337.848" />
+				<Hotspot X="5182.121" Y="-1438.442" Z="1353.508" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" MobId="39974" QuestId="25382" >
+			<HuntingGrounds>
+				<Hotspot X="4928.127" Y="-1519.443" Z="1334.145" />
+				<Hotspot X="5058.602" Y="-1441.618" Z="1337.848" />
+				<Hotspot X="5182.121" Y="-1438.442" Z="1353.508" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Fighting Fire With ... Anything" QuestId="25381" TurnInName="Laina Nightsky" TurnInId="39927" X="5036.445" Y="-1730.77" Z="1322.514" />
+		<TurnIn QuestName="Disrupting the Rituals" QuestId="25382" TurnInName="Laina Nightsky" TurnInId="39927" X="5036.445" Y="-1730.77" Z="1322.514" />
+		<TurnIn QuestName="Save the Wee Animals" QuestId="25385" TurnInName="Mylune" TurnInId="39930" X="5122.024" Y="-1745.974" Z="1334.355" />
+		<PickUp QuestName="Oh, Deer!" QuestId="25392" GiverName="Mylune" GiverId="39930" X="5122.024" Y="-1745.974" Z="1334.355" />
+		<TurnIn QuestName="The Name Never Spoken" QuestId="25412" TurnInName="Tyrus Blackhorn" TurnInId="39933" X="4923.634" Y="-1871.27" Z="1334.574" />
+
+		<PickUp QuestName="Black Heart of Flame" QuestId="25428" GiverName="Tyrus Blackhorn" GiverId="39933" X="4923.634" Y="-1871.27" Z="1334.574" />
+		<While Condition="DoQuest(25428)" >
+			<MoveTo X="5001.762" Y="-1545.177" Z="1330.917" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="UseItem" ItemId="53464" TerminateWhen="Unit(40107, u =&gt; u.Attackable) != null" />
+			<CustomBehavior File="KillUntilComplete" MobId="40107" QuestId="25428" TerminateWhen="Unit(40107, u =&gt; !u.Attackable) != null" />
+		</While>
+
+		<While Condition="DoQuest(25392)" >
+			<CustomBehavior File="InteractWith" MobId="39999" CollectionDistance="200" QuestId="25392" QuestObjectiveIndex="1" TerminateWhen="ObjectManager.GetObjectsOfType&lt;WoWUnit&gt;().Count(x =&gt; x.Entry == 40000 &amp;&amp; x.CreatedByUnit == Me) &gt;= 3" >
+				<HuntingGrounds>
+					<Hotspot X="4928.127" Y="-1519.443" Z="1334.145" />
+					<Hotspot X="5058.602" Y="-1441.618" Z="1337.848" />
+					<Hotspot X="5182.121" Y="-1438.442" Z="1353.508" />
+				</HuntingGrounds>
+			</CustomBehavior>
+			<MoveTo X="5122.521" Y="-1748.951" Z="1334.424" />
+		</While>
+
+		<TurnIn QuestName="Oh, Deer!" QuestId="25392" TurnInName="Mylune" TurnInId="39930" X="5122.141" Y="-1749.258" Z="1334.433" />
+		<TurnIn QuestName="Black Heart of Flame" QuestId="25428" TurnInName="Tyrus Blackhorn" TurnInId="39933" X="4924.082" Y="-1871.111" Z="1334.558" />
+		<PickUp QuestName="Good News... and Bad News" QuestId="29066" GiverName="Matoclaw" GiverId="39928" />
+		<PickUp QuestName="Last Stand at Whistling Grove" QuestId="25940" GiverName="Laina Nightsky" GiverId="39927" X="5034.209" Y="-1737.046" Z="1322.469" />
+		<TurnIn QuestName="Good News... and Bad News" QuestId="29066" TurnInName="Matoclaw" TurnInId="39928" X="5145.375" Y="-1738.682" Z="1336.42" />
+		<TurnIn QuestName="Last Stand at Whistling Grove" QuestId="25940" TurnInName="Keeper Taldros" TurnInId="39932" X="5265.559" Y="-1511.579" Z="1365.726" />
+
+		<PickUp QuestName="The Bears Up There" QuestId="25462" GiverName="Keeper Taldros" GiverId="39932" X="5265.559" Y="-1511.579" Z="1365.726" />
+		<While Condition="DoQuest(25462)" >
+			<CustomBehavior File="RunCode" Code="
+				foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =&gt; Me.GetAuraById(id)).Where(a =&gt; a != null))
+				aura.TryCancelAura();
+			" />
+			<CustomBehavior File="InteractWith" QuestId="25462" MobId="40190" Range="8" CollectionDistance="2" NonCompeteDistance="0" WaitForNpc="true" NumOfTimes="5" WaitTime="2000" X="5254.562" Y="-1536.917" Z="1361.341" TerminateWhen="Me.IsOnTransport" />
+			<CustomBehavior File="SpecificQuests\MountHyjal\BearsUpThere" QuestName="The Bears Up There" QuestId="25462" />
+			<CustomBehavior File="EjectVeh" />
+			<CustomBehavior File="WaitTimer" WaitTime="5000" QuestId="25462" GoalText="Waiting for quest to complete {TimeRemaining}" />
+		</While>
+		<TurnIn QuestName="The Bears Up There" QuestId="25462" TurnInName="Keeper Taldros" TurnInId="39932" X="5264.799" Y="-1511.283" Z="1365.525" />
+
+		<PickUp QuestName="Smashing Through Ashes" QuestId="25490" GiverName="Keeper Taldros" GiverId="39932" X="5264.799" Y="-1511.283" Z="1365.525" />
+		<CustomBehavior File="KillUntilComplete" MobId="40336" QuestId="25490" >
+			<HuntingGrounds>
+				<Hotspot X="4659.33" Y="-1673.999" Z="1280.374" />
+				<Hotspot X="4526.184" Y="-1779.679" Z="1261.661" />
+				<Hotspot X="4502.287" Y="-1921.163" Z="1228.302" />
+				<Hotspot X="4471.459" Y="-2066.158" Z="1207.433" />
+			</HuntingGrounds>
+		</CustomBehavior>
+		<TurnIn QuestName="Smashing Through Ashes" QuestId="25490" TurnInName="Archdruid Hamuul Runetotem" TurnInId="39858" X="4421.899" Y="-2083.753" Z="1211.043" />
+
+		<PickUp QuestName="Durable Seeds" QuestId="25491" GiverName="Archdruid Hamuul Runetotem" GiverId="39858" X="4421.899" Y="-2083.753" Z="1211.043" />
+		<PickUp QuestName="Fresh Bait" QuestId="25493" GiverName="Archdruid Hamuul Runetotem" GiverId="39858" X="4421.899" Y="-2083.753" Z="1211.043" />
+		<PickUp QuestName="Firebreak" QuestId="25492" GiverName="Rayne Feathersong" GiverId="40331" X="4414.284" Y="-2079.96" Z="1210.699" />
+
+		<CustomBehavior File="InteractWith" MobId="202884" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="25491" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="4635.516" Y="-2195.683" Z="1151.664" />
+				<Hotspot X="4725.731" Y="-2199.88" Z="1194.286" />
+				<Hotspot X="4714.386" Y="-2334.452" Z="1178.079" />
+				<Hotspot X="4560.218" Y="-2392.451" Z="1136.04" />
+				<Hotspot X="4491.667" Y="-2532.821" Z="1127.474" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" TerminateWhen="!DoQuest(25492, 25493)" >
+			<HuntingGrounds>
+				<Hotspot X="4635.516" Y="-2195.683" Z="1151.664" />
+				<Hotspot X="4725.731" Y="-2199.88" Z="1194.286" />
+				<Hotspot X="4714.386" Y="-2334.452" Z="1178.079" />
+				<Hotspot X="4560.218" Y="-2392.451" Z="1136.04" />
+				<Hotspot X="4491.667" Y="-2532.821" Z="1127.474" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="46911" PursueWhen="DoQuest(25492)" />
+				<PursueUnit Id="46910" PursueWhen="DoQuest(25493)" />
+			</PursuitList>
+		</CustomBehavior>
+
+		<PickUp QuestName="The Wormwing Problem" QuestId="25655" GiverName="Thisalee Crow" GiverId="41006" X="4912.627" Y="-2720.769" Z="1437.609" />
+		<PickUp QuestName="Scrambling for Eggs" QuestId="25656" GiverName="Thisalee Crow" GiverId="41006" X="4912.627" Y="-2720.769" Z="1437.609" />
+		<TurnIn QuestName="Aviana&apos;s Legacy" QuestId="27874" TurnInName="Choluna" TurnInId="41005" X="4888.242" Y="-2810.679" Z="1437.674" />
+
+		<PickUp QuestName="An Offering for Aviana" QuestId="25663" GiverName="Choluna" GiverId="41005" X="4888.242" Y="-2810.679" Z="1437.674" />
+		<While Condition="DoQuest(25663)" >
+			<MoveTo X="4941.751" Y="-2645.138" Z="1426.459" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="UseItem" ItemId="55208" QuestId="25663" X="4941.751" Y="-2645.138" Z="1426.459" />
+		</While>
+		<TurnIn QuestName="An Offering for Aviana" QuestId="25663" TurnInName="Mysterious Winged Spirit" TurnInId="41068" X="4941.854" Y="-2645.459" Z="1426.444" />
+
+		<PickUp QuestName="A Plea From Beyond" QuestId="25665" GiverName="Mysterious Winged Spirit" GiverId="41068" X="4941.854" Y="-2645.459" Z="1426.444" />
+
+		<CustomBehavior File="InteractWith" MobId="203143" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="25656" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="4950.557" Y="-2530.662" Z="1432.036" />
+				<Hotspot X="4860.317" Y="-2436.893" Z="1342.449" />
+				<Hotspot X="4838.796" Y="-2367.843" Z="1293.032" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" MobId="41028" QuestId="25655" >
+			<HuntingGrounds>
+				<Hotspot X="4950.557" Y="-2530.662" Z="1432.036" />
+				<Hotspot X="4860.317" Y="-2436.893" Z="1342.449" />
+				<Hotspot X="4838.796" Y="-2367.843" Z="1293.032" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="The Wormwing Problem" QuestId="25655" TurnInName="Thisalee Crow" TurnInId="41006" X="4912.208" Y="-2720.819" Z="1437.61" />
+		<TurnIn QuestName="Scrambling for Eggs" QuestId="25656" TurnInName="Thisalee Crow" TurnInId="41006" X="4912.208" Y="-2720.819" Z="1437.61" />
+		<PickUp QuestName="A Bird in Hand" QuestId="25731" GiverName="Thisalee Crow" GiverId="41006" X="4912.208" Y="-2720.819" Z="1437.61" />
+		<TurnIn QuestName="A Plea From Beyond" QuestId="25665" TurnInName="Choluna" TurnInId="41005" X="4887.563" Y="-2811.22" Z="1437.675" />
+
+		<PickUp QuestName="A Prayer and a Wing" QuestId="25664" GiverName="Choluna" GiverId="41005" X="4887.563" Y="-2811.22" Z="1437.675" />
+		<While Condition="DoQuest(25731)" >
+			<CustomBehavior File="InteractWith" MobId="203187" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="25731" X="4945.572" Y="-2560.215" Z="1429.606" TerminateWhen="Unit(41112, u =&gt; u.IsAlive) != null" />
+			<CustomBehavior File="KillUntilComplete" MobId="41112" QuestId="25731" X="4946.747" Y="-2564.203" Z="1429.103" TerminateWhen="Unit(41112) == null || Unit(41112, u =&gt; u.IsFriendly) != null" />
+			<CustomBehavior File="InteractWith" MobId="41112" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" GossipOptions="2,1,1,2" QuestId="25731" X="4945.572" Y="-2560.215" Z="1429.606" TerminateWhen="Unit(41112) == null || Unit(41112, u =&gt; u.IsHostile) != null" />
+		</While>
+
+		<While Condition="DoQuest(25664)" >
+			<MoveTo X="5144.241" Y="-2594.375" Z="1645.932" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="UseItem" ItemId="55211" QuestId="25664" TerminateWhen="Unit(41084, u =&gt; u.Attackable) != null" />
+			<CustomBehavior File="KillUntilComplete" MobId="41084" QuestId="25664" TerminateWhen="Unit(41084, u =&gt; u.Attackable) == null" />
+		</While>
+
+		<TurnIn QuestName="A Bird in Hand" QuestId="25731" TurnInName="Thisalee Crow" TurnInId="41006" X="4911.595" Y="-2721.063" Z="1437.608" />
+		<TurnIn QuestName="A Prayer and a Wing" QuestId="25664" TurnInName="Choluna" TurnInId="41005" X="4888.391" Y="-2810.801" Z="1437.674" />
+		<PickUp QuestName="Fact-Finding Mission" QuestId="25740" GiverName="Skylord Omnuron" GiverId="40997" X="4900.444" Y="-2778.734" Z="1460.579" />
+		<TurnIn QuestName="Durable Seeds" QuestId="25491" TurnInName="Archdruid Hamuul Runetotem" TurnInId="39858" X="4420.155" Y="-2084.449" Z="1211.043" />
+		<TurnIn QuestName="Fresh Bait" QuestId="25493" TurnInName="Archdruid Hamuul Runetotem" TurnInId="39858" X="4420.155" Y="-2084.449" Z="1211.043" />
+		<PickUp QuestName="Hell&apos;s Shells" QuestId="25507" GiverName="Archdruid Hamuul Runetotem" GiverId="39858" X="4420.155" Y="-2084.449" Z="1211.043" />
+		<TurnIn QuestName="Firebreak" QuestId="25492" TurnInName="Rayne Feathersong" TurnInId="40331" X="4413.745" Y="-2080.287" Z="1210.7" />
+		<PickUp QuestName="Prepping the Soil" QuestId="25502" GiverName="Rayne Feathersong" GiverId="40331" X="4413.745" Y="-2080.287" Z="1210.7" />
+
+		<While Condition="DoQuest(25502)" >
+			<CustomBehavior File="InteractWith" MobId="202902" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="25502" X="4370.475" Y="-2331.483" Z="1151.365" TerminateWhen="Unit(40460, u =&gt; u.DistanceSqr &lt; 30f*30f) != null" />
+			<CustomBehavior File="KillUntilComplete" MobIds="46925" QuestId="25502" TerminateWhen="Unit(40460, u =&gt; u.DistanceSqr &lt; 30f*30f) == null" />
+		</While>
+
+		<TurnIn QuestName="Fact-Finding Mission" QuestId="25740" TurnInName="Thisalee Crow" TurnInId="41006" X="4191.266" Y="-2323.104" Z="1147.706" />
+		<PickUp QuestName="Sethria&apos;s Brood" QuestId="25746" GiverName="Thisalee Crow" GiverId="41006" X="4191.266" Y="-2323.104" Z="1147.706" />
+		<PickUp QuestName="A Gap in Their Armor" QuestId="25758" GiverName="Thisalee Crow" GiverId="41006" X="4191.266" Y="-2323.104" Z="1147.706" />
+		<PickUp QuestName="The Codex of Shadows" QuestId="25763" GiverName="Codex of Shadows" GiverId="203207" X="4015.237" Y="-2254.649" Z="1132.194" />
+
+		<CustomBehavior File="InteractWith" MobIds="203197, 203198" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="25758" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="4064.221" Y="-2276.843" Z="1132.231" />
+				<Hotspot X="3941.615" Y="-2227.743" Z="1126.449" />
+				<Hotspot X="3711.538" Y="-2250.556" Z="1129.499" />
+				<Hotspot X="3632.955" Y="-2318.714" Z="1084.004" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" MobId="41029" QuestId="25746" >
+			<HuntingGrounds>
+				<Hotspot X="4064.221" Y="-2276.843" Z="1132.231" />
+				<Hotspot X="3941.615" Y="-2227.743" Z="1126.449" />
+				<Hotspot X="3711.538" Y="-2250.556" Z="1129.499" />
+				<Hotspot X="3632.955" Y="-2318.714" Z="1084.004" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Sethria&apos;s Brood" QuestId="25746" TurnInName="Thisalee Crow" TurnInId="41006" X="4189.234" Y="-2322.312" Z="1147.259" />
+		<TurnIn QuestName="A Gap in Their Armor" QuestId="25758" TurnInName="Thisalee Crow" TurnInId="41006" X="4189.234" Y="-2322.312" Z="1147.259" />
+		<PickUp QuestName="Disassembly" QuestId="25761" GiverName="Thisalee Crow" GiverId="41006" X="4189.234" Y="-2322.312" Z="1147.259" />
+		<TurnIn QuestName="The Codex of Shadows" QuestId="25763" TurnInName="Thisalee Crow" TurnInId="41006" X="4189.234" Y="-2322.312" Z="1147.259" />
+		<PickUp QuestName="Egg Hunt" QuestId="25764" GiverName="Thisalee Crow" GiverId="41006" X="4189.234" Y="-2322.312" Z="1147.259" />
+
+		<While Condition="DoQuest(25761)" >
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="ShivJuggernaut" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.Entry == 41031 &amp;&amp; Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 55883).CooldownTimeLeft == TimeSpan.Zero &amp;&amp; Me.CurrentTarget.HasAura(77224)" >
+				<CustomBehavior File="RunCode" Code="
+					WoWUnit shivTarget = Me.CurrentTarget;
+
+					if (shivTarget == null || !shivTarget.IsValid) return;
+
+					while (shivTarget.DistanceSqr &gt; 5f*5f)
+					{
+						Navigator.MoveTo(shivTarget.Location);
+						await Coroutine.Yield();
+					}
+					SpellManager.StopCasting();
+					await CommonCoroutines.StopMoving();
+					Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 55883).Use();
+				" />
+				<CustomBehavior File="WaitTimer" WaitTime="500" />
+			</CustomBehavior>
+			<CustomBehavior File="TargetAndMoveToMob" MobId="41031" TargetOnlyIfHealthPercentAbove="100" MoveWithinMaxRangeOfMob="5" QuestId="25761" >
+				<HuntingGrounds>
+					<Hotspot X="4042.216" Y="-2235.546" Z="1131.914" />
+					<Hotspot X="3928.267" Y="-2217.941" Z="1123.973" />
+				</HuntingGrounds>
+			</CustomBehavior>
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="ShivJuggernaut" Command="Remove" />
+		</While>
+
+		<While Condition="DoQuest(25764)" >
+			<CustomBehavior File="InteractWith" MobId="203208" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="25764" QuestObjectiveIndex="1" TerminateWhen="Unit(41224) != null" >
+				<HuntingGrounds>
+					<Hotspot X="4064.221" Y="-2276.843" Z="1132.231" />
+					<Hotspot X="3941.615" Y="-2227.743" Z="1126.449" />
+					<Hotspot X="3711.538" Y="-2250.556" Z="1129.499" />
+					<Hotspot X="3632.955" Y="-2318.714" Z="1084.004" />
+				</HuntingGrounds>
+			</CustomBehavior>
+			<CustomBehavior File="KillUntilComplete" QuestId="25764" TerminateWhen="Unit(41224) == null" >
+				<PursuitList>
+					<PursueUnit Id="41029" Priority="9999" PursueWhen="UNIT.CurrentTarget != null &amp;&amp; UNIT.CurrentTarget.Entry == 41224" />
+					<PursueUnit Id="41029" Priority="1" PursueWhen="UNIT.DistanceSqr &lt; 10f*10f" />
+				</PursuitList>
+			</CustomBehavior>
+		</While>
+
+		<TurnIn QuestName="Disassembly" QuestId="25761" TurnInName="Thisalee Crow" TurnInId="41006" X="4191.49" Y="-2323.365" Z="1147.763" />
+		<TurnIn QuestName="Egg Hunt" QuestId="25764" TurnInName="Thisalee Crow" TurnInId="41006" X="4191.49" Y="-2323.365" Z="1147.763" />
+		<PickUp QuestName="Sethria&apos;s Demise" QuestId="25776" GiverName="Thisalee Crow" GiverId="41006" X="4191.49" Y="-2323.365" Z="1147.763" />
+
+
+
+
+
+
+
+      
+		<CustomBehavior File="Message" Text="This profile is still a work in progress." />
+		<CustomBehavior File="Halt" />
+
+	</QuestOrder>
+</HBProfile>
