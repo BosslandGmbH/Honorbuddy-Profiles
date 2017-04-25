@@ -68,6 +68,9 @@
 END INITORDER COMMENT -->
 
 	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
+		<If Condition="Me.IsHorde" >
+			<CustomBehavior File="LoadProfile" ProfileName="..\..\Horde\1-41 Autoloader.xml" RememberProfile="true" />
+		</If>
 		<!-- RunCode Methods -->
 			<CustomBehavior File="RunCode" Type="Definition">
 			<![CDATA[
@@ -451,18 +454,23 @@ END INITORDER COMMENT -->
 
 		<CustomBehavior File="SetHearthstone" MobId="48093" AreaId="5564" X="-7004.32" Y="-2539.427" Z="241.7142" />
 
-		<While Condition="DoQuest(27835)" >
+		<While Condition="!IsObjectiveComplete(2, 27828) || !IsObjectiveComplete(2, 27834) || !IsObjectiveComplete(1, 27835) || !IsObjectiveComplete(2, 27835)" >
 			<CustomBehavior File="ForcedDismount" />
-			<CustomBehavior File="UsePetAbility" AttackButton="2" />
-			<CustomBehavior File="UsePetAbility" AttackButton="5" />
-			<CustomBehavior File="UsePetAbility" AttackButton="7" />
-			<CustomBehavior File="UsePetAbility" AttackButton="8" />
+			<CustomBehavior File="Misc\RunLua" Lua="PetActionButton2:Click();" />
+			<CustomBehavior File="Misc\RunLua" Lua="PetActionButton5:Click();" />
+			<CustomBehavior File="Misc\RunLua" Lua="PetActionButton7:Click();" />
+			<CustomBehavior File="Misc\RunLua" Lua="PetActionButton8:Click();" />
 		</While>
 		<While Condition="DoQuest(27834)" >
 			<CustomBehavior File="UsePetAbility" AttackButton="4" UseType="ToObject" MobId="2734" MobId2="2730" MobState="Alive" Range="80" X="-6989.815" Y="-2519.436" Z="241.7219" />
 		</While>
 		<While Condition="DoQuest(27828)" >
-			<CustomBehavior File="UsePetAbility" AttackButton="1" UseType="ToObject" MobId="2734" MobId2="2730" MobState="Alive" Range="25" X="-6989.815" Y="-2519.436" Z="241.7219" />
+			<UseMount Value="false" />
+			<DefaultNavType Value="Run" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="UsePetAbility" AttackButton="1" UseType="ToObject" MobId="2734" MobId2="2730" MobId3="46918" MobState="Alive" Range="25" MovementBy="NavigatorOnly" X="-6901.253" Y="-2516.435" Z="241.4707" />
+			<DefaultNavType Value="Fly" />
+			<UseMount Value="true" />
 		</While>
 
 		<TurnIn QuestName="Eric, the Utility Dwarf" QuestId="27828" TurnInName="Eric &quot;The Swift&quot;" TurnInId="46855" X="-6996.646" Y="-2527.945" Z="241.712" />

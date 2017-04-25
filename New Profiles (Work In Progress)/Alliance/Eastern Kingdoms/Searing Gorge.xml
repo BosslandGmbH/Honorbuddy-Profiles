@@ -54,6 +54,9 @@
 END INITORDER COMMENT -->
 
 	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
+		<If Condition="Me.IsHorde" >
+			<CustomBehavior File="LoadProfile" ProfileName="..\..\Horde\1-41 Autoloader.xml" RememberProfile="true" />
+		</If>
 		<!-- RunCode Methods -->
 			<CustomBehavior File="RunCode" Type="Definition">
 			<![CDATA[
@@ -553,11 +556,19 @@ END INITORDER COMMENT -->
 
 		<TurnIn QuestName="Welcome to the Brotherhood" QuestId="28064" TurnInName="Overseer Oilfist" TurnInId="14625" X="-6501.64" Y="-1174.957" Z="325.9822" />
 
+		<CustomBehavior File="KillUntilComplete" MobId="47463" TerminateWhen="Me.Level &gt;= 49" >
+			<HuntingGrounds>
+				<Hotspot X="-6613.91" Y="-1477.598" Z="166.755" />
+				<Hotspot X="-6495.602" Y="-1448.003" Z="150.6133" />
+				<Hotspot X="-6502.239" Y="-1383.631" Z="145.3704" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
 		<Checkpoint Level="50" />
 		<If Condition="Me.Level &lt;= 51" >
 			<CustomBehavior File="RunCode" Code="foreach (PlayerQuest quest in Me.QuestLog.GetAllQuests()) QuestLog.Instance.AbandonQuestById(quest.Id)" />
 		</If>
-		<CustomBehavior File="DeleteItems" Ids="62916" />
+		<CustomBehavior File="DeleteItems" Ids="62916, 16884" />
 		<PickUp QuestName="Mouton Flamestar" QuestId="28514" GiverName="Overseer Oilfist" GiverId="14625" X="-6501.64" Y="-1174.957" Z="325.9822" />
 		<CustomBehavior File="LoadProfile" ProfileName="Burning Steppes.xml" RememberProfile="true" />
 
