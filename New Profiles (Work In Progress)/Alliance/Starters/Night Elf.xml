@@ -293,14 +293,18 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Ferocitas the Dream Eater" QuestId="2459" GiverName="Tallonkai Swiftroot" GiverId="3567" X="9888.371" Y="970.3929" Z="1313.839" />
 		<PickUp QuestName="Twisted Hatred" QuestId="932" GiverName="Tallonkai Swiftroot" GiverId="3567" X="9888.371" Y="970.3929" Z="1313.839" />
 
-		<CustomBehavior File="KillUntilComplete" MobId="7234" QuestId="2459" QuestObjectiveIndex="2" X="10005.97" Y="302.5307" Z="1321.044" /> 
-		<CustomBehavior File="KillUntilComplete" MobId="7235" QuestId="2459" QuestObjectiveIndex="1" X="10005.97" Y="302.5307" Z="1321.044" />
+		<CustomBehavior File="KillUntilComplete" QuestId="2459" X="10005.97" Y="302.5307" Z="1321.044" >
+			<PursuitList>
+				<PursueUnit Id="7234" PursueWhen="!IsObjectiveComplete(1, 2459)" />
+				<PursueUnit Id="7235" PursueWhen="!IsObjectiveComplete(2, 2459)" />
+			</PursuitList>
+		</CustomBehavior>
 
 		<TurnIn QuestName="Ferocitas the Dream Eater" QuestId="2459" TurnInName="Tallonkai Swiftroot" TurnInId="3567" X="9887.694" Y="970.7758" Z="1313.841" />
 
 		<CustomBehavior File="KillUntilComplete" MobId="2038" QuestId="932" QuestObjectiveIndex="1" X="10147.4" Y="1191.616" Z="1324.016" />
 
-		<CustomBehavior File="InteractWith" MobId="2002" Range="30" ProactiveCombatStrategy="NoClear" MobState="Alive" InteractByUsingItemId="46716" CollectionDistance="200" QuestId="13946" QuestObjectiveIndex="1" >
+		<CustomBehavior File="CombatUseItemOnV2" MobId="2002" ItemId="46716" MaxRangeToUseItem="30" ItemAppliesAuraId="65455" UseWhenMobHasHealthPercent="100" RecallPetAtMobPercentHealth="100" QuestId="13946" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="10147.4" Y="1191.616" Z="1324.016" />
 				<Hotspot X="10111.96" Y="1110.461" Z="1322.591" />
@@ -314,8 +318,8 @@ END INITORDER COMMENT -->
 
 		<CustomBehavior File="InteractWith" MobId="2742" InteractByLooting="true" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="483" QuestObjectiveIndex="4" X="9740.531" Y="1526.504" Z="1280.314" />
 		<CustomBehavior File="InteractWith" MobId="2739" InteractByLooting="true" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="483" QuestObjectiveIndex="2" X="9712.68" Y="1537.5" Z="1255.213" />
-		<CustomBehavior File="InteractWith" MobId="3407" InteractByLooting="true" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="483" QuestObjectiveIndex="3" X="9839.16" Y="1545.602" Z="1258.634" />
-		<CustomBehavior File="InteractWith" MobId="3405" InteractByLooting="true" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="483" QuestObjectiveIndex="1" X="9882.001" Y="1490.065" Z="1278.748" />
+		<CustomBehavior File="InteractWith" MobId="2741" InteractByLooting="true" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="483" QuestObjectiveIndex="3" X="9839.16" Y="1545.602" Z="1258.634" />
+		<CustomBehavior File="InteractWith" MobId="2740" InteractByLooting="true" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="483" QuestObjectiveIndex="1" X="9882.001" Y="1490.065" Z="1278.748" />
 
 		<CustomBehavior File="KillUntilComplete" MobIds="2010, 2011, 2009" QuestId="13945" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
@@ -351,6 +355,20 @@ END INITORDER COMMENT -->
 			<CustomBehavior File="InteractWith" MobId="40553" NonCompeteDistance="0" X="9871.914" Y="974.9136" Z="1309.787" />
 			<CustomBehavior File="Misc\RunLua" Lua="TakeTaxiNode(36);" />
 		</If>
+
+		<TurnIn QuestName="To Darnassus" QuestId="6341" TurnInName="Sister Aquinne" TurnInId="7316" X="9917.791" Y="2629.971" Z="1316.79" />
+
+		<If Condition="Me.ZoneId == 1657 || Me.ZoneId == 141" >
+			<MoveTo X="8177.54" Y="1003.079" Z="6.646164" />
+			<CustomBehavior File="UseTransport" TransportId="176310"
+				WaitAtX="8177.54" WaitAtY="1003.079" WaitAtZ="6.646164"
+				GetOffX="-8642.001" GetOffY="1330.353" GetOffZ="5.232954"
+				StandOnX="8171.327" StandOnY="1005.99" StandOnZ="6.213342"
+				TransportStartX="8162.587" TransportStartY="1005.365" TransportStartZ="0.005638145"
+				TransportEndX="-8650.719" TransportEndY="1346.051" TransportEndZ="-0.0382334" />
+		</If>
+		
+		<CustomBehavior File="LoadProfile" ProfileName="..\1-58 Autoloader.xml" RememberProfile="true" />
 
 	</QuestOrder>
 
