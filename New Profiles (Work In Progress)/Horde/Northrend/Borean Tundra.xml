@@ -39,6 +39,7 @@
 		<Blackspot X="3575.226" Y="6671.963" Z="195.1052" Radius="8" /> <!-- Blackspotting Archmage Berinand because bot likes to get stuck in the roof of the building he is in -->
 		<Blackspot X="3989.121" Y="5675.641" Z="57.09149" Radius="8" /> <!-- Wagon wheel near Steeljaw's Caravan -->
 		<Blackspot X="4053.091" Y="5768.215" Z="69.38635" Radius="8" /> <!-- Broken wagon near Steeljaw's Caravan -->
+		<Blackspot X="4448.677" Y="5750.183" Z="77.60241" Radius="3" /> <!-- Weird plant beside rock near Bor'gorok Outpost -->
 	</Blackspots>
 
 	<Blacklist>
@@ -803,9 +804,12 @@ END INITORDER COMMENT -->
 
 		<PickUp QuestName="The Art of Persuasion" QuestId="11648" GiverName="Librarian Normantis" GiverId="25480" X="3637.038" Y="5897.107" Z="150.438" />
 		<While Condition="DoQuest(11648)" >
-			<CustomBehavior File="RunCode" Code="Unit(25478).Target();" />
+			<CustomBehavior File="RunCode" Code="
+				if ((Me.CurrentTarget == null || Me.CurrentTarget.Entry != 25478) &amp;&amp; Unit(25478) != null)
+					Unit(25478).Target();
+			" />
 			<CustomBehavior File="RunCode" Code="QuestFrame.Instance.Close();" /> <!-- Sometimes it sticks -->
-			<CustomBehavior File="UseItem" ItemId="34811" QuestId="11648" X="3634.516" Y="5898.067" Z="150.4214" />
+			<CustomBehavior File="UseItem" ItemId="34811" QuestId="11648" X="3634.516" Y="5898.067" Z="150.4214" TerminateWhen="Me.CurrentTarget == null || Me.CurrentTarget.Entry != 25478" />
 		</While>
 		<TurnIn QuestName="The Art of Persuasion" QuestId="11648" TurnInName="Librarian Normantis" TurnInId="25480" X="3635.954" Y="5897.053" Z="150.4401" />
 
