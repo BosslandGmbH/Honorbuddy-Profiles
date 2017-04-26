@@ -54,7 +54,7 @@ END INITORDER COMMENT -->
 			<CustomBehavior File="LoadProfile" ProfileName="..\..\Horde\1-41 Autoloader.xml" RememberProfile="true" />
 		</If>
 		<!-- RunCode Methods -->
-			<CustomBehavior File="RunCode" Type="Definition">
+			<!--<CustomBehavior File="RunCode" Type="Definition">
 			<![CDATA[
 				public __CompiledBatchClass__()
 				{
@@ -66,7 +66,7 @@ END INITORDER COMMENT -->
 					Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
 				}
 			]]>
-			</CustomBehavior>
+			</CustomBehavior> -->
 			<CustomBehavior File="RunCode" Type="Definition">
 				<![CDATA[
 						bool DoQuest(params uint[] questIds)
@@ -205,7 +205,7 @@ END INITORDER COMMENT -->
 		<CustomBehavior File="InteractWith" MobId="201610" InteractByLooting="true" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="24474" QuestObjectiveIndex="1" X="-6144.898" Y="429.2754" Z="399.8878" />
 		<CustomBehavior File="InteractWith" MobId="201609" InteractByLooting="true" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="24474" QuestObjectiveIndex="2" X="-6149.365" Y="596.3177" Z="386.1913" />
 
-		<CustomBehavior File="InteractWith" MobId="201608" InteractByLooting="true" CollectionDistance="200" QuestId="24477" QuestObjectiveIndex="1" >
+		<CustomBehavior File="InteractWith" MobId="201608" InteractByLooting="true" CollectionDistance="200" PreInteractMountStrategy="Dismount" QuestId="24477" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="-6146.415" Y="281.5565" Z="395.6554" />
 				<Hotspot X="-6148.184" Y="344.595" Z="399.939" />
@@ -221,7 +221,7 @@ END INITORDER COMMENT -->
 
 		<CustomBehavior File="KillUntilComplete" MobId="37105" QuestId="24486" QuestObjectiveIndex="1" X="-6251.813" Y="500.3219" Z="387.5844" />
 
-		<CustomBehavior File="KillUntilComplete" MobId="708" QuestId="24475" QuestObjectiveIndex="1" >
+		<CustomBehavior File="KillUntilComplete" TerminateWhen="!DoQuest(24475)" >
 			<HuntingGrounds>
 				<Hotspot X="-6227.935" Y="573.1991" Z="386.6204" />
 				<Hotspot X="-6248.957" Y="716.7283" Z="386.9688" />
@@ -229,16 +229,10 @@ END INITORDER COMMENT -->
 				<Hotspot X="-6379.267" Y="684.7224" Z="386.0585" />
 				<Hotspot X="-6361.002" Y="520.433" Z="384.8369" />
 			</HuntingGrounds>
-		</CustomBehavior>
-
-		<CustomBehavior File="KillUntilComplete" MobId="705" QuestId="24475" QuestObjectiveIndex="2" >
-			<HuntingGrounds>
-				<Hotspot X="-6227.935" Y="573.1991" Z="386.6204" />
-				<Hotspot X="-6248.957" Y="716.7283" Z="386.9688" />
-				<Hotspot X="-6322.672" Y="760.1197" Z="388.8644" />
-				<Hotspot X="-6379.267" Y="684.7224" Z="386.0585" />
-				<Hotspot X="-6361.002" Y="520.433" Z="384.8369" />
-			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="708" PursueWhen="!IsObjectiveComplete(1, 24475)" />
+				<PursueUnit Id="705" PursueWhen="!IsObjectiveComplete(2, 24475)" />
+			</PursuitList>
 		</CustomBehavior>
 
 		<!-- NOTE come back to for 24475-->

@@ -54,7 +54,7 @@ END INITORDER COMMENT -->
 			<CustomBehavior File="LoadProfile" ProfileName="..\..\Horde\1-41 Autoloader.xml" RememberProfile="true" />
 		</If>
 		<!-- RunCode Methods -->
-			<CustomBehavior File="RunCode" Type="Definition">
+			<!--<CustomBehavior File="RunCode" Type="Definition">
 			<![CDATA[
 				public __CompiledBatchClass__()
 				{
@@ -66,7 +66,7 @@ END INITORDER COMMENT -->
 					Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
 				}
 			]]>
-			</CustomBehavior>
+			</CustomBehavior> -->
 			<CustomBehavior File="RunCode" Type="Definition">
 				<![CDATA[
 						bool DoQuest(params uint[] questIds)
@@ -179,7 +179,7 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Fel Moss Corruption" QuestId="28714" GiverName="Ilthalaine" GiverId="2079" X="10314.16" Y="832.374" Z="1326.42" />
 		<PickUp QuestName="Demonic Thieves" QuestId="28715" GiverName="Melithar Staghelm" GiverId="2077" X="10326.07" Y="826.6805" Z="1326.373" />
 
-		<CustomBehavior File="InteractWith" MobId="195074" GossipOptions="1" CollectionDistance="200" QuestId="28715" QuestObjectiveIndex="1" >
+		<CustomBehavior File="InteractWith" MobId="195074" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="28715" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="10270.1" Y="976.8225" Z="1341.535" />
 				<Hotspot X="10342.07" Y="1032.804" Z="1339.116" />
@@ -193,13 +193,13 @@ END INITORDER COMMENT -->
 			</HuntingGrounds>
 		</CustomBehavior>
 
-		<PickUp QuestName="Fel Moss Corruption" QuestId="28714" GiverName="Melithar Staghelm" GiverId="2077" X="10314.16" Y="832.374" Z="1326.42" />
+		<TurnIn QuestName="Fel Moss Corruption" QuestId="28714" TurnInName="Ilthalaine" TurnInId="2079" X="10314.16" Y="832.374" Z="1326.42" />
 		<PickUp QuestName="Priestess of the Moon" QuestId="28723" GiverName="Ilthalaine" GiverId="2079" X="10322.42" Y="823.4805" Z="1326.29" />
 		<TurnIn QuestName="Demonic Thieves" QuestId="28715" TurnInName="Melithar Staghelm" TurnInId="2077" X="10326.67" Y="824.7585" Z="1326.352" />
 		<TurnIn QuestName="Priestess of the Moon" QuestId="28723" TurnInName="Dentaria Silverglade" TurnInId="49479" X="10542.24" Y="875.2897" Z="1309.092" />
 		<PickUp QuestName="Iverron&apos;s Antidote" QuestId="28724" GiverName="Dentaria Silverglade" GiverId="49479" X="10542.24" Y="875.2897" Z="1309.092" />
 
-		<CustomBehavior File="InteractWith" MobId="207346" GossipOptions="1" CollectionDistance="200" QuestId="28724" QuestObjectiveIndex="1" X="10546.33" Y="873.9926" Z="1309.278" />
+		<CustomBehavior File="InteractWith" MobId="207346" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="28724" QuestObjectiveIndex="1" X="10546.33" Y="873.9926" Z="1309.278" />
 
 		<TurnIn QuestName="Iverron&apos;s Antidote" QuestId="28724" TurnInName="Dentaria Silverglade" TurnInId="49479" X="10547.08" Y="877.0978" Z="1309.483" />
 		<PickUp QuestName="The Woodland Protector" QuestId="28725" GiverName="Dentaria Silverglade" GiverId="49479" X="10547.08" Y="877.0978" Z="1309.483" />
@@ -220,13 +220,16 @@ END INITORDER COMMENT -->
 		<CustomBehavior File="KillUntilComplete" MobId="1994" QuestId="28727" QuestObjectiveIndex="1" X="10957.22" Y="932.5278" Z="1340.603" /> 
 
 		<TurnIn QuestName="Vile Touch" QuestId="28727" TurnInName="Tarindrella" TurnInId="49480" X="10945.86" Y="923.3483" Z="1340.87" />
-		<PickUp QuestName="Signs of Things to Come" QuestId="28728" GiverName="Tarindrella" TurnInId="49480" X="10945.86" Y="923.3483" Z="1340.87" />
+		<While Condition="NeedsQuest(28728)" >
+			<CustomBehavior File="InteractWith" MobId="49480" NonCompeteDistance="0" X="10945.86" Y="923.3483" Z="1340.87" TerminateWhen="HasQuest(28728)" />
+			<CustomBehavior File="RunCode" Code="QuestFrame.Instance.AcceptQuest();" />
+		</While>
 		<TurnIn QuestName="Signs of Things to Come" QuestId="28728" TurnInName="Dentaria Silverglade" TurnInId="49479" X="10548.04" Y="876.1609" Z="1309.746" />
 		<PickUp QuestName="Teldrassil: Crown of Azeroth" QuestId="28729" GiverName="Dentaria Silverglade" GiverId="49479" X="10548.04" Y="876.1609" Z="1309.746" />
 
 		<While Condition="DoQuest(28729)" >
 			<MoveTo X="10709.63" Y="763.5432" Z="1321.363" />
-			<CustomBehavior File="UseItem" ItemId="5185" QuestId="28729" />
+			<CustomBehavior File="UseItem" ItemId="5185" QuestId="28729" X="10709.63" Y="763.5432" Z="1321.363" />
 		</While>
 
 		<TurnIn QuestName="Teldrassil: Crown of Azeroth" QuestId="28729" TurnInName="Dentaria Silverglade" TurnInId="49479" X="10543.12" Y="872.4986" Z="1309.146" />
@@ -239,7 +242,7 @@ END INITORDER COMMENT -->
 
 		<PickUp QuestName="Zenn&apos;s Bidding" QuestId="488" GiverName="Zenn Foulhoof" GiverId="2150" X="9921.41" Y="735.9261" Z="1314.297" />
 
-		<CustomBehavior File="KillUntilComplete" MobId="2042" QuestId="488" QuestObjectiveIndex="1" >
+		<CustomBehavior File="KillUntilComplete" QuestId="488" >
 			<HuntingGrounds>
 				<Hotspot X="9831.884" Y="668.5458" Z="1299.166" />
 				<Hotspot X="9774.599" Y="682.7844" Z="1300.277" />
@@ -247,26 +250,11 @@ END INITORDER COMMENT -->
 				<Hotspot X="9766.894" Y="794.0034" Z="1298.96" />
 				<Hotspot X="9721.159" Y="516.3294" Z="1309.023" />
 			</HuntingGrounds>
-		</CustomBehavior>
-
-		<CustomBehavior File="KillUntilComplete" MobId="1995" QuestId="488" QuestObjectiveIndex="2" >
-			<HuntingGrounds>
-				<Hotspot X="9831.884" Y="668.5458" Z="1299.166" />
-				<Hotspot X="9774.599" Y="682.7844" Z="1300.277" />
-				<Hotspot X="9776.257" Y="705.1393" Z="1298.688" />
-				<Hotspot X="9766.894" Y="794.0034" Z="1298.96" />
-				<Hotspot X="9721.159" Y="516.3294" Z="1309.023" />
-			</HuntingGrounds>
-		</CustomBehavior>
-
-		<CustomBehavior File="KillUntilComplete" MobId="1998" QuestId="488" QuestObjectiveIndex="3" >
-			<HuntingGrounds>
-				<Hotspot X="9831.884" Y="668.5458" Z="1299.166" />
-				<Hotspot X="9774.599" Y="682.7844" Z="1300.277" />
-				<Hotspot X="9776.257" Y="705.1393" Z="1298.688" />
-				<Hotspot X="9766.894" Y="794.0034" Z="1298.96" />
-				<Hotspot X="9721.159" Y="516.3294" Z="1309.023" />
-			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="2042" PursueWhen="!IsObjectiveComplete(1, 488)" />
+				<PursueUnit Id="1995" PursueWhen="!IsObjectiveComplete(2, 488)" />
+				<PursueUnit Id="1998" PursueWhen="!IsObjectiveComplete(3, 488)" />
+			</PursuitList>
 		</CustomBehavior>
 
 		<TurnIn QuestName="Zenn&apos;s Bidding" QuestId="488" TurnInName="Zenn Foulhoof" TurnInId="2150" X="9923.463" Y="736.0999" Z="1315.017" />
