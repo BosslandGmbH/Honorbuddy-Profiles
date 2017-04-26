@@ -30,6 +30,7 @@
 
 	<Blackspots>
 		<Blackspot X="123.0346" Y="-4335.183" Z="39.52357" Radius="15" /> <!-- Razormane Scout in unnavable location -->
+		<Blackspot X="-236.2292" Y="-5084.252" Z="25.78056" Radius="1" /> <!-- Kul Tiras treasure in bad spot -->
 	</Blackspots>
 
 	<Blacklist>
@@ -55,7 +56,7 @@ END INITORDER COMMENT -->
 			<CustomBehavior File="LoadProfile" ProfileName="..\..\Alliance\1-58 Autoloader.xml" RememberProfile="true" />
 		</If>
 		<!-- RunCode Methods -->
-			<CustomBehavior File="RunCode" Type="Definition">
+			<!-- <CustomBehavior File="RunCode" Type="Definition">
 			<![CDATA[
 				public __CompiledBatchClass__()
 				{
@@ -67,7 +68,7 @@ END INITORDER COMMENT -->
 					Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
 				}
 			]]>
-			</CustomBehavior>
+			</CustomBehavior> -->
 			<CustomBehavior File="RunCode" Type="Definition">
 				<![CDATA[
 						bool DoQuest(params uint[] questIds)
@@ -167,7 +168,155 @@ END INITORDER COMMENT -->
 			</CustomBehavior>
 		<!-- END Hooks -->
 
-		<Checkpoint Level="8" />
+		<If Condition="HasQuest(25133)" >
+			<TurnIn QuestName="Report to Sen&apos;jin Village" QuestId="25133" TurnInName="Master Gadrin" TurnInId="3188" X="-829.0919" Y="-4919.275" Z="19.74989" />
+		</If>
+
+		<PickUp QuestName="Breaking the Chain" QuestId="25167" GiverName="Master Gadrin" GiverId="3188" X="-829.0919" Y="-4919.275" Z="19.74989" />
+		<PickUp QuestName="Cleaning Up the Coastline" QuestId="25170" GiverName="Bom&apos;bay" GiverId="10578" X="-843.6657" Y="-4908.623" Z="20.62227" />
+
+		<CustomBehavior File="KillUntilComplete" MobId="3106" QuestId="25170" >
+			<HuntingGrounds>
+				<Hotspot X="-966.4084" Y="-4909.574" Z="7.604385" />
+				<Hotspot X="-1067.56" Y="-4831.426" Z="9.771485" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<CustomBehavior File="KillUntilComplete" MobIds="39249, 39251" QuestId="25167" X="-1038.131" Y="-4714.077" Z="16.50893" />
+
+		<TurnIn QuestName="Cleaning Up the Coastline" QuestId="25170" TurnInName="Bom&apos;bay" TurnInId="10578" X="-842.5173" Y="-4907.065" Z="20.52651" />
+		<PickUp QuestName="Never Trust a Big Barb and a Smile" QuestId="25165" GiverName="Bom&apos;bay" GiverId="10578" X="-842.5173" Y="-4907.065" Z="20.52651" />
+		<TurnIn QuestName="Breaking the Chain" QuestId="25167" TurnInName="Master Gadrin" TurnInId="3188" X="-829.0167" Y="-4918.031" Z="19.64443" />
+		<PickUp QuestName="Purge the Valley" QuestId="25168" GiverName="Master Gadrin" GiverId="3188" X="-829.0167" Y="-4918.031" Z="19.64443" />
+		<PickUp QuestName="The War of Northwatch Aggression" QuestId="25169" GiverName="Lar Prowltusk" GiverId="3140" X="-836.986" Y="-4895.632" Z="23.42636" />
+
+		<While Condition="DoQuest(25165)" >
+			<CustomBehavior File="RunCode" Type="Definition" >
+			<![CDATA[
+				private Styx.TreeSharp.Composite _poisonExtractionTotem;
+				private WoWItem _poisonTotem = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 52505);
+				private WoWGuid _scorpidGuid;
+				private async Task<bool> PosionExtractionTotemLogic()
+				{
+					if (QuestDone(25165)) return false;
+					if (Me.CurrentTarget == null || Me.CurrentTarget.IsDead || Me.CurrentTarget.Entry != 3125) return false;
+					if (!Me.CurrentTarget.Aggro || Me.CurrentTarget.Guid == _scorpidGuid) return false;
+					SpellManager.StopCasting();
+					TreeRoot.StatusText = "Waiting for scorpid to cast poison.";
+					if (Me.CurrentTarget.Aggro && Me.CurrentTarget.CastingSpellId != 73672 && Me.CurrentTarget.Guid != _scorpidGuid) return true;
+
+					if (Me.CurrentTarget.Guid != _scorpidGuid)
+						_scorpidGuid = Me.CurrentTarget.Guid;
+
+					Lua.DoString("PetPassiveMode();");
+
+					_poisonTotem.Use();
+
+					await Coroutine.Sleep(2700);
+					Lua.DoString("PetAssistMode();");
+
+					return true;
+				}
+			]]>
+			</CustomBehavior>
+			<CustomBehavior File="RunCode"><![CDATA[ TreeHooks.Instance.InsertHook("Questbot_Main", 0, _poisonExtractionTotem ?? (_poisonExtractionTotem = new  CommonBehaviors.Actions.ActionRunCoroutine(ctx => PosionExtractionTotemLogic()))); ]]></CustomBehavior>
+
+			<CustomBehavior File="KillUntilComplete" MobId="3125" QuestId="25165" >
+				<HuntingGrounds>
+					<Hotspot X="-778.754" Y="-4734.114" Z="29.94708" />
+					<Hotspot X="-868.32" Y="-4765.797" Z="17.30972" />
+					<Hotspot X="-959.0878" Y="-4863.18" Z="13.00284" />
+				</HuntingGrounds>
+			</CustomBehavior>
+			<CustomBehavior File="RunCode"><![CDATA[ TreeHooks.Instance.RemoveHook("Questbot_Main", _poisonExtractionTotem); ]]></CustomBehavior>
+		</While>
+
+		<CustomBehavior File="InteractWith" MobId="3189" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="25169" QuestObjectiveIndex="1" X="-1066.58" Y="-4593.727" Z="25.82208" />
+		<CustomBehavior File="InteractWith" MobId="3190" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="25169" QuestObjectiveIndex="2" X="-925.1393" Y="-4495.786" Z="29.56791" />
+		<CustomBehavior File="InteractWith" MobId="3192" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="25169" QuestObjectiveIndex="3" X="-972.9437" Y="-4412.896" Z="29.26433" />
+
+		<CustomBehavior File="KillUntilComplete" MobId="39260" QuestId="25168" >
+			<HuntingGrounds>
+				<Hotspot X="-1025.571" Y="-4441.74" Z="25.82469" />
+				<Hotspot X="-997.2941" Y="-4536.941" Z="25.8093" />
+				<Hotspot X="-988.6417" Y="-4622.426" Z="25.71498" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Never Trust a Big Barb and a Smile" QuestId="25165" TurnInName="Bom&apos;bay" TurnInId="10578" X="-845.7318" Y="-4903.534" Z="21.19713" />
+		<TurnIn QuestName="The War of Northwatch Aggression" QuestId="25169" TurnInName="Lar Prowltusk" TurnInId="3140" X="-837.2903" Y="-4895.265" Z="23.45088" />
+		<TurnIn QuestName="Purge the Valley" QuestId="25168" TurnInName="Master Gadrin" TurnInId="3188" X="-828.2787" Y="-4919.267" Z="19.55996" />
+
+		<PickUp QuestName="Riding On" QuestId="25171" GiverName="Master Gadrin" GiverId="3188" X="-828.2787" Y="-4919.267" Z="19.55996" />
+		<TurnIn QuestName="Riding On" QuestId="25171" TurnInName="Gar&apos;Thok" TurnInId="3139" X="272.2065" Y="-4710.155" Z="17.76737" />
+
+		<Checkpoint Level="7" />
+
+		<PickUp QuestName="From Bad to Worse" QuestId="25173" GiverName="Gar&apos;Thok" GiverId="3139" X="272.2065" Y="-4710.155" Z="17.76737" />
+
+		<CustomBehavior File="SetHearthstone" AreaId="362" MobId="6928" X="338.0916" Y="-4689.857" Z="16.4893" />
+
+		<PickUp QuestName="Exploiting the Situation" QuestId="25176" GiverName="Gail Nozzywig" GiverId="39423" X="289.1065" Y="-4766.727" Z="11.62428" />
+
+		<CustomBehavior File="KillUntilComplete" MobId="39269" QuestId="25173" QuestObjectiveIndex="3" X="-246.601" Y="-5108.46" Z="41.3469" />
+
+		<CustomBehavior File="InteractWith" MobId="202648" CollectionDistance="200" InteractByLooting="true" QuestId="25176" QuestObjectiveIndex="1" X="-241.6779" Y="-5121.612" Z="25.2449" />
+
+		<CustomBehavior File="KillUntilComplete" QuestId="25173" >
+			<HuntingGrounds>
+				<Hotspot X="-237.8307" Y="-5008.411" Z="21.43744" />
+				<Hotspot X="-156.6974" Y="-5010.745" Z="21.44332" />
+				<Hotspot X="-177.4973" Y="-5083.324" Z="21.13748" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="39267" PursueWhen="!IsObjectiveComplete(1, 25173)" />
+				<PursueUnit Id="39268" PursueWhen="!IsObjectiveComplete(2, 25173)" />
+			</PursuitList>
+		</CustomBehavior>
+
+		<If Condition="QuestDone(25173, 25176) &amp;&amp; Me.HearthstoneAreaId == 362 &amp;&amp; Unit(39267) != null" >
+			<CustomBehavior File="UseHearthstone" WaitForCd="false" />
+		</If>
+
+		<TurnIn QuestName="From Bad to Worse" QuestId="25173" TurnInName="Gar&apos;Thok" TurnInId="3139" X="272.2328" Y="-4709.489" Z="17.76726" />
+		<PickUp QuestName="Storming the Beaches" QuestId="25177" GiverName="Gar&apos;Thok" GiverId="3139" X="272.2328" Y="-4709.489" Z="17.76726" />
+		<TurnIn QuestName="Exploiting the Situation" QuestId="25176" TurnInName="Gail Nozzywig" TurnInId="39423" X="287.9623" Y="-4766.835" Z="11.65313" />
+		<PickUp QuestName="Shipwreck Searching" QuestId="25178" GiverName="Gail Nozzywig" GiverId="39423" X="287.9623" Y="-4766.835" Z="11.65313" />
+
+		<CustomBehavior File="InteractWith" MobId="3236" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrateg="Dismount" QuestId="25178" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="164.1894" Y="-4989.998" Z="8.30092" />
+				<Hotspot X="160.1897" Y="-5090.87" Z="2.384543" />
+				<Hotspot X="263.1451" Y="-5101.335" Z="2.665331" />
+				<Hotspot X="286.292" Y="-5102.481" Z="2.332727" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<While Condition="!IsQuestCompleted(25179)" >
+			<CustomBehavior File="InteractWith" MobId="39270" CollectionDistance="200" NumOfTimes="16" TerminateWhen="IsQuestCompleted(25179)" >
+				<HuntingGrounds>
+					<Hotspot X="164.1894" Y="-4989.998" Z="8.30092" />
+					<Hotspot X="160.1897" Y="-5090.87" Z="2.384543" />
+					<Hotspot X="263.1451" Y="-5101.335" Z="2.665331" />
+					<Hotspot X="286.292" Y="-5102.481" Z="2.332727" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<CustomBehavior File="KillUntilComplete" MobId="39272" QuestId="25177" >
+			<HuntingGrounds>
+				<Hotspot X="164.1894" Y="-4989.998" Z="8.30092" />
+				<Hotspot X="160.1897" Y="-5090.87" Z="2.384543" />
+				<Hotspot X="263.1451" Y="-5101.335" Z="2.665331" />
+				<Hotspot X="286.292" Y="-5102.481" Z="2.332727" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Shipwreck Searching" QuestId="25178" TurnInName="Gail Nozzywig" TurnInId="39423" X="285.8777" Y="-4771.13" Z="11.61437" />
+		<TurnIn QuestName="Storming the Beaches" QuestId="25177" TurnInName="Gar&apos;Thok" TurnInId="3139" X="272.2539" Y="-4710.219" Z="17.76728" />
+		<TurnIn QuestName="Loss Reduction" QuestId="25179" TurnInName="Gar&apos;Thok" TurnInId="3139" X="272.2539" Y="-4710.219" Z="17.76728" />
+
+		<Checkpoint Level="8.5" />
 
 		<PickUp QuestName="The Burning Blade" QuestId="25232" GiverName="Orgnil Soulscar" GiverId="3142" X="288.3329" Y="-4727.827" Z="12.55133" />
 
@@ -229,7 +378,6 @@ END INITORDER COMMENT -->
 		<Checkpoint Level="10" />
 
 		<CustomBehavior File="LoadProfile" ProfileName="Northern Barrens.xml" RememberProfile="true" />
-
 
 	</QuestOrder>
 

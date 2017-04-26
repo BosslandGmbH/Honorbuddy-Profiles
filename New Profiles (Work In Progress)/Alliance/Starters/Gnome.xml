@@ -54,7 +54,7 @@ END INITORDER COMMENT -->
 			<CustomBehavior File="LoadProfile" ProfileName="..\..\Horde\1-41 Autoloader.xml" RememberProfile="true" />
 		</If>
 		<!-- RunCode Methods -->
-			<CustomBehavior File="RunCode" Type="Definition">
+			<!--<CustomBehavior File="RunCode" Type="Definition">
 			<![CDATA[
 				public __CompiledBatchClass__()
 				{
@@ -66,7 +66,7 @@ END INITORDER COMMENT -->
 					Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
 				}
 			]]>
-			</CustomBehavior>
+			</CustomBehavior> -->
 			<CustomBehavior File="RunCode" Type="Definition">
 				<![CDATA[
 						bool DoQuest(params uint[] questIds)
@@ -189,7 +189,7 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Decontamination" QuestId="27635" GiverName="Gaffer Coilspring" GiverId="46274" X="-5173.695" Y="767.2145" Z="285.4739" />
 
 		<While Condition="DoQuest(27635)" >
-			<CustomBehavior File="27635" MobId="46185" PreInteractMountStrategy="Dismount" NonCompeteDistance="0" QuestId="27635" QuestObjectiveIndex="1" X="-5173.035" Y="734.7468" Z="287.3968" />
+			<CustomBehavior File="InteractWith" MobId="46185" PreInteractMountStrategy="Dismount" NonCompeteDistance="0" QuestId="27635" QuestObjectiveIndex="1" X="-5173.035" Y="734.7468" Z="287.3968" />
 			<CustomBehavior File="WaitTimer" WaitTime="24000" TerminateWhen="!Me.InVehicle" />
 		</While>
 
@@ -199,17 +199,45 @@ END INITORDER COMMENT -->
 		<CustomBehavior File="InteractWith" MobId="46293" GossipOptions="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="27674" QuestObjectiveIndex="1" X="-5180.927" Y="686.3372" Z="287.7943" />
 
 		<TurnIn QuestName="To the Surface" QuestId="27674" TurnInName="Nevin Twistwrench" TurnInId="42396" X="-5200.896" Y="476.3752" Z="388.2964" />
-		<PickUp QuestName="The Future of Gnomeregan" VariantQuestIds="26203, 41217" GiverName="Nevin Twistwrench" GiverId="42396" X="-5200.154" Y="476.148" Z="388.3247" />
-		<TurnIn QuestName="The Future of Gnomeregan" VariantQuestIds="26203, 41217" TurnInName="Drill Sergeant Steamcrank" TurnInId="42324" X="-5171.555" Y="453.2145" Z="390.999" />
-		<PickUp QuestName="Meet the High Tinker" QuestId="26425" GiverName="Drill Sergeant Steamcrank" GiverId="42324" X="-5172.462" Y="454.1792" Z="390.6352" />
-		<TurnIn QuestName="Meet the High Tinker" QuestId="26425" TurnInName="High Tinker Mekkatorque" TurnInId="42317" X="-5132.171" Y="488.9808" Z="395.5446" />
+		<PickUp QuestName="The Future of Gnomeregan" VariantQuestIds="26203, 26199, 26206, 26197, 26202, 31135, 41217" GiverName="Nevin Twistwrench" GiverId="42396" X="-5200.154" Y="476.148" Z="388.3247" />
+
+		<If Condition="Me.Class == WoWClass.Warrior">
+			<TurnIn QuestName="The Future of Gnomeregan" QuestId="26203" TurnInName="Drill Sergeant Steamcrank" TurnInId="42324" />
+			<PickUp QuestName="Meet the High Tinker" QuestId="26425" GiverName="Drill Sergeant Steamcrank" GiverId="42324" />
+		</If>
+		<If Condition="Me.Class == WoWClass.Priest">
+			<TurnIn QuestName="The Future of Gnomeregan" QuestId="26199" TurnInName="Doc Cogspin" TurnInId="42323" />
+			<PickUp QuestName="Meet the High Tinker" QuestId="26422" GiverName="Doc Cogspin" GiverId="42323" />
+		</If>
+		<If Condition="Me.Class == WoWClass.Rogue">
+			<TurnIn QuestName="The Future of Gnomeregan" QuestId="26206" TurnInName="Kelsey Steelspark" TurnInId="42366" />
+			<PickUp QuestName="Meet the High Tinker" QuestId="26423" GiverName="Kelsey Steelspark" GiverId="42366" />
+		</If>
+		<If Condition="Me.Class == WoWClass.Mage">
+			<TurnIn QuestName="The Future of Gnomeregan" QuestId="26197" TurnInName="Bipsi Frostflinger" TurnInId="42331" />
+			<PickUp QuestName="Meet the High Tinker" QuestId="26421" GiverName="Bipsi Frostflinger" GiverId="42331" />
+		</If>
+		<If Condition="Me.Class == WoWClass.Warlock">
+			<TurnIn QuestName="The Future of Gnomeregan" QuestId="26202" TurnInName="Alamar Grimm" TurnInId="460" />
+			<PickUp QuestName="Meet the High Tinker" QuestId="26424" GiverName="Alamar Grimm" GiverId="460" />
+		</If>
+		<If Condition="Me.Class == WoWClass.Monk">
+			<TurnIn QuestName="The Future of Gnomeregan" QuestId="31135" TurnInName="Xi, Friend to the Small" TurnInId="63238" />
+			<PickUp QuestName="Meet the High Tinker" QuestId="31137" GiverName="Xi, Friend to the Small" GiverId="63238" />
+		</If>
+		<If Condition="Me.Class == WoWClass.Hunter">
+			<TurnIn QuestName="The Future of Gnomeregan" QuestId="41217" TurnInName="Muffinus Chromebrew" TurnInId="103614" />
+			<PickUp QuestName="Meet the High Tinker" QuestId="41218" GiverName="Muffinus Chromebrew" GiverId="103614" />
+		</If>
+
+		<TurnIn QuestName="Meet the High Tinker" VariantQuestIds="26425, 26422, 26423, 26421, 26424, 31137, 41218" TurnInName="High Tinker Mekkatorque" TurnInId="42317" X="-5132.171" Y="488.9808" Z="395.5446" />
 		<PickUp QuestName="The Fight Continues" QuestId="26208" GiverName="High Tinker Mekkatorque" GiverId="42317" X="-5132.171" Y="488.9808" Z="395.5446" />
 		<TurnIn QuestName="The Fight Continues" QuestId="26208" TurnInName="High Tinker Mekkatorque" TurnInId="42317" X="-5133.752" Y="491.2054" Z="395.5446" />
 		<PickUp QuestName="A Triumph of Gnomish Ingenuity" QuestId="26566" GiverName="High Tinker Mekkatorque" GiverId="42317" X="-5133.752" Y="491.2054" Z="395.5446" />
 		<TurnIn QuestName="A Triumph of Gnomish Ingenuity" QuestId="26566" TurnInName="Engineer Grindspark" TurnInId="42553" X="-5075.978" Y="455.7361" Z="410.4492" />
 		<PickUp QuestName="Scrounging for Parts" QuestId="26222" GiverName="Engineer Grindspark" GiverId="42553" X="-5075.978" Y="455.7361" Z="410.4492" />
 
-		<CustomBehavior File="InteractWith" MobIds="203965, 203966, 203967, 203964, 203968" InteractByLooting="true" PreInteractMountStrategy="Dismount" CollectionDistance="200" QuestId="26222" QuestObjectiveIndex="1" >
+		<CustomBehavior File="InteractWith" MobIds="203965, 203966, 203967, 203964, 203968" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" CollectionDistance="200" QuestId="26222" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="-5093.619" Y="488.985" Z="403.7388" />
 				<Hotspot X="-5131.075" Y="535.6282" Z="408.1685" />
