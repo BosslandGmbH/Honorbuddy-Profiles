@@ -39,12 +39,12 @@
 	<!-- INITORDER COMMENT 
 	<InitOrder>
 		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
-		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+		<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
 
-		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
-		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+		<Code File="EnablePlugin" Names="Anti Drown" />
+		<Code File="EnablePlugin" Names="Refreshment Detection" />
 
-		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+		<Code File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 
 		<LootMobs Value="true" />
 		<TargetingDistance Value="45" /> Use LevelBot default
@@ -53,10 +53,10 @@ END INITORDER COMMENT -->
 
 	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
 		<If Condition="Me.IsAlliance" >
-			<CustomBehavior File="LoadProfile" ProfileName="..\..\Alliance\1-58 Autoloader.xml" RememberProfile="true" />
+			<Code File="LoadProfile" ProfileName="..\..\Alliance\1-58 Autoloader.xml" RememberProfile="true" />
 		</If>
 		<!-- RunCode Methods -->
-			<CustomBehavior File="RunCode" Type="Definition">
+			<Code File="RunCode" Type="Definition">
 			<![CDATA[
 				public __CompiledBatchClass__()
 				{
@@ -68,8 +68,8 @@ END INITORDER COMMENT -->
 					Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
 				}
 			]]>
-			</CustomBehavior>
-			<CustomBehavior File="RunCode" Type="Definition">
+			</Code>
+			<Code File="RunCode" Type="Definition">
 				<![CDATA[
 						bool DoQuest(params uint[] questIds)
 						{
@@ -120,11 +120,11 @@ END INITORDER COMMENT -->
 							await Coroutine.Sleep(postWait);
 						}
 					]]>
-			</CustomBehavior>
+			</Code>
 		<!-- END RunCode Methods -->
 
 		<!-- Hooks -->
-			<CustomBehavior File="RunCode" Type="Definition">
+			<Code File="RunCode" Type="Definition">
 				<![CDATA[ 
 					IEnumerable<WoWItem> GetExtraConsumables()
 					{
@@ -162,16 +162,16 @@ END INITORDER COMMENT -->
 						}
 					}
 				]]>
-			</CustomBehavior>
-			<CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
-				<CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>
-			</CustomBehavior>
+			</Code>
+			<Code File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+				<Code File="RunCode" Code="await SellExtraConsumables();"/>
+			</Code>
 		<!-- END Hooks -->
 
 		<PickUp QuestName="Where in the World is Hemet Nesingwary?" QuestId="12521" GiverName="Archmage Pentarus" GiverId="28160" X="5833.273" Y="480.2529" Z="658.2257" />
 		<If Condition="HasQuest(12521) &amp;&amp; Me.ZoneId == 4395" >
-			<CustomBehavior File="InteractWith" MobId="28160" NonCompeteDistance="0" GossipOptions="1" X="5833.347" Y="480.2344" Z="658.2257" />
-			<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.InVehicle" />
+			<Code File="InteractWith" MobId="28160" NonCompeteDistance="0" GossipOptions="1" X="5833.347" Y="480.2344" Z="658.2257" />
+			<Code File="WaitTimer" WaitTime="60000" TerminateWhen="!Me.InVehicle" />
 		</If>
 		<TurnIn QuestName="Where in the World is Hemet Nesingwary?" QuestId="12521" TurnInName="Monte Muzzleshot" TurnInId="27987" X="5583.73" Y="5199.755" Z="-132.9756" />
 
@@ -182,36 +182,36 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Need an Engine, Take an Engine" QuestId="12522" GiverName="Weslex Quickwrench" GiverId="28033" X="5591.188" Y="5821.243" Z="-68.89047" />
 
 		<If Condition="!IsQuestCompleted(12569)" >
-			<CustomBehavior File="SetHearthstone" MobId="28038" AreaId="4284" X="5569.797" Y="5760.778" Z="-75.22555" />
+			<Code File="SetHearthstone" MobId="28038" AreaId="4284" X="5569.797" Y="5760.778" Z="-75.22555" />
 		</If>
 
-		<CustomBehavior File="InteractWith" MobId="190447" InteractByLooting="true" PreInteractMountStrategy="Dismount" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="12522" QuestObjectiveIndex="1" X="5642.771" Y="5245.859" Z="-134.0129" />
+		<Code File="InteractWith" MobId="190447" InteractByLooting="true" PreInteractMountStrategy="Dismount" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="12522" QuestObjectiveIndex="1" X="5642.771" Y="5245.859" Z="-134.0129" />
 
 		<TurnIn QuestName="Need an Engine, Take an Engine" QuestId="12522" TurnInName="Weslex Quickwrench" TurnInId="28033" X="5592.272" Y="5821.267" Z="-68.81171" />
 		<PickUp QuestName="Have a Part, Give a Part" QuestId="12523" GiverName="Weslex Quickwrench" GiverId="28033" X="5592.272" Y="5821.267" Z="-68.81171" />
 
-		<CustomBehavior File="InteractWith" MobIds="190453, 190454, 190455" InteractByLooting="true" CollectionDistance="200" PreInteractMountStrategy="Dismount" NumOfTimes="14" QuestId="12523" QuestObjectiveIndex="1" >
+		<Code File="InteractWith" MobIds="190453, 190454, 190455" InteractByLooting="true" CollectionDistance="200" PreInteractMountStrategy="Dismount" NumOfTimes="14" QuestId="12523" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="5904.705" Y="5445.865" Z="-90.40022" />
 				<Hotspot X="5941.208" Y="5387.049" Z="-102.935" />
 				<Hotspot X="5870.155" Y="5322.226" Z="-92.818" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
-		<CustomBehavior File="KillUntilComplete" MobIds="28123, 28124" TerminateWhen="!DoQuest(12524, 12624)" >
+		<Code File="KillUntilComplete" MobIds="28123, 28124" TerminateWhen="!DoQuest(12524, 12624)" >
 			<HuntingGrounds>
 				<Hotspot X="5904.705" Y="5445.865" Z="-90.40022" />
 				<Hotspot X="5941.208" Y="5387.049" Z="-102.935" />
 				<Hotspot X="5870.155" Y="5322.226" Z="-92.818" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
 		<TurnIn QuestName="It Could Be Anywhere!" QuestId="12624" TurnInName="Chad" TurnInId="28497" X="5575.328" Y="5754.261" Z="-74.99184" />
 		<TurnIn QuestName="Venture Co. Misadventure" QuestId="12524" TurnInName="Debaar" TurnInId="28032" X="5550.158" Y="5743.325" Z="-76.76759" />
 		<TurnIn QuestName="Have a Part, Give a Part" QuestId="12523" TurnInName="Weslex Quickwrench" TurnInId="28033" X="5592.108" Y="5821.647" Z="-68.79933" />
 
 		<PickUp QuestName="Wipe That Grin Off His Face" QuestId="12525" GiverName="Debaar" GiverId="28032" X="5550.158" Y="5743.325" Z="-76.76759" />
-		<CustomBehavior File="KillUntilComplete" MobIds="28186, 28188" QuestId="12525" X="5824.479" Y="5370.068" Z="-67.71816" />
+		<Code File="KillUntilComplete" MobIds="28186, 28188" QuestId="12525" X="5824.479" Y="5370.068" Z="-67.71816" />
 		<TurnIn QuestName="Wipe That Grin Off His Face" QuestId="12525" TurnInName="Debaar" TurnInId="28032" X="5550.839" Y="5742.418" Z="-76.59561" />
 		<PickUp QuestName="Rhino Mastery: The Test" QuestId="12520" GiverName="Hemet Nesingwary" GiverId="27986" X="5580.653" Y="5749.963" Z="-73.20103" />
 		<PickUp QuestName="Dreadsaber Mastery: Becoming a Predator" QuestId="12549" GiverName="Buck Cantwell" GiverId="28031" X="5571.411" Y="5763.775" Z="-75.22583" />
@@ -219,13 +219,13 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Kick, What Kick?" QuestId="12589" GiverName="Drostan" GiverId="28328" X="5549.699" Y="5749.3" Z="-77.59612" />
 		<While Condition="DoQuest(12589)" >
 			<MoveTo X="5545.409" Y="5748.311" Z="-77.52705" />
-			<CustomBehavior File="InteractWith" MobId="28054" InteractByUsingItemId="38573" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" NumOfTimes="20" QuestId="12589" X="5545.409" Y="5748.311" Z="-77.52705" />
+			<Code File="InteractWith" MobId="28054" InteractByUsingItemId="38573" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" NumOfTimes="20" QuestId="12589" X="5545.409" Y="5748.311" Z="-77.52705" />
 		</While>
 		<TurnIn QuestName="Kick, What Kick?" QuestId="12589" TurnInName="Drostan" TurnInId="28328" X="5547.51" Y="5747.128" Z="-77.14711" />
 
 		<PickUp QuestName="The Great Hunter&apos;s Challenge" QuestId="12592" GiverName="Drostan" GiverId="28328" X="5547.51" Y="5747.128" Z="-77.14711" />
 
-		<CustomBehavior File="KillUntilComplete" QuestId="12549" >
+		<Code File="KillUntilComplete" QuestId="12549" >
 			<HuntingGrounds>
 				<Hotspot X="5713.829" Y="5715.337" Z="-75.87571" />
 				<Hotspot X="5743.263" Y="5890.618" Z="-53.94011" />
@@ -236,16 +236,16 @@ END INITORDER COMMENT -->
 				<PursueUnit Id="28001" PursueWhen="DoQuest(12549)" />
 				<PursueUnit Id="28009" PursueWhen="DoQuest(12520)" />
 			</PursuitList>
-		</CustomBehavior>
+		</Code>
 
-		<CustomBehavior File="KillUntilComplete" MobId="28009" QuestId="12520" >
+		<Code File="KillUntilComplete" MobId="28009" QuestId="12520" >
 			<HuntingGrounds>
 				<Hotspot X="5713.829" Y="5715.337" Z="-75.87571" />
 				<Hotspot X="5743.263" Y="5890.618" Z="-53.94011" />
 				<Hotspot X="5924.127" Y="5597.91" Z="-71.80404" />
 				<Hotspot X="5640.537" Y="5738.87" Z="-78.05402" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
 		<TurnIn QuestName="Dreadsaber Mastery: Becoming a Predator" QuestId="12549" TurnInName="Buck Cantwell" TurnInId="28031" X="5571.826" Y="5763.883" Z="-75.22467" />
 		<PickUp QuestName="Dreadsaber Mastery: Stalking the Prey" QuestId="12550" GiverName="Buck Cantwell" GiverId="28031" X="5571.826" Y="5763.883" Z="-75.22467" />
@@ -257,17 +257,17 @@ END INITORDER COMMENT -->
 		<TurnIn QuestName="Rhino Mastery: The Chase" QuestId="12526" TurnInName="Oracle Soo-rahm" TurnInId="28191" X="5359.296" Y="5814.923" Z="-74.38718" />
 		<PickUp QuestName="An Offering for Soo-rahm" QuestId="12543" GiverName="Oracle Soo-rahm" GiverId="28191" X="5359.296" Y="5814.923" Z="-74.38718" />
 
-		<CustomBehavior File="KillUntilComplete" MobId="28129" QuestId="12804" >
+		<Code File="KillUntilComplete" MobId="28129" QuestId="12804" >
 			<HuntingGrounds>
 				<Hotspot X="5339.327" Y="5856.752" Z="-73.83149" />
 				<Hotspot X="5271.093" Y="5698.985" Z="-87.34746" />
 				<Hotspot X="5185.224" Y="5884.112" Z="-70.35722" />
 				<Hotspot X="5280.879" Y="5956.196" Z="-51.32619" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
 		<While Condition="DoQuest(12634)" >
-			<CustomBehavior File="InteractWith" MobId="190622" Range="9.5" PreInteractMountStrategy="Dismount" CollectionDistance="200" NumOfTimes="6" QuestId="12634" TerminateWhen="(!IsObjectiveComplete(3, 12634) &amp;&amp; Object(190623) != null) || (!IsObjectiveComplete(1, 12634) &amp;&amp; Object(190624) != null) || (!IsObjectiveComplete(2, 12634) &amp;&amp; Object(190625) != null)">
+			<Code File="InteractWith" MobId="190622" Range="9.5" PreInteractMountStrategy="Dismount" CollectionDistance="200" NumOfTimes="6" QuestId="12634" TerminateWhen="(!IsObjectiveComplete(3, 12634) &amp;&amp; Object(190623) != null) || (!IsObjectiveComplete(1, 12634) &amp;&amp; Object(190624) != null) || (!IsObjectiveComplete(2, 12634) &amp;&amp; Object(190625) != null)">
 				<HuntingGrounds>
 					<Hotspot X="5502.582" Y="5309.715" Z="-132.0815" />
 					<Hotspot X="5541.08" Y="5156.653" Z="-129.3156" />
@@ -275,20 +275,20 @@ END INITORDER COMMENT -->
 					<Hotspot X="5306.824" Y="4950.104" Z="-133.9092" />
 					<Hotspot X="5568.741" Y="5040.014" Z="-129.7748" />
 				</HuntingGrounds>
-			</CustomBehavior>
-			<CustomBehavior File="InteractWith" MobIds="190623, 190624, 190625" InteractByLooting="true" PreInteractMountStrategy="Dismount" WaitForNpcs="false" QuestId="12634" />
+			</Code>
+			<Code File="InteractWith" MobIds="190623, 190624, 190625" InteractByLooting="true" PreInteractMountStrategy="Dismount" WaitForNpcs="false" QuestId="12634" />
 		</While>
 
-		<CustomBehavior File="KillUntilComplete" MobId="28002" QuestId="12551" >
+		<Code File="KillUntilComplete" MobId="28002" QuestId="12551" >
 			<HuntingGrounds>
 				<Hotspot X="5554.136" Y="5246.002" Z="-136.1102" />
 				<Hotspot X="5498.22" Y="5045.62" Z="-135.1693" />
 				<Hotspot X="5673.051" Y="4991.856" Z="-135.036" />
 				<Hotspot X="5814.733" Y="5069.874" Z="-135.4415" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
-		<CustomBehavior File="KillUntilComplete" MobId="28011" TerminateWhen="!DoQuest(12543, 12592)" > <!-- Finishing the great hunter challenge -->
+		<Code File="KillUntilComplete" MobId="28011" TerminateWhen="!DoQuest(12543, 12592)" > <!-- Finishing the great hunter challenge -->
 			<HuntingGrounds>
 				<Hotspot X="5331.415" Y="5003.864" Z="-136.3978" />
 				<Hotspot X="5315.354" Y="5180.538" Z="-133.4261" />
@@ -296,19 +296,19 @@ END INITORDER COMMENT -->
 				<Hotspot X="5192.099" Y="4926.136" Z="-129.3122" />
 				<Hotspot X="5136.894" Y="4760.221" Z="-133.0242" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
-		<CustomBehavior File="InteractWith" MobId="190700" CollectionDistance="200" PreInteractMountStrategy="Dismount" NumOfTimes="6" QuestId="12550" >
+		<Code File="InteractWith" MobId="190700" CollectionDistance="200" PreInteractMountStrategy="Dismount" NumOfTimes="6" QuestId="12550" >
 			<HuntingGrounds>
 				<Hotspot X="6154.259" Y="5496.559" Z="-65.98036" />
 				<Hotspot X="6068.319" Y="5429.11" Z="-90.99768" />
 				<Hotspot X="6050.95" Y="5282.268" Z="-96.22697" />
 				<Hotspot X="6011.344" Y="5197.114" Z="-96.63311" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
 		<If Condition="QuestDone(12550) &amp;&amp; Me.HearthstoneAreaId == 4284 &amp;&amp; (Object(190700) != null || Object(190701) != null)" >
-			<CustomBehavior File="UseHearthstone" WaitForCD="false" />
+			<Code File="UseHearthstone" WaitForCD="false" />
 		</If>
 
 		<TurnIn QuestName="Crocolisk Mastery: The Trial" QuestId="12551" TurnInName="Debaar" TurnInId="28032" X="5552.952" Y="5742.026" Z="-76.44872" />
@@ -324,16 +324,16 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="The Bones of Nozronn" QuestId="12544" GiverName="Oracle Soo-rahm" GiverId="28191" X="5359.218" Y="5816.162" Z="-74.38981" />
 		<While Condition="DoQuest(12544)" >
 			<MoveTo X="5208.624" Y="5789.969" Z="-71.38312" />
-			<CustomBehavior File="UseItem" ItemId="38519" QuestId="12544" TerminateWhen="!HasItem(38519)" X="5208.624" Y="5789.969" Z="-71.38312" />
-			<CustomBehavior File="WaitTimer" WaitTime="35000" QuestId="12544" />
+			<Code File="UseItem" ItemId="38519" QuestId="12544" TerminateWhen="!HasItem(38519)" X="5208.624" Y="5789.969" Z="-71.38312" />
+			<Code File="WaitTimer" WaitTime="35000" QuestId="12544" />
 		</While>
 		<TurnIn QuestName="The Bones of Nozronn" QuestId="12544" TurnInName="Hemet Nesingwary" TurnInId="27986" X="5582.274" Y="5749.617" Z="-72.65093" />
 
 		<PickUp QuestName="Rhino Mastery: The Kill" QuestId="12556" GiverName="Hemet Nesingwary" GiverId="27986" X="5581.846" Y="5747.804" Z="-72.62736" />
 
-		<CustomBehavior File="KillUntilComplete" MobId="28297" QuestId="12558" X="6298.448" Y="5465.604" Z="-44.75372" />
+		<Code File="KillUntilComplete" MobId="28297" QuestId="12558" X="6298.448" Y="5465.604" Z="-44.75372" />
 
-		<CustomBehavior File="InteractWith" MobId="190533" InteractByLooting="true" PreInteractMountStrategy="Dismount" CollectionDistance="200" NumOfTimes="10" QuestId="12560" QuestObjectiveIndex="1" >
+		<Code File="InteractWith" MobId="190533" InteractByLooting="true" PreInteractMountStrategy="Dismount" CollectionDistance="200" NumOfTimes="10" QuestId="12560" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="6086.055" Y="5234.104" Z="-98.76144" />
 				<Hotspot X="6048.418" Y="5190.716" Z="-99.8747" />
@@ -343,17 +343,17 @@ END INITORDER COMMENT -->
 				<Hotspot X="5259.487" Y="4903.698" Z="-131.4791" />
 				<Hotspot X="5157.743" Y="4996.846" Z="-134.3134" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
-		<CustomBehavior File="KillUntilComplete" MobId="28288" QuestId="12556" >
+		<Code File="KillUntilComplete" MobId="28288" QuestId="12556" >
 			<HuntingGrounds>
 				<Hotspot X="6001.554" Y="4858.772" Z="-98.95996" />
 				<Hotspot X="6061.114" Y="4912.55" Z="-96.58702" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
 		<If Condition="QuestDone(12556) &amp;&amp; Me.HearthstoneAreaId == 4284 &amp;&amp; Unit(28288) != null" >
-			<CustomBehavior File="UseHearthstone" WaitForCD="false" />
+			<Code File="UseHearthstone" WaitForCD="false" />
 		</If>
 
 		<TurnIn QuestName="Rhino Mastery: The Kill" QuestId="12556" TurnInName="Hemet Nesingwary" TurnInId="27986" X="5583.314" Y="5748.283" Z="-72.25323" />
@@ -363,37 +363,37 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Crocolisk Mastery: The Ambush" QuestId="12569" GiverName="Debaar" GiverId="28032" X="5550.627" Y="5743.981" Z="-76.91969" />
 		<While Condition="DoQuest(12569)" >
 			<MoveTo X="5438.055" Y="4900.209" Z="-198.3494" />
-			<CustomBehavior File="UseItem" ItemId="38564" X="5438.055" Y="4900.209" Z="-198.3494" />
-			<CustomBehavior File="WaitTimer" WaitTime="7000" QuestId="12569" />
-			<CustomBehavior File="KillUntilComplete" MobId="28317" QuestId="12569" X="5432.103" Y="4900.068" Z="-197.7553" />
+			<Code File="UseItem" ItemId="38564" X="5438.055" Y="4900.209" Z="-198.3494" />
+			<Code File="WaitTimer" WaitTime="7000" QuestId="12569" />
+			<Code File="KillUntilComplete" MobId="28317" QuestId="12569" X="5432.103" Y="4900.068" Z="-197.7553" />
 		</While>
 
 		<If Condition="NeedsQuest(12528)" >
 			<MoveTo X="5064.585" Y="4732.391" Z="-131.0443" />
-			<CustomBehavior File="KillUntilComplete" MobId="28097" X="5063.274" Y="4731.896" Z="-131.2568" TerminateWhen="Unit(28095, u =&gt; u.QuestGiverStatus != QuestGiverStatus.None) != null" />
+			<Code File="KillUntilComplete" MobId="28097" X="5063.274" Y="4731.896" Z="-131.2568" TerminateWhen="Unit(28095, u =&gt; u.QuestGiverStatus != QuestGiverStatus.None) != null" />
 		</If>
 		<PickUp QuestName="Playing Along" QuestId="12528" GiverName="Tracker Gekgek" GiverId="28095" X="5067.211" Y="4730.374" Z="-131.3982" />
 		<TurnIn QuestName="Playing Along" QuestId="12528" TurnInName="High-Shaman Rakjak" TurnInId="28082" X="5277.18" Y="4531.402" Z="-81.38486" />
 
 		<PickUp QuestName="The Ape Hunter&apos;s Slave" QuestId="12529" GiverName="High-Shaman Rakjak" GiverId="28082" X="5277.18" Y="4531.402" Z="-81.38486" />
 		<While Condition="!IsQuestCompleted(12530) &amp;&amp; !HasItem(38619)" >
-			<CustomBehavior File="InteractWith" MobId="28138" NonCompeteDistance="0" GossipOptions="1" X="5265.628" Y="4515.716" Z="-84.83878" TerminateWhen="HasItem(38619)" />
+			<Code File="InteractWith" MobId="28138" NonCompeteDistance="0" GossipOptions="1" X="5265.628" Y="4515.716" Z="-84.83878" TerminateWhen="HasItem(38619)" />
 		</While>
 
 		<If Condition="NeedsQuest(12530)" >
 			<While Condition="Unit(28214, u =&gt; u.CreatedByUnit == Me) == null" >
-				<CustomBehavior File="ForcedDismount" />
-				<CustomBehavior File="UseItem" ItemId="38619" TerminateWhen="!HasItem(38619) || Unit(28214, u =&gt; u.CreatedByUnit == Me) != null" />
+				<Code File="ForcedDismount" />
+				<Code File="UseItem" ItemId="38619" TerminateWhen="!HasItem(38619) || Unit(28214, u =&gt; u.CreatedByUnit == Me) != null" />
 			</While>
 			<PickUp QuestName="Tormenting the Softknuckles" QuestId="12530" GiverName="Goregek the Gorilla Hunter" GiverId="28214" X="5269.529" Y="4518.748" Z="-83.98974" />
 		</If>
 
 		<While Condition="DoQuest(12530)" >
-			<CustomBehavior File="InteractWith" MobId="28127" InteractByUsingItemId="38467" PreInteractMountStrategy="Dismount" CollectionDistance="200" NumOfTimes="20" QuestId="12530" X="5134.74" Y="4007.375" Z="-61.68164" TerminateWhen="Unit(28213) != null" />
-			<CustomBehavior File="KillUntilComplete" MobId="28213" QuestId="12530" X="5146.016" Y="3993.578" Z="-61.86334" TerminateWhen="Unit(28213, u =&gt; u.IsAlive) == null" />
+			<Code File="InteractWith" MobId="28127" InteractByUsingItemId="38467" PreInteractMountStrategy="Dismount" CollectionDistance="200" NumOfTimes="20" QuestId="12530" X="5134.74" Y="4007.375" Z="-61.68164" TerminateWhen="Unit(28213) != null" />
+			<Code File="KillUntilComplete" MobId="28213" QuestId="12530" X="5146.016" Y="3993.578" Z="-61.86334" TerminateWhen="Unit(28213, u =&gt; u.IsAlive) == null" />
 		</While>
 
-		<CustomBehavior File="KillUntilComplete" QuestId="12529" >
+		<Code File="KillUntilComplete" QuestId="12529" >
 			<HuntingGrounds>
 				<Hotspot X="5140.884" Y="4125.809" Z="-75.22289" />
 				<Hotspot X="5206.626" Y="4193.102" Z="-93.34675" />
@@ -404,7 +404,7 @@ END INITORDER COMMENT -->
 				<PursueUnit Id="28098" PursueWhen="!IsObjectiveComplete(1, 12529)" />
 				<PursueUnit Id="28096" PursueWhen="!IsObjectiveComplete(2, 12529)" />
 			</PursuitList>
-		</CustomBehavior>
+		</Code>
 
 		<TurnIn QuestName="The Ape Hunter&apos;s Slave" QuestId="12529" TurnInName="High-Shaman Rakjak" TurnInId="28082" X="5277.958" Y="4530.33" Z="-81.11193" />
 		<TurnIn QuestName="Tormenting the Softknuckles" QuestId="12530" TurnInName="High-Shaman Rakjak" TurnInId="28082" X="5277.958" Y="4530.33" Z="-81.11193" />
@@ -416,10 +416,10 @@ END INITORDER COMMENT -->
 				<MoveTo X="4991.095" Y="4334.819" Z="-84.66538" />
 				<MoveTo Nav="Run" X="4975.731" Y="4383.322" Z="-107.9953" />
 			</If>
-			<CustomBehavior File="KillUntilComplete" MobId="28087" MovementBy="NavigatorOnly" QuestId="12534" X="4964.994" Y="4442.079" Z="-130.9837" />
+			<Code File="KillUntilComplete" MobId="28087" MovementBy="NavigatorOnly" QuestId="12534" X="4964.994" Y="4442.079" Z="-130.9837" />
 		</While>
 
-		<CustomBehavior File="KillUntilComplete" QuestId="12533" >
+		<Code File="KillUntilComplete" QuestId="12533" >
 			<HuntingGrounds>
 				<Hotspot X="5018.08" Y="4267.73" Z="-85.57268" />
 				<Hotspot X="5074.777" Y="4226.229" Z="-80.91552" />
@@ -428,42 +428,42 @@ END INITORDER COMMENT -->
 				<PursueUnit Id="28086" PursueWhen="!IsObjectiveComplete(1, 12533)" />
 				<PursueUnit Id="28085" PursueWhen="!IsObjectiveComplete(2, 12533)" />
 			</PursuitList>
-		</CustomBehavior>
+		</Code>
 
 		<TurnIn QuestName="The Wasp Hunter&apos;s Apprentice" QuestId="12533" TurnInName="High-Shaman Rakjak" TurnInId="28082" X="5277.291" Y="4531.351" Z="-81.34651" />
 		<TurnIn QuestName="The Sapphire Queen" QuestId="12534" TurnInName="High-Shaman Rakjak" TurnInId="28082" X="5277.291" Y="4531.351" Z="-81.34651" />
 
 		<PickUp QuestName="Flown the Coop!" QuestId="12532" GiverName="Elder Harkek" GiverId="28138" X="5265.463" Y="4512.988" Z="-84.85381" />
-		<CustomBehavior File="InteractWith" QuestId="12532" QuestObjectiveIndex="1" MobId="28161" NumOfTimes="30" Range="5" CollectionDistance="500" X="5278.118" Y="4434.634" Z="-96.02177" />
+		<Code File="InteractWith" QuestId="12532" QuestObjectiveIndex="1" MobId="28161" NumOfTimes="30" Range="5" CollectionDistance="500" X="5278.118" Y="4434.634" Z="-96.02177" />
 		<TurnIn QuestName="Flown the Coop!" QuestId="12532" TurnInName="Elder Harkek" TurnInId="28138" X="5265.351" Y="4514.127" Z="-84.89781" />
 
 		<PickUp QuestName="The Underground Menace" QuestId="12531" GiverName="Elder Harkek" GiverId="28138" X="5265.351" Y="4514.127" Z="-84.89781" />
 		<PickUp QuestName="Mischief in the Making" QuestId="12535" GiverName="High-Shaman Rakjak" GiverId="28082" X="5278.755" Y="4529.87" Z="-80.82507" />
 
-		<CustomBehavior File="InteractWith" MobId="190500" InteractByLooting="true" CollectionDistance="200" PreInteractMountStrategy="Dismount" NumOfTimes="16" QuestId="12535" QuestObjectiveIndex="1" >
+		<Code File="InteractWith" MobId="190500" InteractByLooting="true" CollectionDistance="200" PreInteractMountStrategy="Dismount" NumOfTimes="16" QuestId="12535" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="4845.001" Y="4365.83" Z="-58.827" />
 				<Hotspot X="4763.513" Y="4381.85" Z="-51.70296" />
 				<Hotspot X="4761.84" Y="4551.591" Z="-61.50637" />
 				<Hotspot X="4821.076" Y="4717.442" Z="-70.69373" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
-		<CustomBehavior File="KillUntilComplete" MobId="28083" MovementBy="NavigatorPreferred" QuestId="12531" >
+		<Code File="KillUntilComplete" MobId="28083" MovementBy="NavigatorPreferred" QuestId="12531" >
 			<HuntingGrounds>
 				<Hotspot X="4820.208" Y="4761.527" Z="-76.13779" />
 				<Hotspot X="4771.806" Y="4700.383" Z="-68.31072" />
 				<Hotspot X="4857.012" Y="4394.469" Z="-61.99173" />
 				<Hotspot X="4801.377" Y="4365.442" Z="-56.77114" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
 		<TurnIn QuestName="The Underground Menace" QuestId="12531" TurnInName="High-Shaman Rakjak" TurnInId="28082" X="5278.295" Y="4531.167" Z="-80.97735" />
 		<TurnIn QuestName="Mischief in the Making" QuestId="12535" TurnInName="High-Shaman Rakjak" TurnInId="28082" X="5278.295" Y="4531.167" Z="-80.97735" />
 		<PickUp QuestName="A Rough Ride" QuestId="12536" GiverName="High-Shaman Rakjak" GiverId="28082" X="5278.295" Y="4531.167" Z="-80.97735" />
 
 		<While Condition="!IsQuestCompleted(12539) &amp;&amp; !HasItem(38512)" >
-			<CustomBehavior File="InteractWith" MobId="28138" NonCompeteDistance="0" GossipOptions="1" X="5265.628" Y="4515.716" Z="-84.83878" TerminateWhen="HasItem(38512)" />
+			<Code File="InteractWith" MobId="28138" NonCompeteDistance="0" GossipOptions="1" X="5265.628" Y="4515.716" Z="-84.83878" TerminateWhen="HasItem(38512)" />
 		</While>
 
 		<While Condition="DoQuest(12536)" >
@@ -472,36 +472,36 @@ END INITORDER COMMENT -->
 
 		<If Condition="QuestDone(12536)" >
 			<If Condition="Unit(28216, u =&gt; u.CreatedByUnit == Me) == null" >
-				<CustomBehavior File="UseItem" ItemId="38512" TerminateWhen="!HasItem(38512)" />
+				<Code File="UseItem" ItemId="38512" TerminateWhen="!HasItem(38512)" />
 			</If>
 			<TurnIn QuestName="A Rough Ride" QuestId="12536" TurnInName="Zepik the Gorloc Hunter" TurnInId="28216" />
 		</If>
 
 		<If Condition="NeedsQuest(12537, 12538)" >
 			<If Condition="Unit(28216, u =&gt; u.CreatedByUnit == Me) == null" >
-				<CustomBehavior File="UseItem" ItemId="38512" TerminateWhen="!HasItem(38512)" />
+				<Code File="UseItem" ItemId="38512" TerminateWhen="!HasItem(38512)" />
 			</If>
 			<PickUp QuestName="Lightning Definitely Strikes Twice" QuestId="12537" GiverName="Zepik the Gorloc Hunter" GiverId="28216" />
 			<PickUp QuestName="The Mist Isn&apos;t Listening" QuestId="12538" GiverName="Zepik the Gorloc Hunter" GiverId="28216" />
 		</If>
 
 		<While Condition="DoQuest(12537)" >
-			<CustomBehavior File="InteractWith" MobId="28273" InteractByUsingItemId="38510" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="12537" X="6209.047" Y="4952.947" Z="-98.94051" TerminateWhen="Object(190502) != null" />
-			<CustomBehavior File="InteractWith" MobId="190502" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="12537" X="6209.047" Y="4952.947" Z="-98.94051" TerminateWhen="Object(190502) == null" />
+			<Code File="InteractWith" MobId="28273" InteractByUsingItemId="38510" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="12537" X="6209.047" Y="4952.947" Z="-98.94051" TerminateWhen="Object(190502) != null" />
+			<Code File="InteractWith" MobId="190502" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="12537" X="6209.047" Y="4952.947" Z="-98.94051" TerminateWhen="Object(190502) == null" />
 		</While>
 
-		<CustomBehavior File="KillUntilComplete" MobIds="28109, 28110" QuestId="12538" >
+		<Code File="KillUntilComplete" MobIds="28109, 28110" QuestId="12538" >
 			<HuntingGrounds>
 				<Hotspot X="6229.391" Y="5005.124" Z="-98.4735" />
 				<Hotspot X="6148.217" Y="5028.572" Z="-97.17419" />
 				<Hotspot X="6306.73" Y="5062.249" Z="-85.09155" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
 		<If Condition="QuestDone(12537, 12538)" >
 			<If Condition="Unit(28216, u =&gt; u.CreatedByUnit == Me) == null" >
-				<CustomBehavior File="ForcedDismount" />
-				<CustomBehavior File="UseItem" ItemId="38512" TerminateWhen="Unit(28216) != null" />
+				<Code File="ForcedDismount" />
+				<Code File="UseItem" ItemId="38512" TerminateWhen="Unit(28216) != null" />
 			</If>
 			<TurnIn QuestName="Lightning Definitely Strikes Twice" QuestId="12537" TurnInName="Zepik the Gorloc Hunter" TurnInId="28216" />
 			<TurnIn QuestName="The Mist Isn&apos;t Listening" QuestId="12538" TurnInName="Zepik the Gorloc Hunter" TurnInId="28216" />
@@ -509,8 +509,8 @@ END INITORDER COMMENT -->
 
 		<If Condition="NeedsQuest(12539)" >
 			<If Condition="Unit(28216, u =&gt; u.CreatedByUnit == Me) == null" >
-				<CustomBehavior File="ForcedDismount" />
-				<CustomBehavior File="UseItem" ItemId="38512" TerminateWhen="Unit(28216) != null" />
+				<Code File="ForcedDismount" />
+				<Code File="UseItem" ItemId="38512" TerminateWhen="Unit(28216) != null" />
 			</If>
 			<PickUp QuestName="Hoofing It" QuestId="12539" GiverName="Zepik the Gorloc Hunter" GiverId="28216" />
 		</If>
@@ -518,45 +518,45 @@ END INITORDER COMMENT -->
 
 		<PickUp QuestName="Just Following Orders" QuestId="12540" GiverName="High-Shaman Rakjak" GiverId="28082" X="5278.987" Y="4531.914" Z="-80.71124" />
 		<While Condition="HasQuest(12540)" >
-			<CustomBehavior File="InteractWith" WaitForNpcs="false" CollectionDistance="200" NonCompeteDistance="0" >
+			<Code File="InteractWith" WaitForNpcs="false" CollectionDistance="200" NonCompeteDistance="0" >
 				<PursuitList>
 					<PursueUnit Id="28217" PursueWhen="UNIT.QuestGiverStatus == QuestGiverStatus.TurnIn" />
 				</PursuitList>
-			</CustomBehavior>
+			</Code>
 			<If Condition="QuestFrame.Instance.IsVisible" >
-				<CustomBehavior File="RunCode" Code="QuestFrame.Instance.CompleteQuest();" />
+				<Code File="RunCode" Code="QuestFrame.Instance.CompleteQuest();" />
 				<!-- <TurnIn QuestName="Just Following Orders" QuestId="12540" TurnInName="Injured Rainspeaker Oracle" TurnInId="28217" />-->
 			</If>
 
-			<CustomBehavior File="InteractWith" MobId="28217" GossipOptions="1" CollectionDistance="200" X="5412.318" Y="4574.35" Z="-129.3929" TerminateWhen="!HasQuest(12540) || Unit(8217, u =&gt; u.QuestGiverStatus == QuestGiverStatus.TurnIn) != null" />
-			<CustomBehavior File="Misc\RunLua" QuestId="12540" WaitTime="1000" Lua="ReloadUI();" /> <!-- Fixes interface bug -->
+			<Code File="InteractWith" MobId="28217" GossipOptions="1" CollectionDistance="200" X="5412.318" Y="4574.35" Z="-129.3929" TerminateWhen="!HasQuest(12540) || Unit(8217, u =&gt; u.QuestGiverStatus == QuestGiverStatus.TurnIn) != null" />
+			<Code File="Misc\RunLua" QuestId="12540" WaitTime="1000" Lua="ReloadUI();" /> <!-- Fixes interface bug -->
 		</While>
 		
 		<PickUp QuestName="Fortunate Misunderstandings" QuestId="12570" GiverName="Injured Rainspeaker Oracle" GiverId="28217" X="5412.318" Y="4574.35" Z="-129.3929" />
 		<While Condition="DoQuest(12570)" >
-			<CustomBehavior File="InteractWith" MobId="28217" GossipOptions="1" NonCompeteDistance="0" CollectionDistance="200" QuestId="12570" X="5412.318" Y="4574.35" Z="-129.3929" />
+			<Code File="InteractWith" MobId="28217" GossipOptions="1" NonCompeteDistance="0" CollectionDistance="200" QuestId="12570" X="5412.318" Y="4574.35" Z="-129.3929" />
 			<MoveTo X="5638.694" Y="4599.41" Z="-137.1068" />
-			<CustomBehavior File="WaitTimer" WaitTime="70000" QuestId="12570" />
+			<Code File="WaitTimer" WaitTime="70000" QuestId="12570" />
 		</While>
 		<TurnIn QuestName="Fortunate Misunderstandings" QuestId="12570" TurnInName="High-Oracle Soo-say" TurnInId="28027" X="5650.718" Y="4555.79" Z="-134.9444" />
 
 		<PickUp QuestName="Make the Bad Snake Go Away" QuestId="12571" GiverName="High-Oracle Soo-say" GiverId="28027" X="5650.718" Y="4555.79" Z="-134.9444" />
 		<While Condition="!IsQuestCompleted(12572) &amp;&amp; !HasItem(38622)" >
-			<CustomBehavior File="InteractWith" MobId="28027" NonCompeteDistance="0" GossipOptions="1" X="5650.456" Y="4554.259" Z="-134.9279" TerminateWhen="HasItem(38622)" />
+			<Code File="InteractWith" MobId="28027" NonCompeteDistance="0" GossipOptions="1" X="5650.456" Y="4554.259" Z="-134.9279" TerminateWhen="HasItem(38622)" />
 		</While>
 
 		<If Condition="NeedsQuest(12572)" >
 			<If Condition="Unit(28120, u =&gt; u.CreatedByUnit == Me) == null" >
-				<CustomBehavior File="UseItem" ItemId="38622" NumOfTimes="500" TerminateWhen="!HasItem(38622) || Unit(28120, u =&gt; u.CreatedByUnit == Me) != null" />
+				<Code File="UseItem" ItemId="38622" NumOfTimes="500" TerminateWhen="!HasItem(38622) || Unit(28120, u =&gt; u.CreatedByUnit == Me) != null" />
 			</If>
 			<PickUp QuestName="Gods like Shiny Things" QuestId="12572" GiverName="Lafoo" GiverId="28120" X="5650.718" Y="4555.79" Z="-134.9444" />
 		</If>
 
 		<While Condition="DoQuest(12572)" >
-			<CustomBehavior File="Hooks\DoWhen" ActivityName="UseLafooBag" AllowUseWhileMounted="true" UseWhen="DoQuest(12572) &amp;&amp; HasItem(38622) &amp;&amp; Unit(28120, u =&gt; u.CreatedByUnit == Me) == null" >
-				<CustomBehavior File="UseItem" ItemId="38622" TerminateWhen="Unit(28120, u =&gt; u.CreatedByUnit == Me) != null" />
-			</CustomBehavior>
-			<CustomBehavior File="InteractWith" MobId="28362" CollectionDistance="200" WaitTime="5000" NumOfTimes="12" QuestId="12572" TerminateWhen="Object(190561) != null || Object(190558) != null || Object(190560) != null || Object(190562) != null || Object(190563) != null" >
+			<Code File="Hooks\DoWhen" ActivityName="UseLafooBag" AllowUseWhileMounted="true" UseWhen="DoQuest(12572) &amp;&amp; HasItem(38622) &amp;&amp; Unit(28120, u =&gt; u.CreatedByUnit == Me) == null" >
+				<Code File="UseItem" ItemId="38622" TerminateWhen="Unit(28120, u =&gt; u.CreatedByUnit == Me) != null" />
+			</Code>
+			<Code File="InteractWith" MobId="28362" CollectionDistance="200" WaitTime="5000" NumOfTimes="12" QuestId="12572" TerminateWhen="Object(190561) != null || Object(190558) != null || Object(190560) != null || Object(190562) != null || Object(190563) != null" >
 				<HuntingGrounds>
 					<Hotspot X="5680.747" Y="4499.689" Z="-135.7962" />
 					<Hotspot X="5765.88" Y="4470.231" Z="-133.974" />
@@ -564,27 +564,27 @@ END INITORDER COMMENT -->
 					<Hotspot X="5590.567" Y="4688.513" Z="-135.4218" />
 					<Hotspot X="5496.937" Y="4595.389" Z="-138.2689" />
 				</HuntingGrounds>
-			</CustomBehavior>
-			<CustomBehavior File="InteractWith" MobIds="190561, 190558, 190560, 190562, 190563" Range="2" CollectionDistance="200" PreInteractMountStrategy="Dismount" WaitForNpcs="false" InteractByLooting="true" NumOfTimes="12" QuestId="12572" />
-			<CustomBehavior File="Hooks\DoWhen" ActivityName="UseLafooBag" Command="Remove" />
+			</Code>
+			<Code File="InteractWith" MobIds="190561, 190558, 190560, 190562, 190563" Range="2" CollectionDistance="200" PreInteractMountStrategy="Dismount" WaitForNpcs="false" InteractByLooting="true" NumOfTimes="12" QuestId="12572" />
+			<Code File="Hooks\DoWhen" ActivityName="UseLafooBag" Command="Remove" />
 		</While>
 
-		<CustomBehavior File="KillUntilComplete" MobId="28358" QuestId="12571" QuestObjectiveIndex="2"  X="5778.421" Y="4463.592" Z="-132.9612" />
+		<Code File="KillUntilComplete" MobId="28358" QuestId="12571" QuestObjectiveIndex="2"  X="5778.421" Y="4463.592" Z="-132.9612" />
 
-		<CustomBehavior File="KillUntilComplete" MobId="28011" QuestId="12571" QuestObjectiveIndex="1" >
+		<Code File="KillUntilComplete" MobId="28011" QuestId="12571" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="5717.429" Y="4741.774" Z="-135.114" />
 				<Hotspot X="5836.128" Y="4624.396" Z="-132.0914" />
 				<Hotspot X="5686.407" Y="4479.044" Z="-135.643" />
 				<Hotspot X="5714.577" Y="4738.994" Z="-135.4611" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
 		<TurnIn QuestName="Make the Bad Snake Go Away" QuestId="12571" TurnInName="High-Oracle Soo-say" TurnInId="28027" X="5652.003" Y="4554.32" Z="-135.1184" />
 		<PickUp QuestName="Making Peace" QuestId="12573" GiverName="High-Oracle Soo-say" GiverId="28027" X="5652.003" Y="4554.32" Z="-135.1184" />
 		<TurnIn QuestName="Gods like Shiny Things" QuestId="12572" TurnInName="High-Oracle Soo-say" TurnInId="28027" X="5652.003" Y="4554.32" Z="-135.1184" />
 
-		<CustomBehavior File="InteractWith" MobId="28315" GossipOptions="1, 1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="12573" QuestObjectiveIndex="1" X="5409.18" Y="4691.645" Z="-122.4445" />
+		<Code File="InteractWith" MobId="28315" GossipOptions="1, 1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="12573" QuestObjectiveIndex="1" X="5409.18" Y="4691.645" Z="-122.4445" />
 
 		<TurnIn QuestName="Making Peace" QuestId="12573" TurnInName="High-Oracle Soo-say" TurnInId="28027" X="5650.016" Y="4555.552" Z="-134.8717" />
 		<PickUp QuestName="Back So Soon?" QuestId="12574" GiverName="High-Oracle Soo-say" GiverId="28027" X="5650.016" Y="4555.552" Z="-134.8717" />
@@ -593,11 +593,11 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Forced Hand" QuestId="12576" GiverName="Mistcaller Soo-gan" GiverId="28114" X="6168.691" Y="5092.313" Z="-97.2947" />
 		<!-- <PickUp QuestName="Burning to Help" QuestId="12683" GiverName="Colvin Norrington" GiverId="28771" X="6452.807" Y="5093.079" Z="-64.28634" /> Not worth it -->
 
-		<CustomBehavior File="KillUntilComplete" MobIds="28399, 28105" QuestId="12575" QuestObjectiveIndex="1" X="6718.713" Y="5121.258" Z="-17.7485" />
+		<Code File="KillUntilComplete" MobIds="28399, 28105" QuestId="12575" QuestObjectiveIndex="1" X="6718.713" Y="5121.258" Z="-17.7485" />
 
-		<CustomBehavior File="InteractWith" MobId="190578" InteractByLooting="true" NonCompeteDistance="0" QuestId="12575" QuestObjectiveIndex="2" X="6718.713" Y="5121.258" Z="-17.7485" />
+		<Code File="InteractWith" MobId="190578" InteractByLooting="true" NonCompeteDistance="0" QuestId="12575" QuestObjectiveIndex="2" X="6718.713" Y="5121.258" Z="-17.7485" />
 
-		<CustomBehavior File="KillUntilComplete" QuestId="12576" >
+		<Code File="KillUntilComplete" QuestId="12576" >
 			<HuntingGrounds>
 				<Hotspot X="6648.267" Y="5124.897" Z="-36.64067" />
 				<Hotspot X="6614.537" Y="5183.641" Z="-41.87869" />
@@ -607,21 +607,21 @@ END INITORDER COMMENT -->
 				<PursueUnit Id="28080" PursueWhen="!IsObjectiveComplete(1, 12576)" />
 				<PursueUnit Id="28081" PursueWhen="!IsObjectiveComplete(2, 12576)" />
 			</PursuitList>
-		</CustomBehavior>
+		</Code>
 
 		<TurnIn QuestName="The Lost Mistwhisper Treasure" QuestId="12575" TurnInName="Mistcaller Soo-gan" TurnInId="28114" X="6168.956" Y="5092.291" Z="-97.28282" />
 		<TurnIn QuestName="Forced Hand" QuestId="12576" TurnInName="Mistcaller Soo-gan" TurnInId="28114" X="6168.956" Y="5092.291" Z="-97.28282" />
 		<PickUp QuestName="Home Time!" QuestId="12577" GiverName="Mistcaller Soo-gan" GiverId="28114" X="6168.956" Y="5092.291" Z="-97.28282" />
 
 		<If Condition="QuestDone(12569) &amp;&amp; Me.HearthstoneAreaId == 4284 &amp;&amp; Unit(28114) != null" >
-			<CustomBehavior File="UseHearthstone" WaitForCD="false" />
+			<Code File="UseHearthstone" WaitForCD="false" />
 		</If>
 
 		<TurnIn QuestName="Crocolisk Mastery: The Ambush" QuestId="12569" TurnInName="Debaar" TurnInId="28032" X="5550.522" Y="5743.342" Z="-76.78261" />
 		<TurnIn QuestName="Home Time!" QuestId="12577" TurnInName="High-Oracle Soo-say" TurnInId="28027" X="5652.528" Y="4554.269" Z="-135.1849" />
 
 		<PickUp QuestName="An Issue of Trust" QuestId="12561" GiverName="Avatar of Freya" GiverId="27801" X="5870.207" Y="4113.711" Z="-85.54322" />
-		<CustomBehavior File="KillUntilComplete" QuestId="12561" >
+		<Code File="KillUntilComplete" QuestId="12561" >
 			<HuntingGrounds>
 				<Hotspot X="5989.576" Y="4181.704" Z="-71.70348" />
 				<Hotspot X="6115.332" Y="4114.637" Z="-47.6128" />
@@ -633,11 +633,11 @@ END INITORDER COMMENT -->
 				<PursueUnit Id="28101" PursueWhen="!IsObjectiveComplete(1, 12561)" />
 				<PursueUnit Id="28108" PursueWhen="!IsObjectiveComplete(2, 12561)" />
 			</PursuitList>
-		</CustomBehavior>
+		</Code>
 		<TurnIn QuestName="An Issue of Trust" QuestId="12561" TurnInName="Avatar of Freya" TurnInId="27801" X="5871.862" Y="4118.938" Z="-85.54267" />
 
 		<PickUp QuestName="Returned Sevenfold" QuestId="12611" GiverName="Avatar of Freya" GiverId="27801" X="5871.862" Y="4118.938" Z="-85.54267" />
-		<CustomBehavior File="CombatUseItemOnV2" QuestId="12611" ItemId="38657" MobId="28443" MobState="Alive" UseWhenMobCastingSpellId="51854" MaxRangeToUseItem="8" CollectionDistance="40" X="6006.052" Y="4023.683" Z="-44.92612" />
+		<Code File="CombatUseItemOnV2" QuestId="12611" ItemId="38657" MobId="28443" MobState="Alive" UseWhenMobCastingSpellId="51854" MaxRangeToUseItem="8" CollectionDistance="40" X="6006.052" Y="4023.683" Z="-44.92612" />
 		<TurnIn QuestName="Returned Sevenfold" QuestId="12611" TurnInName="Avatar of Freya" TurnInId="27801" X="5871.273" Y="4114.278" Z="-85.5395" />
 
 		<PickUp QuestName="The Fallen Pillar" QuestId="12612" GiverName="Avatar of Freya" GiverId="27801" X="5871.273" Y="4114.278" Z="-85.5395" />
@@ -649,7 +649,7 @@ END INITORDER COMMENT -->
 		<If Condition="DoQuest(12805)" >
 			<!-- The player must keep the unit selected and looting causes targetting to clear. -->
 			<DisableBehavior Name="Loot" />
-			<CustomBehavior File="InteractWith" InteractByUsingItemId="40397" MobState="Dead" WaitTime="5000" InteractBlacklistTimeInSeconds="320" KeepTargetSelected="true" Range="5" CollectionDistance="200" PreInteractMountStrategy="Dismount" QuestId="12805" QuestObjectiveIndex="1" >
+			<Code File="InteractWith" InteractByUsingItemId="40397" MobState="Dead" WaitTime="5000" InteractBlacklistTimeInSeconds="320" KeepTargetSelected="true" Range="5" CollectionDistance="200" PreInteractMountStrategy="Dismount" QuestId="12805" QuestObjectiveIndex="1" >
 				<HuntingGrounds>
 					<Hotspot X="5686.143" Y="3658.059" Z="-26.07698" />
 					<Hotspot X="5630.897" Y="3665.229" Z="-25.46609" />
@@ -669,7 +669,7 @@ END INITORDER COMMENT -->
 				<PursuitList>
 					<PursueUnit Id="29124" PursueWhen="UNIT.KilledByMe || UNIT.IsAlive" />
 				</PursuitList>
-			</CustomBehavior>
+			</Code>
 			<EnableBehavior Name="Loot" />
 		</If>
 
@@ -678,26 +678,26 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Exterminate the Intruders" QuestId="12617" GiverName="Avatar of Freya" GiverId="27801" X="5882.037" Y="4121.923" Z="-85.52077" />
 		<PickUp QuestName="Weapons of Destruction" QuestId="12660" GiverName="Avatar of Freya" GiverId="27801" X="5882.037" Y="4121.923" Z="-85.52077" />
 
-		<CustomBehavior File="InteractWith" MobId="190590" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="12660" QuestObjectiveIndex="1" >
+		<Code File="InteractWith" MobId="190590" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="12660" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="6087.19" Y="4442.244" Z="-82.94944" />
 				<Hotspot X="6034.316" Y="4514.908" Z="-87.43926" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
-		<CustomBehavior File="KillUntilComplete" MobId="28373" QuestId="12617" >
+		<Code File="KillUntilComplete" MobId="28373" QuestId="12617" >
 			<HuntingGrounds>
 				<Hotspot X="6087.19" Y="4442.244" Z="-82.94944" />
 				<Hotspot X="6034.316" Y="4514.908" Z="-87.43926" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
 		<TurnIn QuestName="Exterminate the Intruders" QuestId="12617" TurnInName="Avatar of Freya" TurnInId="27801" X="5880.763" Y="4119.542" Z="-85.51296" />
 		<TurnIn QuestName="Weapons of Destruction" QuestId="12660" TurnInName="Avatar of Freya" TurnInId="27801" X="5880.763" Y="4119.542" Z="-85.51296" />
 
 		<Checkpoint Level="78" />
 
-		<CustomBehavior File="LoadProfile" ProfileName="Storm Peaks.xml" RememberProfile="true" />
+		<Code File="LoadProfile" ProfileName="Storm Peaks.xml" RememberProfile="true" />
 
 	</QuestOrder>
 </HBProfile>

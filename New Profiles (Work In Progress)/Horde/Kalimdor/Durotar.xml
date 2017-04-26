@@ -39,12 +39,12 @@
 	<!-- INITORDER COMMENT 
 	<InitOrder>
 		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
-		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+		<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
 
-		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
-		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+		<Code File="EnablePlugin" Names="Anti Drown" />
+		<Code File="EnablePlugin" Names="Refreshment Detection" />
 
-		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+		<Code File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 
 		<LootMobs Value="true" />
 		<TargetingDistance Value="45" /> Use LevelBot default
@@ -53,10 +53,10 @@ END INITORDER COMMENT -->
 
 	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
 		<If Condition="Me.IsAlliance" >
-			<CustomBehavior File="LoadProfile" ProfileName="..\..\Alliance\1-58 Autoloader.xml" RememberProfile="true" />
+			<Code File="LoadProfile" ProfileName="..\..\Alliance\1-58 Autoloader.xml" RememberProfile="true" />
 		</If>
 		<!-- RunCode Methods -->
-			<!-- <CustomBehavior File="RunCode" Type="Definition">
+			<!-- <Code File="RunCode" Type="Definition">
 			<![CDATA[
 				public __CompiledBatchClass__()
 				{
@@ -68,8 +68,8 @@ END INITORDER COMMENT -->
 					Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
 				}
 			]]>
-			</CustomBehavior> -->
-			<CustomBehavior File="RunCode" Type="Definition">
+			</Code> -->
+			<Code File="RunCode" Type="Definition">
 				<![CDATA[
 						bool DoQuest(params uint[] questIds)
 						{
@@ -120,11 +120,11 @@ END INITORDER COMMENT -->
 							await Coroutine.Sleep(postWait);
 						}
 					]]>
-			</CustomBehavior>
+			</Code>
 		<!-- END RunCode Methods -->
 
 		<!-- Hooks -->
-			<CustomBehavior File="RunCode" Type="Definition">
+			<Code File="RunCode" Type="Definition">
 				<![CDATA[ 
 					IEnumerable<WoWItem> GetExtraConsumables()
 					{
@@ -162,10 +162,10 @@ END INITORDER COMMENT -->
 						}
 					}
 				]]>
-			</CustomBehavior>
-			<CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
-				<CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>
-			</CustomBehavior>
+			</Code>
+			<Code File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+				<Code File="RunCode" Code="await SellExtraConsumables();"/>
+			</Code>
 		<!-- END Hooks -->
 
 		<If Condition="HasQuest(25133)" >
@@ -175,14 +175,14 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Breaking the Chain" QuestId="25167" GiverName="Master Gadrin" GiverId="3188" X="-829.0919" Y="-4919.275" Z="19.74989" />
 		<PickUp QuestName="Cleaning Up the Coastline" QuestId="25170" GiverName="Bom&apos;bay" GiverId="10578" X="-843.6657" Y="-4908.623" Z="20.62227" />
 
-		<CustomBehavior File="KillUntilComplete" MobId="3106" QuestId="25170" >
+		<Code File="KillUntilComplete" MobId="3106" QuestId="25170" >
 			<HuntingGrounds>
 				<Hotspot X="-966.4084" Y="-4909.574" Z="7.604385" />
 				<Hotspot X="-1067.56" Y="-4831.426" Z="9.771485" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
-		<CustomBehavior File="KillUntilComplete" MobIds="39249, 39251" QuestId="25167" X="-1038.131" Y="-4714.077" Z="16.50893" />
+		<Code File="KillUntilComplete" MobIds="39249, 39251" QuestId="25167" X="-1038.131" Y="-4714.077" Z="16.50893" />
 
 		<TurnIn QuestName="Cleaning Up the Coastline" QuestId="25170" TurnInName="Bom&apos;bay" TurnInId="10578" X="-842.5173" Y="-4907.065" Z="20.52651" />
 		<PickUp QuestName="Never Trust a Big Barb and a Smile" QuestId="25165" GiverName="Bom&apos;bay" GiverId="10578" X="-842.5173" Y="-4907.065" Z="20.52651" />
@@ -191,7 +191,7 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="The War of Northwatch Aggression" QuestId="25169" GiverName="Lar Prowltusk" GiverId="3140" X="-836.986" Y="-4895.632" Z="23.42636" />
 
 		<While Condition="DoQuest(25165)" >
-			<CustomBehavior File="RunCode" Type="Definition" >
+			<Code File="RunCode" Type="Definition" >
 			<![CDATA[
 				private Styx.TreeSharp.Composite _poisonExtractionTotem;
 				private WoWItem _poisonTotem = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 52505);
@@ -218,30 +218,30 @@ END INITORDER COMMENT -->
 					return true;
 				}
 			]]>
-			</CustomBehavior>
-			<CustomBehavior File="RunCode"><![CDATA[ TreeHooks.Instance.InsertHook("Questbot_Main", 0, _poisonExtractionTotem ?? (_poisonExtractionTotem = new  CommonBehaviors.Actions.ActionRunCoroutine(ctx => PosionExtractionTotemLogic()))); ]]></CustomBehavior>
+			</Code>
+			<Code File="RunCode"><![CDATA[ TreeHooks.Instance.InsertHook("Questbot_Main", 0, _poisonExtractionTotem ?? (_poisonExtractionTotem = new  CommonBehaviors.Actions.ActionRunCoroutine(ctx => PosionExtractionTotemLogic()))); ]]></Code>
 
-			<CustomBehavior File="KillUntilComplete" MobId="3125" QuestId="25165" >
+			<Code File="KillUntilComplete" MobId="3125" QuestId="25165" >
 				<HuntingGrounds>
 					<Hotspot X="-778.754" Y="-4734.114" Z="29.94708" />
 					<Hotspot X="-868.32" Y="-4765.797" Z="17.30972" />
 					<Hotspot X="-959.0878" Y="-4863.18" Z="13.00284" />
 				</HuntingGrounds>
-			</CustomBehavior>
-			<CustomBehavior File="RunCode"><![CDATA[ TreeHooks.Instance.RemoveHook("Questbot_Main", _poisonExtractionTotem); ]]></CustomBehavior>
+			</Code>
+			<Code File="RunCode"><![CDATA[ TreeHooks.Instance.RemoveHook("Questbot_Main", _poisonExtractionTotem); ]]></Code>
 		</While>
 
-		<CustomBehavior File="InteractWith" MobId="3189" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="25169" QuestObjectiveIndex="1" X="-1066.58" Y="-4593.727" Z="25.82208" />
-		<CustomBehavior File="InteractWith" MobId="3190" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="25169" QuestObjectiveIndex="2" X="-925.1393" Y="-4495.786" Z="29.56791" />
-		<CustomBehavior File="InteractWith" MobId="3192" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="25169" QuestObjectiveIndex="3" X="-972.9437" Y="-4412.896" Z="29.26433" />
+		<Code File="InteractWith" MobId="3189" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="25169" QuestObjectiveIndex="1" X="-1066.58" Y="-4593.727" Z="25.82208" />
+		<Code File="InteractWith" MobId="3190" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="25169" QuestObjectiveIndex="2" X="-925.1393" Y="-4495.786" Z="29.56791" />
+		<Code File="InteractWith" MobId="3192" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="25169" QuestObjectiveIndex="3" X="-972.9437" Y="-4412.896" Z="29.26433" />
 
-		<CustomBehavior File="KillUntilComplete" MobId="39260" QuestId="25168" >
+		<Code File="KillUntilComplete" MobId="39260" QuestId="25168" >
 			<HuntingGrounds>
 				<Hotspot X="-1025.571" Y="-4441.74" Z="25.82469" />
 				<Hotspot X="-997.2941" Y="-4536.941" Z="25.8093" />
 				<Hotspot X="-988.6417" Y="-4622.426" Z="25.71498" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
 		<TurnIn QuestName="Never Trust a Big Barb and a Smile" QuestId="25165" TurnInName="Bom&apos;bay" TurnInId="10578" X="-845.7318" Y="-4903.534" Z="21.19713" />
 		<TurnIn QuestName="The War of Northwatch Aggression" QuestId="25169" TurnInName="Lar Prowltusk" TurnInId="3140" X="-837.2903" Y="-4895.265" Z="23.45088" />
@@ -254,15 +254,15 @@ END INITORDER COMMENT -->
 
 		<PickUp QuestName="From Bad to Worse" QuestId="25173" GiverName="Gar&apos;Thok" GiverId="3139" X="272.2065" Y="-4710.155" Z="17.76737" />
 
-		<CustomBehavior File="SetHearthstone" AreaId="362" MobId="6928" X="338.0916" Y="-4689.857" Z="16.4893" />
+		<Code File="SetHearthstone" AreaId="362" MobId="6928" X="338.0916" Y="-4689.857" Z="16.4893" />
 
 		<PickUp QuestName="Exploiting the Situation" QuestId="25176" GiverName="Gail Nozzywig" GiverId="39423" X="289.1065" Y="-4766.727" Z="11.62428" />
 
-		<CustomBehavior File="KillUntilComplete" MobId="39269" QuestId="25173" QuestObjectiveIndex="3" X="-246.601" Y="-5108.46" Z="41.3469" />
+		<Code File="KillUntilComplete" MobId="39269" QuestId="25173" QuestObjectiveIndex="3" X="-246.601" Y="-5108.46" Z="41.3469" />
 
-		<CustomBehavior File="InteractWith" MobId="202648" CollectionDistance="200" InteractByLooting="true" QuestId="25176" QuestObjectiveIndex="1" X="-241.6779" Y="-5121.612" Z="25.2449" />
+		<Code File="InteractWith" MobId="202648" CollectionDistance="200" InteractByLooting="true" QuestId="25176" QuestObjectiveIndex="1" X="-241.6779" Y="-5121.612" Z="25.2449" />
 
-		<CustomBehavior File="KillUntilComplete" QuestId="25173" >
+		<Code File="KillUntilComplete" QuestId="25173" >
 			<HuntingGrounds>
 				<Hotspot X="-237.8307" Y="-5008.411" Z="21.43744" />
 				<Hotspot X="-156.6974" Y="-5010.745" Z="21.44332" />
@@ -272,10 +272,10 @@ END INITORDER COMMENT -->
 				<PursueUnit Id="39267" PursueWhen="!IsObjectiveComplete(1, 25173)" />
 				<PursueUnit Id="39268" PursueWhen="!IsObjectiveComplete(2, 25173)" />
 			</PursuitList>
-		</CustomBehavior>
+		</Code>
 
 		<If Condition="QuestDone(25173, 25176) &amp;&amp; Me.HearthstoneAreaId == 362 &amp;&amp; Unit(39267) != null" >
-			<CustomBehavior File="UseHearthstone" WaitForCd="false" />
+			<Code File="UseHearthstone" WaitForCd="false" />
 		</If>
 
 		<TurnIn QuestName="From Bad to Worse" QuestId="25173" TurnInName="Gar&apos;Thok" TurnInId="3139" X="272.2328" Y="-4709.489" Z="17.76726" />
@@ -283,34 +283,34 @@ END INITORDER COMMENT -->
 		<TurnIn QuestName="Exploiting the Situation" QuestId="25176" TurnInName="Gail Nozzywig" TurnInId="39423" X="287.9623" Y="-4766.835" Z="11.65313" />
 		<PickUp QuestName="Shipwreck Searching" QuestId="25178" GiverName="Gail Nozzywig" GiverId="39423" X="287.9623" Y="-4766.835" Z="11.65313" />
 
-		<CustomBehavior File="InteractWith" MobId="3236" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrateg="Dismount" QuestId="25178" QuestObjectiveIndex="1" >
+		<Code File="InteractWith" MobId="3236" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrateg="Dismount" QuestId="25178" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="164.1894" Y="-4989.998" Z="8.30092" />
 				<Hotspot X="160.1897" Y="-5090.87" Z="2.384543" />
 				<Hotspot X="263.1451" Y="-5101.335" Z="2.665331" />
 				<Hotspot X="286.292" Y="-5102.481" Z="2.332727" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
 		<While Condition="!IsQuestCompleted(25179)" >
-			<CustomBehavior File="InteractWith" MobId="39270" CollectionDistance="200" NumOfTimes="16" TerminateWhen="IsQuestCompleted(25179)" >
+			<Code File="InteractWith" MobId="39270" CollectionDistance="200" NumOfTimes="16" TerminateWhen="IsQuestCompleted(25179)" >
 				<HuntingGrounds>
 					<Hotspot X="164.1894" Y="-4989.998" Z="8.30092" />
 					<Hotspot X="160.1897" Y="-5090.87" Z="2.384543" />
 					<Hotspot X="263.1451" Y="-5101.335" Z="2.665331" />
 					<Hotspot X="286.292" Y="-5102.481" Z="2.332727" />
 				</HuntingGrounds>
-			</CustomBehavior>
+			</Code>
 		</While>
 
-		<CustomBehavior File="KillUntilComplete" MobId="39272" QuestId="25177" >
+		<Code File="KillUntilComplete" MobId="39272" QuestId="25177" >
 			<HuntingGrounds>
 				<Hotspot X="164.1894" Y="-4989.998" Z="8.30092" />
 				<Hotspot X="160.1897" Y="-5090.87" Z="2.384543" />
 				<Hotspot X="263.1451" Y="-5101.335" Z="2.665331" />
 				<Hotspot X="286.292" Y="-5102.481" Z="2.332727" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
 		<TurnIn QuestName="Shipwreck Searching" QuestId="25178" TurnInName="Gail Nozzywig" TurnInId="39423" X="285.8777" Y="-4771.13" Z="11.61437" />
 		<TurnIn QuestName="Storming the Beaches" QuestId="25177" TurnInName="Gar&apos;Thok" TurnInId="3139" X="272.2539" Y="-4710.219" Z="17.76728" />
@@ -323,8 +323,8 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Lost in the Floods" QuestId="25187" GiverName="Thonk" GiverId="39323" X="394.9551" Y="-4582.44" Z="76.59322" />
 		<While Condition="DoQuest(25187)" >
 			<MoveTo X="393.3874" Y="-4581.685" Z="76.59281" />
-			<CustomBehavior File="UseItem" ItemId="52514" QuestId="25187" X="393.3874" Y="-4581.685" Z="76.59281" TerminateWhen="Bots.DungeonBuddy.Helpers.ScriptHelpers.InCinematic" />
-			<CustomBehavior File="WaitTimer" WaitTime="30000" QuestId="25187" TerminateWhen="!Bots.DungeonBuddy.Helpers.ScriptHelpers.InCinematic" />
+			<Code File="UseItem" ItemId="52514" QuestId="25187" X="393.3874" Y="-4581.685" Z="76.59281" TerminateWhen="Bots.DungeonBuddy.Helpers.ScriptHelpers.InCinematic" />
+			<Code File="WaitTimer" WaitTime="30000" QuestId="25187" TerminateWhen="!Bots.DungeonBuddy.Helpers.ScriptHelpers.InCinematic" />
 		</While>
 		<TurnIn QuestName="Lost in the Floods" QuestId="25187" TurnInName="Thonk" TurnInId="39323" X="390.9776" Y="-4581.806" Z="76.61802" />
 
@@ -333,18 +333,18 @@ END INITORDER COMMENT -->
 		</If>
 
 		<PickUp QuestName="Lost But Not Forgotten" QuestId="25193" GiverName="Misha Tor&apos;kren" GiverId="3193" X="725.0805" Y="-4259.535" Z="20.0992" />
-		<CustomBehavior File="KillUntilComplete" MobId="39452" QuestId="25193" >
+		<Code File="KillUntilComplete" MobId="39452" QuestId="25193" >
 			<HuntingGrounds>
 				<Hotspot X="626.2142" Y="-4257.228" Z="15.89098" />
 				<Hotspot X="573.5645" Y="-4197.48" Z="15.97568" />
 				<Hotspot X="520.2295" Y="-4121.67" Z="17.00622" />
 				<Hotspot X="449.1795" Y="-4111.976" Z="17.69797" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 		<TurnIn QuestName="Lost But Not Forgotten" QuestId="25193" TurnInName="Misha Tor&apos;kren" TurnInId="3193" X="728.2195" Y="-4253.421" Z="19.88069" />
 
 		<PickUp QuestName="Raggaran&apos;s Rage" QuestId="25190" GiverName="Raggaran" GiverId="39326" X="51.09787" Y="-4222.216" Z="35.1847" />
-		<CustomBehavior File="KillUntilComplete" QuestId="25190" >
+		<Code File="KillUntilComplete" QuestId="25190" >
 			<HuntingGrounds>
 				<Hotspot X="83.05998" Y="-4278.209" Z="29.14359" />
 				<Hotspot X="55.76519" Y="-4307.87" Z="38.0656" />
@@ -355,11 +355,11 @@ END INITORDER COMMENT -->
 				<PursueUnit Id="3112" PursueWhen="!IsObjectiveComplete(2, 25190)" />
 				<PursueUnit Id="5826" Priority="500" /> <!-- Rare spawn -->
 			</PursuitList>
-		</CustomBehavior>
+		</Code>
 		<TurnIn QuestName="Raggaran&apos;s Rage" QuestId="25190" TurnInName="Raggaran" TurnInId="39326" X="51.35043" Y="-4224.708" Z="35.34327" />
 
 		<PickUp QuestName="Raggaran&apos;s Fury" QuestId="25192" GiverName="Raggaran" GiverId="39326" X="51.35043" Y="-4224.708" Z="35.34327" />
-		<CustomBehavior File="KillUntilComplete" QuestId="25192" >
+		<Code File="KillUntilComplete" QuestId="25192" >
 			<HuntingGrounds>
 				<Hotspot X="-47.91932" Y="-4065.591" Z="34.91591" />
 				<Hotspot X="-57.7879" Y="-4036.371" Z="28.73617" />
@@ -368,16 +368,16 @@ END INITORDER COMMENT -->
 				<PursueUnit Id="3113" PursueWhen="!IsObjectiveComplete(1, 25192)" />
 				<PursueUnit Id="3114" PursueWhen="!IsObjectiveComplete(2, 25192)" />
 			</PursuitList>
-		</CustomBehavior>
+		</Code>
 		<TurnIn QuestName="Raggaran&apos;s Fury" QuestId="25192" TurnInName="Raggaran" TurnInId="39326" X="51.49988" Y="-4224.066" Z="35.27617" />
 
 		<If Condition="HasQuest(25188)" >
-			<CustomBehavior File="AbandonQuest" QuestId="25188" />
+			<Code File="AbandonQuest" QuestId="25188" />
 		</If>
 
 		<Checkpoint Level="10" />
 
-		<CustomBehavior File="LoadProfile" ProfileName="Northern Barrens.xml" RememberProfile="true" />
+		<Code File="LoadProfile" ProfileName="Northern Barrens.xml" RememberProfile="true" />
 
 	</QuestOrder>
 

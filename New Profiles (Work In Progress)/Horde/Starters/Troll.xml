@@ -37,12 +37,12 @@
 	<!-- INITORDER COMMENT 
 	<InitOrder>
 		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
-		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+		<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
 
-		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
-		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+		<Code File="EnablePlugin" Names="Anti Drown" />
+		<Code File="EnablePlugin" Names="Refreshment Detection" />
 
-		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+		<Code File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 
 		<LootMobs Value="true" />
 		<TargetingDistance Value="45" /> Use LevelBot default
@@ -51,10 +51,10 @@ END INITORDER COMMENT -->
 
 	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
 		<If Condition="Me.IsAlliance" >
-			<CustomBehavior File="LoadProfile" ProfileName="..\..\Alliance\1-58 Autoloader.xml" RememberProfile="true" />
+			<Code File="LoadProfile" ProfileName="..\..\Alliance\1-58 Autoloader.xml" RememberProfile="true" />
 		</If>
 		<!-- RunCode Methods -->
-			<!--<CustomBehavior File="RunCode" Type="Definition">
+			<!--<Code File="RunCode" Type="Definition">
 			<![CDATA[
 				public __CompiledBatchClass__()
 				{
@@ -66,8 +66,8 @@ END INITORDER COMMENT -->
 					Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
 				}
 			]]>
-			</CustomBehavior> -->
-			<CustomBehavior File="RunCode" Type="Definition">
+			</Code> -->
+			<Code File="RunCode" Type="Definition">
 				<![CDATA[
 						bool DoQuest(params uint[] questIds)
 						{
@@ -118,11 +118,11 @@ END INITORDER COMMENT -->
 							await Coroutine.Sleep(postWait);
 						}
 					]]>
-			</CustomBehavior>
+			</Code>
 		<!-- END RunCode Methods -->
 
 		<!-- Hooks -->
-			<CustomBehavior File="RunCode" Type="Definition">
+			<Code File="RunCode" Type="Definition">
 				<![CDATA[ 
 					IEnumerable<WoWItem> GetExtraConsumables()
 					{
@@ -160,33 +160,33 @@ END INITORDER COMMENT -->
 						}
 					}
 				]]>
-			</CustomBehavior>
-			<CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
-				<CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>
-			</CustomBehavior>
+			</Code>
+			<Code File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+				<Code File="RunCode" Code="await SellExtraConsumables();"/>
+			</Code>
 		<!-- END Hooks -->
 
 		<PickUp QuestName="The Rise of the Darkspear" QuestId="24764" GiverName="Jin&apos;thala" GiverId="37951" X="-1171.45" Y="-5263.65" Z="0.8481997" />
 		<TurnIn QuestName="The Rise of the Darkspear" QuestId="24764" TurnInName="Zen&apos;tabra" TurnInId="38243" X="-1175.964" Y="-5536.096" Z="11.94465" />
 
 		<PickUp QuestName="The Basics: Hitting Things" QuestId="24765" GiverName="Zen&apos;tabra" GiverId="38243" X="-1175.964" Y="-5536.096" Z="11.94465" />
-		<CustomBehavior File="KillUntilComplete" MobId="38038" QuestId="24765" X="-1174.382" Y="-5519.634" Z="12.35504" />
+		<Code File="KillUntilComplete" MobId="38038" QuestId="24765" X="-1174.382" Y="-5519.634" Z="12.35504" />
 		<TurnIn QuestName="The Basics: Hitting Things" QuestId="24765" TurnInName="Zen&apos;tabra" TurnInId="38243" X="-1172.986" Y="-5537.554" Z="11.94298" />
 
 		<PickUp QuestName="A Rough Start" QuestId="24767" GiverName="Zen&apos;tabra" GiverId="38243" X="-1172.986" Y="-5537.554" Z="11.94298" />
-		<CustomBehavior File="KillUntilComplete" MobId="38046" QuestId="24767" >
+		<Code File="KillUntilComplete" MobId="38046" QuestId="24767" >
 			<HuntingGrounds>
 				<Hotspot X="-1094.444" Y="-5616.467" Z="14.57797" />
 				<Hotspot X="-1195.334" Y="-5616.909" Z="14.79196" />
 				<Hotspot X="-1232.066" Y="-5500.679" Z="14.70079" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 		<TurnIn QuestName="A Rough Start" QuestId="24767" TurnInName="Zen&apos;tabra" TurnInId="38243" X="-1173.96" Y="-5536.537" Z="11.95022" />
 
 		<PickUp QuestName="Proving Pit" QuestId="24768" GiverName="Zen&apos;tabra" GiverId="38243" X="-1173.96" Y="-5536.537" Z="11.95022" />
 		<While Condition="DoQuest(24768)" >
-			<CustomBehavior File="InteractWith" MobId="24768" GossipOptions="1" NonCompeteDistance="0" QuestId="24768" X="-1162.095" Y="-5531.158" Z="11.97586" TerminateWhen="Unit(38142, u =&gt; u.Attackable) != null" />
-			<CustomBehavior File="KillUntilComplete" MobId="38142" QuestId="24768" X="-1148.786" Y="-5532.944" Z="8.105022" TerminateWhen="Unit(38142, u =&gt; u.Attackable) == null" />
+			<Code File="InteractWith" MobId="24768" GossipOptions="1" NonCompeteDistance="0" QuestId="24768" X="-1162.095" Y="-5531.158" Z="11.97586" TerminateWhen="Unit(38142, u =&gt; u.Attackable) != null" />
+			<Code File="KillUntilComplete" MobId="38142" QuestId="24768" X="-1148.786" Y="-5532.944" Z="8.105022" TerminateWhen="Unit(38142, u =&gt; u.Attackable) == null" />
 		</While>
 		<TurnIn QuestName="Proving Pit" QuestId="24768" TurnInName="Zen&apos;tabra" TurnInId="38243" X="-1158.094" Y="-5531.59" Z="11.72109" />
 
@@ -196,12 +196,12 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Moraya" QuestId="25064" GiverName="Vol&apos;jin" GiverId="38966" X="-1314.463" Y="-5599.671" Z="23.71969" />
 
 		<PickUp QuestName="Crab Fishin&apos;" QuestId="25037" GiverName="Tora&apos;jin" GiverId="39007" X="-1277.715" Y="-5584.758" Z="21.00058" />
-		<CustomBehavior File="KillUntilComplete" MobId="39004" QuestId="25037" >
+		<Code File="KillUntilComplete" MobId="39004" QuestId="25037" >
 			<HuntingGrounds>
 				<Hotspot X="-1195.888" Y="-5692.071" Z="1.144262" />
 				<Hotspot X="-1105.067" Y="-5690.657" Z="-0.3782958" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 		<TurnIn QuestName="Crab Fishin&apos;" QuestId="25037" TurnInName="Tora&apos;jin" TurnInId="39007" X="-1281.243" Y="-5588.295" Z="21.00638" />
 
 		<TurnIn QuestName="Moraya" QuestId="25064" TurnInName="Moraya" TurnInId="38005" X="-1292.582" Y="-5521.677" Z="20.76698" />
@@ -211,21 +211,21 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Mercy for the Lost" QuestId="24624" GiverName="Tegashi" GiverId="37987" X="-1548.225" Y="-5314.966" Z="7.974018" />
 		<PickUp QuestName="Consort of the Sea Witch" QuestId="24625" GiverName="Tegashi" GiverId="37987" X="-1548.225" Y="-5314.966" Z="7.974018" />
 
-		<CustomBehavior File="KillUntilComplete" MobId="39072" QuestId="24625" X="-1353.536" Y="-5159.622" Z="13.4896" />
+		<Code File="KillUntilComplete" MobId="39072" QuestId="24625" X="-1353.536" Y="-5159.622" Z="13.4896" />
 
-		<CustomBehavior File="InteractWith" MobId="39157" CollectionDistance="200" InteractByUsingItemId="52283" QuestId="24623" QuestObjectiveIndex="1" >
+		<Code File="InteractWith" MobId="39157" CollectionDistance="200" InteractByUsingItemId="52283" QuestId="24623" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="-1306.902" Y="-5174.234" Z="1.187117" />
 				<Hotspot X="-1397.547" Y="-5134.247" Z="1.968089" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
-		<CustomBehavior File="KillUntilComplete" MobId="37961" QuestId="24624" >
+		<Code File="KillUntilComplete" MobId="37961" QuestId="24624" >
 			<HuntingGrounds>
 				<Hotspot X="-1306.902" Y="-5174.234" Z="1.187117" />
 				<Hotspot X="-1397.547" Y="-5134.247" Z="1.968089" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
 		<TurnIn QuestName="Mercy for the Lost" QuestId="24624" TurnInName="Tegashi" TurnInId="37987" X="-1545.624" Y="-5313.12" Z="8.049932" />
 		<TurnIn QuestName="Consort of the Sea Witch" QuestId="24625" TurnInName="Tegashi" TurnInId="37987" X="-1545.624" Y="-5313.12" Z="8.049932" />
@@ -233,39 +233,39 @@ END INITORDER COMMENT -->
 
 		<PickUp QuestName="Young and Vicious" QuestId="24626" GiverName="Kijara" GiverId="37969" X="-1546.085" Y="-5312.521" Z="8.107081" />
 		<While Condition="DoQuest(24626)" >
-			<CustomBehavior File="InteractWith" MobId="38002" Range="19" CollectionDistance="200" NonCompeteDistance="0" InteractByUsingItemId="50053" QuestId="24626" X="-1550.001" Y="-5299.74" Z="8.991699" TerminateWhen="Me.InVehicle" />
-			<CustomBehavior File="NoCombatMoveTo" QuestId="24626" X="-1305.38" Y="-5449.925" Z="14.65966" TerminateWhen="!Me.InVehicle" />
+			<Code File="InteractWith" MobId="38002" Range="19" CollectionDistance="200" NonCompeteDistance="0" InteractByUsingItemId="50053" QuestId="24626" X="-1550.001" Y="-5299.74" Z="8.991699" TerminateWhen="Me.InVehicle" />
+			<Code File="NoCombatMoveTo" QuestId="24626" X="-1305.38" Y="-5449.925" Z="14.65966" TerminateWhen="!Me.InVehicle" />
 		</While>
 		<TurnIn QuestName="Young and Vicious" QuestId="24626" TurnInName="Moraya" TurnInId="38005" X="-1294.191" Y="-5521.454" Z="20.76723" />
 
 		<PickUp QuestName="Breaking the Line" QuestId="25035" GiverName="Tortunga" GiverId="38440" X="-1327.71" Y="-5553.412" Z="21.52649" />
-		<CustomBehavior File="InteractWith" MobId="38989" GossipOptions="1" WaitTime="35000" X="-1331.409" Y="-5555.198" Z="21.4374" TerminateWhen="!HasQuest(25035) &amp;&amp; Unit(38989) == null" />
-		<CustomBehavior File="WaitTimer" WaitTime="40000" TerminateWhen="!Me.InVehicle" />
+		<Code File="InteractWith" MobId="38989" GossipOptions="1" WaitTime="35000" X="-1331.409" Y="-5555.198" Z="21.4374" TerminateWhen="!HasQuest(25035) &amp;&amp; Unit(38989) == null" />
+		<Code File="WaitTimer" WaitTime="40000" TerminateWhen="!Me.InVehicle" />
 		<TurnIn QuestName="Breaking the Line" QuestId="25035" TurnInName="Morakki" TurnInId="38442" X="-805.5458" Y="-5554.75" Z="4.603838" />
 
 		<PickUp QuestName="No More Mercy" QuestId="24812" GiverName="Morakki" GiverId="38442" X="-805.5458" Y="-5554.75" Z="4.603838" />
 		<PickUp QuestName="Territorial Fetish" QuestId="24813" GiverName="Morakki" GiverId="38442" X="-805.5458" Y="-5554.75" Z="4.603838" />
 
-		<CustomBehavior File="InteractWith" MobId="202113" CollectionDistance="200" InteractByUsingItemId="52065" QuestId="24813" QuestObjectiveIndex="1" >
+		<Code File="InteractWith" MobId="202113" CollectionDistance="200" InteractByUsingItemId="52065" QuestId="24813" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="-745.6462" Y="-5596.807" Z="-8.219222" />
 				<Hotspot X="-663.8286" Y="-5651.184" Z="-25.14141" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
-		<CustomBehavior File="KillUntilComplete" MobIds="38300, 38301" QuestId="24812" >
+		<Code File="KillUntilComplete" MobIds="38300, 38301" QuestId="24812" >
 			<HuntingGrounds>
 				<Hotspot X="-745.6462" Y="-5596.807" Z="-8.219222" />
 				<Hotspot X="-663.8286" Y="-5651.184" Z="-25.14141" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
 		<TurnIn QuestName="No More Mercy" QuestId="24812" TurnInName="Morakki" TurnInId="38442" X="-799.3029" Y="-5557.472" Z="4.405144" />
 		<TurnIn QuestName="Territorial Fetish" QuestId="24813" TurnInName="Morakki" TurnInId="38442" X="-799.3029" Y="-5557.472" Z="4.405144" />
 
 		<Checkpoint Level="5.5" /> <!-- Would be 5, but we don't want to level up inside of the cave and not turn in quests -->
 
-		<CustomBehavior File="LoadProfile" ProfileName="..\Kalimdor\Durotar.xml" RememberProfile="true" />
+		<Code File="LoadProfile" ProfileName="..\Kalimdor\Durotar.xml" RememberProfile="true" />
 
 	</QuestOrder>
 

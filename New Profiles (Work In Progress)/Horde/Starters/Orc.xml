@@ -37,12 +37,12 @@
 	<!-- INITORDER COMMENT 
 	<InitOrder>
 		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
-		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+		<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
 
-		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
-		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+		<Code File="EnablePlugin" Names="Anti Drown" />
+		<Code File="EnablePlugin" Names="Refreshment Detection" />
 
-		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+		<Code File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 
 		<LootMobs Value="true" />
 		<TargetingDistance Value="45" /> Use LevelBot default
@@ -51,10 +51,10 @@ END INITORDER COMMENT -->
 
 	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
 		<If Condition="Me.IsAlliance" >
-			<CustomBehavior File="LoadProfile" ProfileName="..\..\Alliance\1-58 Autoloader.xml" RememberProfile="true" />
+			<Code File="LoadProfile" ProfileName="..\..\Alliance\1-58 Autoloader.xml" RememberProfile="true" />
 		</If>
 		<!-- RunCode Methods -->
-			<CustomBehavior File="RunCode" Type="Definition">
+			<Code File="RunCode" Type="Definition">
 			<![CDATA[
 				public __CompiledBatchClass__()
 				{
@@ -66,8 +66,8 @@ END INITORDER COMMENT -->
 					Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
 				}
 			]]>
-			</CustomBehavior>
-			<CustomBehavior File="RunCode" Type="Definition">
+			</Code>
+			<Code File="RunCode" Type="Definition">
 				<![CDATA[
 						bool DoQuest(params uint[] questIds)
 						{
@@ -118,11 +118,11 @@ END INITORDER COMMENT -->
 							await Coroutine.Sleep(postWait);
 						}
 					]]>
-			</CustomBehavior>
+			</Code>
 		<!-- END RunCode Methods -->
 
 		<!-- Hooks -->
-			<CustomBehavior File="RunCode" Type="Definition">
+			<Code File="RunCode" Type="Definition">
 				<![CDATA[ 
 					IEnumerable<WoWItem> GetExtraConsumables()
 					{
@@ -160,10 +160,10 @@ END INITORDER COMMENT -->
 						}
 					}
 				]]>
-			</CustomBehavior>
-			<CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
-				<CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>
-			</CustomBehavior>
+			</Code>
+			<Code File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+				<Code File="RunCode" Code="await SellExtraConsumables();"/>
+			</Code>
 		<!-- END Hooks -->
 
 		<PickUp QuestName="Your Place In The World" QuestId="25152" GiverName="Kaltunk" GiverId="10176" X="-618.518" Y="-4251.67" Z="38.718" />
@@ -172,7 +172,7 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Cutting Teeth" QuestId="25126" GiverName="Gornek" GiverId="3143" X="-601.4888" Y="-4246.486" Z="38.95587" />
 		<While Condition="DoQuest(25126)" >
 			<DisableBehavior Name="Loot" />
-			<CustomBehavior File="KillUntilComplete" MobId="3098" QuestId="25126" X="-492.3602" Y="-4343.501" Z="38.99313" />
+			<Code File="KillUntilComplete" MobId="3098" QuestId="25126" X="-492.3602" Y="-4343.501" Z="38.99313" />
 			<EnableBehavior Name="Loot" />
 		</While>
 		<TurnIn QuestName="Cutting Teeth" QuestId="25126" TurnInName="Gornek" TurnInId="3143" X="-595.0386" Y="-4249.554" Z="38.95654" />
@@ -180,12 +180,12 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Invaders in Our Home" QuestId="25172" GiverName="Gornek" GiverId="3143" X="-595.0386" Y="-4249.554" Z="38.95654" />
 		<While Condition="DoQuest(25172)" >
 			<DisableBehavior Name="Loot" />
-			<CustomBehavior File="KillUntilComplete" MobId="39317" QuestId="25172" >
+			<Code File="KillUntilComplete" MobId="39317" QuestId="25172" >
 				<HuntingGrounds>
 					<Hotspot X="-697.0238" Y="-4266.36" Z="38.58712" />
 					<Hotspot X="-727.9263" Y="-4182.924" Z="30.08645" />
 				</HuntingGrounds>
-			</CustomBehavior>
+			</Code>
 			<EnableBehavior Name="Loot" />
 		</While>
 		<TurnIn QuestName="Invaders in Our Home" QuestId="25172" TurnInName="Gornek" TurnInId="3143" X="-596.3851" Y="-4250.415" Z="38.95618" />
@@ -193,29 +193,29 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Sting of the Scorpid" QuestId="25127" GiverName="Gornek" GiverId="3143" X="-596.3851" Y="-4250.415" Z="38.95618" />
 		<PickUp QuestName="Galgar&apos;s Cactus Apple Surprise" QuestId="25136" GiverName="Galgar" GiverId="9796" X="-563.7537" Y="-4223.57" Z="41.59048" />
 
-		<CustomBehavior File="InteractWith" MobId="171938" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="25136" QuestObjectiveIndex="1" >
+		<Code File="InteractWith" MobId="171938" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="25136" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="-395.2452" Y="-4270.956" Z="50.2653" />
 				<Hotspot X="-404.6069" Y="-4165.924" Z="51.36276" />
 				<Hotspot X="-291.4646" Y="-4182.903" Z="52.63857" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
-		<CustomBehavior File="KillUntilComplete" MobId="3124" QuestId="25127" >
+		<Code File="KillUntilComplete" MobId="3124" QuestId="25127" >
 			<HuntingGrounds>
 				<Hotspot X="-395.2452" Y="-4270.956" Z="50.2653" />
 				<Hotspot X="-404.6069" Y="-4165.924" Z="51.36276" />
 				<Hotspot X="-291.4646" Y="-4182.903" Z="52.63857" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
 		<PickUp QuestName="Sarkoth" QuestId="25129" GiverName="Hana&apos;zua" GiverId="3287" X="-397.6655" Y="-4111.908" Z="50.17544" />
-		<CustomBehavior File="KillUntilComplete" MobId="3281" QuestId="25129" X="-555.134" Y="-4105.038" Z="71.25594" />
+		<Code File="KillUntilComplete" MobId="3281" QuestId="25129" X="-555.134" Y="-4105.038" Z="71.25594" />
 		<TurnIn QuestName="Sarkoth" QuestId="25129" TurnInName="Hana&apos;zua" TurnInId="3287" X="-401.0444" Y="-4111.048" Z="50.13127" />
 
 		<PickUp QuestName="Back to the Den" QuestId="25130" GiverName="Hana&apos;zua" GiverId="3287" X="-401.0444" Y="-4111.048" Z="50.13127" />
 		<If Condition="QuestDone(25130) &amp;&amp; Me.HearthstoneAreaId == 363 &amp;&amp; Unit(3287) != null" >
-			<CustomBehavior File="UseHearthstone" WaitForCds="false" />
+			<Code File="UseHearthstone" WaitForCds="false" />
 		</If>
 
 		<TurnIn QuestName="Sting of the Scorpid" QuestId="25127" TurnInName="Gornek" TurnInId="3143" X="-600.4946" Y="-4246.126" Z="38.95629" />
@@ -225,20 +225,20 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Vile Familiars" QuestId="25131" GiverName="Zureetha Fargaze" GiverId="3145" X="-574.2421" Y="-4259.012" Z="37.9632" />
 		<PickUp QuestName="Lazy Peons" QuestId="37446" GiverName="Foreman Thazz&apos;ril" GiverId="11378" X="-572.3614" Y="-4263.845" Z="38.06332" />
 
-		<CustomBehavior File="InteractWith" MobId="10556" AuraIdOnMob="17743" Range="2" CollectionDistance="200" InteractByUsingItemId="16114" InteractBlacklistTimeInSeconds="1" QuestId="37446" QuestObjectiveIndex="1" >
+		<Code File="InteractWith" MobId="10556" AuraIdOnMob="17743" Range="2" CollectionDistance="200" InteractByUsingItemId="16114" InteractBlacklistTimeInSeconds="1" QuestId="37446" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="-640.2183" Y="-4348.577" Z="42.71794" />
 				<Hotspot X="-508.4733" Y="-4383.482" Z="46.54433" />
 				<Hotspot X="-339.9293" Y="-4421.483" Z="52.76396" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
-		<CustomBehavior File="KillUntilComplete" MobId="3101" QuestId="25131" >
+		<Code File="KillUntilComplete" MobId="3101" QuestId="25131" >
 			<HuntingGrounds>
 				<Hotspot X="-286.8987" Y="-4388.662" Z="57.47244" />
 				<Hotspot X="-206.8877" Y="-4300.415" Z="63.70576" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
 		<TurnIn QuestName="Hana&apos;zua" QuestId="25128" TurnInName="Hana&apos;zua" TurnInId="3287" X="-398.0338" Y="-4113.111" Z="50.1658" />
 		<TurnIn QuestName="Lazy Peons" QuestId="37446" TurnInName="Foreman Thazz&apos;ril" TurnInId="11378" X="-570.3971" Y="-4268.388" Z="37.96813" />
@@ -246,9 +246,9 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Burning Blade Medallion" QuestId="25132" GiverName="Zureetha Fargaze" GiverId="3145" X="-571.2792" Y="-4263.039" Z="38.17424" />
 		<PickUp QuestName="Thazz&apos;ril&apos;s Pick" QuestId="25135" GiverName="Foreman Thazz&apos;ril" GiverId="11378" X="-571.3143" Y="-4264.124" Z="38.11153" />
 
-		<CustomBehavior File="InteractWith" MobId="178087" NonCompeteDistance="0" InteractByLooting="true" InteractBlacklistTimeInSeconds="1" QuestId="25135" QuestObjectiveIndex="1" X="-88.34402" Y="-4277.792" Z="64.601" />
+		<Code File="InteractWith" MobId="178087" NonCompeteDistance="0" InteractByLooting="true" InteractBlacklistTimeInSeconds="1" QuestId="25135" QuestObjectiveIndex="1" X="-88.34402" Y="-4277.792" Z="64.601" />
 
-		<CustomBehavior File="KillUntilComplete" QuestId="25132" >
+		<Code File="KillUntilComplete" QuestId="25132" >
 			<HuntingGrounds>
 				<Hotspot X="-98.70916" Y="-4293.755" Z="60.9591" />
 				<Hotspot X="-85.67622" Y="-4209.158" Z="49.94697" />
@@ -257,7 +257,7 @@ END INITORDER COMMENT -->
 				<PursueUnit Id="3102" PursueWhen="!IsObjectiveComplete(1, 25132)" />
 				<PursueUnit Id="3183" Priority="10" PursueWhen="!IsObjectiveComplete(2, 25132)" />
 			</PursuitList>
-		</CustomBehavior>
+		</Code>
 
 		<TurnIn QuestName="Thazz&apos;ril&apos;s Pick" QuestId="25135" TurnInName="Foreman Thazz&apos;ril" TurnInId="11378" X="-567.558" Y="-4266.502" Z="38.6017" />
 		<TurnIn QuestName="Burning Blade Medallion" QuestId="25132" TurnInName="Zureetha Fargaze" TurnInId="3145" X="-569.9094" Y="-4262.885" Z="38.48481" />
@@ -266,7 +266,7 @@ END INITORDER COMMENT -->
 
 		<Checkpoint Level="5.5" /> <!-- Would be 5, but we don't want to level up inside of the cave and not turn in quests -->
 
-		<CustomBehavior File="LoadProfile" ProfileName="..\Kalimdor\Durotar.xml" RememberProfile="true" />
+		<Code File="LoadProfile" ProfileName="..\Kalimdor\Durotar.xml" RememberProfile="true" />
 
 
 	</QuestOrder>

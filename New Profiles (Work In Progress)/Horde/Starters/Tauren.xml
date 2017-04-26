@@ -37,12 +37,12 @@
 	<!-- INITORDER COMMENT 
 	<InitOrder>
 		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
-		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+		<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
 
-		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
-		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+		<Code File="EnablePlugin" Names="Anti Drown" />
+		<Code File="EnablePlugin" Names="Refreshment Detection" />
 
-		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+		<Code File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 
 		<LootMobs Value="true" />
 		<TargetingDistance Value="45" /> Use LevelBot default
@@ -51,10 +51,10 @@ END INITORDER COMMENT -->
 
 	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
 		<If Condition="Me.IsAlliance" >
-			<CustomBehavior File="LoadProfile" ProfileName="..\..\Alliance\1-58 Autoloader.xml" RememberProfile="true" />
+			<Code File="LoadProfile" ProfileName="..\..\Alliance\1-58 Autoloader.xml" RememberProfile="true" />
 		</If>
 		<!-- RunCode Methods -->
-			<CustomBehavior File="RunCode" Type="Definition">
+			<Code File="RunCode" Type="Definition">
 			<![CDATA[
 				public __CompiledBatchClass__()
 				{
@@ -66,8 +66,8 @@ END INITORDER COMMENT -->
 					Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
 				}
 			]]>
-			</CustomBehavior>
-			<CustomBehavior File="RunCode" Type="Definition">
+			</Code>
+			<Code File="RunCode" Type="Definition">
 				<![CDATA[
 						bool DoQuest(params uint[] questIds)
 						{
@@ -118,11 +118,11 @@ END INITORDER COMMENT -->
 							await Coroutine.Sleep(postWait);
 						}
 					]]>
-			</CustomBehavior>
+			</Code>
 		<!-- END RunCode Methods -->
 
 		<!-- Hooks -->
-			<CustomBehavior File="RunCode" Type="Definition">
+			<Code File="RunCode" Type="Definition">
 				<![CDATA[ 
 					IEnumerable<WoWItem> GetExtraConsumables()
 					{
@@ -160,34 +160,34 @@ END INITORDER COMMENT -->
 						}
 					}
 				]]>
-			</CustomBehavior>
-			<CustomBehavior File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
-				<CustomBehavior File="RunCode" Code="await SellExtraConsumables();"/>
-			</CustomBehavior>
+			</Code>
+			<Code File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+				<Code File="RunCode" Code="await SellExtraConsumables();"/>
+			</Code>
 		<!-- END Hooks -->
 
 		<PickUp QuestName="The First Step" QuestId="14449" GiverName="Chief Hawkwind" GiverId="2981" X="-2913.882" Y="-257.4125" Z="59.46426" />
 		<TurnIn QuestName="The First Step" QuestId="14449" TurnInName="Grull Hawkwind" TurnInId="2980" X="-3011.569" Y="-460.7193" Z="44.88071" />
 
 		<PickUp QuestName="Rite of Strength" QuestId="14452" GiverName="Grull Hawkwind" GiverId="2980" X="-3011.569" Y="-460.7193" Z="44.88071" />
-		<CustomBehavior File="KillUntilComplete" MobId="36943" QuestId="14452" >
+		<Code File="KillUntilComplete" MobId="36943" QuestId="14452" >
 			<HuntingGrounds>
 				<Hotspot X="-3010.547" Y="-537.363" Z="44.59013" />
 				<Hotspot X="-2942.779" Y="-594.4091" Z="48.35432" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 		<TurnIn QuestName="Rite of Strength" QuestId="14452" TurnInName="Grull Hawkwind" TurnInId="2980" X="-3011.569" Y="-460.7193" Z="44.88071" />
 
 		<PickUp QuestName="Our Tribe, Imprisoned" QuestId="24852" GiverName="Grull Hawkwind" GiverId="2980" X="-3014.825" Y="-467.5406" Z="44.63879" />
 		<While Condition="DoQuest(24852)" >
 			<DisableBehavior Name="Pull" />
-			<CustomBehavior File="InteractWith" MobId="202112" CollectionDistance="200" QuestId="24852" QuestObjectiveIndex="1" >
+			<Code File="InteractWith" MobId="202112" CollectionDistance="200" QuestId="24852" QuestObjectiveIndex="1" >
 				<HuntingGrounds>
 					<Hotspot X="-2980.774" Y="-637.2737" Z="43.03579" />
 					<Hotspot X="-2926.979" Y="-674.4214" Z="46.36351" />
 					<Hotspot X="-3130.612" Y="-606.8148" Z="38.60238" />
 				</HuntingGrounds>
-			</CustomBehavior>
+			</Code>
 			<EnableBehavior Name="Pull" />
 		</While>
 		<TurnIn QuestName="Our Tribe, Imprisoned" QuestId="24852" TurnInName="Grull Hawkwind" TurnInId="2980" X="-3014.096" Y="-466.4911" Z="44.80344" />
@@ -199,7 +199,7 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="Stop the Thorncallers" QuestId="14455" GiverName="Adana Thunderhorn" GiverId="36694" X="-3172.95" Y="-316.3729" Z="46.55291" />
 			<PickUp QuestName="Rite of Courage" QuestId="14456" GiverName="Adana Thunderhorn" GiverId="36694" X="-3172.95" Y="-316.3729" Z="46.55291" />
 		</While>
-		<CustomBehavior File="KillUntilComplete" TerminateWhen="!DoQuest(14455, 14456)" >
+		<Code File="KillUntilComplete" TerminateWhen="!DoQuest(14455, 14456)" >
 			<HuntingGrounds>
 				<Hotspot X="-3344.93" Y="-360.639" Z="56.79113" />
 				<Hotspot X="-3389.52" Y="-306.6911" Z="62.5074" />
@@ -210,7 +210,7 @@ END INITORDER COMMENT -->
 				<PursueUnit Id="36697" PursueWhen="DoQuest(14455)" />
 				<PursueUnit Id="36708" PursueWhen="DoQuest(14456)" />
 			</PursuitList>
-		</CustomBehavior>
+		</Code>
 		<While Condition="QuestDone(14455, 14456)" >
 			<TurnIn QuestName="Rite of Courage" QuestId="14456" TurnInName="Adana Thunderhorn" TurnInId="36694" X="-3176.953" Y="-313.0642" Z="46.38595" />
 			<TurnIn QuestName="Stop the Thorncallers" QuestId="14455" TurnInName="Adana Thunderhorn" TurnInId="36694" X="-3176.953" Y="-313.0642" Z="46.38595" />
@@ -222,17 +222,17 @@ END INITORDER COMMENT -->
 		</While>
 
 		<While Condition="DoQuest(14461)" >
-			<CustomBehavior File="InteractWith" MobId="36727" InteractByUsingItemId="49539" Range="5" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="14461" QuestObjectiveIndex="1" X="-3361.041" Y="-234.6382" Z="61.45366" />
-			<CustomBehavior File="InteractWith" MobId="37155" InteractByUsingItemId="49539" Range="5" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="14461" QuestObjectiveIndex="2" X="-3390.991" Y="-213.8656" Z="61.64237" />
-			<CustomBehavior File="InteractWith" MobId="37156" InteractByUsingItemId="49539" Range="5" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="14461" QuestObjectiveIndex="3" X="-3403.38" Y="-262.7828" Z="61.52839" />
+			<Code File="InteractWith" MobId="36727" InteractByUsingItemId="49539" Range="5" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="14461" QuestObjectiveIndex="1" X="-3361.041" Y="-234.6382" Z="61.45366" />
+			<Code File="InteractWith" MobId="37155" InteractByUsingItemId="49539" Range="5" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="14461" QuestObjectiveIndex="2" X="-3390.991" Y="-213.8656" Z="61.64237" />
+			<Code File="InteractWith" MobId="37156" InteractByUsingItemId="49539" Range="5" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="14461" QuestObjectiveIndex="3" X="-3403.38" Y="-262.7828" Z="61.52839" />
 		</While>
 
-		<CustomBehavior File="KillUntilComplete" MobId="36696" QuestId="14459" >
+		<Code File="KillUntilComplete" MobId="36696" QuestId="14459" >
 			<HuntingGrounds>
 				<Hotspot X="-3386.887" Y="-230.8796" Z="60.54503" />
 				<Hotspot X="-3369.133" Y="-280.5368" Z="61.55612" />
 			</HuntingGrounds>
-		</CustomBehavior>
+		</Code>
 
 		<While Condition="QuestDone(14459, 14461)" >
 			<TurnIn QuestName="The Battleboars" QuestId="14459" TurnInName="Adana Thunderhorn" TurnInId="36694" X="-3176.202" Y="-311.7177" Z="46.62113" />
@@ -240,13 +240,13 @@ END INITORDER COMMENT -->
 		</While>
 
 		<PickUp QuestName="Rite of Honor" QuestId="14460" GiverName="Adana Thunderhorn" GiverId="36694" X="-3176.202" Y="-311.7177" Z="46.62113" />
-		<CustomBehavior File="KillUntilComplete" MobId="36712" QuestId="14460" QuestObjectiveIndex="1" X="-3128.52" Y="-58.50631" Z="45.44364" />
+		<Code File="KillUntilComplete" MobId="36712" QuestId="14460" QuestObjectiveIndex="1" X="-3128.52" Y="-58.50631" Z="45.44364" />
 		<TurnIn QuestName="Rite of Honor" QuestId="14460" TurnInName="Chief Hawkwind" TurnInId="2981" X="-2914.526" Y="-253.3296" Z="59.51802" />
 
 		<PickUp QuestName="Last Rites, First Rites" QuestId="24861" GiverName="Chief Hawkwind" GiverId="2981" X="-2914.526" Y="-253.3296" Z="59.51802" />
 		<While Condition="DoQuest(24861)" >
 			<MoveTo X="-2910.605" Y="-254.2194" Z="59.63737" />
-			<CustomBehavior File="UseItem" ItemId="50465" QuestId="24861" />
+			<Code File="UseItem" ItemId="50465" QuestId="24861" />
 		</While>
 		<TurnIn QuestName="Last Rites, First Rites" QuestId="24861" TurnInName="Chief Hawkwind" TurnInId="2981" X="-2911.032" Y="-254.1168" Z="59.62164" />
 
@@ -258,8 +258,8 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Rite of the Winds" QuestId="24215" GiverName="Dyami Windsoar" GiverId="36803" X="-2932.918" Y="-37.43242" Z="190.0333" />
 		<If Condition="QuestDone(24215) &amp;&amp; Unit(36803) != null" >
 			<MoveTo X="-2930.317" Y="-39.29258" Z="189.4208" />
-			<CustomBehavior File="UseItem" ItemId="49652" />
-			<CustomBehavior File="WaitTimer" WaitTime="45000" TerminateWhen="!Me.InVehicle" />
+			<Code File="UseItem" ItemId="49652" />
+			<Code File="WaitTimer" WaitTime="45000" TerminateWhen="!Me.InVehicle" />
 		</If>
 		<TurnIn QuestName="Rite of the Winds" QuestId="24215" TurnInName="Ahmo Thunderhorn" TurnInId="36644" X="-2337.027" Y="-396.0383" Z="-8.145905" />
 
@@ -267,7 +267,7 @@ END INITORDER COMMENT -->
 
 		<Checkpoint Level="6" />
 		
-		<CustomBehavior File="LoadProfile" ProfileName="..\Kalimdor\Mulgore.xml" RememberProfile="true" />
+		<Code File="LoadProfile" ProfileName="..\Kalimdor\Mulgore.xml" RememberProfile="true" />
 
 
 	</QuestOrder>

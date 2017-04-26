@@ -8,12 +8,12 @@
 
 	<QuestOrder>
 		<If Condition="Me.IsAlliance" >
-			<CustomBehavior File="LoadProfile" ProfileName="..\Alliance\1-58 Autoloader.xml" RememberProfile="true" />
+			<Code File="LoadProfile" ProfileName="..\Alliance\1-58 Autoloader.xml" RememberProfile="true" />
 		</If>
 
 		<!-- Clean out trash items from 58-68 -->
-		<CustomBehavior File="DeleteItems" Ids="31121, 29443, 31535, 31437, 25433, 31449, 26043 29209, 30809, 25555, 26042, 20749, 24421, 29740, 22832, 25658, 30810" />
-		<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+		<Code File="DeleteItems" Ids="31121, 29443, 31535, 31437, 25433, 31449, 26043 29209, 30809, 25555, 26042, 20749, 24421, 29740, 22832, 25658, 30810" />
+		<Code File="RunCode" Type="Definition"><![CDATA[
 			bool LoremasterCheckpointCheck(float levelToCheck, int achievementId = 0, int achievementIndex = 0)
 			{
 				if (Me.LevelFraction < levelToCheck) return true;
@@ -63,73 +63,73 @@
 				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, "[Azyul Navigator]: ", color, $"{message}");
 			}
 			]]>
-		</CustomBehavior>
+		</Code>
 		<If Condition="!HasArrivedNorthrend() &amp;&amp; LoremasterCheckpointCheck(80, 41)" >
-			<CustomBehavior File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;Going to Northrend!&quot;);" />
+			<Code File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;Going to Northrend!&quot;);" />
 			<!-- /// Mage Logic /// -->
 			<If Condition="SpellManager.CanCast(53140)" > <!-- Checks if we're a mage and spell is fully learnt+castable -->
-				<CustomBehavior File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're a Mage! Teleporting to Dalaran.&quot;);" />
-				<CustomBehavior File="ForcedDismount" />
+				<Code File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're a Mage! Teleporting to Dalaran.&quot;);" />
+				<Code File="ForcedDismount" />
 				<While Condition="!HasArrivedNorthrend()" >
-					<CustomBehavior File="Misc\RunLua" Lua="CastSpellByID(53140);" WaitTime="500" />
-					<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="HasArrivedNorthrend() || CastingInterruptedNorthrend()" />
+					<Code File="Misc\RunLua" Lua="CastSpellByID(53140);" WaitTime="500" />
+					<Code File="WaitTimer" WaitTime="50000" TerminateWhen="HasArrivedNorthrend() || CastingInterruptedNorthrend()" />
 				</While>
 			</If>
 			<!-- /// Item Teleportation Logic.   Teleport to area that has portals (Shrine/etc) or teleport to destination /// -->
 			<If Condition="!HasArrivedNorthrend() &amp;&amp; HearthIsPriorityLocationNorthrend() &amp;&amp; !InPriorityLocationNorthrend() &amp;&amp; HasHearthNorthrend()" >
-				<CustomBehavior File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;Hearthing would be faster to reach our destination, attempting to Hearth!&quot;);" />
-				<CustomBehavior File="ForcedDismount" />
+				<Code File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;Hearthing would be faster to reach our destination, attempting to Hearth!&quot;);" />
+				<Code File="ForcedDismount" />
 				<While Condition="!(HasArrivedNorthrend() || InPriorityLocationNorthrend())" >
-					<CustomBehavior File="RunCode" Code="await Coroutine.Wait(1800000, () => HearthIsReadyNorthrend() || InPriorityLocationNorthrend());" />
-					<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(6948); UseItemByName(64488); CastSpellByID(556);" WaitTime="500" />
-					<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="HasArrivedNorthrend() || InPriorityLocationNorthrend() || CastingInterruptedNorthrend()" />
+					<Code File="RunCode" Code="await Coroutine.Wait(1800000, () => HearthIsReadyNorthrend() || InPriorityLocationNorthrend());" />
+					<Code File="Misc\RunLua" Lua="UseItemByName(6948); UseItemByName(64488); CastSpellByID(556);" WaitTime="500" />
+					<Code File="WaitTimer" WaitTime="50000" TerminateWhen="HasArrivedNorthrend() || InPriorityLocationNorthrend() || CastingInterruptedNorthrend()" />
 				</While>
 			</If>
 			<!-- /// Generic Logic /// -->
 			<If Condition="Me.ZoneId == 6455 || Me.ZoneId == 3430 || Me.ZoneId == 3487 || Me.ZoneId == 3433" > <!-- Sunstrider Isle, Eversong Woods, Silvermoon City, Ghostlands -->
-				<CustomBehavior File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're in northen Eastern Kingdoms.  Using the Orb of Translocation to enter Undercity.&quot;);" />
+				<Code File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're in northen Eastern Kingdoms.  Using the Orb of Translocation to enter Undercity.&quot;);" />
 				<MoveTo DestName="Inner Sanctum" X="10039.12" Y="-7000.733" Z="61.95295" />
 				<While Condition="Me.ZoneId != 85" >
-					<CustomBehavior File="InteractWith" MobId="184502" X="10032.36" Y="-7000.288" Z="61.30979" WaitTime="2500" />
-					<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Me.ZoneId == 85" />
+					<Code File="InteractWith" MobId="184502" X="10032.36" Y="-7000.288" Z="61.30979" WaitTime="2500" />
+					<Code File="WaitTimer" WaitTime="50000" TerminateWhen="Me.ZoneId == 85" />
 				</While>
 			</If>
 			<If Condition="Me.ZoneId == 4080" > <!-- Isle of Quel'Danas -->
-				<CustomBehavior File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're in Isle of Quel'Danas, using the Flight Master to Stormwind.&quot;);" />
+				<Code File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're in Isle of Quel'Danas, using the Flight Master to Stormwind.&quot;);" />
 				<MoveTo DestName="Ohura, the flight master." X="13009.74" Y="-6910.024" Z="9.584676" />
-				<CustomBehavior File="InteractWith" MobId="26560" X="13012.39" Y="-6911.189" Z="9.586156" WaitTime="850" />
-				<CustomBehavior File="WaitTimer" WaitTime="600000" TerminateWhen="!Me.OnTaxi" />
-				<CustomBehavior File="Misc\RunLua" Lua="TaxiButton2:Click();" WaitTime="1000" />
+				<Code File="InteractWith" MobId="26560" X="13012.39" Y="-6911.189" Z="9.586156" WaitTime="850" />
+				<Code File="WaitTimer" WaitTime="600000" TerminateWhen="!Me.OnTaxi" />
+				<Code File="Misc\RunLua" Lua="TaxiButton2:Click();" WaitTime="1000" />
 			</If>
 			<If Condition="Me.MapId == 870" > <!-- Pandaria -->
-				<CustomBehavior File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're in Pandaria, using the Shrine portal to Dalaran.&quot;);" />
+				<Code File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're in Pandaria, using the Shrine portal to Dalaran.&quot;);" />
 				<If Condition="Me.ZoneId != 6141" > <!-- If not inside of Shrine building -->
 					<MoveTo Nav="Fly" X="1629.72" Y="924.5151" Z="471.1836" />
 				</If>
 				<MoveTo X="1725.195" Y="875.6638" Z="487.0624" />
 				<While Condition="!HasArrivedNorthrend()" >
-					<CustomBehavior File="InteractWith" MobId="215112" X="1745.706" Y="903.9822" Z="487.2821" TerminateWhen="HasArrivedNorthrend()" />
-					<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="HasArrivedNorthrend() || Me.Combat" />
+					<Code File="InteractWith" MobId="215112" X="1745.706" Y="903.9822" Z="487.2821" TerminateWhen="HasArrivedNorthrend()" />
+					<Code File="WaitTimer" WaitTime="50000" TerminateWhen="HasArrivedNorthrend() || Me.Combat" />
 				</While>
 			</If>
 			<If Condition="Me.MapId == 530" > <!-- Outlands -->
-				<CustomBehavior File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're in Outlands, using the Shattrath portal to Orgrimmar.&quot;);" />
+				<Code File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're in Outlands, using the Shattrath portal to Orgrimmar.&quot;);" />
 				<MoveTo Nav="Fly" X="-1898.129" Y="5395.677" Z="-12.42727" />
 				<While Condition="Me.MapId != 1" >
-					<CustomBehavior File="InteractWith" MobId="183323" X="-1899.45" Y="5393.01" Z="-12.42832" TerminateWhen="Me.MapId == 1" />
-					<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Me.MapId == 1 || Me.Combat" />
+					<Code File="InteractWith" MobId="183323" X="-1899.45" Y="5393.01" Z="-12.42832" TerminateWhen="Me.MapId == 1" />
+					<Code File="WaitTimer" WaitTime="50000" TerminateWhen="Me.MapId == 1 || Me.Combat" />
 				</While>
 			</If>
 			<!--<If Condition="Me.MapId == 530" >  Instanced Draenei Zone 
 				Do we really need Horde support for this?
 			</If> -->
 			<If Condition="Me.CurrentMap.ExpansionId == 5" > <!-- Draenor -->
-				<CustomBehavior File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're in Draenor, using the Ashran portal to Orgrimmar.&quot;);" />
+				<Code File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're in Draenor, using the Ashran portal to Orgrimmar.&quot;);" />
 				<If Condition="Me.Y &gt; -3509.631" > <!-- Not in Ashran -->
 					<If Condition="Me.BagItems.FirstOrDefault(h => h.Entry == 110560).CooldownTimeLeft.TotalMilliseconds == 0 &amp;&amp; Me.ZoneId != 7004" > <!-- Can cast G-Hearth and Outside of Garrison. -->
 						<While Condition="Me.ZoneId != 7004" >
-							<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(110560);" WaitTime="500" />
-							<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Me.ZoneId == 7004 || CastingInterruptedNorthrend()" />
+							<Code File="Misc\RunLua" Lua="UseItemByName(110560);" WaitTime="500" />
+							<Code File="WaitTimer" WaitTime="50000" TerminateWhen="Me.ZoneId == 7004 || CastingInterruptedNorthrend()" />
 						</While>
 						<Else>
 							<MoveTo DestName="Garrison" X="5592.404" Y="4529.675" Z="126.3718" />
@@ -137,41 +137,41 @@
 					</If>
 					<If Condition="Me.MapId == 1153" >
 						<MoveTo DestName="Ashran Portal" X="5583.557" Y="4373.989" Z="137.6236" />
-						<CustomBehavior File="MyCTM" X="5579.374" Y="4366.707" Z="138.9411" />
-						<CustomBehavior File="MyCTM" X="5575.75" Y="4367.552" Z="138.9789" />
-						<CustomBehavior File="MyCTM" X="5572.477" Y="4361.848" Z="143.433" />
-						<CustomBehavior File="MyCTM" X="5578.62" Y="4358.129" Z="147.87" />
-						<CustomBehavior File="MyCTM" X="5582.464" Y="4364.247" Z="152.3972" />
-						<CustomBehavior File="MyCTM" X="5576.058" Y="4368.637" Z="156.7244" />
-						<CustomBehavior File="MyCTM" X="5572.972" Y="4361.899" Z="159.8998" />
-						<CustomBehavior File="MyCTM" X="5584.697" Y="4356.71" Z="160.9148" />
+						<Code File="MyCTM" X="5579.374" Y="4366.707" Z="138.9411" />
+						<Code File="MyCTM" X="5575.75" Y="4367.552" Z="138.9789" />
+						<Code File="MyCTM" X="5572.477" Y="4361.848" Z="143.433" />
+						<Code File="MyCTM" X="5578.62" Y="4358.129" Z="147.87" />
+						<Code File="MyCTM" X="5582.464" Y="4364.247" Z="152.3972" />
+						<Code File="MyCTM" X="5576.058" Y="4368.637" Z="156.7244" />
+						<Code File="MyCTM" X="5572.972" Y="4361.899" Z="159.8998" />
+						<Code File="MyCTM" X="5584.697" Y="4356.71" Z="160.9148" />
 					</If>
 					<While Condition="Me.ZoneId != 7333" >
-						<CustomBehavior File="InteractWith" MobId="233600" X="5586.819" Y="4357.713" Z="161.427" TerminateWhen="Me.ZoneId == 7333" />
-						<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Me.ZoneId == 7333 || Me.Combat" />
+						<Code File="InteractWith" MobId="233600" X="5586.819" Y="4357.713" Z="161.427" TerminateWhen="Me.ZoneId == 7333" />
+						<Code File="WaitTimer" WaitTime="50000" TerminateWhen="Me.ZoneId == 7333 || Me.Combat" />
 					</While>
 				</If>
 				<MoveTo X="5266.4" Y="-4075.891" Z="21.13024" />
 				<While Condition="Me.MapId != 1" >
-					<CustomBehavior File="InteractWith" MobId="235880" X="5266.4" Y="-4075.891" Z="21.13024" TerminateWhen="Me.MapId == 1" />
-					<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Me.MapId == 1 || Me.Combat" />
+					<Code File="InteractWith" MobId="235880" X="5266.4" Y="-4075.891" Z="21.13024" TerminateWhen="Me.MapId == 1" />
+					<Code File="WaitTimer" WaitTime="50000" TerminateWhen="Me.MapId == 1 || Me.Combat" />
 				</While>
 			</If>
 			<If Condition="Me.MapId == 646" > <!-- Deepholm -->
-				<CustomBehavior File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're in Deepholm, using the portal for Orgrimmar.&quot;);" />
+				<Code File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're in Deepholm, using the portal for Orgrimmar.&quot;);" />
 				<MoveTo Nav="Fly" X="991.8574" Y="458.2401" Z="-44.27066" />
 				<While Condition="Me.MapId != 1" >
-					<CustomBehavior File="InteractWith" MobId="205273" X="990.495" Y="454.457" Z="-44.2477" TerminateWhen="Me.MapId == 1" />
-					<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Me.MapId == 1 || Me.Combat" />
+					<Code File="InteractWith" MobId="205273" X="990.495" Y="454.457" Z="-44.2477" TerminateWhen="Me.MapId == 1" />
+					<Code File="WaitTimer" WaitTime="50000" TerminateWhen="Me.MapId == 1 || Me.Combat" />
 				</While>
 			</If>
 			<If Condition="Me.MapId == 0" > <!-- Eastern Kingdoms -->
 				<If Condition="Me.X &gt;= -5275 &amp;&amp; Me.MapId == 0" >
-					<CustomBehavior File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're in Eastern Kingdoms, using the Undercity Zeppelin to Howling Fjord.&quot;);" />
+					<Code File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're in Eastern Kingdoms, using the Undercity Zeppelin to Howling Fjord.&quot;);" />
 					<MoveTo Nav="Fly" X="2061.766" Y="358.607" Z="82.47437" />
-					<CustomBehavior File="ForcedDismount" />
+					<Code File="ForcedDismount" />
 					<MoveTo WaitAtX="2061.913" WaitAtY="365.0161" WaitAtZ="82.51536" />
-					<CustomBehavior File="UseTransport" TransportId="181689"
+					<Code File="UseTransport" TransportId="181689"
 						WaitAtX="2061.913" WaitAtY="365.0161" WaitAtZ="82.51536"
 						TransportStartX="2056.493" TransportStartY="381.6347" TransportStartZ="100.362" 
 						StandOnX="2058.949" StandOnY="374.2945" StandOnZ="82.47006" 
@@ -180,10 +180,10 @@
 					/>
 				</If>
 				<If Condition="Me.X &lt; -5275 &amp;&amp; Me.MapId == 0" >
-					<CustomBehavior File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're in Eastern Kingdoms, going to Booty Bay to take the boat to Ratchet.&quot;);" />
+					<Code File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're in Eastern Kingdoms, going to Booty Bay to take the boat to Ratchet.&quot;);" />
 					<MoveTo Nav="Fly" X="-14284.1" Y="558.6824" Z="8.684329" />
-					<CustomBehavior File="ForcedDismount" />
-					<CustomBehavior File="UseTransport" TransportId="20808"
+					<Code File="ForcedDismount" />
+					<Code File="UseTransport" TransportId="20808"
 						WaitAtX="-14281.7" WaitAtY="564.5626" WaitAtZ="7.523634"
 						TransportStartX="-14277.75" TransportStartY="582.8661" TransportStartZ="0.02733914"
 						StandOnX="-14274.47" StandOnY="579.4496" StandOnZ="6.051711"
@@ -192,11 +192,11 @@
 				</If>
 			</If>
 			<If Condition="Me.MapId == 1" > <!-- Kalimdor -->
-				<CustomBehavior File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're in Kalimdor, using the Orgrimmar Zeppelin to Howling Fjord.&quot;);" />
+				<Code File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We're in Kalimdor, using the Orgrimmar Zeppelin to Howling Fjord.&quot;);" />
 				<MoveTo Nav="Fly" X="1754.089" Y="-4278.742" Z="133.0416" />
-				<CustomBehavior File="ForcedDismount" />
+				<Code File="ForcedDismount" />
 				<MoveTo X="1763.389" Y="-4283.858" Z="133.1073" />
-				<CustomBehavior File="UseTransport" TransportId="186238"
+				<Code File="UseTransport" TransportId="186238"
 					WaitAtX="1763.066" WaitAtY="-4284.396" WaitAtZ="133.1081" 
 					TransportStartX="1775.066" TransportStartY="-4299.745" TransportStartZ="151.0326" 
 					StandOnX="1770.22" StandOnY="-4292.056" StandOnZ="133.1872" 
@@ -204,36 +204,36 @@
 					GetOffX="2836.831" GetOffY="6185.15" GetOffZ="121.9923" />
 				<MoveTo X="2740.837" Y="6097.529" Z="76.88604" />
 			</If>
-			<CustomBehavior File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We have reached Northrend!&quot;);" />
+			<Code File="RunCode" Code="NorthrendLog(Colors.LightGreen, &quot;We have reached Northrend!&quot;);" />
 		</If>
 
 		<If Condition="LoremasterCheckpointCheck(72, 33)" > <!-- 68 -->
-			<CustomBehavior File="LoadProfile" ProfileName="Northrend\Borean Tundra.xml" RememberProfile="true" />
+			<Code File="LoadProfile" ProfileName="Northrend\Borean Tundra.xml" RememberProfile="true" />
 		</If>
 
 		<If Condition="LoremasterCheckpointCheck(74, 35)" >
-			<CustomBehavior File="LoadProfile" ProfileName="Northrend\Dragonblight.xml" RememberProfile="true" />
+			<Code File="LoadProfile" ProfileName="Northrend\Dragonblight.xml" RememberProfile="true" />
 		</If>
 
 		<If Condition="LoremasterCheckpointCheck(75, 37)" >
-			<CustomBehavior File="LoadProfile" ProfileName="Northrend\Grizzly Hills.xml" RememberProfile="true" />
+			<Code File="LoadProfile" ProfileName="Northrend\Grizzly Hills.xml" RememberProfile="true" />
 		</If>
 
 		<If Condition="LoremasterCheckpointCheck(77, 36)" >
-			<CustomBehavior File="LoadProfile" ProfileName="Northrend\Zul'Drak" RememberProfile="true" />
+			<Code File="LoadProfile" ProfileName="Northrend\Zul'Drak" RememberProfile="true" />
 		</If>
 
 		<If Condition="LoremasterCheckpointCheck(78, 39)" >
-			<CustomBehavior File="LoadProfile" ProfileName="Northrend\Sholazar Basin.xml" RememberProfile="true" />
+			<Code File="LoadProfile" ProfileName="Northrend\Sholazar Basin.xml" RememberProfile="true" />
 		</If>
 
 		<If Condition="LoremasterCheckpointCheck(80, 38)" >
-			<CustomBehavior File="LoadProfile" ProfileName="Northrend\Storm Peaks.xml" RememberProfile="true" />
+			<Code File="LoadProfile" ProfileName="Northrend\Storm Peaks.xml" RememberProfile="true" />
 		</If>
 
 		<!-- Icecrown is loaded within Storm Peaks, but the level checks are the same so there's no checkpoints for it. -->
 
-		<CustomBehavior File="LoadProfile" ProfileName="80-85 Autoloader.xml" RememberProfile="true" />
+		<Code File="LoadProfile" ProfileName="80-85 Autoloader.xml" RememberProfile="true" />
 
 	</QuestOrder>
 
