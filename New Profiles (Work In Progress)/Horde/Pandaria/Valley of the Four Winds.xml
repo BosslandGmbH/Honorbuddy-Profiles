@@ -1,0 +1,226 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/EchoQuestingSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Valley of the Four Winds ($Rev: 6041 $)</Name>
+
+	<DefaultNavType>Fly</DefaultNavType>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<!-- INITORDER COMMENT 
+	<InitOrder>
+		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
+		<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<Code File="EnablePlugin" Names="Anti Drown" />
+		<Code File="EnablePlugin" Names="Refreshment Detection" />
+
+		<Code File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> Use LevelBot default
+	</InitOrder>
+END INITORDER COMMENT -->
+
+	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
+		<If Condition="Me.IsAlliance" >
+			<Code File="LoadProfile" ProfileName="..\..\Alliance\1-58 Autoloader.xml" RememberProfile="true" />
+		</If>
+		<!-- RunCode Methods -->
+			<!--<Code File="RunCode">
+			<![CDATA[
+				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
+				Lua.DoString("SetCVar('AutoLootDefault', 1);");
+				CharacterSettings.Instance.LootMobs = true;
+				CharacterSettings.Instance.Save();
+				Lua.DoString("for i=1,GetNumAddOns() do local relo=false if IsAddOnLoaded(i) then relo=true DisableAddOn(i) end if relo then relo=nil ReloadUI() end end");
+				await Coroutine.Sleep(1500);
+				Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
+			]]>
+			</Code> -->
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</Code>
+		<!-- END RunCode Methods -->
+
+		<!-- Hooks -->
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[ 
+					IEnumerable<WoWItem> GetExtraConsumables()
+					{
+						uint foodCount = 0;
+						uint drinkCount = 0;
+						// Skip conjured and buff comsumables.
+				
+						var extraConsumables = (from item in Me.BagItems
+										   where item != null && item.ItemInfo != null
+										   let isFood = Consumable.IsFood(item.ItemInfo)
+										   let isDrink = Consumable.IsDrink(item.ItemInfo)
+										   where (isFood || isDrink) && item.ItemInfo.SellPrice > 0 && item.Effects.Count == 1 && item.ItemInfo.RequiredLevel < Me.Level - 10                    
+										   select item).ToList();
+				
+				
+						var extraPotions = Me.BagItems
+							.Where(c => c != null && c.IsValid && c.ItemInfo != null && c.ItemInfo.SellPrice > 0 && c.Effects.Count == 1
+								&& (c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Potion
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Elixir
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Flask)
+								&& c.ItemInfo.RequiredLevel < Me.Level - 20);
+				
+						extraConsumables.AddRange(extraPotions);
+						return extraConsumables;
+					}
+					 
+					async Task SellExtraConsumables()
+					{
+						Logging.Write("Selling items in GetExtraConsumables()");
+						foreach (var item in GetExtraConsumables())
+						{
+							Logging.Write("Selling {0}.", item.Name);
+							item.UseContainerItem();
+							await Coroutine.Sleep(1337);
+						}
+					}
+				]]>
+			</Code>
+			<Code File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+				<Code File="RunCode" Code="await SellExtraConsumables();"/>
+			</Code>
+		<!-- END Hooks -->
+
+		<PickUp QuestName="Chen and Li Li" QuestId="29907" GiverName="Chen Stormstout" GiverId="56133" X="518.2825" Y="-696.5137" Z="247.235" />
+		<While Condition="DoQuest(29907)" >
+			<MoveTo X="542.108" Y="-608.9107" Z="262.0381" />
+			<Code File="WaitTimer" WaitTime="15000" QuestId="29907" />
+		</While>
+		<TurnIn QuestName="Chen and Li Li" QuestId="29907" TurnInName="Pang Thunderfoot" TurnInId="56204" X="542.108" Y="-608.9107" Z="262.0381" />
+
+		<PickUp QuestName="A Seemingly Endless Nuisance" QuestId="29908" GiverName="Pang Thunderfoot" GiverId="56204" X="542.108" Y="-608.9107" Z="262.0381" />
+		<PickUp QuestName="A Poor Grasp of the Basics" QuestId="29877" GiverName="Muno the Farmhand" GiverId="56440" X="539.1062" Y="-570.6083" Z="258.7751" />
+
+		<Code File="InteractWith" MobId="56279" CollectionDistance="200" QuestId="29877" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="597.5269" Y="-552.6993" Z="253.7112" />
+				<Hotspot X="525.2256" Y="-444.8404" Z="234.0029" />
+				<Hotspot X="460.0491" Y="-403.4257" Z="212.8058" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" QuestId="29908" >
+			<HuntingGrounds>
+				<Hotspot X="597.5269" Y="-552.6993" Z="253.7112" />
+				<Hotspot X="525.2256" Y="-444.8404" Z="234.0029" />
+				<Hotspot X="460.0491" Y="-403.4257" Z="212.8058" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="56184" PursueWhen="!IsObjectiveComplete(1, 29908)" />
+				<PursueUnit Id="56185" PursueWhen="!IsObjectiveComplete(1, 29908)" />
+				<PursueUnit Id="65504" PursueWhen="!IsObjectiveComplete(2, 29908)" />
+			</PursuitList>
+		</Code>
+
+		<TurnIn QuestName="A Poor Grasp of the Basics" QuestId="29877" TurnInName="Muno the Farmhand" TurnInId="56440" X="538.8289" Y="-570.3568" Z="258.9223" />
+		<TurnIn QuestName="A Seemingly Endless Nuisance" QuestId="29908" TurnInName="Pang Thunderfoot" TurnInId="56204" X="541.2785" Y="-608.5696" Z="261.697" />
+		<PickUp QuestName="Low Turnip Turnout" QuestId="29909" GiverName="Pang Thunderfoot" GiverId="56204" X="541.2785" Y="-608.5696" Z="261.697" />
+		<PickUp QuestName="The Search for the Hidden Master" QuestId="30086" GiverName="Xiao" GiverId="56110" X="539.485" Y="-620.2884" Z="258.7412" />w
+		<TurnIn QuestName="The Search for the Hidden Master" QuestId="30086" TurnInName="Xiao" TurnInId="56110" X="539.485" Y="-620.2884" Z="258.7412" />
+		<PickUp QuestName="Ken-Ken" QuestId="29873" GiverName="Xiao" GiverId="56110" X="539.485" Y="-620.2884" Z="258.7412" />
+		<PickUp QuestName="Clever Ashyo" QuestId="29871" GiverName="Xiao" GiverId="56110" X="539.485" Y="-620.2884" Z="258.7412" />
+		<PickUp QuestName="Kang Bramblestaff" QuestId="29875" GiverName="Xiao" GiverId="56110" X="539.485" Y="-620.2884" Z="258.7412" />
+		<PickUp QuestName="Lin Tenderpaw" QuestId="29872" GiverName="Xiao" GiverId="56110" X="539.485" Y="-620.2884" Z="258.7412" />
+		<TurnIn QuestName="Low Turnip Turnout" QuestId="29909" TurnInName="Ang Thunderfoot" TurnInId="56207" X="441.83" Y="-517.7115" Z="243.7853" />
+		<PickUp QuestName="Taking a Crop" QuestId="29940" GiverName="Ang Thunderfoot" GiverId="56207" X="441.83" Y="-517.7115" Z="243.7853" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	</QuestOrder>
+</HBProfile>
