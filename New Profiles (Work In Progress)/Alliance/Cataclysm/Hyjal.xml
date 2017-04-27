@@ -1291,6 +1291,162 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Twilight Riot" QuestId="25531" GiverName="Commander Jarod Shadowsong" GiverId="40619" X="4742.6" Y="-4973.006" Z="907.4658" />
 		<TurnIn QuestName="Twilight Riot" QuestId="25531" TurnInName="Commander Jarod Shadowsong" TurnInId="40772" X="4082.787" Y="-3994.787" Z="971.5401" />
 
+
+		<PickUp QuestName="Slash and Burn" QuestId="25608" GiverName="Commander Jarod Shadowsong" GiverId="40772" X="4084.071" Y="-3995.333" Z="971.3998" />
+		<If Condition="!IsObjectiveComplete(1, 25608)" >
+			<Code File="RunCode"><![CDATA[ TreeHooks.Instance.InsertHook("Questbot_Main", 0, _controlDrakeHook ?? (_controlDrakeHook = new  CommonBehaviors.Actions.ActionRunCoroutine(ctx => ControlDrake()))); ]]></Code>
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[
+					private Styx.TreeSharp.Composite _controlDrakeHook;
+					private WoWUnit _killDrake;
+					bool aerialSwipeCD => Lua.GetReturnVal<int>("return GetActionCooldown(134)", 1) == 0;
+
+					private async Task<bool> ControlDrake()
+					{
+						if (IsObjectiveComplete(1, 25608)) return false;
+						if (!Me.IsOnTransport) return false;
+						_killDrake = ObjectManager.GetObjectsOfType<WoWUnit>()
+							.Where(u => u.Entry == 40573 && u.IsAlive)
+							.OrderBy(u => u.DistanceSqr).FirstOrDefault();
+						if (_killDrake != null && _killDrake.IsValid && aerialSwipeCD)
+						{
+							_killDrake.Target();
+							WoWMovement.ClickToMove(_killDrake.Location);
+							Lua.DoString("OverrideActionBarButton2:Click();");
+							return true;
+						}
+						return false;
+					}
+				]]>
+			</Code>
+		</If>
+		<While Condition="!IsObjectiveComplete(1, 25608)" >
+			<DisableBehavior Name="Pull" />
+			<If Condition="!Me.IsOnTransport">
+				<EnableBehavior Name="All" />
+				<MoveTo QuestId="25608" X="4076.879" Y="-4008.621" Z="974.0007" />
+				<Code File="InteractWith" MobId="40934" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="25608" X="4074.596" Y="-4009.47" Z="971.1025" TerminateWhen="Me.IsOnTransport" />
+			</If>
+			<While Condition="Me.IsOnTransport &amp;&amp; !IsObjectiveComplete(1, 25608)">
+				<DisableBehavior Name="All" />
+				<MoveTo X="4391.007" Y="-4399.501" Z="939.4135" />
+			</While>
+			<If Condition="IsObjectiveComplete(1, 25608)" >+
+				<Code File="RunCode"><![CDATA[ TreeHooks.Instance.RemoveHook("Questbot_Main", _controlDrakeHook); ]]></Code>
+			</If>
+		</While>
+
+		<While Condition="DoQuest(25608)" >
+			<DisableBehavior Name="Pull" />
+			<If Condition="!Me.IsOnTransport">
+				<EnableBehavior Name="All" />
+				<MoveTo QuestId="25608" X="4076.879" Y="-4008.621" Z="974.0007" />
+				<Code File="InteractWith" MobId="40934" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="25608" X="4074.596" Y="-4009.47" Z="971.1025" TerminateWhen="Me.IsOnTransport" />
+			</If>
+			<Code File="Vehicles\VehicleBehavior" QuestId="25608" AttackButton="1" VehicleId="40025"
+				MobId="40564" MobId2="40562" VehicleMountId="40934" FireHeight="1"
+				StartObjectivePointX="4391.007" StartObjectivePointY="-4399.501"
+				StartObjectivePointZ="939.4135" StartPointX="4084.388" StartPointY="-3996.015"
+				StartPointZ="971.3682" EndPointX="4084.388" EndPointY="-3996.015"
+				EndPointZ="971.3682"
+				VehicleType="2">
+				<Start X="4362.628" Y="-4308.745" Z="1046.3419" />
+				<Path X="4379.361" Y="-4416.606" Z="1039.0206" />
+				<Path X="4452.269" Y="-4502.572" Z="1032.985" />
+				
+				<Path X="4594.852" Y="-4570.126" Z="1023.2373" />
+				<Path X="4487.234" Y="-4506.711" Z="1019.7497" />
+				<Path X="4438.627" Y="-4425.22" Z="1027.3046" />
+				<Path X="4514.863" Y="-4298.843" Z="1029.6279" />
+				<Path X="4522.129" Y="-4530.026" Z="1109.174" />
+				<Path X="4611.841" Y="-4506.28" Z="1023.5945" />
+			</Code>
+			<If Condition="!DoQuest(25608)" >
+				<MoveTo X="4090.029" Y="-3984.283" Z="973.5316" />
+				<Code File="EjectVeh" />
+				<EnableBehavior Name="All" />
+			</If>
+		</While>
+		<If Condition="QuestDone(25608)" >
+			<TurnIn QuestName="Slash and Burn" QuestId="25608" TurnInName="Commander Jarod Shadowsong" TurnInId="40772" X="4085.696" Y="-3994.194" Z="971.2789" />
+			<Code File="RunCode" Code="await SkipCutscene();" />
+		</If>
+
+		<PickUp QuestName="Might of the Firelord" QuestId="25548" GiverName="Commander Jarod Shadowsong" GiverId="40772" X="4103.999" Y="-3989.253" Z="970.5844" />
+		<PickUp QuestName="Secrets of the Flame" QuestId="25554" GiverName="Cenarius" GiverId="40773" X="4103.674" Y="-3982.386" Z="970.3857" />
+
+		<Code File="InteractWith" MobId="203047" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="25554" QuestObjectiveIndex="2" X="3911.226" Y="-3453.681" Z="1011.901" />
+		<Code File="InteractWith" MobId="203046" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="25554" QuestObjectiveIndex="3" X="3964.577" Y="-3395.58" Z="1011.414" />
+		<Code File="InteractWith" MobId="203048" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="25554" QuestObjectiveIndex="1" X="3825.151" Y="-3343.631" Z="1006.685" />
+
+		<PickUp QuestName="The Twilight Egg" QuestId="25644" GiverName="Pure Twilight Egg" GiverId="207359" X="3823.858" Y="-3443.609" Z="1020.771" />
+
+		<Code File="KillUntilComplete" QuestId="25548" >
+			<HuntingGrounds>
+				<Hotspot X="3984.006" Y="-3501.4" Z="1011.178" />
+				<Hotspot X="3874.354" Y="-3486.21" Z="1020.769" />
+				<Hotspot X="3855.333" Y="-3406.448" Z="1014.393" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="40709" PursueWhen="!IsObjectiveComplete(1, 25548)" />
+				<PursueUnit Id="40463" PursueWhen="!IsObjectiveComplete(2, 25548)" />
+			</PursuitList>
+		</Code>
+
+		<TurnIn QuestName="Secrets of the Flame" QuestId="25554" TurnInName="Cenarius" TurnInId="40773" X="4104.719" Y="-3981.949" Z="970.3997" />
+		<PickUp QuestName="The Gatekeeper" QuestId="25555" GiverName="Cenarius" GiverId="40773" X="4104.719" Y="-3981.949" Z="970.3997" />
+		<TurnIn QuestName="Might of the Firelord" QuestId="25548" TurnInName="Commander Jarod Shadowsong" TurnInId="40772" X="4103.768" Y="-3985.753" Z="970.4626" />
+		<PickUp QuestName="The Sanctum of the Prophets" QuestId="25549" GiverName="Commander Jarod Shadowsong" GiverId="40772" X="4103.768" Y="-3985.753" Z="970.4626" />
+		<TurnIn QuestName="The Twilight Egg" QuestId="25644" TurnInName="Aronus" TurnInId="40816" X="4105" Y="-3994.326" Z="970.7886" />
+		<PickUp QuestName="Brood of Evil" QuestId="25552" GiverName="Aronus" GiverId="40816" X="4105" Y="-3994.326" Z="970.7886" />
+
+		<Code File="KillUntilComplete" MobId="40687" QuestId="25552" X="3980.621" Y="-3430.138" Z="1010.737" />
+
+		<While Condition="DoQuest(25555)" >
+			<MoveTo X="4251.421" Y="-3379.266" Z="1020.013" />
+			<Code File="UseItem" ItemId="55153" QuestId="25555" QuestObjectiveIndex="1" X="4251.421" Y="-3379.266" Z="1020.013" TerminateWhen="Unit(40956) != null" />
+			<Code File="KillUntilComplete" MobId="40814" QuestId="25555" X="4251.421" Y="-3379.266" Z="1020.013" TerminateWhen="Unit(40956) == null" />
+		</While>
+
+		<Code File="KillUntilComplete" QuestId="25549" >
+			<HuntingGrounds>
+				<Hotspot X="4238.027" Y="-3377.733" Z="1019.497" />
+				<Hotspot X="4137.708" Y="-3504.655" Z="1013.361" />
+				<Hotspot X="4295.804" Y="-3254.625" Z="1032.886" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="40713" PursueWhen="!IsObjectiveComplete(1, 25549)" />
+				<PursueUnit Id="40767" PursueWhen="!IsObjectiveComplete(2, 25549)" />
+				<PursueUnit Id="40755" PursueWhen="!IsObjectiveComplete(3, 25549)" />
+			</PursuitList>
+		</Code>
+
+		<TurnIn QuestName="The Gatekeeper" QuestId="25555" TurnInName="Cenarius" TurnInId="40773" X="4105.084" Y="-3982.053" Z="970.4046" />
+		<TurnIn QuestName="The Sanctum of the Prophets" QuestId="25549" TurnInName="Commander Jarod Shadowsong" TurnInId="40772" X="4103.229" Y="-3987.768" Z="970.5276" />
+		<PickUp QuestName="Magma Monarch" QuestId="25550" GiverName="Commander Jarod Shadowsong" GiverId="40772" X="4103.229" Y="-3987.768" Z="970.5276" />
+		<TurnIn QuestName="Brood of Evil" QuestId="25552" TurnInName="Aronus" TurnInId="40816" X="4105.854" Y="-3994.054" Z="970.7884" />
+		<PickUp QuestName="Death to the Broodmother" QuestId="25553" GiverName="Aronus" GiverId="40816" X="4105.854" Y="-3994.054" Z="970.7884" />
+
+		<While Condition="DoQuest(25553)" >
+			<MoveTo X="3766.749" Y="-3262.883" Z="980.5875" />
+			<Code File="UseItem" ItemId="55173" QuestId="25553" QuestObjectiveIndex="1" X="3766.749" Y="-3262.883" Z="980.5875" TerminateWhen="Unit(40974, u =&gt; u.Attackable) != null" />
+			<Code File="KillUntilComplete" MobId="40974" QuestId="25553" X="3766.749" Y="-3262.883" Z="980.5875" TerminateWhen="Unit(40974, u =&gt; u.Attackable) == null" />
+		</While>
+
+		<While Condition="DoQuest(25550)" >
+			<MoveTo X="3833.033" Y="-2733.094" Z="997.8598" />
+			<Code File="UseItem" ItemId="55179" QuestId="25550" QuestObjectiveIndex="1" X="3833.033" Y="-2733.094" Z="997.8598" TerminateWhen="Unit(40999) != null" />
+			<Code File="WaitTimer" WaitTime="5000" QuestId="25550" />
+			<Code File="WaitTimer" WaitTime="60000" QuestId="25550" TerminateWhen="Unit(40999) == null || Unit(40998) == null || Unit(40998, u =&gt; u.HealthPercent &lt; 50) != null" /> <!-- Let Tortilla build aggro -->
+			<While Condition="DoQuest(25550) &amp;&amp; Unit(40998) != null" >
+				<Code File="RunCode" Code="BotPoi.Current = new BotPoi(Unit(40998), PoiType.Kill);" />
+			</While>
+		</While>
+
+		<TurnIn QuestName="Magma Monarch" QuestId="25550" TurnInName="Commander Jarod Shadowsong" TurnInId="40772" X="4103.45" Y="-3987.413" Z="970.515" />
+		<TurnIn QuestName="Death to the Broodmother" QuestId="25553" TurnInName="Aronus" TurnInId="40816" X="4105.163" Y="-3994.601" Z="970.8026" />
+		<!--<PickUp QuestName="The Firelord" QuestId="25551" GiverName="Cenarius" GiverId="40773" X="4103.378" Y="-3985.57" Z="970.4562" /> Too long, not worth it -->
+
 		<Code File="KillUntilComplete" MobIds="40463, 40709" TerminateWhen="Me.Level &gt;= 83" >
 			<HuntingGrounds>
 				<Hotspot X="3882.905" Y="-3492.919" Z="1020.764" />
