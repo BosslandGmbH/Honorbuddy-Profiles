@@ -60,17 +60,15 @@ END INITORDER COMMENT -->
 			<Code File="LoadProfile" ProfileName="..\..\Horde\1-41 Autoloader.xml" RememberProfile="true" />
 		</If>
 		<!-- RunCode Methods -->
-			<Code File="RunCode" Type="Definition">
+			<Code File="RunCode">
 			<![CDATA[
-				public __CompiledBatchClass__()
-				{
-					Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
-					Lua.DoString("SetCVar('AutoLootDefault', 1);");
-					CharacterSettings.Instance.LootMobs = true;
-					CharacterSettings.Instance.Save();
-					Lua.DoString("for i=1,GetNumAddOns() do DisableAddOn(i) end ReloadUI();");
-					Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
-				}
+				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
+				Lua.DoString("SetCVar('AutoLootDefault', 1);");
+				CharacterSettings.Instance.LootMobs = true;
+				CharacterSettings.Instance.Save();
+				Lua.DoString("for i=1,GetNumAddOns() do local relo=false if IsAddOnLoaded(i) then relo=true DisableAddOn(i) end if relo then relo=nil ReloadUI() end end");
+				await Coroutine.Sleep(1500);
+				Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
 			]]>
 			</Code>
 			<Code File="RunCode" Type="Definition">
@@ -831,7 +829,7 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="The Path of Redemption" QuestId="12477" GiverName="High Commander Halford Wyrmbane" GiverId="27136" X="3777.545" Y="-786.1367" Z="196.1513" />
 		<TurnIn QuestName="My Old Enemy" QuestId="12464" TurnInName="Commander Eligor Dawnbringer" TurnInId="27784" X="3800.594" Y="-682.2919" Z="222.2861" />
 
-		<Code File="InteractWith" MobId="190189" InteractByLooting="true" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="12475" QuestObjectiveIndex="1" X="4151.27" Y="-1286.952" Z="165.6234" />
+		<Code File="InteractWith" MobId="190189" InteractByLooting="true" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="12475" QuestObjectiveIndex="1" X="4151.27" Y="-1286.952" Z="165.6234" />
 
 		<Code File="KillUntilComplete" MobIds="27330, 27332, 27333" TerminateWhen="!DoQuest(12476, 12477)" >
 			<HuntingGrounds>

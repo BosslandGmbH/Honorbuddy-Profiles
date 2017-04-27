@@ -54,17 +54,15 @@ END INITORDER COMMENT -->
 			<Code File="LoadProfile" ProfileName="..\..\Horde\1-41 Autoloader.xml" RememberProfile="true" />
 		</If>
 		<!-- RunCode Methods -->
-			<Code File="RunCode" Type="Definition">
+			<Code File="RunCode">
 			<![CDATA[
-				public __CompiledBatchClass__()
-				{
-					Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
-					Lua.DoString("SetCVar('AutoLootDefault', 1);");
-					CharacterSettings.Instance.LootMobs = true;
-					CharacterSettings.Instance.Save();
-					Lua.DoString("for i=1,GetNumAddOns() do DisableAddOn(i) end ReloadUI();");
-					Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
-				}
+				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
+				Lua.DoString("SetCVar('AutoLootDefault', 1);");
+				CharacterSettings.Instance.LootMobs = true;
+				CharacterSettings.Instance.Save();
+				Lua.DoString("for i=1,GetNumAddOns() do local relo=false if IsAddOnLoaded(i) then relo=true DisableAddOn(i) end if relo then relo=nil ReloadUI() end end");
+				await Coroutine.Sleep(1500);
+				Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
 			]]>
 			</Code>
 			<Code File="RunCode" Type="Definition">
@@ -272,5 +270,4 @@ END INITORDER COMMENT -->
 		<Code File="LoadProfile" ProfileName="..\Kalimdor\Azuremist Isle.xml" RememberProfile="true" />
 		
 	</QuestOrder>
-
 </HBProfile>

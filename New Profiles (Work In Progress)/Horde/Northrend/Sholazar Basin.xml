@@ -56,17 +56,15 @@ END INITORDER COMMENT -->
 			<Code File="LoadProfile" ProfileName="..\..\Alliance\1-58 Autoloader.xml" RememberProfile="true" />
 		</If>
 		<!-- RunCode Methods -->
-			<Code File="RunCode" Type="Definition">
+			<Code File="RunCode">
 			<![CDATA[
-				public __CompiledBatchClass__()
-				{
-					Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
-					Lua.DoString("SetCVar('AutoLootDefault', 1);");
-					CharacterSettings.Instance.LootMobs = true;
-					CharacterSettings.Instance.Save();
-					Lua.DoString("for i=1,GetNumAddOns() do DisableAddOn(i) end ReloadUI();");
-					Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
-				}
+				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
+				Lua.DoString("SetCVar('AutoLootDefault', 1);");
+				CharacterSettings.Instance.LootMobs = true;
+				CharacterSettings.Instance.Save();
+				Lua.DoString("for i=1,GetNumAddOns() do local relo=false if IsAddOnLoaded(i) then relo=true DisableAddOn(i) end if relo then relo=nil ReloadUI() end end");
+				await Coroutine.Sleep(1500);
+				Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
 			]]>
 			</Code>
 			<Code File="RunCode" Type="Definition">
@@ -545,12 +543,13 @@ END INITORDER COMMENT -->
 			<Code File="InteractWith" MobId="28027" NonCompeteDistance="0" GossipOptions="1" X="5650.456" Y="4554.259" Z="-134.9279" TerminateWhen="HasItem(38622)" />
 		</While>
 
-		<If Condition="NeedsQuest(12572)" >
-			<If Condition="Unit(28120, u =&gt; u.CreatedByUnit == Me) == null" >
+		<While Condition="NeedsQuest(12572)" > <!-- Gods like Shiny Things -->
+			<While Condition="Unit(28120, u =&gt; u.CreatedByUnit == Me) == null" >
 				<Code File="UseItem" ItemId="38622" NumOfTimes="500" TerminateWhen="!HasItem(38622) || Unit(28120, u =&gt; u.CreatedByUnit == Me) != null" />
-			</If>
-			<PickUp QuestName="Gods like Shiny Things" QuestId="12572" GiverName="Lafoo" GiverId="28120" X="5650.718" Y="4555.79" Z="-134.9444" />
-		</If>
+			</While>
+			<Code File="InteractWith" MobId="28120" NonCompeteDistance="0" X="5650.718" Y="4555.79" Z="-134.9444" TerminateWhen="HasQuest(12572) || Unit(28120, u =&gt; u.CreatedByUnit == Me) == null" />
+			<Code File="RunCode" Code="QuestFrame.Instance.AcceptQuest();" />
+		</While>
 
 		<While Condition="DoQuest(12572)" >
 			<Code File="Hooks\DoWhen" ActivityName="UseLafooBag" AllowUseWhileMounted="true" UseWhen="DoQuest(12572) &amp;&amp; HasItem(38622) &amp;&amp; Unit(28120, u =&gt; u.CreatedByUnit == Me) == null" >
