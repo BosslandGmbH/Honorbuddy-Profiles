@@ -450,7 +450,10 @@
 		<PickUp QuestName="Resupplying One Keg" QuestId="30618" GiverName="Big Sal" GiverId="59695" X="3044.109" Y="1227.949" Z="655.0032" />
 		<PickUp QuestName="They Stole My Luck!" QuestId="30621" GiverName="Ji-Lu the Lucky" GiverId="59716" X="3108.833" Y="1248.695" Z="654.8389" />
 
-		<Code File="SetHearthstone" AreaId="6360" MobId="59688" X="3110.613" Y="1245.309" Z="654.8383" />
+		<If Condition="Me.HearthstoneAreaId != 6360" >
+			<Code File="InteractWith" MobId="59688" GossipOptions="1" NonCompeteDistance="0" X="3110.613" Y="1245.309" Z="654.8383" />
+			<Code File="Misc\RunLua" Lua="StaticPopup1Button1:Click();" />
+		</If>
 
 		<Code File="InteractWith" MobIds="211266, 211268, 211270" CollectionDistance="200" InteractByLooting="true" NonCompeteDistance="0" QuestId="30618" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
@@ -495,7 +498,7 @@
 
 		<PickUp QuestName="Comin&apos; Round the Mountain" QuestId="30487" GiverName="Uncle Cloverleaf" GiverId="59696" X="3063.735" Y="1255.185" Z="655.8023" />
 		<While Condition="DoQuest(30487)" >
-			<Code File="InteractWith" MobId="60094" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="60094" X="3055.961" Y="1249.963" Z="655.2157" TerminateWhen="Me.InVehicle" />
+			<Code File="InteractWith" MobId="60094" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="30487" X="3055.961" Y="1249.963" Z="655.2157" TerminateWhen="Me.InVehicle" />
 			<DisableBehavior Name="All" />
 			<Code File="WaitTimer" WaitTime="130000" TerminateWhen="!Me.InVehicle" />
 			<EnableBehavior Name="All" />
@@ -568,8 +571,8 @@
 		</If>
 
 		<PickUp QuestName="Stealing Their Thunder King" QuestId="30800" GiverName="Image of Lorewalker Cho" GiverId="61297" X="3488.501" Y="1521.567" Z="816.376" />
-		<Code File="InteractWith" MobId="211967" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="30800" QuestObjectiveIndex="1" X="3609.664" Y="1668.898" Z="742.9729" />
-		<Code File="InteractWith" MobId="211968" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="30800" QuestObjectiveIndex="2" X="3639.965" Y="1785.062" Z="742.9732" />
+		<Code File="InteractWith" MobId="211967" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="30800" QuestObjectiveIndex="1" X="3609.664" Y="1668.898" Z="742.9729" />
+		<Code File="InteractWith" MobId="211968" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="30800" QuestObjectiveIndex="2" X="3639.965" Y="1785.062" Z="742.9732" />
 		<TurnIn QuestName="Stealing Their Thunder King" QuestId="30800" TurnInName="Image of Lorewalker Cho" TurnInId="61297" X="3639.965" Y="1785.062" Z="742.9732" />
 
 		<PickUp QuestName="Lessons from History" QuestId="30801" GiverName="Image of Lorewalker Cho" GiverId="61297" X="3639.965" Y="1785.062" Z="742.9732" />
@@ -597,17 +600,18 @@
 
 		<Checkpoint Level="90" />
 
-		<If Condition="Me.ZoneId == 5841" > <!-- Go to Shrine -->
+		<While Condition="Me.ZoneId == 5841" > <!-- Go to Shrine -->
 			<If Condition="Unit(61511) != null" > <!-- Zouchin Village -->
-				<Code File="InteractWith" MobId="61511" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="4364.724" Y="930.0962" Z="109.5062" />
-				<Code File="Misc\RunLua" Lua="TakeTaxiNode(31);" />
+				<Code File="InteractWith" MobId="61511" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="4364.724" Y="930.0962" Z="109.5062" TerminateWhen="Me.ZoneId != 5841" />
+				<Code File="Misc\RunLua" WaitTime="750" Lua="local o=TakeTaxiNode;TakeTaxiNode=function(s) TaxiNodeOnButtonEnter(_G[&quot;TaxiButton&quot;..s]);o(s);end end" />
+				<Code File="Misc\RunLua" Lua="GetNumRoutes(31); TakeTaxiNode(31);" />
 				<Else>
 					<MoveTo X="3123.553" Y="1223.18" Z="654.2182" />
-					<Code File="InteractWith" MobId="61504" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="3123.5" Y="1223.213" Z="654.2193" />
-					<Code File="Misc\RunLua" Lua="TakeTaxiNode(31);" />
+					<Code File="InteractWith" MobId="61504" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="3123.5" Y="1223.213" Z="654.2193" TerminateWhen="Me.ZoneId != 5841" />
+					<Code File="Misc\RunLua" Lua="GetNumRoutes(31); TakeTaxiNode(31);" />
 				</Else>
 			</If>
-		</If>
+		</While>
 
 		<If Condition="Me.ZoneId == 6141 || Me.ZoneId == 6554" >
 			<MoveTo X="1698.72" Y="889.4329" Z="470.9242" />
