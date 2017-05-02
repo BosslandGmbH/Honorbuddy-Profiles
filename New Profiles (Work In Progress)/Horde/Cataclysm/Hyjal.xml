@@ -733,8 +733,8 @@
 		</While>
 
 		<While Condition="DoQuest(25664)" >
-			<MoveTo X="5144.241" Y="-2594.375" Z="1645.932" />
-			<Code File="ForcedDismount" />
+			<Code File="FlyTo" X="5144.946" Y="-2596.489" Z="1652.151" />
+			<Code File="Misc\RunLua" WaitTime="5000" Lua="Dismount();" />
 			<Code File="UseItem" ItemId="55211" QuestId="25664" TerminateWhen="Unit(41084, u =&gt; u.Attackable) != null" />
 			<Code File="KillUntilComplete" MobId="41084" QuestId="25664" TerminateWhen="Unit(41084, u =&gt; u.Attackable) == null" />
 		</While>
@@ -831,8 +831,9 @@
 
 		<PickUp QuestName="Sethria&apos;s Demise" QuestId="25776" GiverName="Thisalee Crow" GiverId="41006" X="4191.49" Y="-2323.365" Z="1147.763" />
 		<While Condition="DoQuest(25776)" >
-			<Code File="Hooks\DoWhen" ActivityName="UseFlare" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.Entry == 41255 &amp;&amp; Me.CurrentTarget.HasAura(77355) &amp;&amp; Unit(41287) == null" >
-				<Code File="UseItem" ItemId="56003" QuestId="25776" TerminateWhen="Unit(41287) != null" />
+			<Code File="Hooks\DoWhen" ActivityName="UseFlare" AllowUseDuringCombat="true" LogExecution="false" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.Entry == 41255 &amp;&amp; Me.CurrentTarget.HasAura(77355) &amp;&amp; Unit(41287) == null" >
+				<Code File="RunCode" Code="Me.BagItems.FirstOrDefault(x => x.Entry == 56003).Use();" />
+				<Code File="WaitTimer" WaitTime="2500" />
 			</Code>
 			<Code File="KillUntilComplete" MobId="41255" QuestId="25776" X="3436.354" Y="-2419.666" Z="968.5881" TerminateWhen="Unit(41255, u =&gt; !u.Attackable) != null" />
 			<Code File="Hooks\DoWhen" ActivityName="UseFlare" Command="Remove" />
