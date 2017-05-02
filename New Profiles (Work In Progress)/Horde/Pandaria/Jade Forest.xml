@@ -807,6 +807,8 @@
 				<Hotspot X="1525.128" Y="-2251.095" Z="157.327" />
 				<Hotspot X="1612.38" Y="-2242.268" Z="158.6568" />
 				<Hotspot X="1372.991" Y="-2318.112" Z="146.2181" />
+				<Hotspot X="1436.367" Y="-2336.061" Z="152.6013" />
+				<Hotspot X="1351.799" Y="-2300.61" Z="146.2948" />
 			</HuntingGrounds>
 		</Code>
 
@@ -815,9 +817,20 @@
 		<TurnIn QuestName="Shrine of the Dawn" QuestId="29995" TurnInName="Syra Goldendraft" TurnInId="56708" X="1875.682" Y="-2219.906" Z="232.0172" />
 
 		<PickUp QuestName="Getting Permission" QuestId="29920" GiverName="Syra Goldendraft" GiverId="56708" X="1875.682" Y="-2219.906" Z="232.0172" />
-		<Code File="InteractWith" MobId="56209" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="2" QuestId="29920" QuestObjectiveIndex="2" X="1862.793" Y="-2320.857" Z="256.2074" />
-		<Code File="InteractWith" MobId="56210" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="2" QuestId="29920" QuestObjectiveIndex="3" X="1938.662" Y="-2287.79" Z="240.2343" />
-		<Code File="InteractWith" MobId="56206" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="2" QuestId="29920" QuestObjectiveIndex="1" X="1993.569" Y="-2219.941" Z="246.6634" />
+		<While Condition="DoQuest(29920)" >
+			<While Condition="!IsObjectiveComplete(2, 29920)" >
+				<Code File="InteractWith" MobId="56209" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="2" QuestId="29920" QuestObjectiveIndex="2" X="1862.793" Y="-2320.857" Z="256.2074" TerminateWhen="Unit(56209, u =&gt; u.IsHostile) != null" />
+				<Code File="KillUntilComplete" MobId="56209" QuestId="29920" QuestObjectiveIndex="2" X="1862.793" Y="-2320.857" Z="256.2074" TerminateWhen="Unit(56209, u =&gt; u.IsFriendly) != null" />
+			</While>
+			<While Condition="!IsObjectiveComplete(3, 29920)" >
+				<Code File="InteractWith" MobId="56210" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="2" QuestId="29920" QuestObjectiveIndex="3" X="1938.662" Y="-2287.79" Z="240.2343" TerminateWhen="Unit(56210, u =&gt; u.IsHostile) != null" />
+				<Code File="KillUntilComplete" MobId="56210" QuestId="29920" QuestObjectiveIndex="3" X="1938.662" Y="-2287.79" Z="240.2343" TerminateWhen="Unit(56210, u =&gt; u.IsFriendly) != null" />
+			</While>
+			<While Condition="!IsObjectiveComplete(1, 29920)" >
+				<Code File="InteractWith" MobId="56206" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="2" QuestId="29920" QuestObjectiveIndex="1" X="1993.569" Y="-2219.941" Z="246.6634" TerminateWhen="Unit(56206, u =&gt; u.IsHostile) != null" />
+				<Code File="KillUntilComplete" MobId="56206" QuestId="29920" QuestObjectiveIndex="1" X="1993.569" Y="-2219.941" Z="246.6634" TerminateWhen="Unit(56206, u =&gt; u.IsFriendly) != null" />
+			</While>
+		</While>
 		<TurnIn QuestName="Getting Permission" QuestId="29920" TurnInName="Lo Wanderbrew" TurnInId="55788" X="1879.201" Y="-2224.691" Z="232.7823" />
 
 		<TurnIn QuestName="All We Can Spare" QuestId="29925" TurnInName="Lorewalker Cho" TurnInId="56345" X="2389.753" Y="-2105.33" Z="230.662" />
@@ -895,7 +908,7 @@
 		<Code File="InteractWith" MobId="209700" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="29751" QuestObjectiveIndex="2" X="2988.171" Y="-1452.173" Z="244.1401" />
 
 		<While Condition="DoQuest(29752)">
-			<Code File="InteractWith" QuestId="29752" MobId="55290" CollectionDistance="200" MobState="Alive" IgnoreCombat="true" InteractByUsingItemId="74771" WaitTime="3500" TerminateWhen="Me.Combat &amp;&amp; Me.GotTarget &amp;&amp; Me.CurrentTarget.Entry != 55290">
+			<Code File="InteractWith" QuestId="29752" MobId="55290" CollectionDistance="200" MobState="Alive" IgnoreCombat="true" InteractByUsingItemId="74771" WaitTime="3500" PreInteractMountStrategy="Dismount" TerminateWhen="Me.Combat &amp;&amp; Me.GotTarget &amp;&amp; Me.CurrentTarget.Entry != 55290">
 				<HuntingGrounds>
 					<Hotspot X="2959.472" Y="-1456.232" Z="244.1401" />
 					<Hotspot X="2904.618" Y="-1510.627" Z="255.8839" />
@@ -1032,8 +1045,8 @@
 			<MoveTo X="2833.439" Y="-1188.525" Z="330.1518" />
 			<UseMount Value="false" />
 			<CustomBehavior File="ForcedDismount" />
-			<Code File="InteractWith" MobId="209551" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="29628" QuestObjectiveIndex="1" X="2833.439" Y="-1188.525" Z="330.1518" TerminateWhen="Me.HasAura(102908)" />
-			<MoveTo X="2552.122" Y="-1454.823" Z="406.1151" />
+			<Code File="InteractWith" MobId="209551" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="29628" X="2833.439" Y="-1188.525" Z="330.1518" TerminateWhen="Me.HasAura(102908)" />
+			<MoveTo Nav="Run" X="2552.122" Y="-1454.823" Z="406.1151" />
 			<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepCauldronClose" Command="Remove" />
 			<UseMount Value="true" />
 		</While>

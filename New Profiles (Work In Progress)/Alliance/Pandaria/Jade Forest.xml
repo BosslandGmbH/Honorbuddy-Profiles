@@ -737,8 +737,8 @@
 
 		<PickUp QuestName="The Jade Witch" QuestId="29723" GiverName="An Windfur" GiverId="55274" X="1644.555" Y="-1273.258" Z="242.7596" />
 		<While Condition="DoQuest(29723)" >
-			<Code File="InteractWith" MobId="55368" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="29723" QuestObjectiveIndex="1" X="1501.196" Y="-1291.331" Z="248.764" TerminateWhen="Unit(55367, u =&gt; u.Attackable) != null" />
-			<Code File="KillUntilComplete" MobId="55368" QuestId="29723" X="1498.128" Y="-1320.051" Z="245.6444" TerminateWhen="Unit(55367, u =&gt; u.Attackable) == null" />
+			<Code File="InteractWith" MobId="55368" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="29723" QuestObjectiveIndex="1" X="1501.196" Y="-1291.331" Z="248.764" TerminateWhen="Unit(55368, u =&gt; u.IsHostile) != null" />
+			<Code File="KillUntilComplete" MobId="55368" QuestId="29723" X="1498.128" Y="-1320.051" Z="245.6444" TerminateWhen="Unit(55368, u =&gt; !u.IsHostile) != null" />
 		</While>
 
 		<TurnIn QuestName="The Silkwood Road" QuestId="29865" TurnInName="Tzu the Ironbelly" TurnInId="56062" X="1519.283" Y="-1796.241" Z="246.1821" />
@@ -764,6 +764,8 @@
 				<Hotspot X="1525.128" Y="-2251.095" Z="157.327" />
 				<Hotspot X="1612.38" Y="-2242.268" Z="158.6568" />
 				<Hotspot X="1372.991" Y="-2318.112" Z="146.2181" />
+				<Hotspot X="1436.367" Y="-2336.061" Z="152.6013" />
+				<Hotspot X="1351.799" Y="-2300.61" Z="146.2948" />
 			</HuntingGrounds>
 		</Code>
 
@@ -772,9 +774,20 @@
 		<TurnIn QuestName="Shrine of the Dawn" QuestId="29995" TurnInName="Syra Goldendraft" TurnInId="56708" X="1875.682" Y="-2219.906" Z="232.0172" />
 
 		<PickUp QuestName="Getting Permission" QuestId="29920" GiverName="Syra Goldendraft" GiverId="56708" X="1875.682" Y="-2219.906" Z="232.0172" />
-		<Code File="InteractWith" MobId="56209" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="29920" QuestObjectiveIndex="2" X="1862.793" Y="-2320.857" Z="256.2074" />
-		<Code File="InteractWith" MobId="56210" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="29920" QuestObjectiveIndex="3" X="1938.662" Y="-2287.79" Z="240.2343" />
-		<Code File="InteractWith" MobId="56206" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="29920" QuestObjectiveIndex="1" X="1993.569" Y="-2219.941" Z="246.6634" />
+		<While Condition="DoQuest(29920)" >
+			<While Condition="!IsObjectiveComplete(2, 29920)" >
+				<Code File="InteractWith" MobId="56209" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="2" QuestId="29920" QuestObjectiveIndex="2" X="1862.793" Y="-2320.857" Z="256.2074" TerminateWhen="Unit(56209, u =&gt; u.IsHostile) != null" />
+				<Code File="KillUntilComplete" MobId="56209" QuestId="29920" QuestObjectiveIndex="2" X="1862.793" Y="-2320.857" Z="256.2074" TerminateWhen="Unit(56209, u =&gt; u.IsFriendly) != null" />
+			</While>
+			<While Condition="!IsObjectiveComplete(3, 29920)" >
+				<Code File="InteractWith" MobId="56210" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="2" QuestId="29920" QuestObjectiveIndex="3" X="1938.662" Y="-2287.79" Z="240.2343" TerminateWhen="Unit(56210, u =&gt; u.IsHostile) != null" />
+				<Code File="KillUntilComplete" MobId="56210" QuestId="29920" QuestObjectiveIndex="3" X="1938.662" Y="-2287.79" Z="240.2343" TerminateWhen="Unit(56210, u =&gt; u.IsFriendly) != null" />
+			</While>
+			<While Condition="!IsObjectiveComplete(1, 29920)" >
+				<Code File="InteractWith" MobId="56206" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="2" QuestId="29920" QuestObjectiveIndex="1" X="1993.569" Y="-2219.941" Z="246.6634" TerminateWhen="Unit(56206, u =&gt; u.IsHostile) != null" />
+				<Code File="KillUntilComplete" MobId="56206" QuestId="29920" QuestObjectiveIndex="1" X="1993.569" Y="-2219.941" Z="246.6634" TerminateWhen="Unit(56206, u =&gt; u.IsFriendly) != null" />
+			</While>
+		</While>
 		<TurnIn QuestName="Getting Permission" QuestId="29920" TurnInName="Lo Wanderbrew" TurnInId="55788" X="1879.201" Y="-2224.691" Z="232.7823" />
 
 		<TurnIn QuestName="All We Can Spare" QuestId="29925" TurnInName="Lorewalker Cho" TurnInId="56345" X="2389.753" Y="-2105.33" Z="230.662" />
@@ -789,7 +802,7 @@
 			</Code>
 			<Code File="InteractWith" MobId="209863" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="29928" QuestObjectiveIndex="1" TerminateWhen="Object(209863) == null" />
 		</While>
-		<If Condition="QuestDone(56346)" >
+		<If Condition="QuestDone(29928)" >
 			<TurnIn QuestName="I Have No Jade And I Must Scream" QuestId="29928" TurnInName="Foreman Mann" TurnInId="56346" X="2390.201" Y="-2105.833" Z="230.5727" />
 			<Code File="RunCode" Code="await SkipCutscene();" />
 		</If>
@@ -851,13 +864,15 @@
 		<Code File="InteractWith" MobId="209699" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="29751" QuestObjectiveIndex="1" X="2917.019" Y="-1524.846" Z="255.884" />
 		<Code File="InteractWith" MobId="209700" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="29751" QuestObjectiveIndex="2" X="2988.171" Y="-1452.173" Z="244.1401" />
 
-		<Code File="InteractWith" MobId="55290" MobState="Alive" CollectionDistance="200" InteractByUsingItemId="74771" PreInteractMountStrategy="Dismount" QuestId="29752" QuestObjectiveIndex="1" >
-			<HuntingGrounds>
-				<Hotspot X="2959.472" Y="-1456.232" Z="244.1401" />
-				<Hotspot X="2904.618" Y="-1510.627" Z="255.8839" />
-				<Hotspot X="2994.232" Y="-1399.901" Z="244.1402" />
-			</HuntingGrounds>
-		</Code>
+		<While Condition="DoQuest(29752)">
+			<Code File="InteractWith" QuestId="29752" MobId="55290" CollectionDistance="200" MobState="Alive" IgnoreCombat="true" InteractByUsingItemId="74771" WaitTime="3500" PreInteractMountStrategy="Dismount" TerminateWhen="Me.Combat &amp;&amp; Me.GotTarget &amp;&amp; Me.CurrentTarget.Entry != 55290">
+				<HuntingGrounds>
+					<Hotspot X="2959.472" Y="-1456.232" Z="244.1401" />
+					<Hotspot X="2904.618" Y="-1510.627" Z="255.8839" />
+					<Hotspot X="2994.232" Y="-1399.901" Z="244.1402" />
+				</HuntingGrounds>
+			</Code>
+		</While>
 
 		<Code File="KillUntilComplete" MobId="55291" QuestId="29750" >
 			<HuntingGrounds>
@@ -916,7 +931,7 @@
 
 		<PickUp QuestName="The Great Banquet" QuestId="29620" GiverName="Lin Tenderpaw" GiverId="54913" X="2488.638" Y="-1685.721" Z="429.7188" />
 		<Code File="InteractWith" MobId="54914" GossipOptions="2,2" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="29620" QuestObjectiveIndex="1" X="2571.071" Y="-1535.299" Z="406.2947" />
-		<If Condition="QuestDone(54914)" >
+		<If Condition="QuestDone(29620)" >
 			<TurnIn QuestName="The Great Banquet" QuestId="29620" TurnInName="High Elder Cloudfall" TurnInId="54914" X="2570.862" Y="-1536.077" Z="406.2939" />
 			<CustomBehavior File="WaitTimer" WaitTime="12000" />
 		</If>
@@ -969,9 +984,9 @@
 		<TurnIn QuestName="A Test of Endurance" QuestId="29636" TurnInName="Instructor Myang" TurnInId="54918" X="2528.365" Y="-1269.449" Z="388.1015" />
 
 		<PickUp QuestName="The Rumpus" QuestId="29637" GiverName="Instructor Myang" GiverId="54918" X="2528.365" Y="-1269.449" Z="388.1015" />
-		<While Condition="DoQuest(54918)" >
+		<While Condition="DoQuest(29637)" >
 			<MoveTo X="2573.604" Y="-1270.931" Z="377.7181" />
-			<Code File="UseItem" ItemId="73369" QuestId="54918" QuestObjectiveIndex="1" X="2573.604" Y="-1270.931" Z="377.7181" TerminateWhen="Me.HasAura(102953)" />
+			<Code File="UseItem" ItemId="73369" QuestId="29637" QuestObjectiveIndex="1" X="2573.604" Y="-1270.931" Z="377.7181" TerminateWhen="Me.HasAura(102953)" />
 			<Code File="KillUntilComplete" MobId="55139" QuestId="54918" X="2573.604" Y="-1270.931" Z="377.7181" TerminateWhen="!Me.HasAura(102953)" />
 		</While>
 		<TurnIn QuestName="The Rumpus" QuestId="29637" TurnInName="Instructor Myang" TurnInId="54918" X="2529.515" Y="-1271.845" Z="388.1012" />
@@ -987,8 +1002,8 @@
 			<MoveTo X="2833.439" Y="-1188.525" Z="330.1518" />
 			<UseMount Value="false" />
 			<CustomBehavior File="ForcedDismount" />
-			<Code File="InteractWith" MobId="209551" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="29628" X="2833.439" Y="-1188.525" Z="330.1518" TerminateWhen="!Me.HasAura(102908)" />
-			<MoveTo X="2552.122" Y="-1454.823" Z="406.1151" />
+			<Code File="InteractWith" MobId="209551" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="29628" X="2833.439" Y="-1188.525" Z="330.1518" TerminateWhen="Me.HasAura(102908)" />
+			<MoveTo Nav="Run" X="2552.122" Y="-1454.823" Z="406.1151" />
 			<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepCauldronClose" Command="Remove" />
 			<UseMount Value="true" />
 		</While>
