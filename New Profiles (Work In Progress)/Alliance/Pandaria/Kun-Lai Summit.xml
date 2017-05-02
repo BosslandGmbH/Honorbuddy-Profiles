@@ -227,10 +227,9 @@
 		<TurnIn QuestName="Call Out Their Leader" QuestId="30457" TurnInName="Mayor Bramblestaff" TurnInId="59073" X="1787.228" Y="319.7869" Z="478.0307" />
 		<TurnIn QuestName="Hit Medicine" QuestId="30460" TurnInName="Apothecary Cheng" TurnInId="59077" X="1748.158" Y="358.9515" Z="481.648" />
 
-		<!-- Horde stuff below -->
-		<PickUp QuestName="General Nazgrim has Awakened" QuestId="30511" GiverName="Apothecary Cheng" GiverId="59077" X="1748.158" Y="358.9515" Z="481.648" />
-		<TurnIn QuestName="General Nazgrim has Awakened" QuestId="30511" TurnInName="General Nazgrim" TurnInId="59442" X="1732.784" Y="358.439" Z="489.63" />
-		<PickUp QuestName="Eastwind Rest" QuestId="30513" GiverName="General Nazgrim" GiverId="59442" X="1732.784" Y="358.439" Z="489.63" />
+		<PickUp NQuestName="Admiral Taylor has Awakened" QuestId="30508" GiverName="Apothecary Cheng" GiverId="59077" X="1748.158" Y="358.9515" Z="481.648" />
+		<TurnIn QuestName="Admiral Taylor has Awakened" QuestId="30508" TurnInName="Admiral Taylor" TurnInId="59441" X="1732.784" Y="358.439" Z="489.63" />
+		<!--<PickUp QuestName="Eastwind Rest" QuestId="30513" GiverName="General Nazgrim" GiverId="59442" X="1732.784" Y="358.439" Z="489.63" /> Horde version, add Alliance version if we decide to do it -->
 		<PickUp QuestName="Repossession" QuestId="30469" GiverName="Merchant Shi" GiverId="59263" X="1906.998" Y="149.451" Z="476.8762" />
 		<PickUp QuestName="My Son..." QuestId="30467" GiverName="Merchant Shi" GiverId="59263" X="1906.998" Y="149.451" Z="476.8762" />
 		<PickUp QuestName="Enraged Vengeance" QuestId="30468" GiverName="Swordmistress Mei" GiverId="59273" X="1917.322" Y="160.8786" Z="476.8751" />
@@ -271,6 +270,7 @@
 		<TurnIn QuestName="The Waterspeaker&apos;s Staff" QuestId="30496" TurnInName="Waterspeaker Gorai" TurnInId="60973" X="1938.454" Y="136.9254" Z="475.9276" />
 		<TurnIn QuestName="Free the Dissenters" QuestId="30967" TurnInName="Waterspeaker Gorai" TurnInId="60973" X="1938.454" Y="136.9254" Z="475.9276" />
 		<TurnIn QuestName="Repossession" QuestId="30469" TurnInName="Merchant Shi" TurnInId="59263" X="1913.942" Y="145.1105" Z="476.7903" />
+		<MoveTo QuestId="30834" X="1912.527" Y="146.2959" Z="476.7479" />
 		<TurnIn QuestName="Father and Child Reunion" QuestId="30834" TurnInName="Merchant Shi" TurnInId="59263" X="1913.942" Y="145.1105" Z="476.7903" />
 		<TurnIn QuestName="Enraged Vengeance" QuestId="30468" TurnInName="Swordmistress Mei" TurnInId="59273" X="1919.256" Y="155.2879" Z="476.2486" />
 
@@ -566,7 +566,7 @@
 		<Code File="KillUntilComplete" MobId="60572" QuestId="30798" X="3478.931" Y="1524.967" Z="814.9631" />
 		<TurnIn QuestName="Breaking the Emperor&apos;s Shield" QuestId="30798" TurnInName="Image of Lorewalker Cho" TurnInId="61297" X="3488.501" Y="1521.567" Z="816.376" />
 
-		<If Condition="NeedsQuest(30935)" > <!-- Avoid is no longer needed once we have this quest or completed this quest. -->
+		<If Condition="!IsQuestCompleted(30935)" > <!-- Avoid is no longer needed once we have this quest or completed this quest. -->
 			<Code File="Hooks\Avoid" AvoidName="AvoidKnockbackTrap" ObjectType="GameObject" ObjectId="211965" Radius="5" />
 		</If>
 
@@ -588,13 +588,14 @@
 
 		<PickUp QuestName="Fisherman&apos;s Tale" QuestId="30935" GiverName="Image of Lorewalker Cho" GiverId="61297" X="3632.106" Y="1660.628" Z="742.666" />
 
-		<Code File="Hooks\Avoid" AvoidName="AvoidKnockbackTrap" Command="Remove" />
 
 		<While Condition="DoQuest(30935)" >
 			<Code File="InteractWith" MobId="61382" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="30935" QuestObjectiveIndex="1" X="3678.745" Y="1524.184" Z="782.0529" />
 			<Code File="InteractWith" MobId="61380" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="30935" QuestObjectiveIndex="2" X="3935.016" Y="874.2041" Z="417.1737" TerminateWhen="Me.InVehicle" />
 			<Code File="WaitTimer" WaitTime="130000" TerminateWhen="!Me.InVehicle" />
 		</While>
+
+		<Code File="Hooks\Avoid" AvoidName="AvoidKnockbackTrap" Command="Remove" />
 
 		<TurnIn QuestName="Fisherman&apos;s Tale" QuestId="30935" TurnInName="Lorewalker Cho" TurnInId="61371" X="4401.564" Y="938.3234" Z="116.2356" />
 
