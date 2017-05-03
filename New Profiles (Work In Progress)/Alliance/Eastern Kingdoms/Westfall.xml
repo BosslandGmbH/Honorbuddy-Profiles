@@ -337,14 +337,14 @@
 
 		<PickUp QuestName="Secrets of the Tower" QuestId="26290" GiverName="Agent Kearnen" GiverId="7024" X="-11042.95" Y="627.3809" Z="34.47513" />
 		<While Condition="DoQuest(26290)" >
-			<DisableBehavior Name="Pull" />
-			<MoveTo X="-11137.18" Y="554.0266" Z="35.96019" />
-			<Code File="UseItem" ItemId="58112" />
+			<MoveTo X="-11106.04" Y="600.1963" Z="37.093" />
+			<DisableBehavior Name="Combat" />
+			<MoveTo X="-11136.32" Y="555.5871" Z="35.9606" />
+			<Code File="UseItem" ItemId="58112" X="-11136.32" Y="555.5871" Z="35.9606" />
 			<MoveTo X="-11130.85" Y="544.9093" Z="70.38125" />
 			<Code File="WaitTimer" WaitTime="65000" QuestId="26290" />
-			<DisableBehavior Name="Combat" />
 			<MoveTo X="-11047.89" Y="622.7817" Z="34.29488" />
-			<EnableBehavior Name="Combat" />
+			<EnableBehavior Name="Combat, Pull" />
 		</While>
 		<TurnIn QuestName="Secrets of the Tower" QuestId="26290" TurnInName="Agent Kearnen" TurnInId="7024" X="-11042.95" Y="627.3809" Z="34.47513" />
 
@@ -380,9 +380,13 @@
 		<PickUp QuestName="The Dawning of a New Day" QuestId="26297" GiverName="Captain Alpert" GiverId="42425" X="-10896.19" Y="1543.047" Z="54.6497" />
 		<TurnIn QuestName="Evidence Collection" QuestId="26296" TurnInName="Captain Alpert" TurnInId="42425" X="-10896.19" Y="1543.047" Z="54.6497" />
 
-		<While Condition="DoQuest(26297)" >
+		<While Condition="!IsQuestCompleted(26297)" >
+			<PickUp QuestName="The Dawning of a New Day" QuestId="26297" GiverName="Captain Alpert" GiverId="42425" X="-10896.19" Y="1543.047" Z="54.6497" />
 			<MoveTo X="-11016.69" Y="1485.837" Z="43.33044" />
 			<Code File="WaitTimer" WaitTime="70000" QuestId="26297" />
+			<If Condition="!IsQuestCompleted(26296)" >
+				<Code File="AbandonQuest" QuestId="26297" />
+			</If>
 		</While>
 
 		<TurnIn QuestName="The Dawning of a New Day" QuestId="26297" TurnInName="Captain Alpert" TurnInId="42425" X="-10896.19" Y="1543.047" Z="54.6497" />
