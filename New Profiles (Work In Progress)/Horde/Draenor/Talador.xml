@@ -1,0 +1,228 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/EchoQuestingSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Talador ($Rev: 6041 $)</Name>
+
+	<DefaultNavType>Fly</DefaultNavType>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+		<Mob Name="Crater Lord Igneous" Id="81528" Flags="Pull" />
+	</Blacklist>
+
+	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
+		<If Condition="Me.IsAlliance" >
+			<Code File="LoadProfile" ProfileName="..\..\Alliance\1-58 Autoloader.xml" RememberProfile="true" />
+		</If>
+		<!-- RunCode Methods -->
+			<!-- <Code File="RunCode">
+			<![CDATA[
+				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
+				Lua.DoString("SetCVar('AutoLootDefault', 1);");
+				CharacterSettings.Instance.LootMobs = true;
+				CharacterSettings.Instance.Save();
+				Lua.DoString("for i=1,GetNumAddOns() do local relo=false if IsAddOnLoaded(i) then relo=true DisableAddOn(i) end if relo then relo=nil ReloadUI() end end");
+				await Coroutine.Sleep(1500);
+				Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
+			]]>
+			</Code> -->
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</Code>
+		<!-- END RunCode Methods -->
+
+		<!-- Hooks -->
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[ 
+					IEnumerable<WoWItem> GetExtraConsumables()
+					{
+						uint foodCount = 0;
+						uint drinkCount = 0;
+						// Skip conjured and buff comsumables.
+				
+						var extraConsumables = (from item in Me.BagItems
+										   where item != null && item.ItemInfo != null
+										   let isFood = Consumable.IsFood(item.ItemInfo)
+										   let isDrink = Consumable.IsDrink(item.ItemInfo)
+										   where (isFood || isDrink) && item.ItemInfo.SellPrice > 0 && item.Effects.Count == 1 && item.ItemInfo.RequiredLevel < Me.Level - 10                    
+										   select item).ToList();
+				
+				
+						var extraPotions = Me.BagItems
+							.Where(c => c != null && c.IsValid && c.ItemInfo != null && c.ItemInfo.SellPrice > 0 && c.Effects.Count == 1
+								&& (c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Potion
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Elixir
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Flask)
+								&& c.ItemInfo.RequiredLevel < Me.Level - 20);
+				
+						extraConsumables.AddRange(extraPotions);
+						return extraConsumables;
+					}
+					 
+					async Task SellExtraConsumables()
+					{
+						Logging.Write("Selling items in GetExtraConsumables()");
+						foreach (var item in GetExtraConsumables())
+						{
+							Logging.Write("Selling {0}.", item.Name);
+							item.UseContainerItem();
+							await Coroutine.Sleep(1337);
+						}
+					}
+				]]>
+			</Code>
+			<Code File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+				<Code File="RunCode" Code="await SellExtraConsumables();"/>
+			</Code>
+		<!-- END Hooks -->
+
+		<If Condition="NeedsQuest(34566)" >
+			<If Condition="Me.ZoneId == 6721" >
+				<PickUp QuestName="News from Talador" QuestId="36494" GiverName="Durotan" GiverId="74594" X="5767.498" Y="1299.314" Z="106.9576" />
+				<If Condition="QuestDone(36494) &amp;&amp; HasItem(110560) &amp;&amp; Me.ZoneId == 7004" >
+					<Code File="RunCode" Code="
+						await CommonCoroutines.LandAndDismount();
+						Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 110560).Use();
+						await Coroutine.Sleep(500);
+						await Coroutine.Wait(7000, () =&gt; !Me.IsCasting);
+					" />
+				</If>
+				<TurnIn QuestName="News from Talador" QuestId="36494" TurnInName="Rokhan" TurnInId="78487" X="5610.383" Y="4565.458" Z="135.5229" />
+			</If>
+			<If Condition="Me.ZoneId == 7004" >
+				<PickUp QuestName="It&apos;s a Matter of Strategy" QuestId="34681" GiverName="Rokhan" GiverId="78487" X="5610.383" Y="4565.458" Z="135.5229" />
+				<While Condition="QuestDone(34681) &amp;&amp; Unit(79407) != null" >
+					<Code File="InteractWith" MobId="79407" GossipOptions="2" PreInteractMountStrategy="Dismount" X="5581.378" Y="4565.564" Z="136.2603" TerminateWhen="Unit(79407) == null" />
+				</While>
+				<TurnIn QuestName="It&apos;s a Matter of Strategy" QuestId="34681" TurnInName="Foreman Grobash" TurnInId="79176" X="3248.932" Y="1593.355" Z="162.2488" />
+			</If>
+		</If>
+
+
+		<PickUp QuestName="At Your Command" QuestId="34566" GiverName="Foreman Grobash" GiverId="79176" X="3248.932" Y="1593.355" Z="162.2488" />
+		<While Condition="DoQuest(34566)" >
+			<Code File="Misc\RunLua" Lua="LoadAddOn(&quot;Blizzard_QuestChoice&quot;);" />
+			<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+				<Code File="InteractWith" MobId="231231" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="34566" X="3238.947" Y="1592.445" Z="163.9421" />
+			</If>
+			<Code File="Misc\RunLua" QuestId="34566" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1000" />
+			<Code File="RunCode" Code="await SkipCutscene(1000);" />
+		</While>
+		<TurnIn QuestName="At Your Command" QuestId="34566" TurnInName="Foreman Grobash" TurnInId="79176" X="3244.906" Y="1592.066" Z="162.7997" />
+
+		<PickUp QuestName="An Audience With The Archmage" QuestId="34632" GiverName="Foreman Grobash" GiverId="79176" X="3244.906" Y="1592.066" Z="162.7997" />
+		<TurnIn QuestName="An Audience With The Archmage" QuestId="34632" TurnInName="Archmage Khadgar" TurnInId="80142" X="3192.327" Y="1362.953" Z="174.0173" />
+
+		<PickUp QuestName="Making Acquaintances" QuestId="34814" GiverName="Archmage Khadgar" GiverId="80142" X="3192.327" Y="1362.953" Z="174.0173" />
+		<Code File="InteractWith" MobId="230872" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34814" QuestObjectiveIndex="1" X="3391.612" Y="1030.525" Z="178.7731" />
+		<TurnIn QuestName="Making Acquaintances" QuestId="34814" TurnInName="Magister Krelas" TurnInId="79393" X="3221.924" Y="812.1865" Z="80.65894" />
+
+		<PickUp QuestName="Creating the Ink" QuestId="34634" GiverName="Magister Krelas" GiverId="79393" X="3221.924" Y="812.1865" Z="80.65894" />
+		<PickUp QuestName="Forming the Scroll" QuestId="34635" GiverName="Magister Krelas" GiverId="79393" X="3221.924" Y="812.1865" Z="80.65894" />
+		<PickUp QuestName="Gathering the Spark" QuestId="34636" GiverName="Magister Krelas" GiverId="79393" X="3221.924" Y="812.1865" Z="80.65894" />
+
+		<Code File="InteractWith" MobId="79390" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34636" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="3285.587" Y="863.2126" Z="57.2686" />
+				<Hotspot X="3350.354" Y="903.3253" Z="0.9880413" />
+				<Hotspot X="3268.26" Y="963.4196" Z="41.64456" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" MobIds="79333, 79335" QuestId="34634" >
+			<HuntingGrounds>
+				<Hotspot X="3285.587" Y="863.2126" Z="57.2686" />
+				<Hotspot X="3350.354" Y="903.3253" Z="0.9880413" />
+				<Hotspot X="3268.26" Y="963.4196" Z="41.64456" />
+			</HuntingGrounds>
+		</Code>
+
+
+
+
+
+
+
+
+
+
+
+
+	</QuestOrder>
+</HBProfile>
