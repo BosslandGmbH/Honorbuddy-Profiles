@@ -1,0 +1,259 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/EchoQuestingSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Spires of Arak ($Rev: 6041 $)</Name>
+
+	<DefaultNavType>Fly</DefaultNavType>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
+		<If Condition="Me.IsAlliance" >
+			<Code File="LoadProfile" ProfileName="..\..\Alliance\1-58 Autoloader.xml" RememberProfile="true" />
+		</If>
+		<!-- RunCode Methods -->
+			<!-- <Code File="RunCode">
+			<![CDATA[
+				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
+				Lua.DoString("SetCVar('AutoLootDefault', 1);");
+				CharacterSettings.Instance.LootMobs = true;
+				CharacterSettings.Instance.Save();
+				Lua.DoString("for i=1,GetNumAddOns() do local relo=false if IsAddOnLoaded(i) then relo=true DisableAddOn(i) end if relo then relo=nil ReloadUI() end end");
+				await Coroutine.Sleep(1500);
+				Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
+			]]>
+			</Code> -->
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</Code>
+		<!-- END RunCode Methods -->
+
+		<!-- Hooks -->
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[ 
+					IEnumerable<WoWItem> GetExtraConsumables()
+					{
+						uint foodCount = 0;
+						uint drinkCount = 0;
+						// Skip conjured and buff comsumables.
+				
+						var extraConsumables = (from item in Me.BagItems
+										   where item != null && item.ItemInfo != null
+										   let isFood = Consumable.IsFood(item.ItemInfo)
+										   let isDrink = Consumable.IsDrink(item.ItemInfo)
+										   where (isFood || isDrink) && item.ItemInfo.SellPrice > 0 && item.Effects.Count == 1 && item.ItemInfo.RequiredLevel < Me.Level - 10                    
+										   select item).ToList();
+				
+				
+						var extraPotions = Me.BagItems
+							.Where(c => c != null && c.IsValid && c.ItemInfo != null && c.ItemInfo.SellPrice > 0 && c.Effects.Count == 1
+								&& (c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Potion
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Elixir
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Flask)
+								&& c.ItemInfo.RequiredLevel < Me.Level - 20);
+				
+						extraConsumables.AddRange(extraPotions);
+						return extraConsumables;
+					}
+					 
+					async Task SellExtraConsumables()
+					{
+						Logging.Write("Selling items in GetExtraConsumables()");
+						foreach (var item in GetExtraConsumables())
+						{
+							Logging.Write("Selling {0}.", item.Name);
+							item.UseContainerItem();
+							await Coroutine.Sleep(1337);
+						}
+					}
+				]]>
+			</Code>
+			<Code File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+				<Code File="RunCode" Code="await SellExtraConsumables();"/>
+			</Code>
+		<!-- END Hooks -->
+
+		<While Condition="NeedsQuest(36951)" >
+			<Code File="RunCode" Code="
+				if (Unit(79407) != null) return;
+				await CommonCoroutines.LandAndDismount();
+				Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 110560).Use();
+				await Coroutine.Sleep(500);
+				await Coroutine.Wait(7000, () =&gt; !Me.IsCasting);
+			" />
+			<Code File="Misc\RunLua" WaitTime="1000" Lua="if not EncounterJournal then EncounterJournal_LoadUI() end ToggleFrame(EncounterJournal); EncounterJournalSuggestFrame.Suggestion1.button:Click();" />
+			<Code File="RunCode" Code="QuestFrame.Instance.AcceptQuest();" />
+			<Code File="WaitTimer" WaitTime="1000" />
+		</While>
+
+		<While Condition="HasQuest(36951) &amp;&amp; Unit(79407) != null" >
+			<Code File="InteractWith" MobId="79407" GossipOptions="2" PreInteractMountStrategy="Dismount" X="5581.141" Y="4566.74" Z="136.3746" TerminateWhen="Unit(79407) == null" />
+		</While>
+
+		<If Condition="HasQuest(36951)" >
+			<TurnIn QuestName="Arakkoa Exodus" QuestId="36951" TurnInName="Azik" TurnInId="79539" X="655.1141" Y="2387.757" Z="203.7569" />
+		</If>
+
+		<PickUp QuestName="The Shadows of Skettis" QuestId="34655" GiverName="Azik" GiverId="79539" X="655.1141" Y="2387.757" Z="203.7569" />
+		<Code File="InteractWith" MobId="79519" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34655" QuestObjectiveIndex="1" X="858.4827" Y="2036.492" Z="179.6153" />
+		<TurnIn QuestName="The Shadows of Skettis" QuestId="34655" TurnInName="Reshad" TurnInId="79519" X="858.4827" Y="2036.492" Z="179.6153" />
+
+		<PickUp QuestName="Hidden in Plain Sight" QuestId="34656" GiverName="Reshad" GiverId="79519" X="858.4827" Y="2036.492" Z="179.6153" />
+		<PickUp QuestName="Adherents of the Sun God" QuestId="34657" GiverName="Reshad" GiverId="79519" X="858.4827" Y="2036.492" Z="179.6153" />
+
+		<Code File="InteractWith" MobId="230568" IgnoreLoSToTarget="true" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34656" QuestObjectiveIndex="2" X="774.4047" Y="1958.164" Z="174.1314" />
+		<Code File="InteractWith" MobId="230529" IgnoreLoSToTarget="true" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34656" QuestObjectiveIndex="1" X="725.8224" Y="2180.766" Z="157.2528" />
+
+		<Code File="KillUntilComplete" MobId="79598" QuestId="34657" >
+			<HuntingGrounds>
+				<Hotspot X="733.6532" Y="2148.29" Z="157.1929" />
+				<Hotspot X="812.3875" Y="2049.503" Z="167.5723" />
+				<Hotspot X="791.1584" Y="1957.102" Z="174.1313" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="Hidden in Plain Sight" QuestId="34656" TurnInName="Reshad" TurnInId="79519" X="857.3716" Y="2037.078" Z="179.616" />
+		<TurnIn QuestName="Adherents of the Sun God" QuestId="34657" TurnInName="Reshad" TurnInId="79519" X="857.3716" Y="2037.078" Z="179.616" />
+
+		<PickUp QuestName="Orders From On High" QuestId="34658" GiverName="Reshad" GiverId="79519" X="857.3716" Y="2037.078" Z="179.616" />
+		<While Condition="DoQuest(34658)" >
+			<CustomBehavior File="Hooks\Avoid" AvoidName="SolarZone" Command="Add" ObjectType="AreaTrigger" ObjectId="6622" Radius="5" />
+			<Code File="KillUntilComplete" MobId="79516" QuestId="34658" X="772.8386" Y="1898.073" Z="188.3338" />
+			<CustomBehavior File="Hooks\Avoid" AvoidName="SolarZone" Command="Remove" />
+		</While>
+		<TurnIn QuestName="Orders From On High" QuestId="34658" TurnInName="Reshad" TurnInId="79519" X="644.9515" Y="1928.788" Z="141.576" />
+
+		<PickUp QuestName="The Crone" QuestId="34659" GiverName="Reshad" GiverId="79519" X="644.9515" Y="1928.788" Z="141.576" />
+		<Code File="InteractWith" MobId="79890" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34659" QuestObjectiveIndex="1" X="119.9163" Y="1553.551" Z="-1.781598" />
+		<TurnIn QuestName="The Crone" QuestId="34659" TurnInName="Ornekka" TurnInId="79890" X="119.7187" Y="1551.155" Z="-1.781804" />
+
+		<PickUp QuestName="A Charming Deception" QuestId="34756" GiverName="Ornekka" GiverId="79890" X="119.7187" Y="1551.155" Z="-1.781804" />
+		<PickUp QuestName="All Due Respect" QuestId="35636" GiverName="Ornekka" GiverId="79890" X="119.7187" Y="1551.155" Z="-1.781804" />
+
+		<PickUp QuestName="Echo Hunters" QuestId="34805" GiverName="Reshad" GiverId="79519" X="119.027" Y="1556.17" Z="-1.781804" />
+
+		<Code File="InteractWith" MobId="80047" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="35636" QuestObjectiveIndex="1" X="-86.15759" Y="1631.85" Z="-5.85509" />
+		<Code File="InteractWith" MobId="233073" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="30" QuestId="35636" QuestObjectiveIndex="2" X="-99.55599" Y="1647.25" Z="-4.999922" />
+
+		<TurnIn QuestName="All Due Respect" QuestId="35636" TurnInName="Reshad" TurnInId="82621" X="-96.92048" Y="1635.05" Z="-5.855151" />
+		<PickUp QuestName="Syth&apos;s Secret" QuestId="35668" GiverName="Reshad" GiverId="82621" X="-96.92048" Y="1635.05" Z="-5.855151" />
+
+		<Code File="InteractWith" MobId="230714" CollectionDistance="200" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="34756" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="35.44617" Y="1591.769" Z="-11.23843" />
+				<Hotspot X="-120.1487" Y="1605.849" Z="-3.941732" />
+				<Hotspot X="-231.8441" Y="1711.404" Z="9.438479" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" MobId="79895" QuestId="34805" >
+			<HuntingGrounds>
+				<Hotspot X="35.44617" Y="1591.769" Z="-11.23843" />
+				<Hotspot X="-120.1487" Y="1605.849" Z="-3.941732" />
+				<Hotspot X="-231.8441" Y="1711.404" Z="9.438479" />
+			</HuntingGrounds>
+		</Code>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+	</QuestOrder>
+</HBProfile>
