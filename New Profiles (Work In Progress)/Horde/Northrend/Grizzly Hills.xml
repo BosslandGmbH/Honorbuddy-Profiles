@@ -344,7 +344,14 @@
 			<MoveTo X="3838.197" Y="-3425.134" Z="293.1037" />
 			<Code File="UseItem" WaitTime="1000" ItemId="37661" TerminateWhen="Me.MapId == 0" />
 			<Code File="WaitTimer" WaitTime="10000" TerminateWhen="Me.HasAura(49097)" />
-			<Code File="RunCode" Code="Me.GetAuraById(49097).TryCancelAura();" />
+			<Code File="WaitTimer" WaitTime="2500" />
+			<Code File="RunCode" Code="
+				while (Me.HasAura(49097))
+				{
+					Me.GetAuraById(49097).TryCancelAura();
+					await Coroutine.Yield();
+				}"
+			/>
 			<Code File="WaitTimer" WaitTime="5000" QuestId="12327" />
 		</While>
 		<TurnIn QuestName="Out of Body Experience" QuestId="12327" TurnInName="Ruuna the Blind" TurnInId="27581" X="3839.761" Y="-3426.717" Z="293.104" />
