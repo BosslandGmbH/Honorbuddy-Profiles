@@ -1462,17 +1462,27 @@ END INITORDER COMMENT -->
 					<CustomBehavior File="InteractWith" MobId="244717" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="39984" QuestObjectiveIndex="1" X="3393.294" Y="1508.634" Z="60.96248" />
 					<CustomBehavior File="InteractWith" MobId="244718" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="39984" QuestObjectiveIndex="2" X="3357.123" Y="1648.863" Z="7.552205" />
 					<CustomBehavior File="InteractWith" MobId="244719" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="39984" QuestObjectiveIndex="3" X="3432.792" Y="1564.769" Z="9.064156" />
-					<If Condition="!IsObjectiveComplete(4, 39984)" >
+					<If Condition="!IsObjectiveComplete(4, 39984) &amp;&amp; !SpellManager.HasSpell(233368)" >
 						<MoveTo Nav="Run" X="3529.478" Y="1510.68" Z="5.113235" />
 						<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="!Me.Combat" />
 						<MoveTo Precision="1" X="3529.478" Y="1510.68" Z="5.113235" />
 						<DisableBehavior Name="Pull" />
 						<CustomBehavior File="MyCTM" X="3529.799" Y="1514.527" Z="5.113092" />
 						<CustomBehavior File="MyCTM" X="3530.975" Y="1522.947" Z="7.987066" />
-						<CustomBehavior File="InteractWith" MobId="244720" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="39984" QuestObjectiveIndex="4" X="3515.895" Y="1526.835" Z="8.702796" />
+						<CustomBehavior File="InteractWith" MobId="244720" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="39984" QuestObjectiveIndex="4" X="3515.895" Y="1526.835" Z="8.702796" />
 						<MoveTo Precision="1" X="3522.142" Y="1530.597" Z="8.343578" />
 						<CustomBehavior File="MyCTM" X="3523.439" Y="1540.506" Z="5.281436" />
 						<EnableBehavior Name="Pull" />
+					</If>
+					<If Condition="SpellManager.HasSpell(233368)" >
+						<Code File="FlyTo" X="3523.135" Y="1527.423" Z="16.15307" />
+						<Code File="Misc\RunLua" Lua="Dismount();" />
+						<Code File="RunCode" Code="
+							foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =&gt; Me.GetAuraById(id)).Where(a =&gt; a != null))
+							aura.TryCancelAura();
+						" />
+						<Code File="WaitTimer" WaitTime="3500" />
+						<CustomBehavior File="InteractWith" MobId="244720" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="39984" QuestObjectiveIndex="4" X="3515.895" Y="1526.835" Z="8.702796" />
 					</If>
 					<MoveTo X="3521.013" Y="1614.097" Z="11.35885" />
 				</While>
@@ -1529,19 +1539,19 @@ END INITORDER COMMENT -->
 
 			<While Condition="DoQuest(38811)" >
 				<While Condition="!IsObjectiveComplete(2, 38811)" >
-					<CustomBehavior File="InteractWith" MobId="241868" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="38811" QuestObjectiveIndex="2" X="3375.764" Y="1272.615" Z="126.3555" TerminateWhen="Unit(92918) != null" />
+					<CustomBehavior File="InteractWith" MobId="241868" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="38811" QuestObjectiveIndex="2" X="3375.764" Y="1272.615" Z="126.3555" TerminateWhen="Unit(92918, u =&gt; u.IsAlive) != null" />
 					<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Me.Combat" />
-					<CustomBehavior File="KillUntilComplete" MobId="92918" QuestId="38811" QuestObjectiveIndex="2" X="3387.125" Y="1269.484" Z="123.5794" TerminateWhen="Unit(92918) == null" />
+					<CustomBehavior File="KillUntilComplete" MobId="92918" QuestId="38811" QuestObjectiveIndex="2" X="3387.125" Y="1269.484" Z="123.5794" TerminateWhen="Unit(92918, u =&gt; u.IsAlive) == null" />
 				</While>
 				<While Condition="!IsObjectiveComplete(3, 38811)" >
-					<CustomBehavior File="InteractWith" MobId="241864" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="38811" QuestObjectiveIndex="3" X="3406.633" Y="1153.146" Z="136.1777" TerminateWhen="Unit(92920) != null" />
+					<CustomBehavior File="InteractWith" MobId="241864" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="38811" QuestObjectiveIndex="3" X="3406.633" Y="1153.146" Z="136.1777" TerminateWhen="Unit(92920, u =&gt; u.IsAlive) != null" />
 					<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Me.Combat" />
-					<CustomBehavior File="KillUntilComplete" MobId="92920" QuestId="38811" QuestObjectiveIndex="3" X="3410.671" Y="1156.945" Z="137.6972" TerminateWhen="Unit(92920) == null" />
+					<CustomBehavior File="KillUntilComplete" MobId="92920" QuestId="38811" QuestObjectiveIndex="3" X="3410.671" Y="1156.945" Z="137.6972" TerminateWhen="Unit(92920, u =&gt; u.IsAlive) == null" />
 				</While>
 				<While Condition="!IsObjectiveComplete(1, 38811)" >
-					<CustomBehavior File="InteractWith" MobId="241869" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="38811" QuestObjectiveIndex="1" X="3513.713" Y="1113.859" Z="153.0336" TerminateWhen="Unit(92889) != null" />
+					<CustomBehavior File="InteractWith" MobId="241869" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="38811" QuestObjectiveIndex="1" X="3513.713" Y="1113.859" Z="153.0336" TerminateWhen="Unit(92889, u =&gt; u.IsAlive) != null" />
 					<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Me.Combat" />
-					<CustomBehavior File="KillUntilComplete" MobId="92889" QuestId="38811" QuestObjectiveIndex="1" X="3514.32" Y="1102.326" Z="157.9193" TerminateWhen="Unit(92889) == null" />
+					<CustomBehavior File="KillUntilComplete" MobId="92889" QuestId="38811" QuestObjectiveIndex="1" X="3514.32" Y="1102.326" Z="157.9193" TerminateWhen="Unit(92889, u =&gt; u.IsAlive) == null" />
 				</While>
 			</While>
 
@@ -1636,7 +1646,7 @@ END INITORDER COMMENT -->
 			</CustomBehavior>
 			<While Condition="DoQuest(38818)" >
 				<CustomBehavior File="RunCode" Code="IncludeEmpoweredRunestoneUnits();" />
-				<CustomBehavior File="KillUntilComplete" QuestId="38818" ImmediatelySwitchToHighestPriority="true" X="3626.518" Y="791.3125" Z="38.72163" >
+				<CustomBehavior File="KillUntilComplete" QuestId="38818" MovementBy="NavigatorOnly" ImmediatelySwitchToHighestPriority="true" X="3626.518" Y="791.3125" Z="38.72163" >
 					<PursuitList>
 						<!--
 							PursuitList won't engage units that aren't in combat with us, or aren't created by our current POI.
@@ -1921,10 +1931,10 @@ END INITORDER COMMENT -->
 						<MoveTo Precision="1" X="3143.395" Y="660.5744" Z="-1.183627" />
 					</If>
 					<If Condition="Me.X &gt; 3127 &amp;&amp; Me.Z &lt;= 4">
-						<CustomBehavior File="InteractWith" MobId="251027" CollectionDistance="200" NonCompeteDistance="0" Range="8" IgnoreLoSToTarget="true" TerminateWhen="Me.Z &gt; 4" />
+						<CustomBehavior File="InteractWith" MobId="251027" CollectionDistance="200" NonCompeteDistance="0" Range="8" IgnoreLoSToTarget="true" PreInteractMountStrategy="Dismount" TerminateWhen="Me.Z &gt; 4" />
 					</If>
 					<If Condition="Me.X &gt; 3127 &amp;&amp; Me.Z &gt;= 4">
-						<CustomBehavior File="InteractWith" MobIds="258851, 258849" NonCompeteDistance="0" NumOfTimes="2" WaitForNpcs="false" InteractByLooting="true" TerminateWhen="Me.X &gt; 3127 &amp;&amp; Me.Z &lt;= 4" />
+						<CustomBehavior File="InteractWith" MobIds="258851, 258849" NonCompeteDistance="0" NumOfTimes="2" WaitForNpcs="false" InteractByLooting="true" PreInteractMountStrategy="Dismount" TerminateWhen="Me.X &gt; 3127 &amp;&amp; Me.Z &lt;= 4" />
 
 						<If Condition="Me.Z &gt;= 4" >
 							<MoveTo X="3176.632" Y="628.4471" Z="19.26887" />
@@ -1936,7 +1946,7 @@ END INITORDER COMMENT -->
 									await Coroutine.Sleep(5000);
 								}
 							"/>
-							<CustomBehavior File="InteractWith" MobId="251008" NonCompeteDistance="0" WaitForNpcs="false" InteractByLooting="true" TerminateWhen="Me.X &gt; 3127 &amp;&amp; Me.Z &lt;= 4" />
+							<CustomBehavior File="InteractWith" MobId="251008" NonCompeteDistance="0" WaitForNpcs="false" InteractByLooting="true" PreInteractMountStrategy="Dismount" TerminateWhen="Me.X &gt; 3127 &amp;&amp; Me.Z &lt;= 4" />
 							<CustomBehavior File="KillUntilComplete" MobId="108032" QuestId="42639" QuestObjectiveIndex="1" X="3259.51" Y="618.0147" Z="17.86913" TerminateWhen="Me.X &gt; 3127 &amp;&amp; Me.Z &lt;= 4" />
 						</If>
 
@@ -1950,11 +1960,11 @@ END INITORDER COMMENT -->
 									await Coroutine.Sleep(5000);
 								}
 							"/>
-							<CustomBehavior File="InteractWith" MobId="258850" NonCompeteDistance="0" WaitForNpcs="false" InteractByLooting="true" TerminateWhen="Me.X &gt; 3127 &amp;&amp; Me.Z &lt;= 4" />
+							<CustomBehavior File="InteractWith" MobId="258850" NonCompeteDistance="0" WaitForNpcs="false" InteractByLooting="true" PreInteractMountStrategy="Dismount" TerminateWhen="Me.X &gt; 3127 &amp;&amp; Me.Z &lt;= 4" />
 						</If>
 					</If>
 					<If Condition="Me.X &gt;= 4" >
-						<CustomBehavior File="MyCTM" X="3216.257" Y="651.2922" Z="-1.938153" TerminateWhen="Me.IsSwimming" />
+						<CustomBehavior File="MyCTM" X="3216.257" Y="651.2922" Z="-1.938153" TerminateWhen="Me.IsSwimming || Me.IsFlying" />
 					</If>
 				</While>
 
@@ -2009,7 +2019,7 @@ END INITORDER COMMENT -->
 			</If>
 
 			<PickUp QuestName="A Murky Fate" QuestId="40120" GiverName="Morheim Ancestor" GiverId="98587" X="2907.359" Y="493.566" Z="16.40273" />
-			<CustomBehavior File="InteractWith" MobId="98577" NonCompeteDistance="0" Range="3" InteractByUsingItemId="129725" InteractBlacklistTimeInSeconds="1" QuestId="40120" QuestObjectiveIndex="1" >
+			<CustomBehavior File="InteractWith" MobId="98577" NonCompeteDistance="0" Range="3" InteractByUsingItemId="129725" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="40120" QuestObjectiveIndex="1" >
 				<HuntingGrounds>
 					<Hotspot X="2882.382" Y="416.4601" Z="15.81335" />
 				</HuntingGrounds>
@@ -2086,7 +2096,7 @@ END INITORDER COMMENT -->
 
 				<While Condition="DoQuest(39063)" >  <!-- Same as Horde's variant. -->
 					<!-- NOTE: <GameClientIssue?> : Objects must be interacted with twice for credit.  First interaction does nothing. -->
-					<CustomBehavior File="InteractWith" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" Range="6" PreInteractMountStrategy="Dismount" QuestId="39063" QuestObjectiveIndex="1" >
+					<CustomBehavior File="InteractWith" MovementBy="NavigatorOnly" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" Range="6" PreInteractMountStrategy="Dismount" QuestId="39063" QuestObjectiveIndex="1" >
 						<HuntingGrounds>
 							<Hotspot X="2676.834" Y="1354" Z="42.38579" />
 							<Hotspot X="2662.72" Y="1424.462" Z="27.68061" />
