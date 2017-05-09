@@ -35,6 +35,7 @@
 		<Blackspot X="4241.628" Y="2159.299" Z="161.6568" Radius="3.974987" /> <!-- Horde-Alliance barricade that's near the roads in northern Stormheim -->
 		<Blackspot X="4226.039" Y="2173.704" Z="166.3942" Radius="4.699438" /> <!-- Horde-Alliance barricade that's near the roads in northern Stormheim -->
 		<Blackspot X="3668.105" Y="1802.17" Z="0.266252" Radius="2" /> <!-- Shipwrecked Debris near mob that's being avoided. -->
+		<Blackspot X="3248.776" Y="3142.261" Z="526.1411" Radius="5" /> <!-- Engine thing in Weeping Bluffs -->
 	</Blackspots>
 
 	<Blacklist>
@@ -385,7 +386,7 @@ END INITORDER COMMENT -->
 						<UseMount Value="false" />
 
 						<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-							<CustomBehavior File="InteractWith" CollectionDistance="200" IgnoreLoSToTarget="true" PreInteractMountStrategy="Dismount" TerminateWhen="(IsScenarioCriteriaComplete(1) &amp;&amp; IsScenarioCriteriaComplete(2)) || Me.InVehicle || Unit(92957, u =&gt; u.HasAura(184641)) != null" >
+							<CustomBehavior File="InteractWith" CollectionDistance="200" IgnoreLoSToTarget="true" PreInteractMountStrategy="Dismount" TerminateWhen="(IsScenarioCriteriaComplete(1) &amp;&amp; IsScenarioCriteriaComplete(2)) || Me.InVehicle || Unit(92957, u =&gt; u.HasAura(184641)) != null || Unit(93173, u =&gt; u.IsAlive) != null" >
 								<PursuitList>
 									<PursueUnit Id="92957" PursueWhen="(UNIT.Z &gt;= 371 &amp;&amp; Me.Z &gt;= 160) || (UNIT.Z &gt; 141 &amp;&amp; Me.Z &lt; 160)" />
 									<!-- Only use the one the bot can easily navigate to.  The zeppelin-boat-thing slowly descends so we're detecting the two stop positions. -->
@@ -783,7 +784,12 @@ END INITORDER COMMENT -->
 
 	<!-- Story: The Trial of Might -->
 			<If Condition="Me.IsAlliance" >
-				<PickUp QuestName="The Ancient Trials" QuestId="38210" GiverName="Muninn" GiverId="97306" X="3403.811" Y="3075.332" Z="526.5199" />
+				<If Condition="NeedsQuest(38210)" >
+					<If Condition="Unit(107498) != null" >
+						<MoveTo Nav="Run" X="3952.778" Y="2058.971" Z="231.3942" />
+					</If>
+					<PickUp QuestName="The Ancient Trials" QuestId="38210" GiverName="Muninn" GiverId="97306" X="3403.811" Y="3075.332" Z="526.5199" />
+				</If>
 
 				<While Condition="!IsQuestCompleted(39775)" >
 					<CustomBehavior File="InteractWith" MobId="107840" X="3407.027" Y="3071.241" Z="526.5193" TerminateWhen="HasItem(138111) || IsQuestCompleted(39775)" />
@@ -814,7 +820,12 @@ END INITORDER COMMENT -->
 			</If>
 
 			<If Condition="Me.IsHorde" >
-				<PickUp QuestName="The Ancient Trials" QuestId="38459" GiverName="Huginn" GiverId="97305" X="3976.914" Y="2898.343" Z="241.5873" />
+				<If Condition="NeedsQuest(38459)" >
+					<If Condition="Unit(107498) != null" >
+						<MoveTo Nav="Run" X="3952.778" Y="2058.971" Z="231.3942" />
+					</If>
+					<PickUp QuestName="The Ancient Trials" QuestId="38459" GiverName="Huginn" GiverId="97305" X="3976.914" Y="2898.343" Z="241.5873" />
+				</If>
 
 				<While Condition="!IsQuestCompleted(39775)" >
 					<CustomBehavior File="InteractWith" MobId="107840" WaitForNpcs="false" X="3945.718" Y="2888.738" Z="241.7468" TerminateWhen="HasItem(138111) || IsQuestCompleted(39775)" />
@@ -1009,65 +1020,70 @@ END INITORDER COMMENT -->
 					<!-- NOTE: <CheckThis> : This is a very fragile section of code. Need to imrpove or add failsafes. -->
 					<!-- NOTE: <CheckThis> : Changed which objects this section interacts with. Oddly it will end up interacting with objects not below when nav fails. -->
 
-					<DefaultNavType Value="Run" />
-					<CustomBehavior File="ForcedDismount" />
+					<If Condition="!SpellManager.HasSpell(233368)" >
+						<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38410" X="2544.906" Y="2487.497" Z="254.7319" >
+							<PursuitList>
+								<PursueUnit Id="91975" PursueWhen="(int)UNIT.X == 2544" />
+							</PursuitList>
+						</CustomBehavior>
+						<CustomBehavior File="InteractWith" WaitForNpcs="false" NumOfTimes="2" NonCompeteDistance="0" QuestId="38410" X="2547.972" Y="2488.184" Z="254.7321" >
+							<PursuitList>
+								<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2543 || (int)GAMEOBJECT.X == 2549" />
+							</PursuitList>
+						</CustomBehavior>
 
-					<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38410" MovementBy="NavigatorOnly" X="2544.906" Y="2487.497" Z="254.7319" >
-						<PursuitList>
-							<PursueUnit Id="91975" PursueWhen="(int)UNIT.X == 2544" />
-						</PursuitList>
-					</CustomBehavior>
-					<CustomBehavior File="InteractWith" WaitForNpcs="false" NumOfTimes="2" NonCompeteDistance="0" QuestId="38410" MovementBy="NavigatorOnly" X="2547.972" Y="2488.184" Z="254.7321" >
-						<PursuitList>
-							<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2543 || (int)GAMEOBJECT.X == 2549" />
-						</PursuitList>
-					</CustomBehavior>
+						<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38410" X="2529.949" Y="2530.865" Z="262.96" >
+							<PursuitList>
+								<PursueUnit Id="91983" PursueWhen="(int)UNIT.X == 2529" />
+							</PursuitList>
+						</CustomBehavior>
+						<CustomBehavior File="InteractWith" WaitForNpcs="false" NonCompeteDistance="0" QuestId="38410" X="2530.71" Y="2534.549" Z="263.0449" >
+							<PursuitList>
+								<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2530" />
+							</PursuitList>
+						</CustomBehavior>
+						<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38410" X="2544.906" Y="2487.497" Z="254.7319" >
+							<PursuitList>
+								<PursueUnit Id="91975" PursueWhen="(int)UNIT.X == 2544" />
+							</PursuitList>
+						</CustomBehavior>
 
+						<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38410" X="2544.906" Y="2487.497" Z="254.7319" >
+							<PursuitList>
+								<PursueUnit Id="92072" PursueWhen="(int)UNIT.X == 2545" />
+							</PursuitList>
+						</CustomBehavior>
+						<CustomBehavior File="InteractWith" WaitForNpcs="false" NumOfTimes="2" NonCompeteDistance="0" QuestId="38410" X="2535.244" Y="2404.843" Z="262.9575" >
+							<PursuitList>
+								<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2543 || (int)GAMEOBJECT.X == 2524" />
+							</PursuitList>
+						</CustomBehavior>
 
-					<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38410" MovementBy="NavigatorOnly" X="2529.949" Y="2530.865" Z="262.96" >
-						<PursuitList>
-							<PursueUnit Id="91983" PursueWhen="(int)UNIT.X == 2529" />
-						</PursuitList>
-					</CustomBehavior>
-					<CustomBehavior File="InteractWith" WaitForNpcs="false" NonCompeteDistance="0" QuestId="38410" MovementBy="NavigatorOnly" X="2530.71" Y="2534.549" Z="263.0449" >
-						<PursuitList>
-							<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2530" />
-						</PursuitList>
-					</CustomBehavior>
-					<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38410" MovementBy="NavigatorOnly" X="2544.906" Y="2487.497" Z="254.7319" >
-						<PursuitList>
-							<PursueUnit Id="91975" PursueWhen="(int)UNIT.X == 2544" />
-						</PursuitList>
-					</CustomBehavior>
+						<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38410" X="2449.207" Y="2357.403" Z="271.7252" >
+							<PursuitList>
+								<PursueUnit Id="92072" PursueWhen="(int)UNIT.X == 2491" />
+							</PursuitList>
+						</CustomBehavior>
+						<CustomBehavior File="InteractWith" NumOfTimes="3" WaitForNpcs="false" NonCompeteDistance="0" QuestId="38410" X="2448.293" Y="2357.442" Z="271.7252" >
+							<PursuitList>
+								<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2490 || (int)GAMEOBJECT.X == 2428" />
+							</PursuitList>
+						</CustomBehavior>
 
+						<CustomBehavior File="MyCTM" X="2418.247" Y="2367.154" Z="256.2015" TerminateWhen="Me.IsFalling" />
+					</If>
 
-					<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38410" MovementBy="NavigatorOnly" X="2544.906" Y="2487.497" Z="254.7319" >
-						<PursuitList>
-							<PursueUnit Id="92072" PursueWhen="(int)UNIT.X == 2545" />
-						</PursuitList>
-					</CustomBehavior>
-					<CustomBehavior File="InteractWith" WaitForNpcs="false" NumOfTimes="2" NonCompeteDistance="0" QuestId="38410" MovementBy="NavigatorOnly" X="2535.244" Y="2404.843" Z="262.9575" >
-						<PursuitList>
-							<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2543 || (int)GAMEOBJECT.X == 2524" />
-						</PursuitList>
-					</CustomBehavior>
+					<If Condition="SpellManager.HasSpell(233368)" >
+						<Code File="InteractWith" MobId="251257" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="38410" QuestObjectiveIndex="1" >
+							<HuntingGrounds>
+								<Hotspot X="2529.949" Y="2530.865" Z="262.96" />
+								<Hotspot X="2544.906" Y="2487.497" Z="254.7319" />
+								<Hotspot X="2535.244" Y="2404.843" Z="262.9575" />
+								<Hotspot X="2448.293" Y="2357.442" Z="271.7252" />
+							</HuntingGrounds>
+						</Code>
+					</If>
 
-
-
-					<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38410" MovementBy="NavigatorOnly" X="2449.207" Y="2357.403" Z="271.7252" >
-						<PursuitList>
-							<PursueUnit Id="92072" PursueWhen="(int)UNIT.X == 2491" />
-						</PursuitList>
-					</CustomBehavior>
-					<CustomBehavior File="InteractWith" NumOfTimes="3" WaitForNpcs="false" NonCompeteDistance="0" QuestId="38410" MovementBy="NavigatorOnly" X="2448.293" Y="2357.442" Z="271.7252" >
-						<PursuitList>
-							<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2490 || (int)GAMEOBJECT.X == 2428" />
-						</PursuitList>
-					</CustomBehavior>
-
-					<CustomBehavior File="MyCTM" X="2418.247" Y="2367.154" Z="256.2015" TerminateWhen="Me.IsFalling" />
-
-					<DefaultNavType Value="Fly" />
 				</While>
 
 			</If>
@@ -1109,65 +1125,70 @@ END INITORDER COMMENT -->
 					<!-- NOTE: <CheckThis> : This is a very fragile section of code. Need to imrpove or add failsafes. -->
 					<!-- NOTE: <CheckThis> : Changed which objects this section interacts with. Oddly it will end up interacting with objects not below when nav fails. -->
 
-					<DefaultNavType Value="Run" />
-					<CustomBehavior File="ForcedDismount" />
+					<If Condition="!SpellManager.HasSpell(233368)" >
+						<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38615" X="2544.906" Y="2487.497" Z="254.7319" >
+							<PursuitList>
+								<PursueUnit Id="91975" PursueWhen="(int)UNIT.X == 2544" />
+							</PursuitList>
+						</CustomBehavior>
+						<CustomBehavior File="InteractWith" WaitForNpcs="false" NumOfTimes="2" NonCompeteDistance="0" QuestId="38615" X="2547.972" Y="2488.184" Z="254.7321" >
+							<PursuitList>
+								<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2543 || (int)GAMEOBJECT.X == 2549" />
+							</PursuitList>
+						</CustomBehavior>
 
-					<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" MovementBy="NavigatorOnly" QuestId="38615" X="2544.906" Y="2487.497" Z="254.7319" >
-						<PursuitList>
-							<PursueUnit Id="91975" PursueWhen="(int)UNIT.X == 2544" />
-						</PursuitList>
-					</CustomBehavior>
-					<CustomBehavior File="InteractWith" WaitForNpcs="false" NumOfTimes="2" NonCompeteDistance="0" MovementBy="NavigatorOnly" QuestId="38615" X="2547.972" Y="2488.184" Z="254.7321" >
-						<PursuitList>
-							<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2543 || (int)GAMEOBJECT.X == 2549" />
-						</PursuitList>
-					</CustomBehavior>
+						<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38615" X="2529.949" Y="2530.865" Z="262.96" >
+							<PursuitList>
+								<PursueUnit Id="91983" PursueWhen="(int)UNIT.X == 2529" />
+							</PursuitList>
+						</CustomBehavior>
+						<CustomBehavior File="InteractWith" WaitForNpcs="false" NonCompeteDistance="0" QuestId="38615" X="2530.71" Y="2534.549" Z="263.0449" >
+							<PursuitList>
+								<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2530" />
+							</PursuitList>
+						</CustomBehavior>
+						<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38615" X="2544.906" Y="2487.497" Z="254.7319" >
+							<PursuitList>
+								<PursueUnit Id="91975" PursueWhen="(int)UNIT.X == 2544" />
+							</PursuitList>
+						</CustomBehavior>
 
+						<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38615" X="2544.906" Y="2487.497" Z="254.7319" >
+							<PursuitList>
+								<PursueUnit Id="92072" PursueWhen="(int)UNIT.X == 2545" />
+							</PursuitList>
+						</CustomBehavior>
+						<CustomBehavior File="InteractWith" WaitForNpcs="false" NumOfTimes="2" NonCompeteDistance="0" QuestId="38615" X="2535.244" Y="2404.843" Z="262.9575" >
+							<PursuitList>
+								<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2543 || (int)GAMEOBJECT.X == 2524" />
+							</PursuitList>
+						</CustomBehavior>
 
-					<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" MovementBy="NavigatorOnly" QuestId="38615" X="2529.949" Y="2530.865" Z="262.96" >
-						<PursuitList>
-							<PursueUnit Id="91983" PursueWhen="(int)UNIT.X == 2529" />
-						</PursuitList>
-					</CustomBehavior>
-					<CustomBehavior File="InteractWith" WaitForNpcs="false" NonCompeteDistance="0" QuestId="38615" MovementBy="NavigatorOnly" X="2530.71" Y="2534.549" Z="263.0449" >
-						<PursuitList>
-							<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2530" />
-						</PursuitList>
-					</CustomBehavior>
-					<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" MovementBy="NavigatorOnly" QuestId="38615" X="2544.906" Y="2487.497" Z="254.7319" >
-						<PursuitList>
-							<PursueUnit Id="91975" PursueWhen="(int)UNIT.X == 2544" />
-						</PursuitList>
-					</CustomBehavior>
+						<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38615" X="2449.207" Y="2357.403" Z="271.7252" >
+							<PursuitList>
+								<PursueUnit Id="92072" PursueWhen="(int)UNIT.X == 2491" />
+							</PursuitList>
+						</CustomBehavior>
+						<CustomBehavior File="InteractWith" NumOfTimes="3" WaitForNpcs="false" NonCompeteDistance="0" QuestId="38615" X="2448.293" Y="2357.442" Z="271.7252" >
+							<PursuitList>
+								<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2490 || (int)GAMEOBJECT.X == 2428" />
+							</PursuitList>
+						</CustomBehavior>
 
+						<CustomBehavior File="MyCTM" X="2418.247" Y="2367.154" Z="256.2015" TerminateWhen="Me.IsFalling" />
+					</If>
 
-					<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" MovementBy="NavigatorOnly" QuestId="38615" X="2544.906" Y="2487.497" Z="254.7319" >
-						<PursuitList>
-							<PursueUnit Id="92072" PursueWhen="(int)UNIT.X == 2545" />
-						</PursuitList>
-					</CustomBehavior>
-					<CustomBehavior File="InteractWith" WaitForNpcs="false" NumOfTimes="2" NonCompeteDistance="0" MovementBy="NavigatorOnly" QuestId="38615" X="2535.244" Y="2404.843" Z="262.9575" >
-						<PursuitList>
-							<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2543 || (int)GAMEOBJECT.X == 2524" />
-						</PursuitList>
-					</CustomBehavior>
+					<If Condition="SpellManager.HasSpell(233368)" >
+						<Code File="InteractWith" MobId="251257" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="38615" QuestObjectiveIndex="1" >
+							<HuntingGrounds>
+								<Hotspot X="2529.949" Y="2530.865" Z="262.96" />
+								<Hotspot X="2544.906" Y="2487.497" Z="254.7319" />
+								<Hotspot X="2535.244" Y="2404.843" Z="262.9575" />
+								<Hotspot X="2448.293" Y="2357.442" Z="271.7252" />
+							</HuntingGrounds>
+						</Code>
+					</If>
 
-
-
-					<CustomBehavior File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" MovementBy="NavigatorOnly" QuestId="38615" X="2449.207" Y="2357.403" Z="271.7252" >
-						<PursuitList>
-							<PursueUnit Id="92072" PursueWhen="(int)UNIT.X == 2491" />
-						</PursuitList>
-					</CustomBehavior>
-					<CustomBehavior File="InteractWith" NumOfTimes="3" WaitForNpcs="false" NonCompeteDistance="0" MovementBy="NavigatorOnly" QuestId="38615" X="2448.293" Y="2357.442" Z="271.7252" >
-						<PursuitList>
-							<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2490 || (int)GAMEOBJECT.X == 2428" />
-						</PursuitList>
-					</CustomBehavior>
-
-					<CustomBehavior File="MyCTM" X="2418.247" Y="2367.154" Z="256.2015" TerminateWhen="Me.IsFalling" />
-
-					<DefaultNavType Value="Run" />
 				</While>
 			</If>
 
@@ -1202,8 +1223,8 @@ END INITORDER COMMENT -->
 
 				<PickUp QuestName="Above the Winter Moonlight" QuestId="38412" GiverName="Commander Lorna Crowley" GiverId="91558" X="2349.302" Y="2387.768" Z="316.435" />
 				<While Condition="DoQuest(38412)" >
-					<MoveTo QuestId="38412" QuestObjectiveIndex="1" X="2345.374" Y="2367.749" Z="316.4349" />
-					<CustomBehavior File="InteractWith" MobId="91975" NonCompeteDistance="0" Range="52" WaitTime="6000" QuestId="38412" QuestObjectiveIndex="1" X="2299.911" Y="2343.661" Z="311.9629" />
+					<MoveTo Nav="Run" QuestId="38412" QuestObjectiveIndex="1" X="2345.374" Y="2367.749" Z="316.4349" />
+					<CustomBehavior File="InteractWith" MobId="91975" NonCompeteDistance="0" Range="52" WaitTime="6000" MovementBy="NavigatorOnly" QuestId="38412" QuestObjectiveIndex="1" X="2299.911" Y="2343.661" Z="311.9629" />
 					<MoveTo X="2251.925" Y="2363.873" Z="373.657" /> <!-- NOTE: <CheckThis>: Player can easily walk up this mountain, but the mesh has to comply. -->
 					<MoveTo X="2249.971" Y="2348.081" Z="379.8681" /> <!-- NOTE: <CheckThis>: Player can easily walk up this mountain, but the mesh has to comply. -->
 
@@ -1228,8 +1249,8 @@ END INITORDER COMMENT -->
 
 				<PickUp QuestName="Above the Winter Moonlight" QuestId="38618" GiverName="Dread-Rider Cullen" GiverId="92569" X="2344.314" Y="2382.323" Z="316.4346" />
 				<While Condition="DoQuest(38618)" >
-					<MoveTo QuestId="38618" QuestObjectiveIndex="1" X="2345.374" Y="2367.749" Z="316.4349" />
-					<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="6000" QuestId="38618" QuestObjectiveIndex="1" X="2299.911" Y="2343.661" Z="311.9629" />
+					<MoveTo Nav="Run" QuestId="38618" QuestObjectiveIndex="1" X="2345.374" Y="2367.749" Z="316.4349" />
+					<CustomBehavior File="InteractWith" MobId="91975" Range="49" WaitTime="6000" MovementBy="NavigatorOnly" QuestId="38618" QuestObjectiveIndex="1" X="2299.911" Y="2343.661" Z="311.9629" />
 					<MoveTo X="2251.925" Y="2363.873" Z="373.657" /> <!-- NOTE: <CheckThis>: Player can easily walk up this mountain, but the mesh has to comply. -->
 					<MoveTo X="2249.971" Y="2348.081" Z="379.8681" /> <!-- NOTE: <CheckThis>: Player can easily walk up this mountain, but the mesh has to comply. -->
 

@@ -6689,13 +6689,23 @@
 
     <CustomBehavior File="UseItem" ItemId="24421" QuestId="9804" WaitTime="20000" TerminateWhen="!HasItem(24421)" />
 
-    <CustomBehavior File="CollectThings" CollectUntil="QuestComplete" QuestId="9804" MobId="17153">
-      <Hotspot X="-1015.435" Y="6978.983" Z="20.9537" />
-      <Hotspot X="-1095.557" Y="6927.961" Z="-7.853549" />
-      <Hotspot X="-1054.655" Y="7020.357" Z="13.46711" />
-      <Hotspot X="-1035.872" Y="7115.696" Z="8.343487" />
-      <Hotspot X="-996.0095" Y="7218.953" Z="9.012037" />
-    </CustomBehavior>
+    <While Condition="HasQuest(9804) &amp;&amp; !IsQuestCompleted(9804)" >
+      <If Condition="!Me.IsSwimming" >
+        <MoveTo X="-921.4807" Y="7025.175" Z="31.0575" />
+      </If>
+      <DefaultNavType Value="Run" />
+      <CustomBehavior File="KillUntilComplete" MobId="17153" MovementBy="NavigatorOnly" QuestId="9804" QuestObjectiveIndex="1" >
+        <HuntingGrounds>
+          <Hotspot X="-954.3809" Y="7044.484" Z="22.49582" />
+          <Hotspot X="-999.1417" Y="7069.281" Z="16.46107" />
+          <Hotspot X="-984.6497" Y="6982.705" Z="19.63699" />
+          <Hotspot X="-901.8508" Y="7081.958" Z="24.91544" />
+        </HuntingGrounds>
+      </CustomBehavior>
+      <CustomBehavior File="AscendInWater" />
+      <UseMount Value="true" />
+      <DefaultNavType Value="Fly" />
+    </While>
     <If Condition="HasQuest(9804) &amp;&amp; IsQuestCompleted(9804)">
       <CustomBehavior File="AscendInWater" />
       <CustomBehavior File="FlyTo" DestName="Throne of the Elements"
