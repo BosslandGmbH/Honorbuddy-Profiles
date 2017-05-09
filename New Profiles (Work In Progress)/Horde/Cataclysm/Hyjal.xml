@@ -734,13 +734,18 @@
 
 		<While Condition="DoQuest(25664)" >
 			<Code File="FlyTo" X="5144.946" Y="-2596.489" Z="1652.151" />
-			<Code File="Misc\RunLua" WaitTime="5000" Lua="Dismount();" />
+			<Code File="Misc\RunLua" Lua="Dismount();" />
+			<Code File="RunCode" Code="
+				foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =&gt; Me.GetAuraById(id)).Where(a =&gt; a != null))
+				aura.TryCancelAura();
+			" />
+			<Code File="WaitTimer" WaitTime="3500" />
 			<Code File="UseItem" ItemId="55211" QuestId="25664" TerminateWhen="Unit(41084, u =&gt; u.Attackable) != null" />
 			<Code File="KillUntilComplete" MobId="41084" QuestId="25664" TerminateWhen="Unit(41084, u =&gt; u.Attackable) == null" />
 		</While>
 
 		<TurnIn QuestName="A Bird in Hand" QuestId="25731" TurnInName="Thisalee Crow" TurnInId="41006" X="4911.595" Y="-2721.063" Z="1437.608" />
-		<TurnIn QuestName="A Prayer and a Wing" QuestId="25664" TurnInName="Choluna" TurnInId="41005" X="4888.391" Y="-2810.801" Z="1437.674" />
+		<TurnIn Nav="Run" QuestName="A Prayer and a Wing" QuestId="25664" TurnInName="Choluna" TurnInId="41005" X="4888.391" Y="-2810.801" Z="1437.674" />
 		<PickUp QuestName="Fact-Finding Mission" QuestId="25740" GiverName="Skylord Omnuron" GiverId="40997" X="4900.444" Y="-2778.734" Z="1460.579" />
 		<TurnIn QuestName="Durable Seeds" QuestId="25491" TurnInName="Archdruid Hamuul Runetotem" TurnInId="39858" X="4420.155" Y="-2084.449" Z="1211.043" />
 		<TurnIn QuestName="Fresh Bait" QuestId="25493" TurnInName="Archdruid Hamuul Runetotem" TurnInId="39858" X="4420.155" Y="-2084.449" Z="1211.043" />
@@ -1157,10 +1162,13 @@
 			<If Condition="!Me.HasAura(75724)" >
 				<MoveTo X="4831.648" Y="-4221.756" Z="894.0687" />
 				<Code File="ForcedDismount" />
+				<Code File="RunMacro" Macro="/cancelform" />
+				<DisableBehavior Name="Combat" />
 				<Code File="UseItem" ItemId="55137" QuestId="25308" X="4831.648" Y="-4221.756" Z="894.0687" TerminateWhen="Me.HasAura(75724)" />
 			</If>
 			<UseMount Value="false" />
 			<Code File="InteractWith" MobId="40489" NonCompeteDistance="0" GossipOptions="1" MovementBy="NavigatorOnly" QuestId="25308" QuestObjectiveIndex="1" X="4805.007" Y="-4186.206" Z="897.5305" TerminateWhen="Unit(40491, u =&gt; u.Attackable) != null || !Me.HasAura(75724)" />
+			<EnableBehavior Name="Combat" />
 			<Code File="KillUntilComplete" MobId="40491" MovementBy="NavigatorOnly" QuestId="25308" X="4805.007" Y="-4186.206" Z="897.5305" TerminateWhen="Unit(40491, u =&gt; u.Attackable) == null" />
 			<UseMount Value="true" />
 		</While>
