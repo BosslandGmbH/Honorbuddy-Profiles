@@ -577,9 +577,9 @@ END INITORDER COMMENT -->
 
 		<PickUp QuestName="Challiane Vineyards" QuestId="38203" GiverName="Cellarman Voodani" GiverId="91061" X="1396.776" Y="7144.244" Z="59.96989" />
 		<While Condition="DoQuest(38203)" >
-			<CustomBehavior File="InteractWith" MobId="90547" NonCompeteDistance="0" InteractByLooting="true" QuestId="38203" QuestObjectiveIndex="3" X="1433.429" Y="7005.435" Z="90.79688" />
-			<CustomBehavior File="InteractWith" MobId="90537" NonCompeteDistance="0" InteractByLooting="true" QuestId="38203" QuestObjectiveIndex="2" X="1243.832" Y="6826.204" Z="120.8751" />
-			<CustomBehavior File="InteractWith" MobId="90541" NonCompeteDistance="0" InteractByLooting="true" QuestId="38203" QuestObjectiveIndex="1" X="1439.657" Y="6723.007" Z="87.88544" />
+			<CustomBehavior File="KillUntilComplete" MobId="90547" QuestId="38203" QuestObjectiveIndex="3" X="1433.429" Y="7005.435" Z="90.79688" />
+			<CustomBehavior File="KillUntilComplete" MobId="90537" QuestId="38203" QuestObjectiveIndex="2" X="1243.832" Y="6826.204" Z="120.8751" />
+			<CustomBehavior File="KillUntilComplete" MobId="90541" QuestId="38203" QuestObjectiveIndex="1" X="1439.657" Y="6723.007" Z="87.88544" />
 		</While>
 
 		<If Condition="HasQuest(38203)" >
@@ -590,7 +590,7 @@ END INITORDER COMMENT -->
 
 		<While Condition="!IsQuestCompleted(37965) &amp;&amp; Me.Level &lt; 110" >
 			<!-- Bonus quest: 'A Tainted Vintage' -->
-			<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(37965)" >
+			<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" PreInteractMountStrategy="Dismount" TerminateWhen="IsQuestCompleted(37965)" >
 				<HuntingGrounds>
 					<Hotspot X="1280.752" Y="6749.125" Z="106.4029" />
 					<Hotspot X="1325.041" Y="6820.668" Z="106.602" />
@@ -884,9 +884,9 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="You Never Know Until You Scry" QuestId="42693" GiverName="Olothil Starlance" GiverId="108328" X="-189.7396" Y="6313.207" Z="20.58764" />
 
 		<While Condition="DoQuest(42692)" >
-			<CustomBehavior File="InteractWith" MobId="251117" NonCompeteDistance="0" QuestId="42692" QuestObjectiveIndex="1" X="-167.8872" Y="6411.101" Z="46.26837" />
-			<CustomBehavior File="InteractWith" MobId="251121" NonCompeteDistance="0" QuestId="42692" QuestObjectiveIndex="2" X="-110.2135" Y="6406.333" Z="27.6425" />
-			<CustomBehavior File="InteractWith" MobId="251115" NonCompeteDistance="0" QuestId="42692" QuestObjectiveIndex="3" X="-115.7153" Y="6336.984" Z="20.62677" />
+			<CustomBehavior File="InteractWith" MobId="251117" NonCompeteDistance="0" MovementBy="NavigatorOnly" QuestId="42692" QuestObjectiveIndex="1" X="-167.8872" Y="6411.101" Z="46.26837" />
+			<CustomBehavior File="InteractWith" MobId="251121" NonCompeteDistance="0" MovementBy="NavigatorOnly" QuestId="42692" QuestObjectiveIndex="2" X="-110.2135" Y="6406.333" Z="27.6425" />
+			<CustomBehavior File="InteractWith" MobId="251115" NonCompeteDistance="0" MovementBy="NavigatorOnly" QuestId="42692" QuestObjectiveIndex="3" X="-115.7153" Y="6336.984" Z="20.62677" />
 		</While>
 		<CustomBehavior File="KillUntilComplete" MobId="88091" QuestId="37486" QuestObjectiveIndex="1" X="-323.2778" Y="6158.521" Z="48.07375" />
 
@@ -1007,6 +1007,7 @@ END INITORDER COMMENT -->
 			<CustomBehavior File="RunCode">
 				<![CDATA[
 						List<WoWGuid> targetBlacklist = new List<WoWGuid>();
+						await CommonCoroutines.StopMoving();
 						while (DoQuest(42370))
 						{
 							var wandTarget = ObjectManager.GetObjectsOfType<WoWUnit>().Where(u => !targetBlacklist.Contains(u.Guid) && u.Entry == 107279).OrderBy(u => u.DistanceSqr).FirstOrDefault();
