@@ -28,6 +28,17 @@
 	</Mailboxes>
 
 	<Vendors>
+		<Vendor Name="Kraank" Entry="76928" Type="Food" X="5632.268" Y="4627.147" Z="139.2156" />
+		<Vendor Name="Provisioner Rashma" Entry="80151" Type="Food" X="5577.308" Y="4596.927" Z="141.1696" />
+		<Vendor Name="Supplymaster Eri" Entry="76872" Type="Repair" X="5626.828" Y="4629.681" Z="139.3038" />
+		<Vendor Name="Der'shway" Entry="76746" Type="Food" X="6790.803" Y="5850.958" Z="258.7218" />
+		<Vendor Name="Dean'na" Entry="74471" Type="Repair" X="6779.814" Y="5877.275" Z="258.6883" />
+		<Vendor Name="Vasushen" Entry="77470" Type="Repair" X="6738.805" Y="5796.527" Z="258.7143" />
+		<Vendor Name="Kelok Frostblade" Entry="79448" Type="Repair" X="5866.797" Y="6237.577" Z="49.16753" />
+		<Vendor Name="Sejo the Mender" Entry="77462" Type="Repair" X="5840.792" Y="6360.636" Z="69.8737" />
+		<Vendor Name="Dorg" Entry="72382" Type="Food" X="6167.285" Y="5018.628" Z="139.1736" />
+		<Vendor Name="Axe-Shaper Kugra" Entry="78989" Type="Repair" X="6118.715" Y="4986.791" Z="133.5156" />
+		<Vendor Name="Provisioner Lambala" Entry="78672" Type="Food" X="6653.94" Y="4312.604" Z="90.19288" />
 	</Vendors>
 
 	<Blackspots>
@@ -154,8 +165,11 @@
 		<!-- END Hooks -->
 
 		<TurnIn QuestName="The Home of the Frostwolves" QuestId="33868" TurnInName="Farseer Drek&apos;Thar" TurnInId="76411" X="5538.753" Y="5014.584" Z="12.70083" />
+
 		<PickUp QuestName="A Song of Frost and Fire" QuestId="33815" GiverName="Farseer Drek&apos;Thar" GiverId="76411" X="5538.753" Y="5014.584" Z="12.70083" />
+		<MoveTo QuestId="33815" X="5436.736" Y="4952.756" Z="64.57199" />
 		<TurnIn QuestName="A Song of Frost and Fire" QuestId="33815" TurnInName="Durotan" TurnInId="78272" X="5436.736" Y="4952.756" Z="64.57199" />
+
 		<PickUp QuestName="Of Wolves and Warriors" QuestId="34402" GiverName="Durotan" GiverId="78272" X="5436.736" Y="4952.756" Z="64.57199" />
 		<TurnIn QuestName="Of Wolves and Warriors" QuestId="34402" TurnInName="Thrall" TurnInId="70859" X="5613.917" Y="4528.342" Z="119.9844" />
 
@@ -238,8 +252,10 @@
 			<Code File="InteractWith" MobId="231012" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="34461" QuestObjectiveIndex="1" X="5580.643" Y="4467.705" Z="130.8468" />
 			<Code File="UseItem" ItemId="111956" QuestId="34461" QuestObjectiveIndex="2" TerminateWhen="!HasItem(111956)" />
 
-			<Code File="InteractWith" MobId="80600" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34461" QuestObjectiveIndex="3" X="5566.078" Y="4518.871" Z="131.6672" />
-			<Code File="Misc\RunLua" Lua="C_Garrison.PlaceBuilding(23, 26);" QuestId="34461" QuestObjectiveIndex="3" />
+			<While Condition="!IsObjectiveComplete(3, 34461)" >
+				<Code File="InteractWith" MobId="80600" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34461" X="5566.078" Y="4518.871" Z="131.6672" />
+				<Code File="Misc\RunLua" Lua="C_Garrison.PlaceBuilding(23, 26);" QuestId="34461" QuestObjectiveIndex="3" />
+			</While>
 
 			<Code File="InteractWith" MobId="231217" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34461" QuestObjectiveIndex="5" X="5588.321" Y="4480.14" Z="130.0595" />
 			<Code File="RunCode" Code="await SkipCutscene(1500);" />
@@ -313,15 +329,18 @@
 		<PickUp QuestName="Gormaul Tower" QuestId="33784" GiverName="Durotan" GiverId="76557" X="5911.684" Y="6227.206" Z="49.89631" />
 		<While Condition="DoQuest(33784)" >
 			<While Condition="!IsObjectiveComplete(1, 33784)" >
+				<Code File="ForceSetVendor" DoSell="true" DoRepair="true" />
 				<MoveTo X="6472.194" Y="6206.137" Z="220.6776" />
 			</While>
+			<DisableBehavior Name="Vendor" />
 			<Code File="KillUntilComplete" MobIds="73373, 73371, 75240, 75241, 73472" QuestId="33784" QuestObjectiveIndex="3" X="6458.332" Y="6293.213" Z="228.0956" />
 			<Code File="KillUntilComplete" MobId="78173" QuestId="33784" QuestObjectiveIndex="4" X="6458.332" Y="6293.213" Z="228.0956" />
-			<Code File="KillUntilComplete" MobId="76208" QuestId="33784" QuestObjectiveIndex="5" X="6454.606" Y="6318.067" Z="228.1328" />
+			<Code File="KillUntilComplete" MobId="76208" QuestId="33784" X="6454.606" Y="6318.067" Z="228.1328" />
+			<EnableBehavior Name="Vendor" />
 		</While>
 		<TurnIn QuestName="Gormaul Tower" QuestId="33784" TurnInName="Durotan" TurnInId="76240" X="6453.622" Y="6300.132" Z="227.9792" />
 
-		<PickUp QuestName="These Colors Don&apos;t Run" QuestId="33526" GiverName="Durotan" GiverId="76240" X="6453.622" Y="6300.132" Z="227.9792" />
+		<PickUp QuestName="These Colors Don&apos;t Run" QuestId="33526" GiverName="Durotan" GiverId="70860" X="6453.622" Y="6300.132" Z="227.9792" />
 		<Code File="InteractWith" MobIds="73371, 73373, 75240" MobState="Dead" AuraIdMissingFromMob="151088" CollectionDistance="200" InteractByUsingItemId="107279" PreInteractMountStrategy="Dismount" QuestId="33526" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="6580.101" Y="6209.452" Z="230.5385" />
@@ -338,7 +357,7 @@
 				<Hotspot X="6748.134" Y="5794.884" Z="258.688" />
 			</HuntingGrounds>
 		</Code>
-		<Code File="InteractWith" MobId="75223" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="33546" QuestObjectiveIndex="2" X="6791.877" Y="5759.449" Z="258.687" />
+		<Code File="InteractWith" MobId="75167" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="33546" QuestObjectiveIndex="2" X="6791.877" Y="5759.449" Z="258.687" />
 		<TurnIn QuestName="Deeds Left Undone" QuestId="33546" TurnInName="Durotan" TurnInId="75177" X="6656.731" Y="5917.148" Z="253.9552" />
 
 		<PickUp QuestName="Great Balls of Fire!" QuestId="33408" GiverName="Durotan" GiverId="75177" X="6656.731" Y="5917.148" Z="253.9552" />
@@ -443,6 +462,7 @@
 		</If>
 
 		<TurnIn QuestName="Slaying Slavers" QuestId="33898" TurnInName="Gol&apos;kosh the Axe" TurnInId="76662" X="6667.514" Y="6030.175" Z="122.0151" />
+		<TurnIn QuestName="Mopping Up" QuestId="33412" TurnInName="Igrimar the Resolute" TurnInId="74635" X="7112.747" Y="6011.25" Z="133.9278" />
 		<PickUp QuestName="The Warlord&apos;s Guard" QuestId="33450" GiverName="Igrimar the Resolute" GiverId="74635" X="7112.747" Y="6011.25" Z="133.9278" />
 		<PickUp QuestName="The Cure" QuestId="33454" GiverName="Igrimar the Resolute" GiverId="74635" X="7112.747" Y="6011.25" Z="133.9278" />
 
@@ -493,7 +513,7 @@
 		</While>
 
 		<Code File="KillUntilComplete" MobId="74702" QuestId="33468" QuestObjectiveIndex="4" X="5933.991" Y="6152.673" Z="66.55297" />
-		<Code File="KillUntilComplete" MobId="74700" QuestId="33468" QuestObjectiveIndex="2" X="5933.991" Y="6152.673" Z="66.55297" />
+		<Code File="KillUntilComplete" MobId="74700" QuestId="33468" QuestObjectiveIndex="2" X="5904.124" Y="6318.178" Z="52.79211" />
 
 		<PickUp QuestName="Free Our Brothers and Sisters" QuestId="33807" GiverName="Wor&apos;gol Defender" GiverId="74507" X="5899.873" Y="6337.848" Z="53.44947" />
 
@@ -530,7 +550,7 @@
 		<TurnIn QuestName="Pool of Visions" QuestId="33470" TurnInName="Farseer Drek&apos;Thar" TurnInId="74272" X="5920.239" Y="6480.475" Z="29.47891" />
 
 		<PickUp QuestName="Back to Bladespire Citadel" QuestId="33473" GiverName="Farseer Drek&apos;Thar" GiverId="74272" X="5920.239" Y="6480.475" Z="29.47891" />
-		<Code File="InteractWith" MobId="76782" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33473" QuestObjectiveIndex="1" X="5986.553" Y="6183.685" Z="70.07306" />
+		<Code File="InteractWith" MobId="76782" GossipOptions="2" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33473" QuestObjectiveIndex="1" X="5986.553" Y="6183.685" Z="70.07306" />
 		<TurnIn QuestName="Back to Bladespire Citadel" QuestId="33473" TurnInName="Durotan" TurnInId="70860" X="6805.12" Y="5853.257" Z="259.4378" />
 
 		<PickUp QuestName="Ga&apos;nar&apos;s Vengeance" QuestId="32783" GiverName="Durotan" GiverId="70860" X="6805.12" Y="5853.257" Z="259.4378" />
@@ -538,9 +558,9 @@
 		<TurnIn QuestName="Ga&apos;nar&apos;s Vengeance" QuestId="32783" TurnInName="Ga&apos;nar" TurnInId="70909" X="7219.51" Y="5620.848" Z="125.7956" />
 
 		<PickUp QuestName="Let the Hunt Begin!" QuestId="32791" GiverName="Ga&apos;nar" GiverId="70909" X="7219.51" Y="5620.848" Z="125.7956" />
-		<Code File="InteractWith" MobId="70878" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="70909" QuestObjectiveIndex="1" X="7219.51" Y="5620.848" Z="125.7956" />
-		<Code File="KillUntilComplete" MobIds="70900, 71716, 78645" QuestId="70909" QuestObjectiveIndex="2" X="7193.782" Y="5405.48" Z="66.2515" />
-		<Code File="KillUntilComplete" MobIds="70900, 78644, 78645" QuestId="70909" QuestObjectiveIndex="4" X="7220.652" Y="5302.349" Z="62.38413" />
+		<Code File="InteractWith" MobId="70878" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="32791" QuestObjectiveIndex="1" X="7219.51" Y="5620.848" Z="125.7956" />
+		<Code File="KillUntilComplete" MobIds="70900, 71716, 78645" QuestId="32791" QuestObjectiveIndex="2" X="7193.782" Y="5405.48" Z="66.2515" />
+		<Code File="KillUntilComplete" MobIds="70900, 78644, 78645" QuestId="32791" QuestObjectiveIndex="4" X="7220.652" Y="5302.349" Z="62.38413" />
 		<TurnIn QuestName="Let the Hunt Begin!" QuestId="32791" TurnInName="Ga&apos;nar" TurnInId="74000" X="7221.124" Y="5300.958" Z="62.38804" />
 
 		<PickUp QuestName="Leave Nothing Behind!" QuestId="32792" GiverName="Ga&apos;nar" GiverId="74000" X="7221.124" Y="5300.958" Z="62.38804" />

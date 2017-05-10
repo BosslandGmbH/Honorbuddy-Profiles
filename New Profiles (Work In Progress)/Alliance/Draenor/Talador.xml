@@ -31,6 +31,7 @@
 	</Vendors>
 
 	<Blackspots>
+		<Blackspot X="2253.19" Y="2176.558" Z="116.7599" Radius="5.653403" /> <!-- Nadur's turned over caravan -->
 	</Blackspots>
 
 	<Blacklist>
@@ -39,8 +40,8 @@
 	</Blacklist>
 
 	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
-		<If Condition="Me.IsAlliance" >
-			<Code File="LoadProfile" ProfileName="..\..\Alliance\1-58 Autoloader.xml" RememberProfile="true" />
+		<If Condition="Me.IsHorde" >
+			<Code File="LoadProfile" ProfileName="..\..\Horde\1-41 Autoloader.xml" RememberProfile="true" />
 		</If>
 		<!-- RunCode Methods -->
 			<!-- <Code File="RunCode">
@@ -153,10 +154,10 @@
 			</Code>
 		<!-- END Hooks -->
 
-		<If Condition="NeedsQuest(34566)" >
+		<If Condition="NeedsQuest(34558)" >
 			<If Condition="Me.ZoneId == 6721" >
-				<PickUp QuestName="News from Talador" QuestId="36494" GiverName="Durotan" GiverId="74594" X="5767.498" Y="1299.314" Z="106.9576" />
-				<If Condition="QuestDone(36494) &amp;&amp; HasItem(110560) &amp;&amp; Me.ZoneId == 7004" >
+				<PickUp QuestName="News from Talador" QuestId="36495" GiverName="Vindicator Maraad" GiverId="75127" X="6333.875" Y="742.8488" Z="115.8386" />
+				<If Condition="QuestDone(36495) &amp;&amp; HasItem(110560)" >
 					<Code File="RunCode" Code="
 						await CommonCoroutines.LandAndDismount();
 						Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 110560).Use();
@@ -164,55 +165,75 @@
 						await Coroutine.Wait(7000, () =&gt; !Me.IsCasting);
 					" />
 				</If>
-				<TurnIn QuestName="News from Talador" QuestId="36494" TurnInName="Rokhan" TurnInId="78487" X="5610.383" Y="4565.458" Z="135.5229" />
 			</If>
-			<If Condition="Me.ZoneId == 7004" >
-				<PickUp QuestName="It&apos;s a Matter of Strategy" QuestId="34681" GiverName="Rokhan" GiverId="78487" X="5610.383" Y="4565.458" Z="135.5229" />
-				<While Condition="QuestDone(34681) &amp;&amp; Unit(79407) != null" >
-					<Code File="InteractWith" MobId="79407" GossipOptions="2" PreInteractMountStrategy="Dismount" X="5581.378" Y="4565.564" Z="136.2603" TerminateWhen="Unit(79407) == null" />
+			<If Condition="HasQuest(36495)" >
+				<TurnIn QuestName="News from Talador" QuestId="36495" TurnInName="Bodrick Grey" TurnInId="81492" X="1923.487" Y="287.116" Z="88.96603" />
+			</If>
+			<If Condition="Me.ZoneId == 7078" >
+				<PickUp QuestName="The Critical Path" QuestId="37183" GiverName="Bodrick Grey" GiverId="81492" X="1923.487" Y="287.116" Z="88.96603" />
+				<While Condition="QuestDone(37183) &amp;&amp; Unit(81103) != null" >
+					<Code File="InteractWith" MobId="81103" GossipOptions="2" PreInteractMountStrategy="Dismount" X="1867.513" Y="221.9638" Z="76.69334" TerminateWhen="Unit(81103) == null" />
 				</While>
-				<TurnIn QuestName="It&apos;s a Matter of Strategy" QuestId="34681" TurnInName="Foreman Grobash" TurnInId="79176" X="3248.932" Y="1593.355" Z="162.2488" />
+				<TurnIn QuestName="The Critical Path" QuestId="37183" TurnInName="Foreman Eksos" TurnInId="79133" X="3602.868" Y="1670.951" Z="174.4259" />
 			</If>
 		</If>
 
-
-		<PickUp QuestName="At Your Command" QuestId="34566" GiverName="Foreman Grobash" GiverId="79176" X="3248.932" Y="1593.355" Z="162.2488" />
-		<While Condition="DoQuest(34566)" >
+		<PickUp QuestName="At Your Command" QuestId="34558" GiverName="Foreman Eksos" GiverId="79133" X="3602.868" Y="1670.951" Z="174.4259" />
+		<While Condition="DoQuest(34558)" >
 			<Code File="Misc\RunLua" Lua="LoadAddOn(&quot;Blizzard_QuestChoice&quot;);" />
 			<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
-				<Code File="InteractWith" MobId="231231" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="34566" X="3238.947" Y="1592.445" Z="163.9421" />
+				<Code File="InteractWith" MobId="230665" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="34558" X="3604.387" Y="1673.722" Z="174.5183" />
 			</If>
-			<Code File="Misc\RunLua" QuestId="34566" Lua="QuestChoiceFrameOption2.OptionButton:Click()" WaitTime="1000" />
+			<Code File="Misc\RunLua" QuestId="34558" Lua="QuestChoiceFrameOption2.OptionButton:Click()" WaitTime="1000" />
 			<Code File="RunCode" Code="await SkipCutscene(1000);" />
 		</While>
-		<TurnIn QuestName="At Your Command" QuestId="34566" TurnInName="Foreman Grobash" TurnInId="79176" X="3244.906" Y="1592.066" Z="162.7997" />
+		<TurnIn QuestName="At Your Command" QuestId="34558" TurnInName="Foreman Eksos" TurnInId="79133" X="3602.868" Y="1670.951" Z="174.4259" />
 
-		<PickUp QuestName="An Audience With The Archmage" QuestId="34632" GiverName="Foreman Grobash" GiverId="79176" X="3244.906" Y="1592.066" Z="162.7997" />
-		<TurnIn QuestName="An Audience With The Archmage" QuestId="34632" TurnInName="Archmage Khadgar" TurnInId="80142" X="3192.327" Y="1362.953" Z="174.0173" />
+		<PickUp QuestName="An Audience With The Archmage" QuestId="34631" GiverName="Foreman Eksos" GiverId="79133" X="3602.062" Y="1669.475" Z="175.0496" />
 
-		<PickUp QuestName="Making Acquaintances" QuestId="34814" GiverName="Archmage Khadgar" GiverId="80142" X="3192.327" Y="1362.953" Z="174.0173" />
-		<Code File="InteractWith" MobId="230872" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34814" QuestObjectiveIndex="1" X="3391.612" Y="1030.525" Z="178.7731" />
-		<TurnIn QuestName="Making Acquaintances" QuestId="34814" TurnInName="Magister Krelas" TurnInId="79393" X="3221.924" Y="812.1865" Z="80.65894" />
+		<While Condition="!QuestFlaggedCompleted(35236)" >
+			<Code File="InteractWith" MobId="231962" NumOfTimes="40" CollectionDistance="200" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" TerminateWhen="IsObjectiveComplete(2, 35236) ? true : QuestFlaggedCompleted(35236)" >
+				<HuntingGrounds>
+					<Hotspot X="1190.26" Y="709.5089" Z="111.9825" />
+					<Hotspot X="1180.182" Y="843.5872" Z="97.21329" />
+					<Hotspot X="1078.926" Y="782.4187" Z="100.8398" />
+				</HuntingGrounds>
+			</Code>
 
-		<PickUp QuestName="Creating the Ink" QuestId="34634" GiverName="Magister Krelas" GiverId="79393" X="3221.924" Y="812.1865" Z="80.65894" />
-		<PickUp QuestName="Forming the Scroll" QuestId="34635" GiverName="Magister Krelas" GiverId="79393" X="3221.924" Y="812.1865" Z="80.65894" />
-		<PickUp QuestName="Gathering the Spark" QuestId="34636" GiverName="Magister Krelas" GiverId="79393" X="3221.924" Y="812.1865" Z="80.65894" />
+			<Code File="KillUntilComplete" MobId="75815" TerminateWhen="IsObjectiveComplete(1, 35236) ? true : QuestFlaggedCompleted(35236)" >
+				<HuntingGrounds>
+					<Hotspot X="1190.26" Y="709.5089" Z="111.9825" />
+					<Hotspot X="1180.182" Y="843.5872" Z="97.21329" />
+					<Hotspot X="1078.926" Y="782.4187" Z="100.8398" />
+				</HuntingGrounds>
+			</Code>
+		</While>
 
-		<While Condition="DoQuest(34635, 34636)" >
-			<Code File="InteractWith" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" NumOfTimes="12" TerminateWhen="!DoQuest(34635, 34636)" >
+		<TurnIn QuestName="An Audience With The Archmage" QuestId="34631" TurnInName="Archmage Khadgar" TurnInId="80142" X="3192.327" Y="1362.953" Z="174.0173" />
+
+		<PickUp QuestName="Making Acquaintances" QuestId="34815" GiverName="Archmage Khadgar" GiverId="80142" X="3192.327" Y="1362.953" Z="174.0173" />
+		<Code File="InteractWith" MobId="230872" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34815" QuestObjectiveIndex="1" X="3391.612" Y="1030.525" Z="178.7731" />
+		<TurnIn QuestName="Making Acquaintances" QuestId="34815" TurnInName="Magister Serena" TurnInId="79392" X="3198.95" Y="771.1351" Z="78.3364" />
+
+		<PickUp QuestName="Creating the Ink" QuestId="34609" GiverName="Magister Serena" GiverId="79392" X="3198.95" Y="771.1351" Z="78.3364" />
+		<PickUp QuestName="Forming the Scroll" QuestId="34612" GiverName="Magister Serena" GiverId="79392" X="3198.95" Y="771.1351" Z="78.3364" />
+		<PickUp QuestName="Gathering the Spark" QuestId="34619" GiverName="Magister Serena" GiverId="79392" X="3198.95" Y="771.1351" Z="78.3364" />
+
+		<While Condition="DoQuest(34612, 34619)" >
+			<Code File="InteractWith" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" NumOfTimes="12" TerminateWhen="!DoQuest(34612, 34619)" >
 				<HuntingGrounds>
 					<Hotspot X="3350.354" Y="903.3253" Z="0.9880413" />
 					<Hotspot X="3285.587" Y="863.2126" Z="57.2686" />
 					<Hotspot X="3268.26" Y="963.4196" Z="41.64456" />
 				</HuntingGrounds>
 				<PursuitList>
-					<PursueUnit Id="79390" PursueWhen="DoQuest(34636)" />
-					<PursueUnit Id="79330" PursueWhen="DoQuest(34635)" />
+					<PursueUnit Id="79390" PursueWhen="DoQuest(34619)" />
+					<PursueUnit Id="79330" PursueWhen="DoQuest(34612)" />
 				</PursuitList>
 			</Code>
 		</While>
 
-		<Code File="KillUntilComplete" MobIds="79333, 79335" QuestId="34634" >
+		<Code File="KillUntilComplete" MobIds="79333, 79335" QuestId="34609" >
 			<HuntingGrounds>
 				<Hotspot X="3350.354" Y="903.3253" Z="0.9880413" />
 				<Hotspot X="3285.587" Y="863.2126" Z="57.2686" />
@@ -220,105 +241,100 @@
 			</HuntingGrounds>
 		</Code>
 
-		<TurnIn QuestName="Creating the Ink" QuestId="34634" TurnInName="Magister Krelas" TurnInId="79393" X="3347.853" Y="906.2322" Z="0.8040742" />
-		<TurnIn QuestName="Forming the Scroll" QuestId="34635" TurnInName="Magister Krelas" TurnInId="79393" X="3347.853" Y="906.2322" Z="0.8040742" />
-		<TurnIn QuestName="Gathering the Spark" QuestId="34636" TurnInName="Magister Krelas" TurnInId="79393" X="3347.853" Y="906.2322" Z="0.8040742" />
-		<PickUp QuestName="Next Steps" QuestId="34874" GiverName="Magister Krelas" GiverId="79393" X="3347.853" Y="906.2322" Z="0.8040742" />
-		<TurnIn QuestName="Next Steps" QuestId="34874" TurnInName="Magister Krelas" TurnInId="80965" X="3251.193" Y="1579.334" Z="162.2327" />
-		<PickUp QuestName="The Foot of the Fortress" QuestId="34878" GiverName="Magister Krelas" GiverId="81549" X="3251.193" Y="1579.334" Z="162.2327" />
-		<PickUp QuestName="Logistical Nightmare" QuestId="34766" GiverName="Provisioner Naya" GiverId="79921" X="3256.889" Y="1589.312" Z="162.3458" />
-		<PickUp QuestName="One Step Ahead" QuestId="34683" GiverName="Shadow Hunter Kajassa" GiverId="79627" X="3240.938" Y="1587.315" Z="163.0665" />
+		<TurnIn QuestName="Creating the Ink" QuestId="34609" TurnInName="Magister Serena" TurnInId="79392" X="3347.853" Y="906.2322" Z="0.8040742" />
+		<TurnIn QuestName="Forming the Scroll" QuestId="34612" TurnInName="Magister Serena" TurnInId="79392" X="3347.853" Y="906.2322" Z="0.8040742" />
+		<TurnIn QuestName="Gathering the Spark" QuestId="34619" TurnInName="Magister Serena" TurnInId="79392" X="3347.853" Y="906.2322" Z="0.8040742" />
+		<PickUp QuestName="Next Steps" QuestId="34875" GiverName="Magister Serena" GiverId="79392" X="3286.503" Y="869.3343" Z="57.83586" />
+		<TurnIn QuestName="Next Steps" QuestId="34875" TurnInName="Magister Serena" TurnInId="80966" X="3591.815" Y="1679.873" Z="172.8984" />
+		<PickUp QuestName="The Foot of the Fortress" QuestId="34908" GiverName="Magister Serena" GiverId="80966" X="3591.815" Y="1679.873" Z="172.8984" />
+		<PickUp QuestName="One Step Ahead" QuestId="36801" GiverName="Sloan McCoy" GiverId="86442" X="3599.905" Y="1682.449" Z="172.9747" />
 
-		<While Condition="DoQuest(34766)" >
-			<Code File="InteractWith" IgnoreLoSToTarget="true" CollectionDistance="200" NonCompeteDistance="0" InteractByLooting="true" InteractBlacklistTimeInSeconds="1" NumOfTimes="20" PreInteractMountStrategy="Dismount" QuestId="34766" >
+		<PickUp QuestName="Why Is The Brew Gone?" QuestId="34773" GiverName="Quartermaster O&apos;Riley" GiverId="79963" X="3573.541" Y="1684.138" Z="172.925" />
+		<While Condition="DoQuest(34773)" >
+			<Code File="InteractWith" CollectionDistance="200" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" NumOfTimes="20" QuestId="34773" >
 				<HuntingGrounds>
-					<Hotspot X="3203.33" Y="1686.306" Z="161.726" />
-					<Hotspot X="3251.923" Y="1726.303" Z="153.6792" />
+					<Hotspot X="3570.944" Y="1557.17" Z="140.5639" />
+					<Hotspot X="3636.706" Y="1454.034" Z="135.724" />
+					<Hotspot X="3705.331" Y="1524.542" Z="134.896" />
 				</HuntingGrounds>
 				<PursuitList>
-					<PursueGameObject Id="230728" PursueWhen="!IsObjectiveComplete(1, 34766)" />
-					<PursueGameObject Id="230729" PursueWhen="!IsObjectiveComplete(1, 34766)" />
-					<PursueGameObject Id="230733" PursueWhen="!IsObjectiveComplete(2, 34766)" />
-					<PursueGameObject Id="230734" PursueWhen="!IsObjectiveComplete(2, 34766)" />
-					<PursueGameObject Id="230735" PursueWhen="!IsObjectiveComplete(2, 34766)" />
+					<PursueGameObject Id="230751" PursueWhen="!IsObjectiveComplete(1, 34773)" />
+					<PursueGameObject Id="230752" PursueWhen="!IsObjectiveComplete(1, 34773)" />
+					<PursueGameObject Id="230753" PursueWhen="!IsObjectiveComplete(2, 34773)" />
 				</PursuitList>
 			</Code>
 		</While>
+		<TurnIn QuestName="Why Is The Brew Gone?" QuestId="34773" TurnInName="Quartermaster O&apos;Riley" TurnInId="79963" X="3573.836" Y="1680.946" Z="172.9242" />
 
-		<TurnIn QuestName="Logistical Nightmare" QuestId="34766" TurnInName="Provisioner Naya" TurnInId="79921" X="3257.101" Y="1589" Z="162.3534" />
-		<PickUp QuestName="Send Them Running" QuestId="34803" GiverName="Provisioner Naya" GiverId="79921" X="3257.101" Y="1589" Z="162.3534" />
+		<PickUp QuestName="Not In Your House" QuestId="34804" GiverName="Quartermaster O&apos;Riley" GiverId="79963" X="3573.836" Y="1680.946" Z="172.9242" />
+		<Code File="KillUntilComplete" MobId="80058" QuestId="34804" X="3606.109" Y="1818.415" Z="214.2437" />
+		<TurnIn QuestName="Not In Your House" QuestId="34804" TurnInName="Quartermaster O&apos;Riley" TurnInId="79963" X="3574.06" Y="1683.81" Z="172.9245" />
 
-		<Code File="KillUntilComplete" MobId="80053" QuestId="34803" X="3322.3" Y="1627.345" Z="159.5031" />
+		<TurnIn QuestName="One Step Ahead" QuestId="36801" TurnInName="Vindicator Maraad" TurnInId="75803" X="3398.77" Y="2069.659" Z="160.3984" />
 
-		<TurnIn QuestName="Send Them Running" QuestId="34803" TurnInName="Provisioner Naya" TurnInId="79921" X="3257.136" Y="1589.013" Z="162.3549" />
-		<TurnIn QuestName="One Step Ahead" QuestId="34683" TurnInName="Durotan" TurnInId="75806" X="3996.771" Y="2163.231" Z="118.0372" />
-
-		<PickUp QuestName="Through the Looking Glass" QuestId="33754" GiverName="Durotan" GiverId="75806" X="3996.771" Y="2163.231" Z="118.0372" />
-		<If Condition="DoQuest(33754)" >
-			<Code File="InteractWith" MobId="225769" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="33754" QuestObjectiveIndex="1" X="3993.615" Y="2162.649" Z="117.7795" />
+		<PickUp QuestName="Through the Looking Glass" QuestId="34087" GiverName="Vindicator Maraad" GiverId="75803" X="3398.77" Y="2069.659" Z="160.3984" />
+		<While Condition="DoQuest(34087)" >
+			<Code File="InteractWith" MobId="77335" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34087" X="3387.499" Y="2070.666" Z="159.7278" />
 			<Code File="RunCode" Code="await SkipCutscene();" />
-		</If>
-		<TurnIn QuestName="Through the Looking Glass" QuestId="33754" TurnInName="Durotan" TurnInId="75806" X="3993.615" Y="2162.649" Z="117.7795" />
+		</While>
+		<TurnIn QuestName="Through the Looking Glass" QuestId="34087" TurnInName="Vindicator Maraad" TurnInId="75803" X="3397.77" Y="2070.799" Z="160.3989" />
 
-		<PickUp QuestName="Old Friends, New Enemies" QuestId="35226" GiverName="Durotan" GiverId="75806" X="3993.615" Y="2162.649" Z="117.7795" />
-		<PickUp QuestName="Too Many Irons in the Fire" QuestId="33722" GiverName="Durotan" GiverId="75806" X="3993.615" Y="2162.649" Z="117.7795" />
-		<PickUp QuestName="In Short Supply" QuestId="33735" GiverName="Draka" GiverId="75808" X="3996.922" Y="2137.402" Z="117.7159" />
-		<PickUp QuestName="Gazlowe&apos;s Solution" QuestId="33721" GiverName="Gazlowe" GiverId="75873" X="4011.011" Y="2132.361" Z="116.3439" />
+		<PickUp QuestName="Too Many Irons in the Fire" QuestId="34088" GiverName="Vindicator Maraad" GiverId="75803" X="3397.77" Y="2070.799" Z="160.3989" />
+		<PickUp QuestName="In Short Supply" QuestId="34089" GiverName="Yrel" GiverId="75804" X="3400.512" Y="2071.123" Z="160.3996" />
+		<PickUp QuestName="Thaelin&apos;s Quick Fix" QuestId="34090" GiverName="Thaelin Darkanvil" GiverId="75874" X="3391.082" Y="2070.221" Z="160.3197" />
 
 		<Code File="KillUntilComplete" MobId="81704" QuestId="35226" QuestObjectiveIndex="3" X="4150.308" Y="2681.478" Z="23.60999" />
 
-		<While Condition="DoQuest(33721)" >
-			<While Condition="!IsObjectiveComplete(1, 33721)" >
-				<MoveTo X="4042.825" Y="2453.865" Z="12.47071" />
+		<While Condition="DoQuest(34090)" >
+			<While Condition="!IsObjectiveComplete(1, 34090)" >
+				<MoveTo Precision="3.01" X="3365.661" Y="1867.81" Z="167.3703" />
 				<Code File="ForcedDismount" />
-				<Code File="UseItem" ItemId="107899" QuestId="33721" QuestObjectiveIndex="1" X="4042.825" Y="2453.865" Z="12.47071" />
+				<Code File="UseItem" ItemId="109161" QuestId="34090" QuestObjectiveIndex="1" X="3365.661" Y="1867.81" Z="167.3703" />
 			</While>
-			<While Condition="!IsObjectiveComplete(2, 33721)" >
-				<MoveTo X="3934.033" Y="2479.387" Z="2.451773" />
+			<While Condition="!IsObjectiveComplete(2, 34090)" >
+				<MoveTo Precision="3.01" X="3121.398" Y="1964.625" Z="117.0849" />
 				<Code File="ForcedDismount" />
-				<Code File="UseItem" ItemId="107899" QuestId="33721" QuestObjectiveIndex="2" X="3934.033" Y="2479.387" Z="2.451773" />
+				<Code File="UseItem" ItemId="109161" QuestId="34090" QuestObjectiveIndex="2" X="3121.398" Y="1964.625" Z="117.0849" />
 			</While>
-			<While Condition="!IsObjectiveComplete(3, 33721)" >
-				<MoveTo X="3817.883" Y="2381.693" Z="11.11372" />
+			<While Condition="!IsObjectiveComplete(3, 34090)" >
+				<MoveTo Precision="3.01" X="3369.766" Y="2202.75" Z="123.9832" />
 				<Code File="ForcedDismount" />
-				<Code File="UseItem" ItemId="107899" QuestId="33721" QuestObjectiveIndex="3" X="3817.883" Y="2381.693" Z="11.11372" />
+				<Code File="UseItem" ItemId="109161" QuestId="34090" QuestObjectiveIndex="3" X="3369.766" Y="2202.75" Z="123.9832" />
 			</While>
 		</While>
 
-		<Code File="InteractWith" MobId="225731" CollectionDistance="200" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="33735" QuestObjectiveIndex="1" >
+		<Code File="InteractWith" MobId="225731" CollectionDistance="200" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="34089" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
-				<Hotspot X="3817.883" Y="2381.693" Z="11.11372" />
-				<Hotspot X="3845.991" Y="2564.527" Z="1.400807" />
-				<Hotspot X="3929.011" Y="2475.628" Z="2.569001" />
-				<Hotspot X="4022.063" Y="2519.684" Z="3.874789" />
+				<Hotspot X="3254.085" Y="1980.219" Z="129.2642" />
+				<Hotspot X="3139.591" Y="1996.539" Z="112.7896" />
+				<Hotspot X="3182.466" Y="1907.268" Z="129.1862" />
 			</HuntingGrounds>
 		</Code>
 
-		<Code File="KillUntilComplete" MobIds="75745, 75749, 75752, 80303" QuestId="33722" >
+		<Code File="KillUntilComplete" MobIds="75745, 75749, 75752, 80303" QuestId="34088" >
 			<HuntingGrounds>
-				<Hotspot X="3817.883" Y="2381.693" Z="11.11372" />
-				<Hotspot X="3845.991" Y="2564.527" Z="1.400807" />
-				<Hotspot X="3929.011" Y="2475.628" Z="2.569001" />
-				<Hotspot X="4022.063" Y="2519.684" Z="3.874789" />
+				<Hotspot X="3254.085" Y="1980.219" Z="129.2642" />
+				<Hotspot X="3139.591" Y="1996.539" Z="112.7896" />
+				<Hotspot X="3182.466" Y="1907.268" Z="129.1862" />
 			</HuntingGrounds>
 		</Code>
 
-		<TurnIn QuestName="Gazlowe&apos;s Solution" QuestId="33721" TurnInName="Gazlowe" TurnInId="75924" X="3609.201" Y="2316.07" Z="67.29845" />
-		<TurnIn QuestName="Old Friends, New Enemies" QuestId="35226" TurnInName="Durotan" TurnInId="75958" X="3622.392" Y="2317.629" Z="66.80582" />
-		<TurnIn QuestName="Too Many Irons in the Fire" QuestId="33722" TurnInName="Durotan" TurnInId="75958" X="3622.392" Y="2317.629" Z="66.80582" />
-		<PickUp QuestName="Dreadpiston" QuestId="34950" GiverName="Durotan" GiverId="75958" X="3622.392" Y="2317.629" Z="66.80582" />
-		<TurnIn QuestName="In Short Supply" QuestId="33735" TurnInName="Draka" TurnInId="75808" X="3624.896" Y="2317.486" Z="66.92386" />
-		<PickUp QuestName="Iron Them Out" QuestId="33736" GiverName="Draka" GiverId="75808" X="3624.896" Y="2317.486" Z="66.92386" />
+		<TurnIn QuestName="In Short Supply" QuestId="34089" TurnInName="Yrel" TurnInId="75804" X="3399.103" Y="2069.607" Z="160.3983" />
+		<PickUp QuestName="Iron Them Out" QuestId="34095" GiverName="Yrel" GiverId="75804" X="3399.103" Y="2069.607" Z="160.3983" />
+		<TurnIn QuestName="Too Many Irons in the Fire" QuestId="34088" TurnInName="Vindicator Maraad" TurnInId="75803" X="3399.103" Y="2069.607" Z="160.3983" />
+		<PickUp QuestName="Dreadpiston" QuestId="34959" GiverName="Vindicator Maraad" GiverId="75803" X="3399.103" Y="2069.607" Z="160.3983" />
+		<TurnIn QuestName="Thaelin&apos;s Quick Fix" QuestId="34090" TurnInName="Thaelin Darkanvil" TurnInId="75874" X="3393.942" Y="2069.568" Z="160.4014" />
 
-		<Code File="InteractWith" MobIds="225757, 225760" Range="16" IgnoreLoSToTarget="true" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" MovementBy="NavigatorOnly" QuestId="33736" QuestObjectiveIndex="1" >
+		<Code File="InteractWith" MobIds="225757, 225760" Range="16" IgnoreLoSToTarget="true" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" MovementBy="NavigatorOnly" QuestId="34095" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="3268.085" Y="2282.124" Z="117.3244" />
 				<Hotspot X="3267.01" Y="2310.245" Z="116.4776" />
 				<Hotspot X="3323.339" Y="2490.347" Z="113.4533" />
 			</HuntingGrounds>
+			<!-- Perhaps try GAMEOBJECT.State != Ready with 1second blacklist since some objects aren't getting interacted with on the first pass. -->
 		</Code>
 
-		<While Condition="DoQuest(34950)" >
+		<While Condition="DoQuest(34959)" >
 			<Code File="Hooks\Avoid" AvoidName="ClusterpultShot" Command="Add" ObjectType="Missile" ObjectId="162711" Radius="9" />
 
 			<!--<Code File="Hooks\Avoid" AvoidName="RightPiston" Command="Add" ObjectType="Npc" ObjectId="162711" Radius="10"
@@ -328,7 +344,7 @@
 				AvoidLocationProducer="WoWMathHelper.CalculatePointAtSide(UNIT.Location, UNIT.Rotation, 10, true)"
 				AvoidWhen="UNIT.CastingSpellId == 155243 &amp;&amp; UNIT.DistanceSqr &lt; 10f*10f &amp;&amp; UNIT.IsSafelyFacing(Me.Location, 90)" /> -->
 
-			<Code File="KillUntilComplete" MobId="80576" QuestId="34950" X="3317.299" Y="2461.522" Z="113.5137" />
+			<Code File="KillUntilComplete" MobId="80576" QuestId="34959" X="3317.299" Y="2461.522" Z="113.5137" />
 			<Code File="Hooks\Avoid" AvoidName="ClusterpultShot" Command="Remove" />
 
 			<!-- Check and improve later
@@ -340,8 +356,13 @@
 		<Code File="KillUntilComplete" MobId="76981" QuestId="33973" X="3454.736" Y="2435.257" Z="121.0499" />
 		<TurnIn QuestName="Dying Wish" QuestId="33973" TurnInName="Ahm" TurnInId="77031" X="3394.07" Y="2442.411" Z="113.3693" />
 
-		<TurnIn QuestName="Dreadpiston" QuestId="34950" TurnInName="Durotan" TurnInId="75959" X="2804.579" Y="2516.321" Z="120.769" />
-		<TurnIn QuestName="Iron Them Out" QuestId="33736" TurnInName="Draka" TurnInId="75808" X="2800.63" Y="2517.645" Z="121.0209" />
+		<TurnIn QuestName="Dreadpiston" QuestId="34959" TurnInName="Vindicator Maraad" TurnInId="75803" X="3399.047" Y="2070.238" Z="160.3987" />
+		<TurnIn QuestName="Iron Them Out" QuestId="34095" TurnInName="Yrel" TurnInId="75804" X="3401.966" Y="2070.625" Z="160.4" />
+
+
+
+
+
 		<PickUp QuestName="Burning Sky" QuestId="33740" GiverName="Crystal-Shaper Barum" GiverId="75521" X="2892.421" Y="1477.46" Z="181.6134" />
 		<PickUp QuestName="Pieces of Us" QuestId="33734" GiverName="Crystal-Shaper Barum" GiverId="75521" X="2892.421" Y="1477.46" Z="181.6134" />
 		<PickUp QuestName="Barum&apos;s Notes" QuestId="33761" GiverName="Barum&apos;s Notes" GiverId="225778" X="2733.445" Y="1285.219" Z="187.9957" />
@@ -369,18 +390,18 @@
 		</Code>
 
 		<While Condition="!QuestFlaggedCompleted(34639)" >
-			<CustomBehavior File="InteractWith" MobId="79432" Range="5" NumOfTimes="20" PreInteractMountStrategy="Dismount" TerminateWhen="IsObjectiveComplete(2, 34639) ? true : QuestFlaggedCompleted(34639)" >
+			<Code File="InteractWith" MobId="79432" Range="5" NumOfTimes="20" PreInteractMountStrategy="Dismount" TerminateWhen="IsObjectiveComplete(2, 34639) ? true : QuestFlaggedCompleted(34639)" >
 				<HuntingGrounds>
 					<Hotspot X="2523.812" Y="1322.543" Z="140.6996" />
 					<Hotspot X="2455.672" Y="1235.288" Z="139.4202" />
 				</HuntingGrounds>
-			</CustomBehavior>
-			<CustomBehavior File="KillUntilComplete" MobId="79409" TerminateWhen="IsObjectiveComplete(1, 34639) ? true : QuestFlaggedCompleted(34639)" >
+			</Code>
+			<Code File="KillUntilComplete" MobId="79409" TerminateWhen="IsObjectiveComplete(1, 34639) ? true : QuestFlaggedCompleted(34639)" >
 				<HuntingGrounds>
 					<Hotspot X="2523.812" Y="1322.543" Z="140.6996" />
 					<Hotspot X="2455.672" Y="1235.288" Z="139.4202" />
 				</HuntingGrounds>
-			</CustomBehavior>
+			</Code>
 		</While>
 
 		<TurnIn QuestName="Burning Sky" QuestId="33740" TurnInName="Crystal-Shaper Barum" TurnInId="75913" X="2235.199" Y="1263.304" Z="108.907" />
@@ -466,11 +487,11 @@
 			<TurnIn QuestName="Aruumel&apos;s Rest" QuestId="33874" TurnInName="Seer Malune" TurnInId="76665" X="2413.364" Y="1935.033" Z="128.9917" />
 		</If>
 
-		<PickUp QuestName="A Pilgrimage Gone Awry" QuestId="34801" GiverName="Nadur" GiverId="80028" X="2270.396" Y="2175.708" Z="117.8897" />
+		<PickUp QuestName="A Pilgrimage Gone Awry" QuestId="34802" GiverName="Nadur" GiverId="80028" X="2270.396" Y="2175.708" Z="117.8897" />
 
-		<Code File="KillUntilComplete" MobId="78673" QuestId="34801" QuestObjectiveIndex="3" X="2291.633" Y="2133.108" Z="110.6264" />
+		<Code File="KillUntilComplete" MobId="78673" QuestId="34802" QuestObjectiveIndex="3" X="2291.633" Y="2133.108" Z="110.6264" />
 
-		<Code File="InteractWith" MobIds="230820, 230821" CollectionDistance="200" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="34801" QuestObjectiveIndex="2" >
+		<Code File="InteractWith" MobIds="230820, 230821" CollectionDistance="200" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="34802" QuestObjectiveIndex="2" >
 			<HuntingGrounds>
 				<Hotspot X="2233.211" Y="2221.465" Z="117.6665" />
 				<Hotspot X="2286.66" Y="2287.849" Z="118.6817" />
@@ -478,7 +499,7 @@
 			</HuntingGrounds>
 		</Code>
 
-		<Code File="KillUntilComplete" MobId="79703" QuestId="34801" QuestObjectiveIndex="1" >
+		<Code File="KillUntilComplete" MobId="79703" QuestId="34802" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="2233.211" Y="2221.465" Z="117.6665" />
 				<Hotspot X="2286.66" Y="2287.849" Z="118.6817" />
@@ -486,25 +507,25 @@
 			</HuntingGrounds>
 		</Code>
 
-		<TurnIn QuestName="A Pilgrimage Gone Awry" QuestId="34801" TurnInName="Nadur" TurnInId="80028" X="2269.769" Y="2174.854" Z="117.8083" />
-		<TurnIn QuestName="The Foot of the Fortress" QuestId="34878" TurnInName="Magister Krelas" TurnInId="80396" X="1716.563" Y="2123.801" Z="138.9243" />
+		<TurnIn QuestName="A Pilgrimage Gone Awry" QuestId="34802" TurnInName="Nadur" TurnInId="80028" X="2269.769" Y="2174.854" Z="117.8083" />
+		<TurnIn QuestName="The Foot of the Fortress" QuestId="34908" TurnInName="Magister Serena" TurnInId="80607" X="1718.943" Y="2120.432" Z="139.7615" />
 
-		<PickUp QuestName="Dropping In" QuestId="34879" GiverName="Magister Krelas" GiverId="80396" X="1716.563" Y="2123.801" Z="138.9243" />
-		<Code File="InteractWith" MobId="230978" Range="9" IgnoreLoSToTarget="true" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34879" QuestObjectiveIndex="1" >
+		<PickUp QuestName="Dropping In" QuestId="34913" GiverName="Magister Serena" GiverId="80607" X="1718.943" Y="2120.432" Z="139.7615" />
+		<Code File="InteractWith" MobId="230978" Range="9" IgnoreLoSToTarget="true" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34913" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="1677.12" Y="2040.371" Z="165.6756" />
 				<Hotspot X="1684.954" Y="1921.003" Z="229.3672" />
 				<Hotspot X="1719.307" Y="1848.202" Z="261.5942" />
 			</HuntingGrounds>
 		</Code>
-		<Code File="InteractWith" MobId="235824" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34879" QuestObjectiveIndex="3" X="1659.424" Y="1740.648" Z="298.9584" />
+		<Code File="InteractWith" MobId="231105" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34913" QuestObjectiveIndex="3" X="1667.344" Y="1714.365" Z="294.9077" />
+		<TurnIn QuestName="Dropping In" QuestId="34913" TurnInName="Magister Serena" TurnInId="80608" X="1667.65" Y="1667.3" Z="304.68" />
 
-		<TurnIn QuestName="Dropping In" QuestId="34879" TurnInName="Magister Krelas" TurnInId="80390" X="1636.87" Y="1757.1" Z="311.133" />
-		<PickUp QuestName="While We&apos;re in the Neighborhood" QuestId="34887" GiverName="Magister Krelas" GiverId="79393" X="1636.87" Y="1757.1" Z="311.133" />
-		<PickUp QuestName="Vicious Viziers" QuestId="34888" GiverName="Magister Krelas" GiverId="79393" X="1636.87" Y="1757.1" Z="311.133" />
-		<PickUp QuestName="Orbs of Power" QuestId="34889" GiverName="Magister Krelas" GiverId="79393" X="1636.87" Y="1757.1" Z="311.133" />
+		<PickUp QuestName="While We&apos;re in the Neighborhood" QuestId="34909" GiverName="Magister Serena" GiverId="80608" X="1667.65" Y="1667.3" Z="304.68" />
+		<PickUp QuestName="Vicious Viziers" QuestId="34910" GiverName="Magister Serena" GiverId="80608" X="1667.65" Y="1667.3" Z="304.68" />
+		<PickUp QuestName="Orbs of Power" QuestId="34911" GiverName="Magister Serena" GiverId="79392" X="1667.65" Y="1667.3" Z="304.68" />
 
-		<Code File="InteractWith" MobId="230960" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34889" QuestObjectiveIndex="1" >
+		<Code File="InteractWith" MobId="230960" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34911" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="1368.717" Y="1733.219" Z="313.7177" />
 				<Hotspot X="1263.717" Y="1725.872" Z="316.2419" />
@@ -514,11 +535,11 @@
 			</HuntingGrounds>
 		</Code>
 
-		<Code File="KillUntilComplete" MobId="80294" QuestId="34888" QuestObjectiveIndex="1" X="1144.382" Y="1743.824" Z="332.3661" />
-		<Code File="KillUntilComplete" MobId="80292" QuestId="34888" QuestObjectiveIndex="2" X="1354.263" Y="1830.931" Z="349.2659" />
-		<Code File="KillUntilComplete" MobId="80295" QuestId="34888" QuestObjectiveIndex="3" X="1214.156" Y="1888.583" Z="343.6653" />
+		<Code File="KillUntilComplete" MobId="80294" QuestId="34910" QuestObjectiveIndex="1" X="1144.382" Y="1743.824" Z="332.3661" />
+		<Code File="KillUntilComplete" MobId="80292" QuestId="34910" QuestObjectiveIndex="2" X="1354.263" Y="1830.931" Z="349.2659" />
+		<Code File="KillUntilComplete" MobId="80295" QuestId="34910" QuestObjectiveIndex="3" X="1214.156" Y="1888.583" Z="343.6653" />
 
-		<Code File="KillUntilComplete" MobIds="79231, 79234, 81764" QuestId="34887" >
+		<Code File="KillUntilComplete" MobIds="79231, 79234, 81764" QuestId="34909" >
 			<HuntingGrounds>
 				<Hotspot X="1368.717" Y="1733.219" Z="313.7177" />
 				<Hotspot X="1263.717" Y="1725.872" Z="316.2419" />
@@ -528,54 +549,68 @@
 			</HuntingGrounds>
 		</Code>
 
-		<TurnIn QuestName="While We&apos;re in the Neighborhood" QuestId="34887" TurnInName="Magister Krelas" TurnInId="79393" X="1254.134" Y="1925.834" Z="338.6884" />
-		<TurnIn QuestName="Vicious Viziers" QuestId="34888" TurnInName="Magister Krelas" TurnInId="79393" X="1254.134" Y="1925.834" Z="338.6884" />
-		<TurnIn QuestName="Orbs of Power" QuestId="34889" TurnInName="Magister Krelas" TurnInId="79393" X="1254.134" Y="1925.834" Z="338.6884" />
+		<TurnIn QuestName="While We&apos;re in the Neighborhood" QuestId="34909" TurnInName="Magister Serena" TurnInId="79392" X="1254.134" Y="1925.834" Z="338.6884" />
+		<TurnIn QuestName="Vicious Viziers" QuestId="34910" TurnInName="Magister Serena" TurnInId="79392" X="1254.134" Y="1925.834" Z="338.6884" />
+		<TurnIn QuestName="Orbs of Power" QuestId="34911" TurnInName="Magister Serena" TurnInId="79392" X="1254.134" Y="1925.834" Z="338.6884" />
 
-		<PickUp QuestName="The Final Step" QuestId="34890" GiverName="Magister Krelas" GiverId="79393" X="1254.134" Y="1925.834" Z="338.6884" />
-		<While Condition="DoQuest(34890)" >
-			<Code File="Hooks\DoWhen" ActivityName="CallReinforcements" AllowUseDuringCombat="true" UseWhen="HasItem(112542) &amp;&amp; Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 112542).CooldownTimeLeft == TimeSpan.Zero &amp;&amp; Unit(81500) == null &amp;&amp; Unit(80335, u =&gt; u.Aggro) != null" >
+		<PickUp QuestName="The Final Step" QuestId="34912" GiverName="Magister Serena" GiverId="79392" X="1254.134" Y="1925.834" Z="338.6884" />
+		<While Condition="DoQuest(34912)" >
+			<Code File="Hooks\DoWhen" ActivityName="CallReinforcements" AllowUseDuringCombat="true" UseWhen="HasItem(112543) &amp;&amp; Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 112543).CooldownTimeLeft == TimeSpan.Zero &amp;&amp; Unit(81428) == null &amp;&amp; Unit(80335, u =&gt; u.Aggro) != null" >
 				<Code File="RunCode" Code="
 					SpellManager.StopCasting();
-					Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 112542).Use();
+					Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 112543).Use();
 				" />
 			</Code>
-			<Code File="KillUntilComplete" MobId="80335" QuestId="34890" QuestObjectiveIndex="1" X="1181.443" Y="1988.24" Z="356.6319" />
+			<Code File="KillUntilComplete" MobId="80335" QuestId="34912" QuestObjectiveIndex="1" X="1181.443" Y="1988.24" Z="356.6319" />
 			<Code File="Hooks\DoWhen" ActivityName="CallReinforcements" Command="Remove" />
-			<Code File="InteractWith" MobId="231056" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34890" QuestObjectiveIndex="2" X="1177.673" Y="1997.927" Z="356.6083" />
+			<Code File="InteractWith" MobId="231056" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34912" QuestObjectiveIndex="2" X="1177.673" Y="1997.927" Z="356.6083" />
 		</While>
-		<TurnIn QuestName="The Final Step" QuestId="34890" TurnInName="Magister Krelas" TurnInId="79393" X="1179.22" Y="1997.649" Z="356.611" />
+		<TurnIn QuestName="The Final Step" QuestId="34912" TurnInName="Magister Serena" TurnInId="79392" X="1179.22" Y="1997.649" Z="356.611" />
 
-		<PickUp QuestName="Due Cause to Celebrate" QuestId="34712" GiverName="Magister Krelas" GiverId="79393" X="1179.22" Y="1997.649" Z="356.611" />
-		<If Condition="QuestDone(34712)" >
-			<Code File="WaitTimer" WaitTime="60000" TerminateWhen="Unit(80553) != null" />
+		<PickUp QuestName="Due Cause to Celebrate" QuestId="34711" GiverName="Magister Serena" GiverId="79392" X="1177.613" Y="2003.135" Z="356.6058" />
+		<If Condition="QuestDone(34711)" >
+			<Code File="WaitTimer" WaitTime="60000" TerminateWhen="Unit(80672) != null" />
 		</If>
-		<TurnIn QuestName="Due Cause to Celebrate" QuestId="34712" TurnInName="Magister Krelas" TurnInId="80553" X="3244.91" Y="1587.53" Z="162.282" />
+		<TurnIn QuestName="Due Cause to Celebrate" QuestId="34711" TurnInName="Magister Serena" TurnInId="80672" X="3599.78" Y="1677.85" Z="173.093" />
 
-		<If Condition="!IsQuestCompleted(34949)" >
-			<Code File="InteractWith" MobId="80553" NonCompeteDistance="0" X="3244.91" Y="1587.53" Z="162.282" TerminateWhen="IsQuestCompleted(34949)" />
+		<If Condition="!IsQuestCompleted(34993)" >
+			<Code File="InteractWith" MobId="80672" NonCompeteDistance="0" X="3599.78" Y="1677.85" Z="173.093" TerminateWhen="IsQuestCompleted(34993)" />
 			<Code File="RunCode" Code="QuestFrame.Instance.CompleteQuest();" />
 		</If>
 
-		<PickUp QuestName="The Lady of Light" QuestId="34696" GiverName="Knight-Lord Dranarus" GiverId="79612" X="3249.768" Y="1553.011" Z="162.512" />
-		<PickUp QuestName="The Heart of Auchindoun" QuestId="33920" GiverName="Soulbinder Nyami" GiverId="78519" X="1761.103" Y="2460.206" Z="129.3472" />
-		<PickUp QuestName="Disrupting the Flow" QuestId="33917" GiverName="Vindicator Nobundo" GiverId="78482" X="1809.845" Y="2446.943" Z="129.3435" />
-		<TurnIn QuestName="The Lady of Light" QuestId="34696" TurnInName="Lady Liadrin" TurnInId="75121" X="1740.947" Y="2521.765" Z="133.6586" />
-		<PickUp QuestName="Holding the Line" QuestId="34418" GiverName="Lady Liadrin" GiverId="75121" X="1740.947" Y="2521.765" Z="133.6586" />
-		<PickUp QuestName="Powering the Defenses" QuestId="35249" GiverName="Mehlar Dawnblade" GiverId="78577" X="1761.846" Y="2523.949" Z="133.6586" />
-		<!-- <PickUp QuestName="Every Bit Counts" QuestId="34710" GiverName="Ranger Belonis" GiverId="79696" X="1771.214" Y="2529.701" Z="133.6586" /> Not worth it -->
+		<TurnIn QuestName="Speaker for the Dead" QuestId="34701" TurnInName="Exarch Maladaar" TurnInId="75119" X="1740.899" Y="2510.718" Z="133.6588" />
+		<PickUp QuestName="Holding the Line" QuestId="34407" GiverName="Exarch Maladaar" GiverId="75119" X="1740.899" Y="2510.718" Z="133.6588" />
+		<PickUp QuestName="Powering the Defenses" QuestId="34458" GiverName="Vindicator Kaluud" GiverId="81789" X="1734.989" Y="2517.639" Z="133.6588" />
+		<PickUp QuestName="The Heart of Auchindoun" QuestId="33920" GiverName="Soulbinder Nyami" GiverId="78519" X="1761.425" Y="2465.228" Z="129.3726" />
+		<PickUp QuestName="Disrupting the Flow" QuestId="33917" GiverName="Vindicator Nobundo" GiverId="78482" X="1806.929" Y="2451.456" Z="129.7726" />
 
-		<If Condition="QuestDone(35249)" >
+		<Code File="KillUntilComplete" MobId="76876" QuestId="33920" QuestObjectiveIndex="1" X="1928.832" Y="2452.651" Z="134.5879" />
+		<Code File="InteractWith" MobId="229269" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="33920" QuestObjectiveIndex="2" X="1942.334" Y="2455.7" Z="136.0305" />
+
+		<Code File="InteractWith" MobId="229139" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33917" QuestObjectiveIndex="1" X="1901.777" Y="2495.176" Z="128.6697" />
+	
+		<Code File="KillUntilComplete" MobIds="76883, 78202, 78457" QuestId="34407" X="1871.09" Y="2454.46" Z="124.4163" />
+
+		<TurnIn QuestName="Disrupting the Flow" QuestId="33917" TurnInName="Vindicator Nobundo" TurnInId="78482" X="1807.922" Y="2450.557" Z="129.6818" />
+		<TurnIn QuestName="The Heart of Auchindoun" QuestId="33920" TurnInName="Soulbinder Nyami" TurnInId="78519" X="1763.595" Y="2461.531" Z="129.3494" />
+		<TurnIn QuestName="Holding the Line" QuestId="34407" TurnInName="Exarch Maladaar" TurnInId="75119" X="1740.143" Y="2510.526" Z="133.6589" />
+
+		<If Condition="QuestDone(34458)" >
 			<If Condition="!Me.IsIndoors" >
 				<MoveTo X="1846.074" Y="2333.084" Z="136.0103" />
 				<MoveTo Nav="Run" X="1874.729" Y="2283.794" Z="102.3438" />
 			</If>
 			<DisableBehavior Name="Pull" />
-			<TurnIn QuestName="Powering the Defenses" QuestId="35249" TurnInName="Soulbinder Tuulani" TurnInId="77737" X="1894.515" Y="2129.525" Z="77.19171" />
+			<TurnIn QuestName="Powering the Defenses" QuestId="34458" TurnInName="Soulbinder Tuulani" TurnInId="77737" X="1894.515" Y="2129.525" Z="77.19171" />
 		</If>
 
+		<DisableBehavior Name="Pull" />
+
 		<PickUp QuestName="We Must Construct Additional Pylons" QuestId="34351" GiverName="Soulbinder Tuulani" GiverId="77737" X="1894.515" Y="2129.525" Z="77.19171" />
-		<PickUp QuestName="Nightmare in the Tomb" QuestId="33530" GiverName="Yuuri" GiverId="76790" X="1830.973" Y="2211.797" Z="79.53761" />
+		<If Condition="NeedsQuest(33530)" >
+
+			<PickUp QuestName="Nightmare in the Tomb" QuestId="33530" GiverName="Yuuri" GiverId="76790" X="1830.973" Y="2211.797" Z="79.53761" />
+		</If>
 
 		<Code File="InteractWith" MobId="229034" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34351" QuestObjectiveIndex="2" X="1796.034" Y="2316.735" Z="78.07319" />
 
@@ -586,34 +621,26 @@
 			</HuntingGrounds>
 		</Code>
 
+		<EnableBehavior Name="Pull" />
+
 		<Code File="KillUntilComplete" MobId="76745" QuestId="33530" X="1731.763" Y="2153.279" Z="63.3777" />
 
-		<Code File="KillUntilComplete" MobId="76876" QuestId="33920" QuestObjectiveIndex="1" X="1928.832" Y="2452.651" Z="134.5879" />
-		<Code File="InteractWith" MobId="229269" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="33920" QuestObjectiveIndex="2" X="1942.334" Y="2455.7" Z="136.0305" />
+		<TurnIn QuestName="Nightmare in the Tomb" QuestId="33530" TurnInName="Exarch Maladaar" TurnInId="75119" X="1738.406" Y="2512.491" Z="133.6588" />
+		<TurnIn QuestName="We Must Construct Additional Pylons" QuestId="34351" TurnInName="Soulbinder Tuulani" TurnInId="78520" X="1748.991" Y="2541.804" Z="133.6588" />
+		<PickUp QuestName="Light&apos;s Rest" QuestId="34452" GiverName="Exarch Maladaar" GiverId="75119" X="1740.927" Y="2517.245" Z="133.6587" />
+		<TurnIn QuestName="Light&apos;s Rest" QuestId="34452" TurnInName="Exarch Maladaar" TurnInId="75250" X="1371.042" Y="2417.98" Z="131.7066" />
+		<PickUp QuestName="Into the Hollow" QuestId="33958" GiverName="Soulbinder Nyami" GiverId="75256" X="1372.001" Y="2422.349" Z="131.7066" />
+		<PickUp QuestName="Antivenin" QuestId="33967" GiverName="Soulbinder Tuulani" GiverId="78028" X="1372.001" Y="2422.349" Z="131.7066" />
+		<PickUp QuestName="Vile Defilers" QuestId="33969" GiverName="Vindicator Namuun" GiverId="78102" X="1381.772" Y="2403.662" Z="131.7066" />
 
-		<Code File="InteractWith" MobId="229139" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33917" QuestObjectiveIndex="1" X="1901.777" Y="2495.176" Z="128.6697" />
-
-		<Code File="KillUntilComplete" MobIds="76883, 78202, 78457" QuestId="34418" X="1871.09" Y="2454.46" Z="124.4163" />
-
-		<TurnIn QuestName="Disrupting the Flow" QuestId="33917" TurnInName="Vindicator Nobundo" TurnInId="78482" X="1807.922" Y="2450.557" Z="129.6818" />
-		<TurnIn QuestName="The Heart of Auchindoun" QuestId="33920" TurnInName="Soulbinder Nyami" TurnInId="78519" X="1763.595" Y="2461.531" Z="129.3494" />
-		<TurnIn QuestName="Holding the Line" QuestId="34418" TurnInName="Lady Liadrin" TurnInId="75121" X="1741.295" Y="2519.724" Z="133.6591" />
-		<TurnIn QuestName="Nightmare in the Tomb" QuestId="33530" TurnInName="Lady Liadrin" TurnInId="75121" X="1741.295" Y="2519.724" Z="133.6591" />
-		<TurnIn QuestName="We Must Construct Additional Pylons" QuestId="34351" TurnInName="Soulbinder Tuulani" TurnInId="78520" X="1749.288" Y="2542.441" Z="133.6591" />
-		<PickUp QuestName="Sunsworn Camp" QuestId="34451" GiverName="Lady Liadrin" GiverId="75121" X="1742.907" Y="2522.327" Z="133.6591" />
-		<TurnIn QuestName="Sunsworn Camp" QuestId="34451" TurnInName="Lady Liadrin" TurnInId="75246" X="1549.923" Y="2198.706" Z="139.0522" />
-		<PickUp QuestName="Into the Hollow" QuestId="33970" GiverName="Soulbinder Nyami" GiverId="75256" X="1551.457" Y="2201.164" Z="138.9381" />
-		<PickUp QuestName="Antivenin" QuestId="33971" GiverName="Soulbinder Tuulani" GiverId="78028" X="1548.699" Y="2202.426" Z="139.1783" />
-		<PickUp QuestName="Vile Defilers" QuestId="33972" GiverName="Mehlar Dawnblade" GiverId="75249" X="1550.441" Y="2221.542" Z="138.7865" />
-
-		<While Condition="DoQuest(33970, 33972)" >
+		<While Condition="DoQuest(33958, 33969)" >
 			<If Condition="!Me.IsIndoors" >
 				<MoveTo X="1089.248" Y="2187.757" Z="150.2249" />
 			</If>
-			<Code File="KillUntilComplete" MobId="75294" MovementBy="NavigatorOnly" QuestId="33970" QuestObjectiveIndex="1" X="986.5636" Y="1928.684" Z="116.7817" />
-			<Code File="InteractWith" MobId="229596" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" MovementBy="NavigatorOnly" QuestId="33970" QuestObjectiveIndex="2" X="974.0639" Y="1914.934" Z="117.8797" />
+			<Code File="KillUntilComplete" MobId="75294" MovementBy="NavigatorOnly" QuestId="33958" QuestObjectiveIndex="1" X="986.5636" Y="1928.684" Z="116.7817" />
+			<Code File="InteractWith" MobId="229596" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" MovementBy="NavigatorOnly" QuestId="33958" QuestObjectiveIndex="2" X="974.0639" Y="1914.934" Z="117.8797" />
 
-			<Code File="InteractWith" MobId="228051" Range="10" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33972" QuestObjectiveIndex="1" >
+			<Code File="InteractWith" MobId="228051" Range="10" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33969" QuestObjectiveIndex="1" >
 				<HuntingGrounds>
 					<Hotspot X="1007.524" Y="1943.981" Z="117.5291" />
 					<Hotspot X="924.4438" Y="1981.423" Z="141.589" />
@@ -622,7 +649,7 @@
 			</Code>
 		</While>
 
-		<Code File="KillUntilComplete" MobIds="75273, 76947" QuestId="33971" >
+		<Code File="KillUntilComplete" MobIds="75273, 76947" QuestId="33967" >
 			<HuntingGrounds>
 				<Hotspot X="1246.38" Y="2277.668" Z="132.9377" />
 				<Hotspot X="1144.519" Y="2230.879" Z="141.964" />
@@ -630,10 +657,10 @@
 			</HuntingGrounds>
 		</Code>
 
-		<TurnIn QuestName="Vile Defilers" QuestId="33972" TurnInName="Mehlar Dawnblade" TurnInId="75249" X="1547.859" Y="2221.578" Z="138.8318" />
-		<TurnIn QuestName="Antivenin" QuestId="33971" TurnInName="Soulbinder Tuulani" TurnInId="78028" X="1547.589" Y="2203.284" Z="139.2834" />
-		<TurnIn QuestName="Into the Hollow" QuestId="33970" TurnInName="Soulbinder Nyami" TurnInId="75256" X="1547.589" Y="2203.284" Z="139.2834" />
-		<PickUp QuestName="Scheduled Pickup" QuestId="34242" GiverName="Lady Liadrin" GiverId="75246" X="1545.038" Y="2200.454" Z="139.332" />
+		<TurnIn QuestName="Vile Defilers" QuestId="33969" TurnInName="Vindicator Namuun" TurnInId="78102" X="1381.132" Y="2405.164" Z="131.7063" />
+		<TurnIn QuestName="Antivenin" QuestId="33967" TurnInName="Soulbinder Tuulani" TurnInId="78028" X="1374.348" Y="2420.514" Z="131.7063" />
+		<TurnIn QuestName="Into the Hollow" QuestId="33958" TurnInName="Soulbinder Nyami" TurnInId="75256" X="1374.208" Y="2424.119" Z="131.7063" />
+		<PickUp QuestName="Scheduled Pickup" QuestId="34240" GiverName="Exarch Maladaar" GiverId="75250" X="1366.236" Y="2423.826" Z="131.7063" />
 
 		<While Condition="!QuestFlaggedCompleted(34660)" >
 			<Code File="InteractWith" MobId="79520" NumOfTimes="16" WaitTime="4500" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" TerminateWhen="IsObjectiveComplete(1, 34660) ? true : QuestFlaggedCompleted(34660)" >
@@ -652,7 +679,7 @@
 			</Code>
 		</While>
 
-		<TurnIn QuestName="Scheduled Pickup" QuestId="34242" TurnInName="Soulbinder Tuulani" TurnInId="77869" X="955.3851" Y="2825.728" Z="137.0344" />
+		<TurnIn QuestName="Scheduled Pickup" QuestId="34240" TurnInName="Soulbinder Tuulani" TurnInId="77869" X="955.3851" Y="2825.728" Z="137.0344" />
 		<PickUp QuestName="Restalaan, Captain of the Guard" QuestId="34508" GiverName="Soulbinder Tuulani" GiverId="77869" X="955.3851" Y="2825.728" Z="137.0344" />
 		<PickUp QuestName="Never Forget" QuestId="34013" GiverName="Defender Artaal" GiverId="78083" X="950.893" Y="2823.332" Z="137.0344" />
 		<PickUp QuestName="Payback" QuestId="34234" GiverName="Vindicator Kaluud" GiverId="78082" X="959.9283" Y="2830.176" Z="137.0506" />

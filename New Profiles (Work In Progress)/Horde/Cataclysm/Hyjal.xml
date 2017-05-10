@@ -408,6 +408,7 @@
 			<Code File="KillUntilComplete" MobId="39446" QuestId="25272" X="5146.545" Y="-2299.948" Z="1279.079" />
 		</While>
 		<If Condition="QuestDone(25272)" >
+			<Code File="UseItem" ItemId="52682" X="5146.545" Y="-2299.948" Z="1279.079" TerminateWhen="Unit(39622) != null" />
 			<TurnIn QuestName="Lycanthoth the Corruptor" QuestId="25272" TurnInName="Spirit of Lo&apos;Gosh" TurnInId="39622" X="5147.293" Y="-2299.378" Z="1279.12" />
 			<Code File="WaitTimer" WaitTime="70000" TerminateWhen="!Me.InVehicle" />
 		</If>
@@ -645,8 +646,10 @@
 				aura.TryCancelAura();
 			" />
 			<Code File="InteractWith" QuestId="25462" MobId="40190" Range="8" CollectionDistance="2" NonCompeteDistance="0" WaitForNpc="true" NumOfTimes="5" WaitTime="2000" X="5254.562" Y="-1536.917" Z="1361.341" TerminateWhen="Me.IsOnTransport" />
-			<Code File="SpecificQuests\MountHyjal\BearsUpThere" QuestName="The Bears Up There" QuestId="25462" />
-			<Code File="EjectVeh" />
+			<Code File="SpecificQuests\MountHyjal\BearsUpThere" QuestName="The Bears Up There" QuestId="25462" TerminateWhen="!HasItem(54439) &amp;&amp; Unit(40240, u =&gt; u.DistanceSqr &lt; 60f*60f) == null" />
+			<While Condition="Me.InVehicle" >
+				<Code File="Misc\RunLua" WaitTime="2250" Lua="OverrideActionBarButton2:Click();" />
+			</While>
 			<Code File="WaitTimer" WaitTime="5000" QuestId="25462" GoalText="Waiting for quest to complete {TimeRemaining}" />
 		</While>
 		<TurnIn QuestName="The Bears Up There" QuestId="25462" TurnInName="Keeper Taldros" TurnInId="39932" X="5264.799" Y="-1511.283" Z="1365.525" />
