@@ -515,11 +515,13 @@
 			<Code File="Misc\RunLua" QuestId="12540" WaitTime="1000" Lua="ReloadUI();" /> <!-- Fixes interface bug -->
 		</While>
 		
-		<PickUp QuestName="Fortunate Misunderstandings" QuestId="12570" GiverName="Injured Rainspeaker Oracle" GiverId="28217" X="5412.318" Y="4574.35" Z="-129.3929" />
-		<While Condition="DoQuest(12570)" >
-			<Code File="InteractWith" MobId="28217" GossipOptions="1" NonCompeteDistance="0" CollectionDistance="200" QuestId="12570" X="5412.318" Y="4574.35" Z="-129.3929" />
+		<While Condition="!IsQuestCompleted(12570)" >
+			<Code File="InteractWith" MobId="28217" GossipOptions="1" NonCompeteDistance="0" CollectionDistance="200" PreInteractMountStrategy="Dismount" X="5412.318" Y="4574.35" Z="-129.3929" TerminateWhen="IsQuestCompleted(12570)" />
+			<PickUp QuestName="Fortunate Misunderstandings" QuestId="12570" GiverName="Injured Rainspeaker Oracle" GiverId="28217" X="5412.318" Y="4574.35" Z="-129.3929" />
+			<Code File="InteractWith" MobId="28217" GossipOptions="1" NonCompeteDistance="0" CollectionDistance="200" PreInteractMountStrategy="Dismount" X="5412.318" Y="4574.35" Z="-129.3929" TerminateWhen="IsQuestCompleted(12570)" />
 			<MoveTo X="5638.694" Y="4599.41" Z="-137.1068" />
 			<Code File="WaitTimer" WaitTime="70000" QuestId="12570" />
+			<Code File="AbandonQuest" QuestId="12570" Type="Incomplete" />
 		</While>
 		<TurnIn QuestName="Fortunate Misunderstandings" QuestId="12570" TurnInName="High-Oracle Soo-say" TurnInId="28027" X="5650.718" Y="4555.79" Z="-134.9444" />
 

@@ -255,7 +255,7 @@
 		<Code File="KillUntilComplete" MobId="79621" QuestId="34698" QuestObjectiveIndex="1" X="5956.041" Y="1762.372" Z="62.67952" />
 
 		<While Condition="DoQuest(34702)" >
-			<Code File="InteractWith" MobId="81388" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" WaitTime="6000" QuestId="34702" X="5911.843" Y="1766.637" Z="62.54105" TerminateWhen="Unit(75864, u =&gt; u.IsHostile) != null" />
+			<Code File="InteractWith" MobId="81388" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" WaitTime="8000" QuestId="34702" X="5911.843" Y="1766.637" Z="62.54105" TerminateWhen="Unit(75864, u =&gt; u.Attackable) != null" />
 			<Code File="KillUntilComplete" MobIds="79727, 79728, 79726, 75864" WaitForNpcs="false" QuestId="34702" X="5919.237" Y="1767.982" Z="61.36032" />
 		</While>
 
@@ -280,6 +280,7 @@
 				<Code File="RunCode">
 					<![CDATA[
 						var barricadePoi = Object(227114);
+						await CommonCoroutines.StopMoving();
 						barricadePoi.Interact();
 						await Coroutine.Sleep(2000);
 					]]>
@@ -328,7 +329,7 @@
 		<Code File="KillUntilComplete" MobId="74962" QuestId="35870" X="6275.293" Y="1413.364" Z="36.54895" />
 
 		<While Condition="!QuestFlaggedCompleted(36603)" >
-			<CustomBehavior File="Hooks\Avoid" AvoidName="AcidPool" Command="Add" ObjectType="AreaTrigger" ObjectId="8093" Radius="3" AvoidWhen="Me.Combat" />
+			<CustomBehavior File="Hooks\Avoid" AvoidName="AcidPool" Command="Add" ObjectType="AreaTrigger" ObjectId="8093" Radius="4" />
 			<Code File="KillUntilComplete" TerminateWhen="QuestFlaggedCompleted(36603)" >
 				<HuntingGrounds>
 					<Hotspot X="6380.934" Y="1779.483" Z="62.27605" />
@@ -395,8 +396,8 @@
 		<TurnIn QuestName="Xuk Me, Right?" QuestId="35202" TurnInName="Bony Xuk" TurnInId="84743" X="6590.88" Y="1292.455" Z="64.63418" />
 
 		<PickUp QuestName="Xuk It!" QuestId="35041" GiverName="Bony Xuk" GiverId="84743" X="6589.069" Y="1290.398" Z="64.64732" />
-		<While Condition="DoQuest(84743)" >
-			<Code File="UseItem" ItemId="112958" QuestId="84743" TerminateWhen="Me.HasAura(164332)" />
+		<While Condition="DoQuest(35041)" >
+			<Code File="UseItem" ItemId="112958" QuestId="35041" TerminateWhen="Me.HasAura(164332)" />
 			<Code File="InteractWith" MobId="231880" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="35041" QuestObjectiveIndex="1" X="6571.6" Y="1236.499" Z="63.7883" TerminateWhen="!Me.HasAura(164332)" />
 			<Code File="InteractWith" MobId="86022" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="35041" QuestObjectiveIndex="2" X="6840.418" Y="1318.075" Z="68.51578" TerminateWhen="!Me.HasAura(164332)" />
 			<Code File="InteractWith" MobId="231881" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="35041" QuestObjectiveIndex="3" X="6840.418" Y="1318.075" Z="68.51578" TerminateWhen="!Me.HasAura(164332)" />
@@ -422,7 +423,7 @@
 
 		<Code File="KillUntilComplete" MobId="81043" QuestId="35128" QuestObjectiveIndex="2" X="7022.689" Y="1643.249" Z="-36.82618" />
 
-		<Code File="InteractWith" MobId="81213" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="35129" QuestObjectiveIndex="1" X="6991.152" Y="1592.586" Z="-36.68575" />
+		<Code File="InteractWith" MobId="81213" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="35129" QuestObjectiveIndex="1" X="6991.152" Y="1592.586" Z="-36.68575" />
 		<Code File="InteractWith" MobId="233594" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="35129" QuestObjectiveIndex="2" X="6991.152" Y="1592.586" Z="-36.68575" />
 
 		<Code File="KillUntilComplete" MobId="81240" QuestId="35128" QuestObjectiveIndex="1" >
@@ -512,7 +513,7 @@
 			</HuntingGrounds>
 		</Code>
 
-		<Code File="KillUntilComplete" MobId="80714" TerminateWhen="IsQuestCompleted(35017)" > <!-- Obtain and complete Mysterious Pod -->
+		<Code File="KillUntilComplete" MobId="80714" TerminateWhen="!DoQuest(35017) &amp;&amp; IsQuestCompleted(35021)" > <!-- Obtain and complete Mysterious Pod -->
 			<HuntingGrounds>
 				<Hotspot X="6022.111" Y="603.8957" Z="24.19525" />
 				<Hotspot X="6112.663" Y="519.1295" Z="11.39996" />

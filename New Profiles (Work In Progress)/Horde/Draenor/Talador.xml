@@ -156,7 +156,7 @@
 		<If Condition="NeedsQuest(34566)" >
 			<If Condition="Me.ZoneId == 6721" >
 				<PickUp QuestName="News from Talador" QuestId="36494" GiverName="Durotan" GiverId="74594" X="5767.498" Y="1299.314" Z="106.9576" />
-				<If Condition="QuestDone(36494) &amp;&amp; HasItem(110560) &amp;&amp; Me.ZoneId == 7004" >
+				<If Condition="QuestDone(36494) &amp;&amp; HasItem(110560)" >
 					<Code File="RunCode" Code="
 						await CommonCoroutines.LandAndDismount();
 						Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 110560).Use();
@@ -164,6 +164,8 @@
 						await Coroutine.Wait(7000, () =&gt; !Me.IsCasting);
 					" />
 				</If>
+			</If>
+			<If Condition="HasQuest(36494)" >
 				<TurnIn QuestName="News from Talador" QuestId="36494" TurnInName="Rokhan" TurnInId="78487" X="5610.383" Y="4565.458" Z="135.5229" />
 			</If>
 			<If Condition="Me.ZoneId == 7004" >
@@ -174,7 +176,6 @@
 				<TurnIn QuestName="It&apos;s a Matter of Strategy" QuestId="34681" TurnInName="Foreman Grobash" TurnInId="79176" X="3248.932" Y="1593.355" Z="162.2488" />
 			</If>
 		</If>
-
 
 		<PickUp QuestName="At Your Command" QuestId="34566" GiverName="Foreman Grobash" GiverId="79176" X="3248.932" Y="1593.355" Z="162.2488" />
 		<While Condition="DoQuest(34566)" >
@@ -369,18 +370,18 @@
 		</Code>
 
 		<While Condition="!QuestFlaggedCompleted(34639)" >
-			<CustomBehavior File="InteractWith" MobId="79432" Range="5" NumOfTimes="20" PreInteractMountStrategy="Dismount" TerminateWhen="IsObjectiveComplete(2, 34639) ? true : QuestFlaggedCompleted(34639)" >
+			<Code File="InteractWith" MobId="79432" Range="5" NumOfTimes="20" PreInteractMountStrategy="Dismount" TerminateWhen="IsObjectiveComplete(2, 34639) ? true : QuestFlaggedCompleted(34639)" >
 				<HuntingGrounds>
 					<Hotspot X="2523.812" Y="1322.543" Z="140.6996" />
 					<Hotspot X="2455.672" Y="1235.288" Z="139.4202" />
 				</HuntingGrounds>
-			</CustomBehavior>
-			<CustomBehavior File="KillUntilComplete" MobId="79409" TerminateWhen="IsObjectiveComplete(1, 34639) ? true : QuestFlaggedCompleted(34639)" >
+			</Code>
+			<Code File="KillUntilComplete" MobId="79409" TerminateWhen="IsObjectiveComplete(1, 34639) ? true : QuestFlaggedCompleted(34639)" >
 				<HuntingGrounds>
 					<Hotspot X="2523.812" Y="1322.543" Z="140.6996" />
 					<Hotspot X="2455.672" Y="1235.288" Z="139.4202" />
 				</HuntingGrounds>
-			</CustomBehavior>
+			</Code>
 		</While>
 
 		<TurnIn QuestName="Burning Sky" QuestId="33740" TurnInName="Crystal-Shaper Barum" TurnInId="75913" X="2235.199" Y="1263.304" Z="108.907" />
