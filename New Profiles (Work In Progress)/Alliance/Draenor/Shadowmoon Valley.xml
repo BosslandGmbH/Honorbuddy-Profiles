@@ -232,12 +232,10 @@
 			<Code File="InteractWith" MobId="231855" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34587" QuestObjectiveIndex="1" X="1903.285" Y="236.0247" Z="77.60751" />
 			<Code File="UseItem" ItemId="111956" QuestId="34587" QuestObjectiveIndex="2" />
 
-			<While Condition="!IsObjectiveComplete(3, 34587)" >
-				<Code File="InteractWith" MobId="81369" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34587" X="1868.666" Y="261.3354" Z="77.12529" />
-				<Code File="Misc\RunLua" Lua="C_Garrison.PlaceBuilding(23, 26);" QuestId="34587" QuestObjectiveIndex="3" />
-			</While>
+			<Code File="InteractWith" MobId="81369" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34587" X="1868.666" Y="261.3354" Z="77.12529" />
+			<Code File="Misc\RunLua" Lua="C_Garrison.PlaceBuilding(23, 26);" QuestId="34587" />
 
-			<Code File="InteractWith" MobId="232651" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34587" QuestObjectiveIndex="5" X="1888.869" Y="242.719" Z="76.55524" />
+			<Code File="InteractWith" MobId="232651" NonCompeteDistance="0" WaitForNpcs="false" PreInteractMountStrategy="Dismount" QuestId="34587" QuestObjectiveIndex="5" X="1888.869" Y="242.719" Z="76.55524" />
 			<Code File="RunCode" Code="await SkipCutscene(1500);" />
 		</While>
 		<TurnIn QuestName="Build Your Barracks" QuestId="34587" TurnInName="Vindicator Maraad" TurnInId="79457" X="1852.672" Y="245.3419" Z="77.02358" />
@@ -367,7 +365,10 @@
 
 		<PickUp QuestName="Migrant Workers" QuestId="34778" GiverName="Vindicator Maraad" GiverId="79457" X="1851.976" Y="247.0664" Z="77.21649" />
 		<Code File="InteractWith" MobId="81912" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34778" QuestObjectiveIndex="1" X="1856.468" Y="243.7795" Z="76.98661" />
-		<TurnIn QuestName="Migrant Workers" QuestId="34778" TurnInName="Foreman Zipfizzle" TurnInId="81912" X="1199.951" Y="-1479.347" Z="-7.146417" />
+		<If Condition="QuestDone(34778)" >
+			<MoveTo X="1199.951" Y="-1479.347" Z="-7.146417" />
+			<TurnIn QuestName="Migrant Workers" QuestId="34778" TurnInName="Foreman Zipfizzle" TurnInId="81912" X="1199.951" Y="-1479.347" Z="-7.146417" />
+		</If>
 
 		<PickUp QuestName="Circle the Wagon" QuestId="34779" GiverName="Foreman Zipfizzle" GiverId="81912" X="1199.951" Y="-1479.347" Z="-7.146417" />
 		<While Condition="DoQuest(34779)" >
@@ -514,10 +515,10 @@
 		<PickUp QuestName="Friend of the Exarchs" QuestId="34788" GiverName="Exarch Naielle" GiverId="80079" X="1491.765" Y="-1918.331" Z="67.46738" />
 		<While Condition="DoQuest(34788)" >
 			<!-- Pick a follower, we're going to default to Onaala -->
-			<Code File="InteractWith" MobId="82492" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34788" X="1490.114" Y="-1913.928" Z="67.46738" />
+			<Code File="InteractWith" MobId="82492" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34788" X="1490.114" Y="-1913.928" Z="67.46738" />
 			<!--<Code File="InteractWith" MobId="82489" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34788" X="1490.114" Y="-1913.928" Z="67.46738" />
 			<Code File="InteractWith" MobId="82491" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34788" X="1490.114" Y="-1913.928" Z="67.46738" />-->
-			<Code File="Misc\RunLua" Lua="StaticPopup1Button1:Click();" />
+			<Code File="Misc\RunLua" Lua="GossipTitleButton1:Click(); StaticPopup1Button1:Click();" />
 		</While>
 		<TurnIn QuestName="Friend of the Exarchs" QuestId="34788" TurnInName="Exarch Naielle" TurnInId="80079" X="1489.023" Y="-1912.556" Z="67.46738" />
 
@@ -597,7 +598,7 @@
 
 			<If Condition="CurrentScenarioStage == 1" >
 				<MoveTo X="578.4584" Y="-3085.131" Z="59.63446" />
-				<Code File="WaitTimer" WaitTime="60000" TerminateWhen="CurrentScenarioStage != 1" />
+				<Code File="WaitTimer" WaitTime="16000" TerminateWhen="CurrentScenarioStage != 1" />
 			</If>
 
 			<Code File="KillUntilComplete" MobId="79560" X="578.4584" Y="-3085.131" Z="59.63446" TerminateWhen="CurrentScenarioStage != 2" />
@@ -611,7 +612,7 @@
 
 			<If Condition="CurrentScenarioStage == 0" >
 				<Code File="WaitTimer" WaitTime="60000" TerminateWhen="Unit(79522) == null || Unit(79522, u =&gt; u.IsDead) != null" />
-				<Code File="await SkipCutscene();" />
+				<Code File="RunCode" Code="await SkipCutscene();" />
 			</If>
 		</While>
 		<TurnIn QuestName="The Fate of Karabor" QuestId="33059" TurnInName="Prophet Velen" TurnInId="79043" X="205.3908" Y="-448.5072" Z="-3.898378" />
