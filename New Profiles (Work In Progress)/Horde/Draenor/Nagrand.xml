@@ -39,7 +39,7 @@
 
 	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
 		<If Condition="Me.IsAlliance" >
-			<Code File="LoadProfile" ProfileName="..\..\Alliance\1-58 Autoloader.xml" RememberProfile="true" />
+			<Code File="LoadProfile" ProfileName="..\..\1-110 Autoloader.xml" RememberProfile="true" />
 		</If>
 		<!-- RunCode Methods -->
 			<!-- <Code File="RunCode">
@@ -341,7 +341,24 @@
 
 		<Code File="KillUntilComplete" MobId="88361" X="3769.262" Y="4783.329" Z="95.63969" TerminateWhen="IsObjectiveComplete(3, 37280) ? true : QuestFlaggedCompleted(37280)" />
 
-		<Code File="InteractWith" MobId="238850" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="37318" QuestObjectiveIndex="1" >
+		<While Condition="DoQuest(37318) || (IsObjectiveComplete(1, 37280) ? false : !QuestFlaggedCompleted(37280))" >
+			<Code File="InteractWith" GossipOptions="1" CollectionDistance="200" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" AttemptCountMax="1" NumOfTimes="15" TerminateWhen="!DoQuest(37318) &amp;&amp; (IsObjectiveComplete(1, 37280) ? true : QuestFlaggedCompleted(37280))" >
+				<HuntingGrounds>
+					<Hotspot X="3721.132" Y="4820.388" Z="88.04623" />
+					<Hotspot X="3818.064" Y="4849.542" Z="87.8642" />
+					<Hotspot X="3900.945" Y="4826.841" Z="108.5565" />
+					<Hotspot X="3806.906" Y="4755.067" Z="139.2679" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueGameObject Id="238850" PursueWhen="DoQuest(37318)" />
+					<PursueUnit Id="88811" PursueWhen="UNIT.CurrentTarget == null &amp;&amp; IsObjectiveComplete(1, 37280) ? false : !QuestFlaggedCompleted(37280)" />
+					<PursueUnit Id="88813" PursueWhen="UNIT.CurrentTarget != null &amp;&amp; IsObjectiveComplete(1, 37280) ? false : !QuestFlaggedCompleted(37280)" ConvertWhen="UNIT.CurrentTarget != null" />					
+				</PursuitList>
+
+			</Code>
+		</While>
+
+		<Code File="KillUntilComplete" MobIds="88358, 88365" TerminateWhen="QuestFlaggedCompleted(37280)" >
 			<HuntingGrounds>
 				<Hotspot X="3721.132" Y="4820.388" Z="88.04623" />
 				<Hotspot X="3818.064" Y="4849.542" Z="87.8642" />
@@ -350,37 +367,99 @@
 			</HuntingGrounds>
 		</Code>
 
-		<While Condition="!QuestFlaggedCompleted(37280)" >
-			<Code File="InteractWith" MobId="88811" GossipOptions="1" NumOfTimes="12" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" TerminateWhen="IsObjectiveComplete(1, 37280) ? true : QuestFlaggedCompleted(37280)" >
-				<HuntingGrounds>
-					<Hotspot X="3721.132" Y="4820.388" Z="88.04623" />
-					<Hotspot X="3818.064" Y="4849.542" Z="87.8642" />
-					<Hotspot X="3900.945" Y="4826.841" Z="108.5565" />
-					<Hotspot X="3806.906" Y="4755.067" Z="139.2679" />
-				</HuntingGrounds>
-			</Code>
-			<Code File="KillUntilComplete" MobIds="88358, 88365" TerminateWhen="QuestFlaggedCompleted(37280)" >
-				<HuntingGrounds>
-					<Hotspot X="3721.132" Y="4820.388" Z="88.04623" />
-					<Hotspot X="3818.064" Y="4849.542" Z="87.8642" />
-					<Hotspot X="3900.945" Y="4826.841" Z="108.5565" />
-					<Hotspot X="3806.906" Y="4755.067" Z="139.2679" />
-				</HuntingGrounds>
-			</Code>
+		<TurnIn QuestName="The Dead Do Not Forget..." QuestId="37318" TurnInName="Boneseer&apos;s Cauldron" TurnInId="237705" X="3776.543" Y="4784.858" Z="95.64471" />
+
+		<PickUp QuestName="Called to the Throne" QuestId="34965" GiverName="Farseer Drek&apos;Thar" GiverId="80597" X="4177.091" Y="5237.115" Z="65.45213" />
+		<While Condition="DoQuest(34965)" >
+			<Code File="InteractWith" MobId="80597" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" WaitTime="90000" QuestId="34965" X="4176.724" Y="5236.811" Z="65.45213" />
 		</While>
+		<TurnIn QuestName="Called to the Throne" QuestId="34965" TurnInName="Farseer Drek&apos;Thar" TurnInId="80597" X="4177.748" Y="5237.9" Z="65.45213" />
 
+		<PickUp QuestName="Elemental Attunement" QuestId="34891" GiverName="Farseer Drek&apos;Thar" GiverId="80597" X="4177.748" Y="5237.9" Z="65.45213" />
+		<PickUp QuestName="An Old Friend" QuestId="34943" GiverName="Kalandrios" GiverId="80595" X="4175.275" Y="5181.187" Z="64.32226" />
+		<PickUp QuestName="Earth, Wind and Fire...and Water" QuestId="34881" GiverName="Incineratus" GiverId="80593" X="4240.317" Y="5257.867" Z="66.14414" />
+		<PickUp QuestName="Guardians of the Plateau" QuestId="34893" GiverName="Incineratus" GiverId="80593" X="4240.317" Y="5257.867" Z="66.14414" />
+		<TurnIn QuestName="An Old Friend" QuestId="34943" TurnInName="Gar&apos;rok" TurnInId="80434" X="4062.035" Y="5042.889" Z="160.886" />
+		<PickUp QuestName="A Rare Bloom" QuestId="34894" GiverName="Gar&apos;rok" GiverId="80434" X="4062.035" Y="5042.889" Z="160.886" />
 
+		<Code File="InteractWith" MobId="230961" Range="5" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34891" QuestObjectiveIndex="1" X="4477.763" Y="4807.948" Z="180.2167" />
 
+		<Code File="KillUntilComplete" MobId="80374" QuestId="34893" QuestObjectiveIndex="1" X="4369.164" Y="4678.623" Z="214.418" />
 
+		<Code File="KillUntilComplete" TerminateWhen="IsObjectiveComplete(1, 34881) &amp;&amp; IsObjectiveComplete(2, 34881)" >
+			<HuntingGrounds>
+				<Hotspot X="4322.844" Y="4652.382" Z="207.1106" />
+				<Hotspot X="4267.114" Y="4717.686" Z="217.003" />
+				<Hotspot X="4289.172" Y="4815.893" Z="198.425" />
+				<Hotspot X="4339.857" Y="4872.551" Z="218.8488" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="80382" PursueWhen="!IsObjectiveComplete(1, 34881)" />
+				<PursueUnit Id="80381" PursueWhen="!IsObjectiveComplete(2, 34881)" />
+			</PursuitList>
+		</Code>
 
+		<Code File="KillUntilComplete" MobId="80377" QuestId="34893" QuestObjectiveIndex="4" X="4394.953" Y="5044.26" Z="265.8418" />
 
+		<Code File="InteractWith" MobId="230964" Range="5" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34891" QuestObjectiveIndex="4" X="4523.186" Y="5115.629" Z="249.7445" />
 
+		<Code File="KillUntilComplete" TerminateWhen="IsObjectiveComplete(3, 34881) &amp;&amp; IsObjectiveComplete(4, 34881)" >
+			<HuntingGrounds>
+				<Hotspot X="4511.244" Y="5135.023" Z="250.2839" />
+				<Hotspot X="4558.622" Y="5149.93" Z="248.5664" />
+				<Hotspot X="4597.593" Y="5244.028" Z="249.1443" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="80380" PursueWhen="!IsObjectiveComplete(3, 34881)" />
+				<PursueUnit Id="80379" PursueWhen="!IsObjectiveComplete(4, 34881)" />
+			</PursuitList>
+		</Code>
 
+		<Code File="InteractWith" MobId="230963" Range="5" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34891" QuestObjectiveIndex="3" X="4571.044" Y="5479.153" Z="133.619" />
 
+		<Code File="KillUntilComplete" MobId="80376" QuestId="34893" QuestObjectiveIndex="3" X="4596.896" Y="5530.195" Z="127.1269" />
 
+		<Code File="KillUntilComplete" MobId="80586" X="4551.63" Y="5333.869" Z="133.1359" TerminateWhen="IsQuestCompleted(33928)" />
 
+		<Code File="InteractWith" MobId="231091" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34894" QuestObjectiveIndex="1" X="4548.68" Y="5302.866" Z="134.7715" />
 
+ 		<Code File="InteractWith" MobId="230962" Range="5" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34891" QuestObjectiveIndex="2" X="4003.856" Y="4860.244" Z="262.5155" />
 
+		<Code File="KillUntilComplete" MobId="80375" QuestId="34893" QuestObjectiveIndex="2" X="3964.361" Y="4790.975" Z="285.9186" />
+
+		<If Condition="QuestDone(34893) &amp;&amp; !CanFly() &amp;&amp; Unit(80375) != null" >
+			<MoveTo X="4017.015" Y="4882.822" Z="260.9291" />
+			<Code File="MyCTM" X="4043.085" Y="4924.775" Z="200.5472" />
+		</If>
+
+		<TurnIn QuestName="A Rare Bloom" QuestId="34894" TurnInName="Gar&apos;rok" TurnInId="80434" X="4062.048" Y="5044.841" Z="160.9322" />
+
+		<PickUp QuestName="Guise of the Deceiver" QuestId="34932" GiverName="Gar&apos;rok" GiverId="80434" X="4062.048" Y="5044.841" Z="160.9322" />
+		<Code File="InteractWith" MobId="80483" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34932" QuestObjectiveIndex="1" X="4040.621" Y="4885.84" Z="197.9841" />
+		<Code File="KillUntilComplete" MobId="80483" QuestId="34932" QuestObjectiveIndex="2" X="4040.621" Y="4885.84" Z="197.9841" />
+		<TurnIn QuestName="Guise of the Deceiver" QuestId="34932" TurnInName="Gar&apos;rok" TurnInId="80434" X="4062.065" Y="5044.604" Z="160.9232" />
+
+		<PickUp QuestName="The Debt We Share" QuestId="34941" GiverName="Gar&apos;rok" GiverId="80434" X="4062.065" Y="5044.604" Z="160.9232" />
+		<Code File="InteractWith" MobId="80434" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34941" QuestObjectiveIndex="1" X="4062.065" Y="5044.604" Z="160.9232" />
+		<TurnIn QuestName="The Debt We Share" QuestId="34941" TurnInName="Kalandrios" TurnInId="80595" X="4179.323" Y="5185.349" Z="64.46446" />
+
+		<TurnIn QuestName="Earth, Wind and Fire...and Water" QuestId="34881" TurnInName="Incineratus" TurnInId="80593" X="4243.297" Y="5254.51" Z="66.14433" />
+		<TurnIn QuestName="Guardians of the Plateau" QuestId="34893" TurnInName="Incineratus" TurnInId="80593" X="4243.297" Y="5254.51" Z="66.14433" />
+		<TurnIn QuestName="A Wrong of Earth and Fire" QuestId="33928" TurnInName="Incineratus" TurnInId="80593" X="4243.297" Y="5254.51" Z="66.14433" />
+		<TurnIn QuestName="Elemental Attunement" QuestId="34891" TurnInName="Incineratus" TurnInId="80593" X="4243.297" Y="5254.51" Z="66.14433" />
+
+		<PickUp QuestName="The Ritual of Binding" QuestId="35265" GiverName="Farseer Drek&apos;Thar" GiverId="80597" X="4184.618" Y="5240.175" Z="65.45127" />
+		<While Condition="DoQuest(35265)" >
+			<Code File="InteractWith" MobId="80595" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="35265" QuestObjectiveIndex="1" X="4177.53" Y="5183.91" Z="64.4026" />
+			<Code File="RunCode" Code="await SkipCutscene();" />
+		</While>
+		<TurnIn QuestName="The Ritual of Binding" QuestId="35265" TurnInName="Farseer Drek&apos;Thar" TurnInId="80597" X="4181.931" Y="5237.35" Z="65.45036" />
+
+		<Checkpoint Level="100" />
+
+		<If Condition="Lua.GetReturnVal&lt;uint&gt;(&quot;return GetAccountExpansionLevel();&quot;, 0) &gt;= 6" >
+			<Code File="LoadProfile" ProfileName="..\100-110 Autoloader.xml" RememberProfile="true" />
+		</If>
 		
 	</QuestOrder>
 </HBProfile>

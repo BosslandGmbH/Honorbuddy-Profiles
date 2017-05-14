@@ -1,0 +1,506 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../Schemas/EchoSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Legion Intro Quests ($Rev: 6070 $)</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<Blackspots>
+		<Blackspot X="1320.538" Y="-4527.904" Z="24.80976" Radius="10.25885" /> <!-- Stack of mess near NPC: Gregg -->
+		<Blackspot X="-8374.469" Y="246.2559" Z="155.3479" Radius="4.316002" /> <!-- Varian's Coffin -->
+	</Blackspots>
+
+<!-- INITORDER COMMENT 
+	<InitOrder>
+		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> Use LevelBot default
+	</InitOrder>
+END INITORDER COMMENT -->
+
+	<QuestOrder>
+		<!-- Init Settings -->
+			<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+			<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+			<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+			<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+			<LootMobs Value="true" />
+			<TargetingDistance Value="45" />
+		<!-- END Init Settings -->
+
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+
+					async Task SkipCutscene()
+					{
+				// Add detection of cutscene here.
+						await Coroutine.Sleep(3000);
+				// Test and improve the working method.
+						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+						await Coroutine.Sleep(3000);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<If Condition="!HasQuest(44184) &amp;&amp; !IsQuestCompleted(44184) &amp;&amp; Me.Class != WoWClass.DemonHunter" > <!-- Skip Broken Shore quest -->
+			<!-- Alliance Broken Shore -->
+				<If Condition="Me.IsAlliance" >
+					<While Condition="Me.ZoneId == 7656" > <!-- Boosted 100 -->
+						<CustomBehavior File="UseItem" ItemId="6948" />
+						<CustomBehavior File="WaitTimer" WaitTime="12000" TerminateWhen="Me.ZoneId != 7656 || !Me.IsCasting" />
+					</While>
+
+					<If Condition="HasItem(132120) &amp;&amp; Me.ZoneId != 1519" >
+						<CustomBehavior File="UseItem" ItemId="132120" />
+					</If>
+					<If Condition="!IsQuestCompleted(40519)" >
+						<MoveTo Nav="Fly" X="-8495.853" Y="1083.837" Z="17.94557" />
+						<!-- <PickUp QuestName="The Legion Returns" QuestId="40519" />  Auto Pickup in Stormwind -->
+						<PickUp Nav="Fly" QuestName="The Legion Returns" QuestId="40519" GiverName="Hero's Call Board" GiverId="206111" X="-8823.851" Y="630.5729" Z="94.136" />
+					</If>
+					<If Condition="HasQuest(40519)" >
+						<CustomBehavior File="InteractWith" MobId="107934" WaitTime="2000" X="-8495.111" Y="1078.7" Z="17.9443" />
+						<If Condition="Lua.GetReturnVal&lt;bool&gt;(&quot;return GossipTitleButton3:IsVisible();&quot;, 0)" >
+							<CustomBehavior File="Misc\RunLua" Lua="GossipTitleButton3:Click();" />
+							<CustomBehavior File="Misc\RunLua" WaitTime="5000" Lua="StaticPopup1Button1:Click();" />
+							<CustomBehavior File="LoadProfile" ProfileName="Auto-Loader" />
+							<Else>
+								<TurnIn QuestName="The Legion Returns" QuestId="40519" TurnInName="Recruiter Lee" TurnInId="107934" X="-8495.111" Y="1078.7" Z="17.94479" />
+							</Else>
+						</If>
+					</If>
+
+					<PickUp QuestName="To Be Prepared" QuestId="42782" GiverName="Recruiter Lee" GiverId="107934" X="-8495.111" Y="1078.7" Z="17.94479" />
+					<While Condition="DoQuest(42782)" >
+						<CustomBehavior File="InteractWith" MobId="251195" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="42782" QuestObjectiveIndex="1" X="-8493.529" Y="1204.632" Z="6.094131" />
+						<CustomBehavior File="InteractWith" MobId="251233" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="42782" QuestObjectiveIndex="2" X="-8392.226" Y="1200.191" Z="6.620557" />
+						<CustomBehavior File="InteractWith" MobId="251252" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="42782" QuestObjectiveIndex="3" X="-8344.297" Y="1206.986" Z="6.525891" />
+						<CustomBehavior File="InteractWith" MobId="108749" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" GossipOptions="1" QuestId="42782" QuestObjectiveIndex="4" X="-8377.196" Y="1142.623" Z="18.01496" /> <!-- NOTE: <Technical> May need to use multiple MobIds here for all the duelists. -->
+					</While>
+					<TurnIn QuestName="To Be Prepared" QuestId="42782" TurnInName="Knight Dameron" TurnInId="108916" X="-8302.408" Y="1392.946" Z="4.691516" />
+
+					<PickUp QuestName="The Battle for Broken Shore" QuestId="42740" GiverName="Knight Dameron" GiverId="108916" X="-8302.408" Y="1392.946" Z="4.691516" />
+					<While Condition="DoQuest(42740)" >
+						<!-- NOTE: <Movement> : Character is getting on a static boat object.  May need to turn the second MoveTo below into a MyCTM.
+						If no CTM is required, then remove the first MoveTo, or both entirely as InteractWith can handle movement. -->
+
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0" >
+							<While Condition="Me.ZoneId == 1519" >
+								<If Condition="Unit(108920, u =&gt; u.Distance &gt; 27) != null" >
+									<MoveTo Precision="1" X="-8311.393" Y="1389.263" Z="5.269226" />
+									<CustomBehavior File="MyCTM" X="-8333.537" Y="1388.958" Z="9.25852" />
+									<CustomBehavior File="MyCTM" X="-8336.142" Y="1377.817" Z="9.108124" />
+								</If>
+								<CustomBehavior File="InteractWith" MobId="108920" QuestId="42740" X="-8336.216" Y="1377.066" Z="9.10171" TerminateWhen="Me.ZoneId != 1519" />
+								<CustomBehavior File="Misc\RunLua" Lua="GossipTitleButton1:Click();" />
+								<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click();" />
+								<CustomBehavior File="WaitTimer" WaitTime="5000" />
+							</While>
+							<CustomBehavior File="WaitTimer" WaitTime="300000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" />
+						</If>
+
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+							<MoveTo X="511.0739" Y="2079.291" Z="0.9010414" />
+							<CustomBehavior File="WaitTimer" WaitTime="10000" />	
+						</If>
+
+
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+							<CustomBehavior File="KillUntilComplete" MobId="90705" X="505.0865" Y="2077.216" Z="0.8262886" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+						</If>
+
+
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+							<MoveTo X="817.67" Y="2171.36" Z="86.06" />
+							<MoveTo X="1137.387" Y="2471.281" Z="35.35443" />
+							<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+						</If>
+
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+							<CustomBehavior File="KillUntilComplete" MobIds="101667, 92564" X="1197.934" Y="2448.128" Z="37.49545" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+						</If>
+
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+							<MoveTo X="1095.758" Y="2330.389" Z="20.38814" />
+							<CustomBehavior File="WaitTimer" WaitTime="600000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+						</If>
+
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+							<MoveTo X="1412.287" Y="2138.285" Z="21.84633" />
+							<CustomBehavior File="WaitTimer" WaitTime="18000" />
+							<CustomBehavior File="MyCTM" X="1421.305" Y="2068.239" Z="36.12698" />
+							<MoveTo X="1500.745" Y="1814.474" Z="37.39889" />
+							<CustomBehavior File="WaitTimer" WaitTime="600000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 7" />
+						</If>
+
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8" >
+							<CustomBehavior File="WaitTimer" WaitTime="600000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 8" />
+						</If>
+
+
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 9" >
+							<MoveTo X="1523.406" Y="1805.358" Z="37.32977" />
+							<CustomBehavior File="WaitTimer" WaitTime="10000" />
+							<CustomBehavior File="MyCTM" X="1551.058" Y="1749.131" Z="53.66973" />
+							<MoveTo X="1617.128" Y="1707.515" Z="77.4471" />
+							<CustomBehavior File="WaitTimer" WaitTime="600000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScriptHelpers.InCinematic" />
+							<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+						</If>
+
+					</While>
+					<If Condition="QuestDone(42740)" >
+						<CustomBehavior File="MyCTM" X="-8400.232" Y="1374.057" Z="135.1438" />
+						<TurnIn QuestName="The Battle for Broken Shore" QuestId="42740" TurnInName="Genn Greymane" TurnInId="100395" X="-8400.12" Y="1373.889" Z="135.1429" />
+					</If>
+
+
+					<PickUp QuestName="The Fallen Lion" QuestId="40517" GiverName="Genn Greymane" GiverId="100395" X="-8400.12" Y="1373.889" Z="135.1429" />
+					<While Condition="DoQuest(40517)" >
+						<If Condition="Unit(100696) != null" >
+							<CustomBehavior File="InteractWith" MobId="100696" MovementBy="ClickToMoveOnly" QuestId="40517" X="-8386.337" Y="1352.832" Z="136.3427" />
+							<CustomBehavior File="WaitTimer" WaitTime="25000" />
+						</If>
+						<MoveTo Nav="Fly" X="-8367.111" Y="251.9434" Z="155.3466" />
+						<CustomBehavior File="InteractWith" MobId="100429" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" GossipOptions="1" QuestId="40517" X="-8361.81" Y="230.6198" Z="157.9789" />
+						<CustomBehavior File="WaitTimer" WaitTime="300000" QuestId="40517" />
+					</While>
+					<TurnIn QuestName="The Fallen Lion" QuestId="40517" TurnInName="Anduin Wrynn" TurnInId="100429" X="-8361.81" Y="230.6198" Z="157.9789" />
+
+					<PickUp QuestName="Demons Among Us" QuestId="40593" GiverName="Jace Darkweaver" GiverId="100675" X="-8369.704" Y="240.3636" Z="155.3085" />
+					<While Condition="DoQuest(40593)" >
+						<If Condition="!IsObjectiveComplete(1, 40593)" >
+							<CustomBehavior File="InteractWith" MobId="100675" GossipOptions="1" QuestId="40593" X="-8369.704" Y="240.3636" Z="155.3085" />
+							<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+						</If>
+						<CustomBehavior File="InteractWith" MobId="246706" PreInteractMountStrategy="Dismount" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" MovementBy="NavigatorOnly" QuestId="40593" QuestObjectiveIndex="3" X="-8318.188" Y="290.8993" Z="156.8331" />
+						<CustomBehavior File="InteractWith" MobId="246707" PreInteractMountStrategy="Dismount" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" MovementBy="NavigatorOnly" QuestId="40593" QuestObjectiveIndex="4" X="-8379.064" Y="322.0625" Z="147.0138" />
+						<CustomBehavior File="KillUntilComplete" MobId="100993" QuestId="40593" QuestObjectiveIndex="2" >
+							<HuntingGrounds>
+								<Hotspot X="-8368.443" Y="238.7502" Z="155.8256" />
+								<Hotspot X="-8320.68" Y="284.8057" Z="156.8328" />
+								<Hotspot X="-8397.101" Y="317.421" Z="147.014" />
+							</HuntingGrounds>
+						</CustomBehavior>
+					</While>
+					<If Condition="QuestDone(40593)" >
+						<MoveTo X="-8367.947" Y="250.1042" Z="155.3459" />
+						<TurnIn QuestName="Demons Among Us" QuestId="40593" TurnInName="Anduin Wrynn" TurnInId="100973" X="-8363.591" Y="232.7483" Z="156.9906" />
+					</If>
+
+					<PickUp QuestName="Illidari Allies" QuestId="44120" GiverName="Anduin Wrynn" GiverId="100973" X="-8363.591" Y="232.7483" Z="156.9906" />
+					<If Condition="QuestDone(44120) &amp;&amp; Unit(100973) != null" >
+						<MoveTo X="-8367.947" Y="250.1042" Z="155.3459" />
+					</If>
+					<TurnIn Nav="Fly" QuestName="Illidari Allies" QuestId="44120" TurnInName="Elerion Bladedancer" TurnInId="101004" X="-8895.939" Y="1023.25" Z="124.4144" />
+				</If>
+			<!-- END Alliance Broken Shore -->
+
+			<!-- Horde Broken Shore -->
+				<If Condition="Me.IsHorde" >
+					<While Condition="Me.ZoneId == 7656" > <!-- Boosted 100 -->
+						<CustomBehavior File="UseItem" ItemId="6948" />
+						<CustomBehavior File="WaitTimer" WaitTime="12000" TerminateWhen="Me.ZoneId != 7656 || !Me.IsCasting" />
+					</While>
+
+					<If Condition="HasItem(132119) &amp;&amp; Me.ZoneId != 14" >
+						<CustomBehavior File="UseItem" ItemId="132119" />
+					</If>
+					<If Condition="!IsQuestCompleted(43926)" >
+						<MoveTo Nav="Fly" X="1596.554" Y="-4371.372" Z="21.21093" />
+						<!-- <PickUp QuestName="The Legion Returns" QuestId="40519" />  Auto Pickup in Orgrimmar -->
+						<PickUp QuestName="The Legion Returns" QuestId="43926" GiverName="Warchief's Command Board" GiverId="206109" X="1600.99" Y="-4369.74" Z="21.0694" />
+					</If>
+					<If Condition="HasQuest(43926)" >
+						<CustomBehavior File="InteractWith" MobId="4311" WaitTime="2000" X="1322.269" Y="-4395.174" Z="25.75724" />
+						<If Condition="Lua.GetReturnVal&lt;bool&gt;(&quot;return GossipTitleButton3:IsVisible();&quot;, 0)" >
+							<CustomBehavior File="Misc\RunLua" WaitTime="800" Lua="GossipTitleButton3:Click();" />
+							<CustomBehavior File="Misc\RunLua" WaitTime="5000" Lua="StaticPopup1Button1:Click();" />
+							<CustomBehavior File="LoadProfile" ProfileName="Auto-Loader" />
+							<Else>
+								<TurnIn QuestName="The Legion Returns" QuestId="43926" TurnInName="Holgar Stormaxe" TurnInId="4311" X="1322.269" Y="-4395.174" Z="25.7571" />
+							</Else>
+						</If>
+					</If>
+
+					<PickUp QuestName="To Be Prepared" QuestId="44281" GiverName="Holgar Stormaxe" GiverId="4311" X="-8495.111" Y="1078.7" Z="17.94479" />
+					<While Condition="DoQuest(44281)" >
+						<CustomBehavior File="InteractWith" MobId="251254" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="44281" QuestObjectiveIndex="3" X="1334.845" Y="-4478.17" Z="26.51113" />
+						<CustomBehavior File="InteractWith" MobId="251195" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="44281" QuestObjectiveIndex="1" X="1308.439" Y="-4586.25" Z="24.68729" />
+						<CustomBehavior File="InteractWith" MobId="255930" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="44281" QuestObjectiveIndex="2" X="1376.438" Y="-4672.278" Z="30.20253" />
+						<CustomBehavior File="InteractWith" MobId="113958" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" MovementBy="NavigatorOnly" GossipOptions="1" QuestId="44281" X="1423.823" Y="-4736.453" Z="29.75032"  TerminateWhen="Unit(113958, u =&gt; u.IsHostile) != null "/>
+						<CustomBehavior File="KillUntilComplete" MobId="113958" QuestId="44281" X="1423.823" Y="-4736.453" Z="29.75032" TerminateWhen="Unit(113958, u =&gt; !u.IsHostile) != null "/>
+						<!-- NOTE: <Technical> May need to use multiple MobIds here for all the duelists. -->
+					</While>
+					<If Condition="QuestDone(44281)" >
+						<MoveTo Nav="Fly" X="1419.609" Y="-4877.256" Z="11.32718" /> <!-- Avoiding unmeshed game objects. -->
+					</If>
+					<TurnIn QuestName="To Be Prepared" QuestId="44281" TurnInName="Stone Guard Mukar" TurnInId="113547" X="1419.352" Y="-4905.071" Z="11.34251" />
+
+					<PickUp QuestName="The Battle for Broken Shore" QuestId="40518" GiverName="Stone Guard Mukar" GiverId="113547" X="1419.352" Y="-4905.071" Z="11.34223" />
+					<While Condition="DoQuest(40518)" >
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0" >
+							<While Condition="Me.ZoneId == 14" >
+								<CustomBehavior File="InteractWith" MobId="113118" QuestId="40518" X="1438.67" Y="-5017.094" Z="12.0279" TerminateWhen="Me.ZoneId != 14" />
+								<CustomBehavior File="Misc\RunLua" Lua="GossipTitleButton1:Click();" />
+								<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click();" />
+								<CustomBehavior File="WaitTimer" WaitTime="5000" />
+							</While>
+							<CustomBehavior File="WaitTimer" WaitTime="300000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" />
+						</If>
+
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+							<If Condition="Me.Z &gt;= 5" >
+								<CustomBehavior File="MyCTM" X="528.807" Y="1869.691" Z="8.224627" />
+								<CustomBehavior File="MyCTM" X="561.9959" Y="1873.223" Z="-0.01387646" />
+							</If>
+							<MoveTo X="590.9387" Y="1863.976" Z="2.069255" />
+							<CustomBehavior File="WaitTimer" WaitTime="10000" />
+						</If>
+
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+							<CustomBehavior File="KillUntilComplete" MobId="93719" X="666.2618" Y="1928.811" Z="4.985871" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+						</If>
+
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+							<MoveTo X="992.5775" Y="1880.781" Z="25.0949" />
+							<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+						</If>
+
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+							<CustomBehavior File="KillUntilComplete" MobIds="101667, 92564" X="1040.003" Y="1855.12" Z="25.72702" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+						</If>
+
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+							<MoveTo X="1184.403" Y="1810.042" Z="24.69153" />
+							<CustomBehavior File="WaitTimer" WaitTime="600000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+						</If>
+
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+							<CustomBehavior File="WaitTimer" WaitTime="38000" />
+							<CustomBehavior File="MyCTM" X="1365.94" Y="1741.576" Z="34.22528" />
+							<MoveTo X="1424.073" Y="1752.689" Z="34.22469" />
+							<CustomBehavior File="WaitTimer" WaitTime="600000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 7" />
+						</If>
+
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8" >
+							<CustomBehavior File="WaitTimer" WaitTime="600000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 8" />
+						</If>
+
+
+						<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 9" >
+							<MoveTo X="1431.146" Y="1719.624" Z="34.22358" />
+							<CustomBehavior File="WaitTimer" WaitTime="10000" />
+							<CustomBehavior File="MyCTM" X="1476.651" Y="1670.422" Z="53.67537" />
+							<MoveTo X="1555.114" Y="1552.464" Z="143.8759" />
+							<CustomBehavior File="WaitTimer" WaitTime="600000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScriptHelpers.InCinematic" />
+							<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+						</If>
+
+					</While>
+					<TurnIn Nav="Fly" QuestName="The Battle for Broken Shore" QuestId="40518" TurnInName="Eitrigg" TurnInId="100453" X="1437.345" Y="-4985.149" Z="12.01841" />
+
+
+					<PickUp QuestName="Fate of the Horde" QuestId="40522" GiverName="Eitrigg" GiverId="100453" X="1437.345" Y="-4985.149" Z="12.01868" />
+					<While Condition="DoQuest(40522)" >
+						<!-- NOTE: <Optimization> : Detect if we're on zeppelin before doing Objective1 as Objective1 is just an optional taxi to the next location. -->
+						<CustomBehavior File="InteractWith" MobId="100636" GossipOptions="1" QuestId="40522" X="1605.925" Y="-4376.51" Z="21.7347" />
+						<MoveTo X="1661.379" Y="-4346.83" Z="26.3382" />
+						<CustomBehavior	File="WaitTimer" WaitTime="62000" QuestId="40522" />
+						<CustomBehavior	File="RunCode" Code="await SkipCutscene();" />
+						<CustomBehavior File="InteractWith" MobId="100866" GossipOptions="1" QuestId="40522" QuestObjectiveIndex="4" X="1248.641" Y="-4379.359" Z="34.83271" />
+						<CustomBehavior	File="FlyTo" X="1250.729" Y="-4376.335" Z="41.64366" />
+						<CustomBehavior	File="MyCTM" X="1249.582" Y="-4378.689" Z="34.83342" />
+					</While>
+					<TurnIn QuestName="Fate of the Horde" QuestId="40522" TurnInName="Lady Sylvanas Windrunner" TurnInId="100866" X="1248.641" Y="-4379.359" Z="34.83271" />
+
+					<PickUp QuestName="Emissary" QuestId="40760" GiverName="Lady Sylvanas Windrunner" GiverId="100866" X="1247.257" Y="-4376.686" Z="34.83392" />
+					<If Condition="HasQuest(40760)" >
+						<CustomBehavior	File="MyCTM" X="1276.541" Y="-4384.436" Z="28.71742" />
+					</If>
+					<TurnIn QuestName="Emissary" QuestId="40760" TurnInName="Allari the Souleater" TurnInId="100873" X="1275.693" Y="-4384.899" Z="28.73854" />
+
+					<PickUp QuestName="Demons Among Us" QuestId="40607" GiverName="Allari the Souleater" GiverId="100873" X="1275.693" Y="-4384.899" Z="28.73854" />
+					<While Condition="DoQuest(40607)" >
+						<CustomBehavior File="InteractWith" MobId="100873" GossipOptions="1" QuestId="40607" QuestObjectiveIndex="1" X="1275.693" Y="-4384.899" Z="28.73854" />
+						<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+						<CustomBehavior File="KillUntilComplete" MobIds="101100, 101104" QuestId="40607" QuestObjectiveIndex="2" >
+							<HuntingGrounds>
+								<Hotspot X="1295.562" Y="-4372.065" Z="27.91033" />
+								<Hotspot X="1297.056" Y="-4374.756" Z="27.9967" />
+								<Hotspot X="1279.236" Y="-4430.001" Z="26.87401" />
+								<Hotspot X="1199.561" Y="-4419.203" Z="21.66883" />
+							</HuntingGrounds>
+						</CustomBehavior>
+					</While>
+					<If Condition="QuestDone(40607)" >
+						<MoveTo X="1233.402" Y="-4362.639" Z="28.15995" />
+						<!-- Using RunCode to CTM because MyCTM won't run in comabt -->
+						<CustomBehavior File="RunCode" Code="WoWMovement.ClickToMove(new Vector3(1247.023f, -4371.299f, 34.83783f)); await Coroutine.Sleep(3000);" />
+						<CustomBehavior File="RunCode" Code="WoWMovement.ClickToMove(new Vector3(1247.062f, -4377.508f, 34.8333f)); await Coroutine.Sleep(1000);" />
+						<While Condition="QuestDone(40607)" >
+							<CustomBehavior File="InteractWith" MobId="101035" MovementBy="ClickToMoveOnly" X="1246.866" Y="-4377.863" Z="34.91656" TerminateWhen="!HasQuest(40607)" />
+							<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+						</While>
+
+					</If>
+
+					<While Condition="NeedsQuest(40605)" >
+						<CustomBehavior File="InteractWith" MobId="101035" MovementBy="ClickToMoveOnly" X="1246.866" Y="-4377.863" Z="34.91656" TerminateWhen="HasQuest(40605)" />
+						<CustomBehavior File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click();" />						
+					</While>
+					<If Condition="HasQuest(40605)" >
+						<CustomBehavior	File="MyCTM" X="1276.541" Y="-4384.436" Z="28.71742" />
+						<CustomBehavior File="ForcedDismount" />
+					</If>
+					<TurnIn Nav="Fly" QuestName="Keep Your Friends Close" QuestId="40605" TurnInName="Elthyn Da'rai" TurnInId="95234" X="1819.613" Y="-4422.656" Z="103.1849" />
+				</If>
+			<!-- END Horde Broken Shore -->
+		</If>
+
+		<!-- Alliance Section -->
+			<If Condition="Me.IsAlliance">
+				<If Condition="NeedsQuest(44663) &amp;&amp; !HasQuest(44184)" >
+					<If Condition="Unit(114562) == null" >
+						<MoveTo Nav="Fly" X="-8866.701" Y="642.0375" Z="96.14512" />
+					</If>
+					<PickUp QuestName="In the Blink of an Eye" QuestId="44663" GiverName="Khadgar's Upgraded Servant" GiverId="114562" X="-8866.701" Y="642.0375" Z="96.14512" />
+				</If>
+				<If Condition="HasQuest(44663) &amp;&amp; Me.ZoneId != 7502" >
+					<MoveTo Nav="Fly" X="-8401.058" Y="330.757" Z="147.0138" />
+					<CustomBehavior File="InteractWith" MobId="216350" QuestId="44663" QuestObjectiveIndex="1" X="-8401.058" Y="330.757" Z="147.0138" TerminateWhen="Me.ZoneId == 7502" />
+				</If>
+			</If>
+		<!-- END Alliance Section -->
+
+		<!-- Horde Section -->
+			<If Condition="Me.IsHorde">
+				<If Condition="NeedsQuest(44663) &amp;&amp; !HasQuest(44184)" >
+					<If Condition="Unit(114562) == null" >
+						<MoveTo Nav="Fly" X="1824.579" Y="-4421.238" Z="103.3658" />
+					</If>
+					<PickUp QuestName="In the Blink of an Eye" QuestId="44663" GiverName="Khadgar's Upgraded Servant" GiverId="114562" X="1824.579" Y="-4421.238" Z="103.3658" />
+				</If>
+				<If Condition="HasQuest(44663) &amp;&amp; Me.ZoneId != 7502" >
+					<MoveTo Nav="Fly" X="1881.895" Y="-4502.215" Z="23.3662" />
+					<CustomBehavior File="InteractWith" MobId="254292" MovementBy="NavigatorOnly" QuestId="44663" QuestObjectiveIndex="1" X="1758.979" Y="-4293.224" Z="7.621215" TerminateWhen="Me.ZoneId == 7502" />
+				</If>
+			</If>
+		<!-- END Horde Section -->
+
+		<If Condition="HasQuest(44663) || HasQuest(44184)" >
+			<CustomBehavior File="FlyTo" QuestId="44663" X="-11149.92" Y="-2073.462" Z="808.2543" />
+			<CustomBehavior File="MyCTM" QuestId="44663" X="-11133.15" Y="-2051.721" Z="748.514" />
+			<CustomBehavior File="MyCTM" QuestId="44663" X="-11112.22" Y="-2024.727" Z="747.4563" />
+			<CustomBehavior File="InteractWith" MobId="113986" MovementBy="ClickToMoveOnly" GossipOptions="1" QuestId="44663" X="-11112.06" Y="-2024.847" Z="747.4567" />
+			<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+		</If>
+
+		<While Condition="HasQuest(44663) || HasQuest(44184)" > <!-- Using InteractWith to bypass a Blizz-end bug where the quest isn't showing up properly. -->
+			<!-- In the Blink of an Eye -->
+			<CustomBehavior File="InteractWith" MobId="111109" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" WaitTime="1500" X="-834.3594" Y="4399.119" Z="737.5295" TerminateWhen="!HasQuest(44663) &amp;&amp; !HasQuest(44184)" />
+			<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" WaitTime="2500" />
+		</While>
+
+
+		<!-- Load Class Hall stuff -->
+			<!--
+			NOTE <ImproveLater> : This is currently the easy solution.
+			I'm thinking a RunCode where Me.Class auto-fills the text with using ProfileManager.LoadNew to load the profilewould be more clean.
+			-->
+			<If Condition="Me.Class == WoWClass.Warrior" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Warrior" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Paladin" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Paladin" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Hunter" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Hunter" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Rogue" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Rogue" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Priest" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Priest" />
+			</If>
+			<If Condition="Me.Class == WoWClass.DeathKnight" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Death Knight" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Shaman" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Shaman" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Mage" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Mage" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Warlock" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Warlock" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Monk" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Monk" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Druid" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Druid" />
+			</If>
+			<If Condition="Me.Class == WoWClass.DemonHunter" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Demon Hunter" />
+			</If>
+		<!-- END Load Class Hall stuff -->
+		
+	</QuestOrder>
+</HBProfile>

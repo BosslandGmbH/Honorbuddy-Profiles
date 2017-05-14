@@ -1,0 +1,391 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/EchoQuestingSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Nagrand ($Rev: 6041 $)</Name>
+
+	<DefaultNavType>Fly</DefaultNavType>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<Blackspots>
+		<Blackspot X="2953.524" Y="4324.985" Z="182.6857" Radius="10" /> <!-- Wooden tower the bot gets stuck under in Hallvalor --> 
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
+		<If Condition="Me.IsHorde" >
+			<Code File="LoadProfile" ProfileName="..\..\1-110 Autoloader.xml" RememberProfile="true" />
+		</If>
+		<!-- RunCode Methods -->
+			<!-- <Code File="RunCode">
+			<![CDATA[
+				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
+				Lua.DoString("SetCVar('AutoLootDefault', 1);");
+				CharacterSettings.Instance.LootMobs = true;
+				CharacterSettings.Instance.Save();
+				Lua.DoString("for i=1,GetNumAddOns() do local relo=false if IsAddOnLoaded(i) then relo=true DisableAddOn(i) end if relo then relo=nil ReloadUI() end end");
+				await Coroutine.Sleep(1500);
+				Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
+			]]>
+			</Code> -->
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</Code>
+		<!-- END RunCode Methods -->
+
+		<!-- Hooks -->
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[ 
+					IEnumerable<WoWItem> GetExtraConsumables()
+					{
+						uint foodCount = 0;
+						uint drinkCount = 0;
+						// Skip conjured and buff comsumables.
+				
+						var extraConsumables = (from item in Me.BagItems
+										   where item != null && item.ItemInfo != null
+										   let isFood = Consumable.IsFood(item.ItemInfo)
+										   let isDrink = Consumable.IsDrink(item.ItemInfo)
+										   where (isFood || isDrink) && item.ItemInfo.SellPrice > 0 && item.Effects.Count == 1 && item.ItemInfo.RequiredLevel < Me.Level - 10                    
+										   select item).ToList();
+				
+				
+						var extraPotions = Me.BagItems
+							.Where(c => c != null && c.IsValid && c.ItemInfo != null && c.ItemInfo.SellPrice > 0 && c.Effects.Count == 1
+								&& (c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Potion
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Elixir
+								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Flask)
+								&& c.ItemInfo.RequiredLevel < Me.Level - 20);
+				
+						extraConsumables.AddRange(extraPotions);
+						return extraConsumables;
+					}
+					 
+					async Task SellExtraConsumables()
+					{
+						Logging.Write("Selling items in GetExtraConsumables()");
+						foreach (var item in GetExtraConsumables())
+						{
+							Logging.Write("Selling {0}.", item.Name);
+							item.UseContainerItem();
+							await Coroutine.Sleep(1337);
+						}
+					}
+				]]>
+			</Code>
+			<Code File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
+				<Code File="RunCode" Code="await SellExtraConsumables();"/>
+			</Code>
+		<!-- END Hooks -->
+
+		<While Condition="NeedsQuest(34674)" >
+			<Code File="RunCode" Code="
+				if (Unit(81103) != null) return;
+				await CommonCoroutines.LandAndDismount();
+				Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 110560).Use();
+				await Coroutine.Sleep(500);
+				await Coroutine.Wait(7000, () =&gt; !Me.IsCasting);
+			" />
+			<Code File="Misc\RunLua" WaitTime="1000" Lua="if not EncounterJournal then EncounterJournal_LoadUI() end ToggleFrame(EncounterJournal); EncounterJournalSuggestFrame.Suggestion1.button:Click();" />
+			<Code File="RunCode" Code="QuestFrame.Instance.AcceptQuest();" />
+			<Code File="WaitTimer" WaitTime="1000" />
+		</While>
+
+		<While Condition="HasQuest(34674) &amp;&amp; Unit(81103) != null" >
+			<Code File="InteractWith" MobId="81103" GossipOptions="2" PreInteractMountStrategy="Dismount" X="1867.556" Y="221.79" Z="76.69684" TerminateWhen="Unit(81103) == null" />
+		</While>
+
+		<If Condition="HasQuest(34674)" >
+			<TurnIn QuestName="Taking the Fight to Nagrand" QuestId="34674" TurnInName="Lieutenant Balfor" TurnInId="79263" X="2417.29" Y="4401.972" Z="209.1232" />
+		</If>
+
+		<PickUp QuestName="The Might of the Warsong" QuestId="34675" GiverName="Lieutenant Balfor" GiverId="79263" X="2417.936" Y="4403.718" Z="208.9276" />
+		<TurnIn QuestName="The Might of the Warsong" QuestId="34675" TurnInName="Rangari D&apos;kaan" TurnInId="79576" X="2584.842" Y="5705.865" Z="100.7967" />
+
+		<PickUp QuestName="Up and Running" QuestId="34678" GiverName="Rangari D&apos;kaan" GiverId="79576" X="2584.842" Y="5705.865" Z="100.7967" />
+		<Code File="InteractWith" MobId="231884" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34678" QuestObjectiveIndex="2" X="2590.05" Y="5689.31" Z="100.5343" />
+		<Code File="InteractWith" MobId="231885" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34678" QuestObjectiveIndex="3" X="2590.05" Y="5689.31" Z="100.5343" />
+		<Code File="InteractWith" MobId="231886" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34678" QuestObjectiveIndex="1" X="2574.237" Y="5784.796" Z="101.3738" />
+		<TurnIn QuestName="Up and Running" QuestId="34678" TurnInName="Thaelin Darkanvil" TurnInId="79674" X="2580.742" Y="5726.062" Z="102.8229" />
+
+		<PickUp QuestName="Operation: Surprise Party" QuestId="34682" GiverName="Thaelin Darkanvil" GiverId="79674" X="2580.742" Y="5726.062" Z="102.8229" />
+		<While Condition="DoQuest(34682)" >
+			<Code File="InteractWith" MobId="79676" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34682" QuestObjectiveIndex="1" X="2579.326" Y="5728.942" Z="103.5184" />
+			<Code File="WaitTimer" WaitTime="43000" TerminateWhen="!Me.InVehicle" />
+		</While>
+		<TurnIn QuestName="Operation: Surprise Party" QuestId="34682" TurnInName="Rangari Ogir" TurnInId="79722" X="2324.033" Y="5572.692" Z="234.9191" />
+
+		<PickUp QuestName="Mo&apos;mor Might Know" QuestId="34716" GiverName="Rangari Ogir" GiverId="79722" X="2324.033" Y="5572.692" Z="234.9191" />
+		<PickUp QuestName="Operation: Just Arrowhead" QuestId="34717" GiverName="Rangari Ogir" GiverId="79722" X="2324.033" Y="5572.692" Z="234.9191" />
+
+		<If Condition="DoQuest(34716, 34717) &amp;&amp; !CanFly() &amp;&amp; Object(230614, o =&gt; o.DistanceSqr &lt; 25f*25f) != null" >
+			<Code File="InteractWith" MobId="230614" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" WaitTime="7000" X="2324.007" Y="5569.153" Z="233.6251" />
+		</If>
+
+		<TurnIn QuestName="Mo&apos;mor Might Know" QuestId="34716" TurnInName="Vindicator Mo&apos;mor" TurnInId="79743" X="2328.913" Y="5521.742" Z="166.8034" />
+		<PickUp QuestName="The Others" QuestId="34718" GiverName="Vindicator Mo&apos;mor" GiverId="79743" X="2328.913" Y="5521.742" Z="166.8034" />
+		<PickUp QuestName="... and My Hammer" QuestId="34719" GiverName="Vindicator Mo&apos;mor" GiverId="79743" X="2328.913" Y="5521.742" Z="166.8034" />
+
+		<Code File="InteractWith" MobId="79758" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34718" QuestObjectiveIndex="2" X="2384.112" Y="5423.768" Z="153.5033" />
+		<Code File="InteractWith" MobId="79762" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34718" QuestObjectiveIndex="3" X="2479.17" Y="5469.404" Z="151.9555" />
+
+		<Code File="InteractWith" MobId="34719" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34718" QuestObjectiveIndex="1" X="2537.568" Y="5570.197" Z="138.3326" />
+
+		<Code File="InteractWith" MobId="79761" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34718" QuestObjectiveIndex="1" X="2456.958" Y="5603.793" Z="159.7123" />
+
+		<Code File="KillUntilComplete" MobIds="79744, 79753, 79753" QuestId="34717" >
+			<HuntingGrounds>
+				<Hotspot X="2484.69" Y="5552.613" Z="143.0262" />
+				<Hotspot X="2371.039" Y="5459.934" Z="152.4787" />
+				<Hotspot X="2385.592" Y="5558.971" Z="153.3022" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="The Others" QuestId="34718" TurnInName="Vindicator Mo&apos;mor" TurnInId="79743" X="2327.86" Y="5521.736" Z="166.6971" />
+		<TurnIn QuestName="... and My Hammer" QuestId="34719" TurnInName="Vindicator Mo&apos;mor" TurnInId="79743" X="2327.86" Y="5521.736" Z="166.6971" />
+		<PickUp QuestName="Shields Down!" QuestId="34746" GiverName="Vindicator Mo&apos;mor" GiverId="79743" X="2327.86" Y="5521.736" Z="166.6971" />
+
+		<Code File="KillUntilComplete" MobId="79839" QuestId="34746" QuestObjectiveIndex="2" X="2429.614" Y="5517.288" Z="147.9536" />
+		<Code File="InteractWith" MobId="79919" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34746" QuestObjectiveIndex="1" X="2442.009" Y="5518.601" Z="148.3438" />
+
+		<TurnIn QuestName="Operation: Just Arrowhead" QuestId="34717" TurnInName="Rangari D&apos;kaan" TurnInId="79576" X="2584.517" Y="5703.521" Z="101.087" />
+		<TurnIn QuestName="Shields Down!" QuestId="34746" TurnInName="Thaelin Darkanvil" TurnInId="79674" X="2579.754" Y="5726.931" Z="103.1259" />
+
+		<PickUp QuestName="A Choice to Make" QuestId="34769" GiverName="Thaelin Darkanvil" GiverId="79674" X="2579.754" Y="5726.931" Z="103.1259" />
+		<While Condition="DoQuest(34769)" >
+			<Code File="Misc\RunLua" Lua="LoadAddOn(&quot;Blizzard_QuestChoice&quot;);" />
+			<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+				<Code File="InteractWith" MobId="230741" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="34769" X="2577.737" Y="5726.822" Z="103.4721" />
+			</If>
+			<Code File="Misc\RunLua" QuestId="34769" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1000" />
+			<Code File="RunCode" Code="await SkipCutscene(2000);" />
+		</While>
+		<TurnIn QuestName="A Choice to Make" QuestId="34769" TurnInName="Rangari D&apos;kaan" TurnInId="79576" X="2583.662" Y="5705.052" Z="101.069" />
+
+		<If Condition="SpellManager.HasSpell(165803) &amp;&amp; !CanFly()" >
+			<UseMount Value="false" />
+			<Code File="Hooks\DoWhen" ActivityName="SummonCombatMount" AllowUseInCombat="true" UseWhen="!Me.Mounted &amp;&amp; !Me.IsActuallyInCombat &amp;&amp; !Me.IsIndoors &amp;&amp; SpellManager.HasSpell(165803) &amp;&amp; !Me.HasAura(165803)" >
+				<Code File="RunCode" Code="await CommonCoroutines.StopMoving();SpellManager.Cast(165803); await Coroutine.Wait(3000, () =&gt; Me.HasAura(165803));" />
+			</Code>
+		</If>
+
+		<PickUp QuestName="Trouble at the Overwatch" QuestId="35148" GiverName="Hansel Heavyhands" GiverId="79954" X="2584.304" Y="5705.553" Z="100.9124" />
+		<PickUp QuestName="The Friend o&apos; My Enemy" QuestId="34952" GiverName="Hansel Heavyhands" GiverId="79954" X="2584.304" Y="5705.553" Z="100.9124" />
+		<PickUp QuestName="They Call Him Lantresor of the Blade" QuestId="34951" GiverName="Vindicator Mo&apos;mor" GiverId="80624" X="2584.815" Y="5705.943" Z="100.7872" />
+		<PickUp QuestName="That Pounding Sound" QuestId="35337" GiverName="Kia Herman" GiverId="82092" X="2595.639" Y="5704.526" Z="100.5348" />
+		<PickUp QuestName="Shooting the Breeze" QuestId="35338" GiverName="Rangari Laara" GiverId="82094" X="2595.961" Y="5705.437" Z="100.5357" />
+
+		<Code File="KillUntilComplete" TerminateWhen="!DoQuest(35338, 35337) &amp;&amp; IsQuestCompleted(35356)" >
+			<HuntingGrounds>
+				<Hotspot X="3286.844" Y="4769.271" Z="121.1311" />
+				<Hotspot X="3451.828" Y="4807.23" Z="115.0593" />
+				<Hotspot X="3337.078" Y="4982.566" Z="104.8311" />
+				<Hotspot X="3260.553" Y="5106.815" Z="89.19073" />
+				<Hotspot X="3177.537" Y="5219.808" Z="91.01606" />
+				<Hotspot X="3232.5" Y="5441.953" Z="69.61164" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="78277" PursueWhen="DoQuest(35338)" />
+				<PursueUnit Id="78278" PursueWhen="DoQuest(35338)" />
+				<PursueUnit Id="78279" PursueWhen="DoQuest(35338)" />
+				<PursueUnit Id="81898" PursueWhen="DoQuest(35337)" />
+				<PursueUnit Id="78574" PursueWhen="DoQuest(35337)" />
+			</PursuitList>
+		</Code>
+
+		<TurnIn QuestName="Shooting the Breeze" QuestId="35338" TurnInName="Rangari Laara" TurnInId="82094" X="2597.693" Y="5706.347" Z="100.5503" />
+		<TurnIn QuestName="Someone&apos;s Missing Arrow" QuestId="35356" TurnInName="Rangari Laara" TurnInId="82094" X="2597.693" Y="5706.347" Z="100.5503" />
+		<PickUp QuestName="King of the Breezestriders" QuestId="35357" GiverName="Rangari Laara" GiverId="82094" X="2597.693" Y="5706.347" Z="100.5503" />
+		<TurnIn QuestName="That Pounding Sound" QuestId="35337" TurnInName="Kia Herman" TurnInId="82092" X="2595.815" Y="5702.853" Z="100.537" />
+		<!--<PickUp QuestName="Queen of the Clefthoof" QuestId="35350" GiverName="Kia Herman" GiverId="82092" X="2595.815" Y="5702.853" Z="100.537" /> Not worth it -->
+
+		<Code File="KillUntilComplete" MobId="82116" QuestId="35357" X="2308.408" Y="6020.159" Z="50.30082" />
+
+		<TurnIn QuestName="King of the Breezestriders" QuestId="35357" TurnInName="Rangari Laara" TurnInId="82094" X="2599.039" Y="5708.78" Z="100.5399" />
+		<TurnIn QuestName="Trouble at the Overwatch" QuestId="35148" TurnInName="Rangari Eleena" TurnInId="79282" X="2304.762" Y="4834.583" Z="230.0057" />
+		<PickUp QuestName="Obtaining Ogre Offensive Orders" QuestId="34593" GiverName="Rangari Eleena" GiverId="79282" X="2304.762" Y="4834.583" Z="230.0057" />
+		<PickUp QuestName="Obliterating Ogres" QuestId="34572" GiverName="Rangari Eleena" GiverId="79282" X="2304.762" Y="4834.583" Z="230.0057" />
+		<PickUp QuestName="Removing the Paper Trail" QuestId="34597" GiverName="Ogre Scrolls" GiverId="231901" X="2264.236" Y="4692.745" Z="243.2928" />
+
+		<Code File="KillUntilComplete" MobId="79266" QuestId="34593" QuestObjectiveIndex="2" X="2258.389" Y="4600.351" Z="249.7046" />
+
+		<Code File="InteractWith" MobId="230650" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34597" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="2267.255" Y="4613.376" Z="246.4348" />
+				<Hotspot X="2204.191" Y="4687.917" Z="258.8677" />
+				<Hotspot X="2134.459" Y="4689.746" Z="276.5564" />
+				<Hotspot X="2181.666" Y="4566.881" Z="275.8951" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" MobId="79267" QuestId="34593" QuestObjectiveIndex="1" X="2161.458" Y="4549.689" Z="279.9163" />
+
+		<Code File="KillUntilComplete" MobIds="79022, 79023, 79070" QuestId="34572" >
+			<HuntingGrounds>
+				<Hotspot X="2173.107" Y="4571.696" Z="275.8697" />
+				<Hotspot X="2079.586" Y="4587.337" Z="288.8446" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="Obtaining Ogre Offensive Orders" QuestId="34593" TurnInName="Rangari Mirana" TurnInId="81144" X="2017.092" Y="4541.022" Z="306.4936" />
+		<PickUp QuestName="Reglakk&apos;s Research" QuestId="34596" GiverName="Rangari Mirana" GiverId="81144" X="2018.287" Y="4541.983" Z="306.626" />
+		<TurnIn QuestName="Obliterating Ogres" QuestId="34572" TurnInName="Rangari Mirana" TurnInId="81144" X="2017.092" Y="4541.022" Z="306.4936" />
+		<TurnIn QuestName="Removing the Paper Trail" QuestId="34597" TurnInName="Rangari Mirana" TurnInId="81144" X="2017.092" Y="4541.022" Z="306.4936" />
+		<PickUp QuestName="Removing the Reinforcements" QuestId="34877" GiverName="Rangari Mirana" GiverId="81144" X="2018.287" Y="4541.983" Z="306.626" />
+
+
+
+
+
+
+
+		<Code File="InteractWith" MobId="80357" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34877" QuestObjectiveIndex="1" X="1871.995" Y="4619.03" Z="340.8954" />
+
+		<While Condition="DoQuest(34596)" >
+			<Code File="KillUntilComplete" MobIds="79105, 79927" QuestId="34596" X="2007.966" Y="4680.572" Z="339.8265" >
+				<PursuitList>
+					<PursueUnit Id="79105" Priority="10" />
+					<PursueUnit Id="79927" Priority="100" />
+				</PursuitList>
+			</Code>
+			<Code File="InteractWith" MobId="232562" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="1975.673" Y="4702.045" Z="335.8932" />
+		</While>
+
+		<TurnIn QuestName="Reglakk&apos;s Research" QuestId="34596" TurnInName="Rangari D&apos;kaan" TurnInId="79576" X="2580.793" Y="5707.309" Z="100.8162" />
+		<TurnIn QuestName="Removing the Reinforcements" QuestId="34877" TurnInName="Thaelin Darkanvil" TurnInId="79674" X="2579.845" Y="5727.519" Z="103.2032" />
+
+		<While Condition="!QuestFlaggedCompleted(35379)" >
+			<Code File="KillUntilComplete" MobId="82205" X="3186.734" Y="4336.894" Z="163.3863" TerminateWhen="IsObjectiveComplete(2, 35379) ? true : QuestFlaggedCompleted(35379)" />
+			<Code File="KillUntilComplete" MobId="82209" X="3186.734" Y="4336.894" Z="163.3863" TerminateWhen="IsObjectiveComplete(3, 35379) ? true : QuestFlaggedCompleted(35379)" />
+			<Code File="KillUntilComplete" MobId="82202" X="3251.888" Y="4279.673" Z="146.2112"  TerminateWhen="IsObjectiveComplete(4, 35379) ? true : QuestFlaggedCompleted(35379)" />
+			<Code File="KillUntilComplete" MobId="81902" TerminateWhen="QuestFlaggedCompleted(35379)" >
+				<HuntingGrounds>
+					<Hotspot X="3111.927" Y="4280.872" Z="165.6588" />
+					<Hotspot X="3023.438" Y="4314.251" Z="161.8121" />
+					<Hotspot X="3096.061" Y="4197.608" Z="205.7233" />
+					<Hotspot X="3223.861" Y="4210.868" Z="207.9103" />
+				</HuntingGrounds>
+			</Code>
+		</While>
+
+		<TurnIn QuestName="They Call Him Lantresor of the Blade" QuestId="34951" TurnInName="Lantresor of the Blade" TurnInId="80161" X="2853.747" Y="4460.826" Z="175.5494" />
+		<PickUp QuestName="The Blade Itself" QuestId="34954" GiverName="Lantresor of the Blade" GiverId="80161" X="2855.414" Y="4458.063" Z="175.5457" />
+		<PickUp QuestName="Not Without My Honor" QuestId="34955" GiverName="Lantresor of the Blade" GiverId="80161" X="2855.414" Y="4458.063" Z="175.5457" />
+
+		<Code File="KillUntilComplete" MobId="80236" QuestId="34954" X="2883.822" Y="4422.842" Z="181.1293" />
+
+		<Code File="InteractWith" MobId="233814" CollectionDistance="200" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="34955" QuestObjectiveIndex="1" X="2719.841" Y="4357.071" Z="186.1036" />
+
+		<TurnIn QuestName="The Blade Itself" QuestId="34954" TurnInName="Lantresor of the Blade" TurnInId="80161" X="2852.471" Y="4460.469" Z="175.5502" />
+		<TurnIn QuestName="Not Without My Honor" QuestId="34955" TurnInName="Lantresor of the Blade" TurnInId="80161" X="2852.471" Y="4460.469" Z="175.5502" />
+		<PickUp QuestName="Meet Me in the Cavern" QuestId="34956" GiverName="Lantresor of the Blade" GiverId="80161" X="2852.471" Y="4460.469" Z="175.5502" />
+
+		<Code File="KillUntilComplete" MobIds="80191, 80197, 80205" QuestId="34952" >
+			<HuntingGrounds>
+				<Hotspot X="2913.915" Y="4372.363" Z="173.2574" />
+				<Hotspot X="2828.048" Y="4439.843" Z="175.3577" />
+				<Hotspot X="2745.83" Y="4388.206" Z="179.2366" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="Meet Me in the Cavern" QuestId="34956" TurnInName="Lantresor of the Blade" TurnInId="80319" X="2805.522" Y="4206.467" Z="169.9209" />
+
+		<PickUp QuestName="Challenge of the Masters" QuestId="34957" GiverName="Lantresor of the Blade" GiverId="80319" X="2805.522" Y="4206.467" Z="169.9209" />
+		<While Condition="DoQuest(34957)" >
+			<DisableBehavior Name="Pull" />
+			<Code File="InteractWith" MobId="231088" PreInteractMountStrategy="Dismount" QuestId="34957" QuestObjectiveIndex="2" X="2628.304" Y="4154.368" Z="166.168" TerminateWhen="Me.HasAura(168029)" />
+			<EnableBehavior Name="Pull" />
+			<MoveTo X="2628.238" Y="4151.385" Z="166.1905" />
+			<Code File="KillUntilComplete" MobIds="80326, 80324, 80325, 80327" QuestId="34957" QuestObjectiveIndex="2" X="2628.304" Y="4154.368" Z="166.168" TerminateWhen="!Me.HasAura(168029)" />
+			<Code File="InteractWith" MobId="230946" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34957" QuestObjectiveIndex="3" X="2628.288" Y="4154.09" Z="166.1731" />
+		</While>
+		<TurnIn QuestName="Challenge of the Masters" QuestId="34957" TurnInName="Rangari D&apos;kaan" TurnInId="79576" X="2586.511" Y="5701.239" Z="100.7936" />
+
+		<TurnIn QuestName="The Friend o&apos; My Enemy" QuestId="34952" TurnInName="Hansel Heavyhands" TurnInId="79954" X="2586.511" Y="5701.239" Z="100.7936" />
+
+		<!-- Check later 
+		<PickUp QuestName="Nobundo Sends Word" QuestId="35332" GiverName="Rangari D&apos;kaan" GiverId="79576" X="2585.817" Y="5702.153" Z="100.9107" />
+		<TurnIn QuestName="Nobundo Sends Word" QuestId="35332" TurnInName="Farseer Drek&apos;Thar" TurnInId="80597" X="4177.748" Y="5237.9" Z="65.45213" /> -->
+
+		<Checkpoint Level="100" />
+
+		<If Condition="Lua.GetReturnVal&lt;uint&gt;(&quot;return GetAccountExpansionLevel();&quot;, 0) &gt;= 6" >
+			<Code File="LoadProfile" ProfileName="..\100-110 Autoloader.xml" RememberProfile="true" />
+		</If>
+		
+	</QuestOrder>
+</HBProfile>

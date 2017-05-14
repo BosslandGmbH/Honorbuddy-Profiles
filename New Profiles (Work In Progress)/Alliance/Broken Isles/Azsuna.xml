@@ -1,0 +1,2144 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../Schemas/EchoSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Azsuna ($Rev: 6117 $)</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+	<DefaultNavType>Fly</DefaultNavType>
+
+	<AvoidMobs>
+		<Mob Name="Blerg" Entry="106629" />
+		<Mob Name="Sea Skrog" Entry="88094" />
+		<Mob Name="Hatecoil Skrog" Entry="89802" />
+		<Mob Name="Sentry Brute" Entry="88888" />
+		<Mob Name="Cove Skrog" Entry="89097" />
+	</AvoidMobs>
+
+	<Mailboxes>
+		<Mailbox Name="Shackle's Den" X="-799.2031" Y="6102.301" Z="5.190535" />
+		<Mailbox Name="Challane's Terrace" X="1373.33" Y="7154.679" Z="61.87209" />
+		<Mailbox Name="Azurewing Repose" X="663.3299" Y="6599.911" Z="60.71575" />
+		<Mailbox Name="Illidari Stand" X="-64.97396" Y="6966.936" Z="15.38536" />
+	</Mailboxes>
+
+	<Vendors>
+		<!-- <Vendor Name="Gentle Rosh" Type="Food" Entry="91457" X="-811.0851" Y="6098.343" Z="7.00528" />  Add UseWhen for this NPC as it apparently is causing issues for lots of users. -->
+		<Vendor Name="Cleave Thunderhill" Type="Repair" Entry="89257" X="-790.5798" Y="6109.849" Z="4.647335" />
+		<!-- Shackle's Den -->
+		<Vendor Name="Vestulio the Servant" Type="Repair" Entry="90638" X="1402.411" Y="7129.866" Z="60.92487" />
+		<!-- Challane's Terrace -->
+		<Vendor Name="Enchanted Claw of Ceruledan" Type="Repair" Entry="89938" X="624.4566" Y="6616.471" Z="61.76412" />
+		<!-- Azurewing Repose -->
+		<Vendor Name="Falara Nightsong" Type="Repair" Entry="89640" X="-89.1441" Y="6951.358" Z="14.10535" />
+		<!-- Illidari Strand -->
+	</Vendors>
+
+	<Blackspots>
+		<Blackspot X="-8855.167" Y="651.3267" Z="96.37325" Radius="1.491184" />
+
+		<Blackspot X="-136.9882" Y="6983.85" Z="8.050956" Radius="2" /> <!-- Soul Shooter object thing near Illidari Stand -->
+		<Blackspot X="-235.3848" Y="7039.291" Z="3.527598" Radius="2" /> <!-- Another Soul Shooter object near Illidari Stand -->
+		<Blackspot X="-169.2355" Y="7075.309" Z="4.5437" Radius="2" /> <!-- Another Soul Shooter object near Illidari Stand -->
+		<Blackspot X="-93.79848" Y="6982.305" Z="12.39837" Radius="3.731443" /> <!-- GameObjects near Allari the Souleater in Illidari Stand -->
+		<Blackspot X="-376.3742" Y="6675.382" Z="4.599216" Radius="23.31855" /> <!-- Bad navigation spot. -->
+		<Blackspot X="-913.1205" Y="6648.009" Z="1.293812" Radius="15.1874" /> <!-- Oceanus Cove, weapon rack bot likes to get stuck on. -->
+		<Blackspot X="-885.5005" Y="6459.92" Z="2.451694" Radius="5.491374" /> <!-- Oceanus Cove, another weapon rack. -->
+		<Blackspot X="-183.5051" Y="6310.573" Z="33.68592" Radius="10" /> <!-- Ruins of Nar'thalas - roof stuck area -->
+	</Blackspots>
+
+	<Blacklist>
+		<Mob Name="Cove Skrog" Id="89097" Flags="Pull" />
+	</Blacklist>
+
+	<!-- INITORDER COMMENT 
+	<InitOrder>
+		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> Use LevelBot default
+	</InitOrder>
+END INITORDER COMMENT -->
+
+	<QuestOrder>
+		<!-- Init Settings -->
+			<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+			<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+			<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+			<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+			<LootMobs Value="true" />
+			<TargetingDistance Value="45" />
+		<!-- END Init Settings -->
+
+		<!-- Profile Settings -->
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[private static System.Windows.Window _uiWindow{get;set;}public static void Initialize(){Settings.Instance.Load();System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{var grid=(System.Windows.Controls.Grid)((Honorbuddy.MainWindow)System.Windows.Application.Current.MainWindow).Content;var profileConfigButton=grid.Children.OfType<System.Windows.Controls.Button>().FirstOrDefault(btn=>btn.Name=="btnProfileSettings");if(profileConfigButton!=null)return;profileConfigButton=new System.Windows.Controls.Button{Name="btnProfileSettings",HorizontalAlignment=System.Windows.HorizontalAlignment.Right,VerticalAlignment=System.Windows.VerticalAlignment.Bottom,Margin=new System.Windows.Thickness(0,0,8,86),Content="Profile Config",Height=20,Width=120};grid.Children.Add(profileConfigButton);profileConfigButton.Click+=(sender,args)=>{System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{if(_uiWindow!=null){_uiWindow.Close();_uiWindow=null;}Settings.Instance.Load();_uiWindow=UiWindow.GetWindow();_uiWindow.Show();_uiWindow.Closing+=(o,eventArgs)=>{Settings.Instance.Save();};}));};}));Styx.CommonBot.BotEvents.OnBotStopped+=args=>{System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{var grid=(System.Windows.Controls.Grid)((Honorbuddy.MainWindow)System.Windows.Application.Current.MainWindow).Content;var profileConfigButton=grid.Children.OfType<System.Windows.Controls.Button>().FirstOrDefault(btn=>btn.Name=="btnProfileSettings");grid.Children.Remove(profileConfigButton);_uiWindow.Close();}));};Styx.CommonBot.TreeRoot.OnShutdownRequested+=(sender,args)=>{System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{_uiWindow.Close();}));};}public static class UiWindow{public static System.Windows.Window GetWindow(){var window=new System.Windows.Window{Title="Profile Settings",SizeToContent=System.Windows.SizeToContent.WidthAndHeight,ResizeMode=System.Windows.ResizeMode.NoResize,DataContext=Settings.Instance};var grid=new System.Windows.Controls.Grid{Width=500,Height=550};window.Content=grid;var hbHeaderLogo=new System.Windows.Controls.MediaElement{LoadedBehavior=System.Windows.Controls.MediaState.Play,VerticalAlignment=System.Windows.VerticalAlignment.Top,HorizontalAlignment=System.Windows.HorizontalAlignment.Center};hbHeaderLogo.MediaEnded+=(sender,args)=>{hbHeaderLogo.Position=TimeSpan.FromMilliseconds(1);};grid.Children.Add(hbHeaderLogo);var discordButton=new System.Windows.Controls.Button{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(20,20,0,0),Style=new System.Windows.Style(),Background=System.Windows.Media.Brushes.Transparent,BorderThickness=new System.Windows.Thickness(0),Cursor=System.Windows.Input.Cursors.Hand};discordButton.Click+=(sender,args)=>{Process.Start("http://discord.gg/h74WjFY");};grid.Children.Add(discordButton);var discordImage=new System.Windows.Controls.Image{Height=36,Width=50,Style=new System.Windows.Style()};discordButton.Content=discordImage;var paypalButton=new System.Windows.Controls.Button{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(25,80,0,0),Style=new System.Windows.Style(),Background=System.Windows.Media.Brushes.Transparent,BorderThickness=new System.Windows.Thickness(0),Cursor=System.Windows.Input.Cursors.Hand};paypalButton.Click+=(sender,args)=>{Process.Start("https://www.paypal.me/EchoTiger/");};grid.Children.Add(paypalButton);var paypalImage=new System.Windows.Controls.Image{Height=50,Width=38,Style=new System.Windows.Style()};paypalButton.Content=paypalImage;var tabControl=new System.Windows.Controls.TabControl{Margin=new System.Windows.Thickness(0,150,0,0)};grid.Children.Add(tabControl);var changelogTab=new System.Windows.Controls.TabItem{Header="Changelog",Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255))};tabControl.Items.Add(changelogTab);changelogTab.GotFocus+=(sender,args)=>{changelogTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(73,96,210));};changelogTab.LostFocus+=(sender,args)=>{changelogTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255));};changelogTab.Focus();var changelogTextBox=new System.Windows.Controls.RichTextBox{Margin=new System.Windows.Thickness(10),VerticalScrollBarVisibility=System.Windows.Controls.ScrollBarVisibility.Auto,IsReadOnly=true,SelectionOpacity=0};changelogTab.Content=changelogTextBox;var generalTab=new System.Windows.Controls.TabItem{Header="General Settings",Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255))};tabControl.Items.Add(generalTab);generalTab.GotFocus+=(sender,args)=>{generalTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(73,96,210));};generalTab.LostFocus+=(sender,args)=>{generalTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255));};var generalGrid=new System.Windows.Controls.Grid();generalTab.Content=generalGrid;var useAPItemCheckBox=new System.Windows.Controls.CheckBox{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(50,50,0,0),Content="Use Artifact Power Items"};generalGrid.Children.Add(useAPItemCheckBox);useAPItemCheckBox.SetBinding(System.Windows.Controls.CheckBox.IsCheckedProperty,new System.Windows.Data.Binding(nameof(Settings.Instance.UseAPItems)){Source=Settings.Instance});var useCustomAntiStuckCheckBox=new System.Windows.Controls.CheckBox{HorizontalAlignment=System.Windows.HorizontalAlignment.Center,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(0,100,20,0),Content="Use Custom Anti-Stuck"};generalGrid.Children.Add(useCustomAntiStuckCheckBox);useCustomAntiStuckCheckBox.SetBinding(System.Windows.Controls.CheckBox.IsCheckedProperty,new System.Windows.Data.Binding(nameof(Settings.Instance.UseCustomAntiStuck)){Source=Settings.Instance});var generalTabLabel=new System.Windows.Controls.Label{HorizontalAlignment=System.Windows.HorizontalAlignment.Center,VerticalAlignment=System.Windows.VerticalAlignment.Bottom,Margin=new System.Windows.Thickness(0,0,0,50),Content="More settings coming soon!"};generalGrid.Children.Add(generalTabLabel);var farmTreasuresCheckBox=new System.Windows.Controls.CheckBox{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(270,50,0,0),Content="Passively Farm Treasures"};generalGrid.Children.Add(farmTreasuresCheckBox);farmTreasuresCheckBox.SetBinding(System.Windows.Controls.CheckBox.IsCheckedProperty,new System.Windows.Data.Binding(nameof(Settings.Instance.FarmTreasures)){Source=Settings.Instance});Task.WhenAll(LoadChangelogAsync(window,changelogTextBox),LoadDiscordImageAsync(window,discordImage),LoadPaypalImageAsync(window,paypalImage),LoadHBLogoAsync(window,hbHeaderLogo));return window;}private static async Task LoadChangelogAsync(System.Windows.Window window,System.Windows.Controls.RichTextBox changelogTextBox){await window.Dispatcher.BeginInvoke(new Action(async()=>{using(var client=new System.Net.WebClient()){var str=await client.DownloadStringTaskAsync("http://ech-o.net/bForum/changelog");using(var stream=new MemoryStream(System.Text.Encoding.Default.GetBytes(str))){changelogTextBox.Selection.Load(stream,System.Windows.DataFormats.Rtf);}}}));}private static async Task LoadDiscordImageAsync(System.Windows.Window window,System.Windows.Controls.Image imageControl){await window.Dispatcher.BeginInvoke(new Action(async()=>{using(var client=new System.Net.WebClient()){var str=await client.DownloadDataTaskAsync("http://ech-o.net/bForum/discord.png");using(var stream=new MemoryStream(str)){var bitmap=new System.Windows.Media.Imaging.BitmapImage();bitmap.BeginInit();bitmap.StreamSource=stream;bitmap.CacheOption=System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;bitmap.EndInit();bitmap.Freeze();imageControl.Source=bitmap;}}}));}private static async Task LoadPaypalImageAsync(System.Windows.Window window,System.Windows.Controls.Image imageControl){await window.Dispatcher.BeginInvoke(new Action(async()=>{using(var client=new System.Net.WebClient()){var str=await client.DownloadDataTaskAsync("http://ech-o.net/bForum/paypaltrasnp.png");using(var stream=new MemoryStream(str)){var bitmap=new System.Windows.Media.Imaging.BitmapImage();bitmap.BeginInit();bitmap.StreamSource=stream;bitmap.CacheOption=System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;bitmap.EndInit();bitmap.Freeze();imageControl.Source=bitmap;}}}));}private static async Task LoadHBLogoAsync(System.Windows.Window window,System.Windows.Controls.MediaElement mediaElement){await window.Dispatcher.BeginInvoke(new Action(async()=>{var savedImagePath=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"Profile Settings","header.png");if(savedImagePath==null)return;if(File.Exists(savedImagePath)){mediaElement.Source=new Uri(savedImagePath);}else{mediaElement.Source=new Uri("http://ech-o.net/bForum/headerlowres.jpg");var directory=Path.GetDirectoryName(savedImagePath);if(directory==null)return;if(!Directory.Exists(directory)){Directory.CreateDirectory(directory);}using(var client=new System.Net.WebClient()){await client.DownloadFileTaskAsync("http://ech-o.net/bForum/header.png",savedImagePath);if(File.Exists(savedImagePath)){mediaElement.Source=new Uri(savedImagePath);}}}}));}}public class Settings : System.ComponentModel.INotifyPropertyChanged{private readonly string _filePath;private readonly string _jsonLocation;private bool _useAPItems=true;	private bool _useCustomAntiStuck=true;private bool _farmTreasures=false;private Settings(){var hbLocation=Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);_jsonLocation=Path.Combine(hbLocation,"Newtonsoft.Json.dll");_filePath=Path.Combine(Styx.Helpers.Settings.CharacterSettingsDirectory,"OfficialProfilePackSettings.json");}public bool UseAPItems{get{return _useAPItems;}set{if(value==_useAPItems)return;_useAPItems=value;OnPropertyChanged();}}public bool UseCustomAntiStuck{get{return _useCustomAntiStuck;}set{if(value==_useCustomAntiStuck)return;_useCustomAntiStuck=value;OnPropertyChanged();}}public static Settings Instance{get;private set;}=new Settings();public bool FarmTreasures{get{return _farmTreasures;}set{if(value==_farmTreasures)return;_farmTreasures=value;OnPropertyChanged();}}public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;public void Load(){try{if(File.Exists(_filePath)){var assembly=AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a=>a.FullName.Contains("Newtonsoft.Json"))?? System.Reflection.Assembly.LoadFrom(_jsonLocation);var jsonConvert=assembly.GetTypes().FirstOrDefault(a=>a.FullName=="Newtonsoft.Json.JsonConvert");var json=string.Empty;using(var streamReader=new StreamReader(_filePath)){json=streamReader.ReadToEnd();}var populateObject=jsonConvert.GetMethods().FirstOrDefault(m=>m.Name=="PopulateObject");populateObject.Invoke(null,new object[]{json,Instance});}}catch(Exception ex){Logging.Write(ex.Message);}}private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName=null){PropertyChanged?.Invoke(this,new System.ComponentModel.PropertyChangedEventArgs(propertyName));}public void Save(){try{var assembly=AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a=>a.FullName.Contains("Newtonsoft.Json"))?? System.Reflection.Assembly.LoadFrom(_jsonLocation);var jsonConvert=assembly.GetTypes().FirstOrDefault(a=>a.FullName=="Newtonsoft.Json.JsonConvert");var serializeObject=jsonConvert.GetMethods().FirstOrDefault(m=>m.Name=="SerializeObject");var content=(string)serializeObject.Invoke(null,new object[]{this});using(var streamWriter=new StreamWriter(_filePath)){streamWriter.WriteLine(content);}}catch(Exception ex){Logging.Write(ex.Message);}}}]]>
+			</CustomBehavior>
+			<CustomBehavior File="RunCode"><![CDATA[
+					Initialize();
+					string settingsLog = $"[ProfileBase]: Settings Activated\n	Use Artifact Power Items :: {Settings.Instance.UseAPItems}\n	Use Custom Anti-Stuck    :: {Settings.Instance.UseCustomAntiStuck}\n 	Passively Farm Treasures :: {Settings.Instance.FarmTreasures}\n\nUse the 'Profile Config' button above the bot's Stop/Start button to change these settings.\n";
+					Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, settingsLog);
+				]]>
+			</CustomBehavior>
+		<!-- END Profile Settings -->
+
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Anti-stuck hook -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+				static bool UseAntiStuck = true;
+
+				public static class StuckDetection
+				{
+					public static Vector3 LastPoint = new Vector3(0f,0f,0f);
+
+					public static bool IsStuck()
+					{
+						if (!Settings.Instance.UseCustomAntiStuck) return false;
+						if (!UseAntiStuck) return false; 
+						if (!StyxWoW.Me.IsValid) return false;
+						if (StyxWoW.Me.IsDead) return false;
+						if (StyxWoW.Me.IsActuallyInCombat) return false;
+						if (StyxWoW.Me.HasAura("Resurrection Sickness")) return false;
+
+						var currentPoint = StyxWoW.Me.Location;
+						var isStuck = currentPoint.DistanceSqr(LastPoint) < 10f * 10f;
+						LastPoint = currentPoint;
+						return isStuck;
+					}
+				}
+			]]>
+			</CustomBehavior>
+			<CustomBehavior File="RunCode" Code="StuckDetection.LastPoint = new Vector3(0f,0f,0f);" /> <!-- Clean out stale data in case the user stop/starts the bot. -->
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="DoWhen_StuckDetector" AllowUseWhileMounted="true" LogExecution="false" UseAtInterval="210000" >
+				<If Condition="StuckDetection.IsStuck() &amp;&amp; HasItem(140192)" >
+					<CustomBehavior File="RunCode"><![CDATA[
+						Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Stuck detection activated!");
+						await CommonCoroutines.StopMoving();
+						await CommonCoroutines.LandAndDismount();
+						WoWItem dalaranHearthstone = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+						if (dalaranHearthstone.CooldownTimeLeft != TimeSpan.Zero) {
+							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Awaiting Dalaran Hearthstone cooldown before attempting hearth!");
+							await Coroutine.Wait(901000, () => dalaranHearthstone.CooldownTimeLeft == TimeSpan.Zero);
+						}
+						dalaranHearthstone.Interact();
+						await Coroutine.Sleep(11500);
+						Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Reloading profile.");
+						ProfileManager.LoadNew(ProfileManager.XmlLocation);
+					]]>
+					</CustomBehavior>
+				</If>
+			</CustomBehavior>
+		<!-- END Anti-stuck hook -->
+
+		<!-- Activate Artifact Boost Items Usage -->
+			<CustomBehavior File="RunCode" Type="Definition" ><![CDATA[
+					bool ReadyToEmpowerArtifact()
+					{
+						if (!Settings.Instance.UseAPItems) return false;
+						if (!Lua.GetReturnVal<bool>("return HasArtifactEquipped()", 0)) return false;
+						bool HaveItem = Me.BagItems.Any(x => x.ItemInfo.ConsumableClass == WoWItemConsumableClass.Other && x.GetEffect(0)?.Spell?.Name == "Empowering");
+						return HaveItem;
+					}
+				]]>
+			</CustomBehavior>
+			<CustomBehavior File="Hooks\DoWhen" LogExecution="false" AllowExecutionWhileNotAlive="false" ActivityName="UseArtifactBoostItems" UseWhen="ReadyToEmpowerArtifact()" >
+				<CustomBehavior File="RunCode"><![CDATA[
+						Logging.Write(System.Windows.Media.Colors.Yellow, "[ProfileBase]: Using artifact power booster items.");
+						var artifactPowerItems = Me.BagItems.Where(x => x.ItemInfo.ConsumableClass == WoWItemConsumableClass.Other && x.GetEffect(0)?.Spell?.Name == "Empowering");
+						foreach (WoWItem useMe in artifactPowerItems)
+						{
+							if (!Me.IsValid || !Me.IsAlive || Me.IsActuallyInCombat)
+								break;
+							await CommonCoroutines.StopMoving();
+							useMe.Use();
+							await Coroutine.Sleep(500);
+							await Coroutine.Wait(1600, () => !SpellManager.GlobalCooldown);
+							await Coroutine.Wait(2500, () => !Me.IsCasting);
+						}
+					]]>
+				</CustomBehavior>
+			</CustomBehavior>
+		<!-- END Activate Artifact Boost Items Usage -->
+
+		<!-- Profession Items -->
+			<!-- <WoWItem Name="Skinning Technique: Unbroken Tooth" Entry="139893" /> -->
+			<If Condition="HasItem(139893)" >
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="139893" WaitTime="1337" />
+			</If>
+
+			<!-- <WoWItem Name="Skinning Technique: Unbroken Claw" Entry="139894" /> -->
+			<If Condition="HasItem(139894)" >
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="139894" WaitTime="1337" />
+			</If>
+		<!-- END Profession Items -->
+
+		<!-- Treasure Farm Hook -->
+			<CustomBehavior File="RunCode">
+			<![CDATA[
+				TreeHooks.Instance.InsertHook("Questbot_Profile", 0,
+					_treasureHuntComposite ?? (_treasureHuntComposite = new  CommonBehaviors.Actions.ActionRunCoroutine(ctx => TreasureHunt())));	
+			]]>
+			</CustomBehavior>
+
+			<CustomBehavior File="RunCode" Type="Definition" ><![CDATA[
+					private List<WoWGuid> _treasureBlacklist = new List<WoWGuid>();
+					private bool _treasureIsLogged = false;
+					private Styx.TreeSharp.Composite _treasureHuntComposite;
+					private WoWGameObject _treasurePoi;
+					private Vector3 _treasureLocation; 
+
+					public async Task<bool> TreasureHunt()
+					{
+						if (!Settings.Instance.FarmTreasures) return false;
+
+						if (!_treasureLocation.Equals(new Vector3(0,0,0)) && _treasureLocation.DistanceSquared((WoWMovement.ActiveMover ?? StyxWoW.Me).Location) > 5 * 5)
+						{
+							TreeRoot.StatusText = $"Moving to interact with treasure: {_treasurePoi.Name}";
+							return (await CommonCoroutines.MoveTo(_treasureLocation)).IsSuccessful();
+						}
+
+						if (_treasurePoi == null || !_treasurePoi.IsValid)
+						{
+							_treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !_treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.SubType == WoWGameObjectType.Chest && obj.LockType == WoWLockType.Open && obj.CanUse() && obj.DistanceSqr <= 40f*40f);
+							if (_treasurePoi == null) return false;
+							if (Navigator.LookupPathInfo(_treasurePoi).Navigability != PathNavigability.Navigable)
+							{
+								_treasureBlacklist.Add(_treasurePoi.Guid);
+								Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, $"[ProfileBase]: Treasure detected near us, but we can't navigate to it!\n	Name     :: {_treasurePoi.Name}\n	Entry    :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
+								_treasurePoi = null;
+								return false;
+							}
+							_treasureLocation = _treasurePoi.Location;
+							return true;
+						}
+
+						if (!_treasureIsLogged)
+						{
+							_treasureIsLogged = true;
+							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, $"[ProfileBase]: Treasure detected near us!\n	Name     :: {_treasurePoi.Name}\n	Entry    :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
+						}
+
+						TreeRoot.StatusText = $"Interacting with treasure: {_treasurePoi.Name}";
+						await CommonCoroutines.LandAndDismount();
+						await CommonCoroutines.StopMoving();
+						_treasurePoi.Interact();
+						await Coroutine.Wait(2000, () => LootFrame.Instance.IsVisible);
+						LootFrame.Instance.LootAll();
+						await Coroutine.Wait(2000, () => _treasurePoi == null || !_treasurePoi.IsValid);
+
+						_treasureIsLogged = false;
+						_treasureLocation = new Vector3(0,0,0);
+						_treasureBlacklist.Add(_treasurePoi.Guid);
+
+						return true;
+					}
+			]]>
+			</CustomBehavior>
+		<!-- END Treasure Farm Hook -->
+
+
+		<If Condition="QuestDone(39718)" >
+			<TurnIn QuestName="Paradise Lost" QuestId="39718" TurnInName="Archmage Khadgar" TurnInId="86563" X="-833.8698" Y="4276.531" Z="746.255" />
+			<!-- Breadcrumb from Class Hall -->
+		</If>
+
+	<!-- Story: Behind Legion Lines -->
+		<If Condition="NeedsQuest(37653)" >
+			<!-- Prevent this intro quests from running if we've already started questing in this zone. -->
+			<PickUp QuestName="Down to Azsuna" QuestId="41220" GiverName="Archmage Khadgar" GiverId="86563" X="-833.8698" Y="4276.531" Z="746.255" />
+			<While Condition="DoQuest(41220)" >
+				<CustomBehavior File="InteractWith" MobId="86563" NonCompeteDistance="0" GossipOptions="1" WaitTime="1500" QuestId="41220" QuestObjectiveIndex="1" X="-833.8698" Y="4276.531" Z="746.255" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="2000" Lua="StaticPopup1Button1:Click();" />
+			</While>
+			<!-- All this below is due to a Blizzard bug.  Can be removed once Blizzard fixes their game. ;3  ~EchoTiger -->
+			<MoveTo X="-82.34785" Y="6857.724" Z="30.85935" />
+			<CustomBehavior File="WaitTimer" WaitTime="2000" />
+			<If Condition="Unit(93337) != null" >
+				<TurnIn QuestName="Down to Azsuna" QuestId="41220" TurnInName="Archmage Khadgar" TurnInId="93337" X="-79.12674" Y="6859.221" Z="30.98969" />
+			</If>
+			<If Condition="Unit(93337) == null" >
+				<CustomBehavior File="AbandonQuest" QuestId="41220" Type="All" />
+			</If>
+		</If>
+
+		<If Condition="Me.Class == WoWClass.DemonHunter &amp;&amp; (HasQuest(44137) || !IsQuestCompleted(44137))" >
+			<PickUp QuestName="Into the Fray" QuestId="44137" GiverName="Archmage Khadgar" GiverId="93337" X="-79.12674" Y="6859.221" Z="30.98969" />
+			<MoveTo X="-99.52439" Y="6964.012" Z="12.70574" />
+			<If Condition="Unit(89362) != null" >
+				<TurnIn QuestName="Into the Fray" QuestId="44137" TurnInName="Kayn Sunfury" TurnInId="89362" X="-103.434" Y="6961.333" Z="12.46201" />
+			</If>
+			<If Condition="Unit(101927) != null" >
+				<TurnIn QuestName="Into the Fray" QuestId="44137" TurnInName="Altruis the Sufferer" TurnInId="101927" X="-103.434" Y="6961.333" Z="12.46201" />
+			</If>
+		</If>
+		<If Condition="Me.Class != WoWClass.DemonHunter">
+			<PickUp QuestName="Into the Fray" QuestId="38834" GiverName="Archmage Khadgar" GiverId="93337" X="-79.12674" Y="6859.221" Z="30.98969" />
+			<TurnIn QuestName="Into the Fray" QuestId="38834" TurnInName="Kayn Sunfury" TurnInId="89362" X="-103.434" Y="6961.333" Z="12.46201" />
+		</If>
+
+		<PickUp QuestName="Demon Souls" QuestId="37653" GiverName="Allari the Souleater" GiverId="89398" X="-90.15625" Y="6978.989" Z="12.41577" />
+		<PickUp QuestName="Reignite the Wards" QuestId="37658" GiverName="Jace Darkweaver" GiverId="90317" X="-109.7865" Y="6988.105" Z="12.11385" />
+
+		<While Condition="DoQuest(37658)" >
+			<CustomBehavior File="InteractWith" MobId="239985" Range="4" IgnoreMobsInBlackspots="false" IgnoreLoSToTarget="true" ProactiveCombatStrategy="ClearMobsTargetingUs" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="37658" QuestObjectiveIndex="3" X="-97.22743" Y="7052.647" Z="0.2602924" />
+			<CustomBehavior File="InteractWith" MobId="239984" Range="4" IgnoreMobsInBlackspots="false" IgnoreLoSToTarget="true" ProactiveCombatStrategy="ClearMobsTargetingUs" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="37658" QuestObjectiveIndex="2" X="-165.5666" Y="7077.05" Z="3.925647" />
+			<CustomBehavior File="InteractWith" MobId="239452" Range="4" IgnoreMobsInBlackspots="false" IgnoreLoSToTarget="true" ProactiveCombatStrategy="ClearMobsTargetingUs" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="37658" QuestObjectiveIndex="1" X="-235.4271" Y="7038.738" Z="3.501538" />
+		</While>
+
+		<While Condition="DoQuest(37653)" >
+			<CustomBehavior File="InteractWith" NumOfTimes="100" InteractByUsingItemId="122100" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="600" MobState="Dead" QuestId="37653" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<!-- Staying near the Demon Hunters to avoid getting stuck in an endless loop of fighting mobs. -->
+					<Hotspot X="-274.7887" Y="7107.044" Z="4.286603" />
+					<Hotspot X="-232.2773" Y="7126.32" Z="5.764049" />
+					<Hotspot X="-194.5758" Y="7145.292" Z="2.25913" />
+					<Hotspot X="-136.2664" Y="7115.698" Z="0.8514792" />
+				</HuntingGrounds>
+				<PursuitList>
+					<!-- Maybe UNIT.KilledByMe ? Not sure if this would be any better because we can soul tap ones not killed by us. -->
+					<PursueUnit Id="90241" PursueWhen="!UNIT.HasAura(178763) &amp;&amp; !UNIT.HasAura(178974) &amp;&amp; !UNIT.HasAura(159474)" />
+					<PursueUnit Id="90230" PursueWhen="!UNIT.HasAura(178763) &amp;&amp; !UNIT.HasAura(178974) &amp;&amp; !UNIT.HasAura(159474)" />
+					<PursueUnit Id="101944" PursueWhen="!UNIT.HasAura(178763) &amp;&amp; !UNIT.HasAura(178974) &amp;&amp; !UNIT.HasAura(159474)" />
+					<PursueUnit Id="101943" PursueWhen="!UNIT.HasAura(178763) &amp;&amp; !UNIT.HasAura(178974) &amp;&amp; !UNIT.HasAura(159474)" />
+				</PursuitList>
+			</CustomBehavior>
+		</While>
+
+		<TurnIn QuestName="Reignite the Wards" QuestId="37658" TurnInName="Wolf" TurnInId="90317" X="-109.7865" Y="6988.105" Z="12.11427" />
+		<TurnIn QuestName="Demon Souls" QuestId="37653" TurnInName="Allari the Souleater" TurnInId="89398" X="-90.15625" Y="6978.989" Z="12.41578" />
+
+		<PickUp QuestName="The Scythe of Souls" QuestId="37660" GiverName="Allari the Souleater" GiverId="89398" X="-90.15625" Y="6978.989" Z="12.41578" />
+		<While Condition="DoQuest(37660)" >
+			<CustomBehavior File="RunCode" Code="
+				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Disabling custom anti-stuck measures until this quest is complete.&quot;);
+				UseAntiStuck = false;
+			" />
+			<MoveTo X="-155.1597" Y="6906.518" Z="13.15537" />
+			<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Unit(90403, u =&gt; u.Distance &lt;= 5) != null" />
+			<CustomBehavior File="InteractWith" MobId="90403" NonCompeteDistance="0" GossipOptions="1" QuestId="37660" QuestObjectiveIndex="1" X="-155.1597" Y="6906.518" Z="13.15537" />
+
+			<CustomBehavior File="InteractWith" MobId="239338" NonCompeteDistance="0" QuestId="37660" QuestObjectiveIndex="2" X="-158.8906" Y="6893.831" Z="14.79161" />
+			<CustomBehavior File="WaitTimer" WaitTime="15000" QuestId="37660" QuestObjectiveIndex="3" />
+
+			<CustomBehavior File="InteractWith" MobId="239332" NonCompeteDistance="0" QuestId="37660" QuestObjectiveIndex="4" X="-163.9184" Y="6917.265" Z="12.65213" />
+			<CustomBehavior File="WaitTimer" WaitTime="25000" QuestId="37660" QuestObjectiveIndex="5" />
+
+			<CustomBehavior File="InteractWith" MobId="237017" NonCompeteDistance="0" QuestId="37660" QuestObjectiveIndex="6" X="-157.6337" Y="6904.867" Z="13.32249" />
+
+			<If Condition="!IsObjectiveComplete(7, 37660)" >
+				<CustomBehavior File="ForcedDismount" /> <!-- Mostly for travel form since the bot+mob won't pull if the player is in it. -->
+				<CustomBehavior File="KillUntilComplete" MobId="89673" QuestId="37660" QuestObjectiveIndex="7" X="-161.5538" Y="6903.051" Z="13.31845" />
+			</If>
+
+			<MoveTo X="-90.55988" Y="6976.843" Z="12.68431" />
+			<CustomBehavior File="WaitTimer" WaitTime="5000" QuestId="37660" />
+			<CustomBehavior File="RunCode" Code="
+				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Re-enabling custom anti-stuck measures.&quot;);
+				UseAntiStuck = true;
+			" />
+		</While>
+		<TurnIn QuestName="The Scythe of Souls" QuestId="37660" TurnInName="Allari the Souleater" TurnInId="89398" X="-90.15625" Y="6978.989" Z="12.41578" />
+
+		<If Condition="Me.Class == WoWClass.DemonHunter &amp;&amp; (HasQuest(44140) || !IsQuestCompleted(44140))" >
+			<If Condition="!HasQuest(44140) &amp;&amp; !HasQuest(40815)" >
+				<MoveTo X="-99.68051" Y="6963.089" Z="12.69694" />
+				<If Condition="Unit(89362) != null" >
+					<PickUp QuestName="From Within" QuestId="44140" GiverName="Kayn Sunfury" GiverId="89362" X="-79.12674" Y="6859.221" Z="30.98969" />
+					<TurnIn QuestName="From Within" QuestId="44140" TurnInName="Kor'vas Bloodthorn" TurnInId="90255" X="-412.9792" Y="7113.748" Z="1.571512" />
+				</If>
+				<If Condition="Unit(101927) != null" >
+					<PickUp QuestName="From Within" QuestId="40815" GiverName="Altruis the Sufferer" GiverId="101927" X="-79.12674" Y="6859.221" Z="30.98969" />
+					<TurnIn QuestName="From Within" QuestId="40815" TurnInName="Kor'vas Bloodthorn" TurnInId="90255" X="-412.9792" Y="7113.748" Z="1.571512" />
+				</If>
+			</If>
+		</If>
+		<If Condition="Me.Class != WoWClass.DemonHunter" >
+			<PickUp QuestName="From Within" QuestId="36920" GiverName="Kayn Sunfury" GiverId="89362" X="-103.434" Y="6961.333" Z="12.46202" />
+			<TurnIn QuestName="From Within" QuestId="36920" TurnInName="Kor'vas Bloodthorn" TurnInId="90255" X="-412.9792" Y="7113.748" Z="1.571512" />
+		</If>
+
+		<PickUp QuestName="Fel Machinations" QuestId="37656" GiverName="Wrathguard Invader" GiverId="110988" X="-409.8965" Y="7117.188" Z="2.223603" />
+		<PickUp QuestName="Saving Stellagosa" QuestId="37450" GiverName="Wrathguard Invader" GiverId="110988" X="-409.8965" Y="7117.188" Z="2.223603" />
+
+		<While Condition="DoQuest(37450)" >
+			<MoveTo QuestId="37450" QuestObjectiveIndex="1" X="-735.4157" Y="7344.977" Z="15.02042" />
+			<!-- NOTE: <AddAvoid> : Get out or purple stuff - it silences you. -->
+			<CustomBehavior File="Hooks\Avoid" AvoidName="SubduingChains" ObjectId="9038" ObjectType="AreaTrigger" Radius="8" />
+			<CustomBehavior File="Hooks\Avoid" AvoidName="JailersPrison" ObjectId="9684" ObjectType="AreaTrigger" Radius="8" />
+
+			<!-- The InteractWith below is suicide running into a large pack of mobs.  Perhaps we need to turn off mount usage for it -->
+			<CustomBehavior File="KillUntilComplete" MobId="86535" QuestId="37450" QuestObjectiveIndex="2" X="-670.6696" Y="7160.034" Z="27.95947" />
+			<CustomBehavior File="InteractWith" MobId="239455" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" NumOfTimes="3" QuestId="37450" QuestObjectiveIndex="3" X="-736.6461" Y="7338.293" Z="15.15532" />
+			<CustomBehavior File="Hooks\Avoid" AvoidName="SubduingChains" Command="Remove" />
+			<CustomBehavior File="Hooks\Avoid" AvoidName="JailersPrison" Command="Remove" />
+		</While>
+		<TurnIn QuestName="Saving Stellagosa" QuestId="37450" TurnInName="Kor'vas Bloodthorn" TurnInId="110988" X="-723.8791" Y="7322.058" Z="15.21342" /> <!-- WoWAPI returns 90474 for this NPCId -->
+
+		<While Condition="DoQuest(37656)" >
+			<CustomBehavior File="InteractWith" MobIds="240123, 240075, 240122" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" QuestId="37656" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<!-- Staying near the Demon Hunters to avoid getting stuck in an endless loop of fighting mobs. -->
+					<Hotspot X="-377.3905" Y="7345.168" Z="40.44294" />
+					<Hotspot X="-328.2894" Y="7383.489" Z="29.68443" />
+					<Hotspot X="-236.9479" Y="7337.977" Z="20.6036" />
+					<Hotspot X="-281.3628" Y="7258.15" Z="11.94253" />
+					<Hotspot X="-237.5313" Y="7242.109" Z="21.07804" />
+					<Hotspot X="-168.1649" Y="7272.057" Z="17.37294" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+		<TurnIn QuestName="Fel Machinations" QuestId="37656" TurnInName="Kor'vas Bloodthorn" TurnInId="110988" X="-174.0494" Y="7271.852" Z="13.4738" />
+
+		<While Condition="!IsQuestCompleted(36811) &amp;&amp; Me.Level &lt; 110" >
+			<!-- Bonus Objective: Retake Faronaar -->
+			<CustomBehavior File="InteractWith" NonCompeteDistance="0" ProactiveCombatStrategy="ClearAll" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(36811)" >
+				<HuntingGrounds>
+					<Hotspot X="-320.7442" Y="7365.427" Z="27.60932" />
+					<Hotspot X="-257.0323" Y="7285.456" Z="9.244231" />
+					<Hotspot X="-257.0323" Y="7285.456" Z="9.244231" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueGameObject Id="239676" />
+					<PursueUnit Id="103363" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="103231" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="103162" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="89731" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="103180" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="103176" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="90661" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+				</PursuitList>
+			</CustomBehavior>
+		</While>
+
+		<PickUp QuestName="Dark Revelations" QuestId="37449" GiverName="Kor'vas Bloodthorn" GiverId="110988" X="-212.7293" Y="7229.569" Z="12.26306" />
+		<While Condition="NeedsQuest(37449) || DoQuest(37449)" >
+			<MoveTo X="-502.8906" Y="7499.088" Z="74.15278" />
+			<CustomBehavior File="KillUntilComplete" MobId="90621" QuestId="37449" QuestObjectiveIndex="1" X="-491.7935" Y="7501.004" Z="73.40841" />
+			<CustomBehavior File="InteractWith" MobId="90623" QuestId="37449" X="-518.5573" Y="7518.17" Z="74.2154" />
+			<CustomBehavior File="WaitTimer" QuestId="37449" QuestObjectiveIndex="3" WaitTime="50000" TerminateWhen="!Me.InVehicle" />
+		</While>
+		<If Condition="HasQuest(37449)" >
+			<If Condition="Unit(101927) != null" >
+				<TurnIn QuestName="Dark Revelations" QuestId="37449" TurnInName="Altruis the Sufferer" TurnInId="101927" X="-103.434" Y="6961.333" Z="12.46136" />
+			</If>
+			<If Condition="Unit(89362) != null" >
+				<TurnIn QuestName="Dark Revelations" QuestId="37449" TurnInName="Kayn Sunfury" TurnInId="89362" X="-103.434" Y="6961.333" Z="12.46136" />
+			</If>
+		</If>
+	<!-- END Story: Behing Legion Lines -->
+
+	<!-- Story: Defending Azurewing Repose -->
+		<PickUp QuestName="Journey to the Repose" QuestId="38443" GiverName="Archmage Khadgar" GiverId="93326" X="-101.349" Y="6961.514" Z="12.58813" />
+		<TurnIn QuestName="Journey to the Repose" QuestId="38443" TurnInName="Archmage Khadgar" TurnInId="93354" X="611.743" Y="6672.58" Z="60.20637" />
+
+		<PickUp QuestName="The Death of the Eldest" QuestId="37853" GiverName="Archmage Khadgar" GiverId="93354" X="611.743" Y="6672.58" Z="60.20637" />
+		<While Condition="DoQuest(37853)" >
+			<CustomBehavior File="KillUntilComplete" MobId="106630" QuestId="37853" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="870.1301" Y="6611.31" Z="56.75214" />
+					<Hotspot X="841.2068" Y="6549.64" Z="53.02852" />
+					<Hotspot X="766.4086" Y="6490.921" Z="61.68282" />
+					<Hotspot X="782.0421" Y="6458.898" Z="59.54858" />
+					<Hotspot X="888.8901" Y="6470.409" Z="50.22207" />
+				</HuntingGrounds>
+			</CustomBehavior>
+			<MoveTo X="674.113" Y="6663.514" Z="59.6697" />
+			<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click()" />
+		</While>
+		<TurnIn QuestName="The Death of the Eldest" QuestId="37853" TurnInName="Stellagosa" TurnInId="89794" X="613.1719" Y="6670.912" Z="60.20705" />
+
+		<PickUp QuestName="Agapanthus" QuestId="37991" GiverName="Emmigosa" GiverId="89795" X="614.3611" Y="6669.012" Z="60.23634" />
+		<MoveTo QuestId="37991" X="644.1058" Y="6611.399" Z="60.14321" />
+		<TurnIn QuestName="Agapanthus" QuestId="37991" TurnInName="Agapanthus" TurnInId="90543" X="647.033" Y="6607.346" Z="60.18776" />
+
+		<PickUp QuestName="Their Dying Breaths" QuestId="42271" GiverName="Agapanthus" GiverId="90543" X="647.033" Y="6607.346" Z="60.18776" />
+		<While Condition="DoQuest(42271)" >
+			<CustomBehavior File="InteractWith" MobId="240267" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="42271" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="683.7028" Y="6563.665" Z="63.47566" />
+					<Hotspot X="708.5201" Y="6535.76" Z="62.61032" />
+				</HuntingGrounds>
+			</CustomBehavior>
+			<CustomBehavior File="InteractWith" MobIds="90880, 90219" PreInteractMountStrategy="Dismount" NumOfTimes="4" QuestId="42271" QuestObjectiveIndex="2" X="643.3144" Y="6613.538" Z="60.15187" />
+			<CustomBehavior File="InteractWith" MobId="91037" QuestId="42271" QuestObjectiveIndex="3" X="649.007" Y="6614.711" Z="60.21638" />
+		</While>
+		<TurnIn QuestName="Their Dying Breaths" QuestId="42271" TurnInName="Senegos" TurnInId="89975" X="634.6545" Y="6679.66" Z="54.25773" />
+
+		<PickUp QuestName="Those Who Remember" QuestId="37690" GiverName="Senegos" GiverId="89975" X="634.6545" Y="6679.66" Z="54.25773" />
+		<PickUp QuestName="The Last of the Last" QuestId="37855" GiverName="Senegos" GiverId="89975" X="634.6545" Y="6679.66" Z="54.25773" />
+		<TurnIn QuestName="The Last of the Last" QuestId="37855" TurnInName="Projection of Senegos" TurnInId="89978" X="1076.594" Y="6590.372" Z="139.6547" />
+
+		<PickUp QuestName="The Withered" QuestId="37856" GiverName="Agapanthus" GiverId="90916" X="1080.411" Y="6628.667" Z="141.4537" />
+		<PickUp QuestName="The Consumed" QuestId="37859" GiverName="Mana-Drained Whelpling" GiverId="90423" X="1123.632" Y="6576.793" Z="142.3137" />
+		<PickUp QuestName="Runas the Shamed" QuestId="37957" GiverName="Stellagosa" GiverId="90065" X="1111.717" Y="6758.375" Z="167.4186" />
+
+		<While Condition="DoQuest(37859)" >
+			<CustomBehavior File="InteractWith" MobId="240033" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="37859" QuestObjectiveIndex="1" X="1132.132" Y="6557.674" Z="145.9953" />
+			<CustomBehavior File="InteractWith" MobId="90167" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="37859" QuestObjectiveIndex="2" >
+				<HuntingGrounds>
+					<Hotspot X="1123.632" Y="6576.793" Z="142.3138" />
+					<Hotspot X="1129.818" Y="6703.365" Z="163.6653" />
+					<Hotspot X="1144.209" Y="6821.92" Z="165.6336" />
+					<Hotspot X="1061.409" Y="6897.553" Z="176.9087" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<CustomBehavior File="KillUntilComplete" MobId="90372" QuestId="37957" QuestObjectiveIndex="1" X="1044.2" Y="7008.182" Z="174.3157" />
+
+		<While Condition="DoQuest(37856)" >
+			<CustomBehavior File="KillUntilComplete" MobIds="90380, 90379" QuestId="37856" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="1120.313" Y="6702.432" Z="164.4753" />
+					<Hotspot X="1159.762" Y="6739.092" Z="161.584" />
+					<Hotspot X="1105.938" Y="6875.015" Z="172.3611" />
+					<Hotspot X="1060.182" Y="6891.426" Z="177.4278" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<PickUp QuestName="Challiane Vineyards" QuestId="38203" GiverName="Cellarman Voodani" GiverId="91061" X="1396.776" Y="7144.244" Z="59.96989" />
+		<While Condition="DoQuest(38203)" >
+			<CustomBehavior File="KillUntilComplete" MobId="90547" QuestId="38203" QuestObjectiveIndex="3" X="1433.429" Y="7005.435" Z="90.79688" />
+			<CustomBehavior File="KillUntilComplete" MobId="90537" QuestId="38203" QuestObjectiveIndex="2" X="1243.832" Y="6826.204" Z="120.8751" />
+			<CustomBehavior File="KillUntilComplete" MobId="90541" QuestId="38203" QuestObjectiveIndex="1" X="1439.657" Y="6723.007" Z="87.88544" />
+		</While>
+
+		<If Condition="HasQuest(38203)" >
+			<MoveTo DestName="Cellarman Voodani" X="1256.297" Y="7163.075" Z="61.72334" />
+		</If>
+
+		<TurnIn QuestName="Challiane Vineyards" QuestId="38203" TurnInName="Cellarman Voodani" TurnInId="91061" X="1396.776" Y="7144.244" Z="59.96974" />
+
+		<While Condition="!IsQuestCompleted(37965) &amp;&amp; Me.Level &lt; 110" >
+			<!-- Bonus quest: 'A Tainted Vintage' -->
+			<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" PreInteractMountStrategy="Dismount" TerminateWhen="IsQuestCompleted(37965)" >
+				<HuntingGrounds>
+					<Hotspot X="1280.752" Y="6749.125" Z="106.4029" />
+					<Hotspot X="1325.041" Y="6820.668" Z="106.602" />
+					<Hotspot X="1391.928" Y="6956.63" Z="92.99943" />
+					<Hotspot X="1434.908" Y="6970.988" Z="90.33741" />
+					<Hotspot X="1460.784" Y="7004.989" Z="87.23361" />
+					<Hotspot X="1293.588" Y="6936.071" Z="110.4564" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueGameObject Id="91041" />
+					<PursueGameObject Id="91372" />
+					<PursueUnit Id="90480" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="90526" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="90985" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="90542" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+				</PursuitList>
+			</CustomBehavior>
+		</While>
+
+		<TurnIn QuestName="The Consumed" QuestId="37859" TurnInName="Projection of Senegos" TurnInId="89978" X="1076.594" Y="6590.372" Z="139.6548" />
+		<TurnIn QuestName="Runas the Shamed" QuestId="37957" TurnInName="Projection of Senegos" TurnInId="89978" X="1076.594" Y="6590.372" Z="139.6548" />
+		<TurnIn QuestName="The Withered" QuestId="37856" TurnInName="Agapanthus" TurnInId="90916" X="1080.411" Y="6628.667" Z="141.4543" />
+
+
+		<PickUp QuestName="Runas Knows the Way" QuestId="37857" GiverName="Runas the Shamed" GiverId="90383" X="1099.497" Y="6588.107" Z="139.655" />
+		<While Condition="DoQuest(37857)" >
+			<CustomBehavior File="InteractWith" MobId="90383" NonCompeteDistance="0" NumOfTimes="10" GossipOptions="1" InteractBlacklistTimeInSeconds="1" X="1099.497" Y="6588.107" Z="139.655" TerminateWhen="Unit(90406) != null" />
+			<CustomBehavior File="EscortGroup" EscortCompleteWhen="QuestObjectiveComplete" NonCompeteDistance="0" EscortCountMax="1" QuestId="37857" QuestObjectiveIndex="1"
+				EscortNpcId="90406" EscortMaxFightDistance="15" SearchForNpcsRadius="30" TerminateWhen="Unit(90406) == null" >
+				<SearchPath>
+					<Hotspot X="1099.497" Y="6588.107" Z="139.655" />
+				</SearchPath>
+			</CustomBehavior>
+		</While>
+		<TurnIn QuestName="Runas Knows the Way" QuestId="37857" TurnInName="Projection of Senegos" TurnInId="89978" X="1091.826" Y="6315.432" Z="121.3912" />
+
+		<PickUp QuestName="Leyline Abuse" QuestId="37960" GiverName="Projection of Senegos" GiverId="89978" X="1091.826" Y="6315.432" Z="121.3912" />
+		<PickUp QuestName="The Hunger Returns" QuestId="37959" GiverName="Runas the Shamed" GiverId="90383" X="1067.91" Y="6287.229" Z="117.2477" />
+
+		<While Condition="DoQuest(37960)" >
+			<CustomBehavior File="KillUntilComplete" MobId="90389" QuestId="37960" QuestObjectiveIndex="2" X="1027.78" Y="6093.232" Z="92.60763" />
+			<CustomBehavior File="KillUntilComplete" MobId="90390" QuestId="37960" QuestObjectiveIndex="1" X="1115.208" Y="6029.859" Z="85.51938" />
+		</While>
+
+		<While Condition="DoQuest(37959)" >
+			<CustomBehavior File="KillUntilComplete" MobIds="109826, 90616" QuestId="37959" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="1073.741" Y="6164.798" Z="96.41445" />
+					<Hotspot X="993.0677" Y="6163.931" Z="103.657" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<TurnIn QuestName="The Hunger Returns" QuestId="37959" TurnInName="Runas the Shamed" TurnInId="90383" X="1067.91" Y="6287.229" Z="117.2477" />
+		<TurnIn QuestName="Leyline Abuse" QuestId="37960" TurnInName="Projection of Senegos" TurnInId="89978" X="1091.826" Y="6315.432" Z="121.3913" />
+
+		<PickUp QuestName="The Nightborne Prince" QuestId="37861" GiverName="Projection of Senegos" GiverId="89978" X="1091.826" Y="6315.432" Z="121.3913" />
+		<PickUp QuestName="You Scratch My Back..." QuestId="37860" GiverName="Runas the Shamed" GiverId="90383" X="1067.91" Y="6287.229" Z="117.2477" />
+
+		<!-- <WoWItem Name="Runas' Crystal Grinder" Entry="138876" />-->
+		<If Condition="HasItem(138876)" >
+			<CustomBehavior File="UseItem" ItemId="138876" />
+		</If>
+		<If Condition="HasItem(138876)" >
+			<CustomBehavior File="DeleteItems" Ids="138876" />
+		</If>
+
+		<While Condition="DoQuest(37860)" >
+			<If Condition="!IsObjectiveComplete(1, 37860)" >
+				<MoveTo X="1130.15" Y="6144.952" Z="84.81538" />
+				<CustomBehavior File="RunCode">
+					<![CDATA[
+							Lua.DoString("ExtraActionButton1:Click();");
+							await Coroutine.Sleep(1250);
+							SpellManager.ClickRemoteLocation(new WoWPoint(1136.193, 6112.804, 76.10799));
+							await Coroutine.Sleep(8000);
+						]]>
+				</CustomBehavior>
+			</If>
+			<If Condition="!IsObjectiveComplete(2, 37860)" >
+				<MoveTo X="1154.47" Y="6147.103" Z="86.72526" />
+				<CustomBehavior File="RunCode">
+					<![CDATA[
+							Lua.DoString("ExtraActionButton1:Click();");
+							await Coroutine.Sleep(1250);
+							SpellManager.ClickRemoteLocation(new WoWPoint(1187.097, 6143.048, 79.17685));  
+							await Coroutine.Sleep(5000);
+						]]>
+				</CustomBehavior>
+			</If>
+			<If Condition="!IsObjectiveComplete(3, 37860)" >
+				<MoveTo X="1203.327" Y="6174.563" Z="86.64151" />
+				<CustomBehavior File="RunCode">
+					<![CDATA[
+							Lua.DoString("ExtraActionButton1:Click();");
+							await Coroutine.Sleep(1250);
+							SpellManager.ClickRemoteLocation(new WoWPoint(1239.297, 6168.775, 81.59416));
+							await Coroutine.Sleep(5000);
+						]]>
+				</CustomBehavior>
+			</If>
+			<If Condition="!IsObjectiveComplete(4, 37860)" >
+				<MoveTo X="1197.808" Y="6094.147" Z="81.33151" />
+				<CustomBehavior File="RunCode">
+					<![CDATA[
+							Lua.DoString("ExtraActionButton1:Click();");
+							await Coroutine.Sleep(1250);
+							SpellManager.ClickRemoteLocation(new WoWPoint(1206.857, 6062.605, 78.59689));
+							await Coroutine.Sleep(5000);
+						]]>
+				</CustomBehavior>
+			</If>
+		</While>
+		<TurnIn QuestName="You Scratch My Back..." QuestId="37860" />
+
+		<If Condition="!IsQuestCompleted(37963) &amp;&amp; Me.Level &lt; 110" >
+			<!-- Bonus Objecitve : Those Beyond Redemption -->
+			<CustomBehavior File="KillUntilComplete" MobIds="90005, 90318, 90616, 109826" TerminateWhen="IsQuestCompleted(37963) || QuestFlaggedCompleted(37963)" >
+				<HuntingGrounds>
+					<Hotspot X="1182.086" Y="6172.282" Z="86.19495" />
+					<Hotspot X="1319.275" Y="6120.765" Z="87.61205" />
+					<Hotspot X="1062.626" Y="6162.051" Z="96.75645" />
+					<Hotspot X="994.0278" Y="6165.104" Z="103.6575" />
+					<Hotspot X="997.1215" Y="6223.384" Z="94.85415" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</If>
+
+		<While Condition="DoQuest(37861)" >
+			<CustomBehavior File="KillUntilComplete" MobId="90267" QuestId="37861" QuestObjectiveIndex="1" X="1251.304" Y="6027.025" Z="116.3462" />
+		</While>
+		<TurnIn QuestName="The Nightborne Prince" QuestId="37861" TurnInName="Stellagosa" TurnInId="107995" X="1208.038" Y="6037.164" Z="121.4082" />
+
+		<PickUp QuestName="Still Alive" QuestId="37862" GiverName="Stellagosa" GiverId="107995" X="1208.038" Y="6037.164" Z="121.4082" />
+		<While Condition="DoQuest(37862)" >
+			<If Condition="Unit(107995) != null" >
+				<CustomBehavior File="InteractWith" MobId="107995" GossipOptions="1" X="1208.038" Y="6037.164" Z="121.4082" />
+				<CustomBehavior File="WaitTimer" WaitTime="55000" TerminateWhen="!Me.IsFlying" />
+				<!-- NOTE: <TechnicalCheck> : Not sure if IsFlying returns true while flying on this mount -->
+			</If>
+		</While>
+		<TurnIn QuestName="Still Alive" QuestId="37862" TurnInName="Stellagosa" TurnInId="90738" X="640.132" Y="6540.541" Z="74.45534" />
+
+		<PickUp QuestName="On the Brink" QuestId="38015" GiverName="Stellagosa" GiverId="90738" X="640.132" Y="6540.541" Z="74.45534" />
+		<PickUp QuestName="Feasting on the Dragon" QuestId="38014" GiverName="Archmage Khadgar" GiverId="102988" X="628.2726" Y="6559.667" Z="67.6359" />
+
+		<While Condition="DoQuest(38015)" >
+			<CustomBehavior File="InteractWith" MobId="107964" InteractByUsingItemId="138146" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="38015" QuestObjectiveIndex="4" X="708.4583" Y="6554.415" Z="63.7892" /> <!-- MobId="107964"  -->
+			<CustomBehavior File="InteractWith" MobId="107962" InteractByUsingItemId="138146" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="38015" QuestObjectiveIndex="1" X="580.2465" Y="6624.608" Z="57.83238" /> <!-- MobId="107962"  -->
+			<CustomBehavior File="InteractWith" MobId="107961" InteractByUsingItemId="138146" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="38015" QuestObjectiveIndex="3" X="614.2483" Y="6668.945" Z="60.23647" /> <!-- MobId="107961"  -->
+			<CustomBehavior File="InteractWith" MobId="107963" InteractByUsingItemId="138146" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="38015" QuestObjectiveIndex="2" X="648.5121" Y="6717.858" Z="57.89808" /> <!-- MobId="107963"  -->
+		</While>
+
+		<While Condition="DoQuest(38014)" >
+			<CustomBehavior File="KillUntilComplete" MobIds="91157, 103208" QuestId="38014" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="586.2235" Y="6690.787" Z="63.39612" />
+					<Hotspot X="605.4514" Y="6627.433" Z="57.94707" />
+					<Hotspot X="661.3255" Y="6589.636" Z="63.09806" />
+					<Hotspot X="716.0465" Y="6666.815" Z="65.12503" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<TurnIn QuestName="Feasting on the Dragon" QuestId="38014" TurnInName="Archmage Khadgar" TurnInId="102988" X="628.2726" Y="6559.667" Z="67.63589" />
+		<TurnIn QuestName="On the Brink" QuestId="38015" TurnInName="Stellagosa" TurnInId="90738" X="640.132" Y="6540.541" Z="74.45542" />
+
+		<PickUp QuestName="Cursed to Wither" QuestId="42567" GiverName="Stellagosa" GiverId="90738" X="640.132" Y="6540.541" Z="74.45542" />
+		<TurnIn QuestName="Cursed to Wither" QuestId="42567" TurnInName="Runas the Shamed" TurnInId="91131" X="805.533" Y="6652.471" Z="58.72321" />
+
+		<!-- <WoWItem Name="Emmigosa" Entry="129178" />-->
+		<If Condition="HasItem(129178)" >
+			<CustomBehavior File="UseItem" ItemId="129178" />
+		</If>
+		<If Condition="HasItem(129178)" >
+			<CustomBehavior File="DeleteItems" Ids="129178" />
+		</If>
+
+		<PickUp QuestName="Hunger's End" QuestId="42756" GiverName="Runas the Shamed" GiverId="91131" X="805.533" Y="6652.471" Z="58.72321" />
+		<While Condition="DoQuest(42756)" >
+			<CustomBehavior File="KillUntilComplete" MobId="91155" QuestId="42756" QuestObjectiveIndex="1" X="610.0903" Y="6657.112" Z="60.53638" />
+			<!-- NOTE: <AddAvoid> : Could use an avoid here.  NPC summons a lot of stuff that moves around. -->
+			<CustomBehavior File="KillUntilComplete" MobId="108721" QuestId="42756" QuestObjectiveIndex="2" X="627.3381" Y="6643.479" Z="60.22007" />
+		</While>
+		<TurnIn QuestName="Hunger's End" QuestId="42756" TurnInName="Senegos" TurnInId="100482" X="664.2726" Y="6673.743" Z="55.7644" />
+	<!-- END Story: Defending Azurewing Repose -->
+
+	<!-- Side Quests Breadcrumbs
+		Since they are breadcrumbs, we don't really need to pick them up.  Leaving them in can cause issues for people who manually quest.
+			If added back in, use NeedsBreadcrumbQuest or something along those lines to prevent it from running
+		<PickUp QuestName="Felblaze Ingress" QuestId="42372" GiverName="Marius Felbane" GiverId="106915" X="455.8542" Y="6505.95" Z="40.30322" />
+		<PickUp QuestName="Missing Demon" QuestId="42238" GiverName="Tehd Shoemaker" GiverId="106914" X="453.4601" Y="6509.208" Z="40.25872" />-->
+	<!-- END Side Quests Breadcrumbs -->
+
+	<!-- Story: Azsuna versus Azshara -->
+		<TurnIn QuestName="Those Who Remember" QuestId="37690" TurnInName="Nightwatcher Idri" TurnInId="89023" X="288.5208" Y="6643.104" Z="56.0437" />
+
+		<PickUp QuestName="They Came From the Sea" QuestId="37256" GiverName="Nightwatcher Idri" GiverId="89023" X="288.5208" Y="6643.104" Z="56.0437" />
+		<While Condition="DoQuest(37256)" >
+			<CustomBehavior File="KillUntilComplete" MobId="88090" QuestId="37256" QuestObjectiveIndex="1" X="191.934" Y="6845.155" Z="72.12495" />
+			<CustomBehavior File="KillUntilComplete" MobIds="109154, 88084" QuestId="37256" QuestObjectiveIndex="2" >
+				<HuntingGrounds>
+					<Hotspot X="232.39" Y="6783.089" Z="54.90671" />
+					<Hotspot X="266.6945" Y="6691.551" Z="55.97951" />
+					<Hotspot X="124.1819" Y="6801.362" Z="50.53234" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+		<TurnIn QuestName="They Came From the Sea" QuestId="37256" TurnInName="Nightwatcher Idri" TurnInId="89023" X="288.5208" Y="6643.104" Z="56.04459" />
+
+		<PickUp QuestName="Prince Farondis" QuestId="37733" GiverName="Nightwatcher Idri" GiverId="89023" X="288.5208" Y="6643.104" Z="56.04459" />
+		<TurnIn QuestName="Prince Farondis" QuestId="37733" TurnInName="Nightwatcher Idri" TurnInId="89023" X="-4.743056" Y="6736.632" Z="55.64066" />
+
+		<PickUp QuestName="Our Very Bones" QuestId="37257" GiverName="Prince Farondis" GiverId="88115" X="-10.85069" Y="6734.116" Z="55.58853" />
+		<PickUp QuestName="A Rather Long Walk" QuestId="37492" GiverName="Lady Irisse" GiverId="88798" X="-16.15451" Y="6730.362" Z="55.64079" />
+		<PickUp QuestName="The Magister of Mixology" QuestId="37727" GiverName="Magister Garuhod" GiverId="89341" X="-13.44271" Y="6726.504" Z="55.58865" />
+		<PickUp QuestName="Presentation is Everything" QuestId="37728" GiverName="Magister Garuhod" GiverId="89341" X="-13.44271" Y="6726.504" Z="55.58865" />
+
+		<CustomBehavior File="KillUntilComplete" MobId="89653" QuestId="37728" QuestObjectiveIndex="1" X="377.974" Y="6424.851" Z="3.794955" />
+		<While Condition="DoQuest(37727)" >
+			<CustomBehavior File="InteractWith" MobId="239692" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="37727" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="335.9479" Y="6435.111" Z="9.073827" />
+					<Hotspot X="340.5689" Y="6354.652" Z="5.287906" />
+					<Hotspot X="357.1674" Y="6264.91" Z="2.674739" />
+					<Hotspot X="328.9573" Y="6175.972" Z="6.48738" />
+					<Hotspot X="284.4913" Y="6183.221" Z="0.3277865" />
+					<Hotspot X="287.2297" Y="6367.741" Z="4.224408" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+		<While Condition="DoQuest(37492)" >
+			<UseMount Value="false" />
+			<!-- Prevent bot from suicide running into mobs. -->
+			<MoveTo X="197.0435" Y="6421.526" Z="-1.845306" />
+			<CustomBehavior File="Message" Text="Waiting for Sea Skrog to move before going after object." />
+			<CustomBehavior File="WaitTimer" WaitTime="30000" TerminateWhen="Unit(88094, u =&gt; u.Distance &gt;= 50) != null || Unit(88094) == null" />
+			<MoveTo X="197.181" Y="6421.839" Z="-1.774168" />
+			<CustomBehavior File="InteractWith" MobId="88797" MovementBy="ClickToMoveOnly" QuestId="37492" QuestObjectiveIndex="1" X="201.0521" Y="6424.347" Z="-22.21514" />
+			<UseMount Value="true" />
+		</While>
+		<While Condition="DoQuest(37257)" >
+			<CustomBehavior File="KillUntilComplete" MobIds="107367, 88099, 88101" QuestId="37257" >
+				<HuntingGrounds>
+					<Hotspot X="279.8137" Y="6475.952" Z="1.73516" />
+					<Hotspot X="256.6267" Y="6540.718" Z="3.497601" />
+					<Hotspot X="326.515" Y="6502.422" Z="8.329529" />
+					<Hotspot X="172.635" Y="6534.716" Z="0.5314069" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<While Condition="NeedsQuest(38407) &amp;&amp; !HasItem(122699)" >
+			<CustomBehavior File="KillUntilComplete" MobIds="107367, 88099, 88101, 109174" TerminateWhen="!NeedsQuest(38407) &amp;&amp; !HasItem(122699)" >
+				<HuntingGrounds>
+					<Hotspot X="279.8137" Y="6475.952" Z="1.73516" />
+					<Hotspot X="256.6267" Y="6540.718" Z="3.497601" />
+					<Hotspot X="326.515" Y="6502.422" Z="8.329529" />
+					<Hotspot X="172.635" Y="6534.716" Z="0.5314069" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<PickUp QuestName="Bottled Up" QuestId="38407" GiverType="Item" GiverName="Okuna's Message" GiverId="122699" />
+
+		<TurnIn QuestName="Our Very Bones" QuestId="37257" TurnInName="Prince Farondis" TurnInId="88115" X="-10.85069" Y="6734.116" Z="55.58864" />
+		<TurnIn QuestName="A Rather Long Walk" QuestId="37492" TurnInName="Lady Irisse" TurnInId="88798" X="-16.15451" Y="6730.362" Z="55.63947" />
+		<If Condition="QuestDone(38407)" >
+			<TurnIn QuestName="Bottled Up" QuestId="38407" TurnInName="Lady Irisse" TurnInId="88798" X="-16.15451" Y="6730.362" Z="55.63947" />
+			<!-- Auto pickup from quest item while doing quests above. -->
+		</If>
+		<TurnIn QuestName="The Magister of Mixology" QuestId="37727" TurnInName="Magister Garuhod" TurnInId="89341" X="-13.44271" Y="6726.504" Z="55.58904" />
+		<TurnIn QuestName="Presentation is Everything" QuestId="37728" TurnInName="Magister Garuhod" TurnInId="89341" X="-13.44271" Y="6726.504" Z="55.58904" />
+
+		<PickUp QuestName="Infiltrating Shipwreck Arena" QuestId="37496" GiverName="Lady Irisse" GiverId="88798" X="-16.15451" Y="6730.362" Z="55.63947" /> <!-- Against the Giants breadcrumb. -->
+		<PickUp QuestName="Trailing the Tidestone" QuestId="37497" GiverName="Prince Farondis" GiverId="88115" X="-10.85069" Y="6734.116" Z="55.58864" /> <!-- Azsuna versus Azshara breadcrumb. -->
+
+		<While Condition="DoQuest(37497)" >
+			<CustomBehavior File="InteractWith" MobId="88115" WaitTime="8000" GossipOptions="1" QuestId="37497" X="-10.85069" Y="6734.116" Z="55.58864" />
+			<CustomBehavior File="EscortGroup" QuestId="37497" NonCompeteDistance="0" EscortCompleteWhen="QuestObjectiveComplete" QuestObjectiveIndex="1" EscortCountMax="1"
+				EscortNpcId="88869" EscortMaxFightDistance="15" EscortMaxFollowDistance="10" SearchForNpcsRadius="30" >
+				<SearchPath>
+					<Hotspot X="17.70082" Y="6736.925" Z="55.588" />
+				</SearchPath>
+			</CustomBehavior>
+		</While>
+		<TurnIn QuestName="Trailing the Tidestone" QuestId="37497" TurnInName="Prince Farondis" TurnInId="88867" X="-139.941" Y="6418.818" Z="27.39929" />
+
+		<PickUp QuestName="Nar'thalas Still Suffers" QuestId="37486" GiverName="Prince Farondis" GiverId="88867" X="-139.941" Y="6418.818" Z="27.39929" />
+		<PickUp QuestName="Children of Nar'thalas" QuestId="42692" GiverName="Kallistia Starlance" GiverId="89326" X="-184.7049" Y="6320.589" Z="21.63328" />
+		<PickUp QuestName="You Never Know Until You Scry" QuestId="42693" GiverName="Olothil Starlance" GiverId="108328" X="-189.7396" Y="6313.207" Z="20.58764" />
+
+		<While Condition="DoQuest(42692)" >
+			<CustomBehavior File="InteractWith" MobId="251117" NonCompeteDistance="0" MovementBy="NavigatorOnly" QuestId="42692" QuestObjectiveIndex="1" X="-167.8872" Y="6411.101" Z="46.26837" />
+			<CustomBehavior File="InteractWith" MobId="251121" NonCompeteDistance="0" MovementBy="NavigatorOnly" QuestId="42692" QuestObjectiveIndex="2" X="-110.2135" Y="6406.333" Z="27.6425" />
+			<CustomBehavior File="InteractWith" MobId="251115" NonCompeteDistance="0" MovementBy="NavigatorOnly" QuestId="42692" QuestObjectiveIndex="3" X="-115.7153" Y="6336.984" Z="20.62677" />
+		</While>
+		<CustomBehavior File="KillUntilComplete" MobId="88091" QuestId="37486" QuestObjectiveIndex="1" X="-323.2778" Y="6158.521" Z="48.07375" />
+
+		<CustomBehavior File="KillUntilComplete" MobIds="88086, 88087" QuestId="42693" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="-246.0592" Y="6180.547" Z="41.15833" />
+				<Hotspot X="-208.5076" Y="6137.853" Z="40.12774" />
+				<Hotspot X="-153.4284" Y="6189.759" Z="3.504944" />
+				<Hotspot X="-206.8819" Y="6201.078" Z="4.976368" />
+				<Hotspot X="-51.22282" Y="6225.709" Z="-0.3136045" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Children of Nar'thalas" QuestId="42692" TurnInName="Kallistia Starlance" TurnInId="89326" X="-184.7049" Y="6320.589" Z="21.63328" />
+		<TurnIn QuestName="You Never Know Until You Scry" QuestId="42693" TurnInName="Olothil Starlance" TurnInId="108328" X="-189.7396" Y="6313.207" Z="20.58771" />
+
+		<CustomBehavior File="Hooks\Avoid" AvoidName="SeaSkrog" IgnoreLootInAvoid="true" ObjectId="88094" Radius="25" AvoidWhen="UNIT.IsAlive" />
+
+		<PickUp QuestName="Back from the Dead" QuestId="42694" GiverName="Olothil Starlance" GiverId="108328" X="-189.7396" Y="6313.207" Z="20.58716" />
+		<While Condition="DoQuest(42694)" >
+			<If Condition="!IsObjectiveComplete(1, 42694)" > <!-- For the wait timer -->
+				<CustomBehavior File="InteractWith" MobId="251182"  NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="42694" QuestObjectiveIndex="1" X="-189.3819" Y="6311.526" Z="20.58729" />
+				<CustomBehavior File="WaitTimer" WaitTime="25000" QuestId="42694" />
+			</If>
+			<If Condition="SpellManager.HasSpell(233368) &amp;&amp; Unit(108328, u =&gt; u.DistanceSqr &lt; 15f*15f) != null" >
+				<MoveTo X="-171.4103" Y="6334.366" Z="15.90906" />
+			</If>
+			<CustomBehavior File="KillUntilComplete" MobId="88086" QuestId="42694" QuestObjectiveIndex="4" X="-209.7847" Y="6198.627" Z="4.976766" />
+			<CustomBehavior File="KillUntilComplete" MobId="108441" QuestId="42694" QuestObjectiveIndex="3" X="-53.2309" Y="6129.452" Z="25.73073" />
+			<CustomBehavior File="KillUntilComplete" MobIds="88099, 88100, 88101" QuestId="42694" QuestObjectiveIndex="2" X="102.6458" Y="6211.512" Z="3.477443" />
+		</While>
+		<TurnIn QuestName="Back from the Dead" QuestId="42694" TurnInName="Olothil Starlance" TurnInId="108328" X="-188.7205" Y="6317.007" Z="20.58788" />
+
+		<TurnIn QuestName="Nar'thalas Still Suffers" QuestId="37486" TurnInName="Prince Farondis" TurnInId="88867" X="-139.941" Y="6418.818" Z="27.39911" />
+
+		<CustomBehavior File="Hooks\Avoid" AvoidName="SeaSkrog" Command="Remove" />
+
+		<PickUp QuestName="The Walk of Shame" QuestId="37467" GiverName="Prince Farondis" GiverId="88867" X="-139.941" Y="6418.818" Z="27.39959" />
+		<While Condition="DoQuest(37467)" >
+			<CustomBehavior File="InteractWith" MobId="88867" GossipOptions="1" X="-139.941" Y="6418.818" Z="27.39941" />
+			<CustomBehavior File="EscortGroup" NonCompeteDistance="0" EscortCompleteWhen="QuestObjectiveComplete" EscortCountMax="1" QuestId="37467" QuestObjectiveIndex="1"
+				EscortNpcId="88889" EscortMaxFightDistance="15" SearchForNpcsRadius="30" >
+				<SearchPath>
+					<Hotspot X="-139.941" Y="6418.818" Z="27.39959" />
+				</SearchPath>
+			</CustomBehavior>
+		</While>
+		<TurnIn QuestName="The Walk of Shame" QuestId="37467" TurnInName="Prince Farondis" TurnInId="88890" X="-39.66493" Y="6260.809" Z="8.48697" />
+
+		<While Condition="!IsQuestCompleted(37466) &amp;&amp; Me.Level &lt; 110" >
+			<!-- Bonus Objective: The Broken Academy -->
+			<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(37466)" >
+				<HuntingGrounds>
+					<Hotspot X="-94.31302" Y="6212.817" Z="3.390287" />
+					<Hotspot X="-85.89251" Y="6166.519" Z="5.15255" />
+					<Hotspot X="-171.0516" Y="6196.823" Z="1.93616" />
+					<!-- NOTE: <AddHotspots> : These should be enough to at least kill all the harpooners, but we could use more. -->
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueGameObject Id="91449" />
+					<PursueUnit Id="88086" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="88087" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<!-- Naga Brute,  commented because it leads players towards Skrogs 
+						<PursueUnit Id="91459" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" /> -->
+					<PursueUnit Id="107447" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+				</PursuitList>
+			</CustomBehavior>
+		</While>
+
+		<PickUp QuestName="Into the Academy" QuestId="37468" GiverName="Prince Farondis" GiverId="88890" X="-39.66493" Y="6260.809" Z="8.48697" />
+		<If Condition="DoQuest(37468) &amp;&amp; Me.Z &gt;= -10" >
+			<MoveTo X="68.94806" Y="6332.833" Z="12.69665" />
+			<CustomBehavior File="MyCTM" X="74.53338" Y="6318.028" Z="9.115507" />
+			<CustomBehavior File="MyCTM" X="59.49255" Y="6278.779" Z="-15.45908" />
+		</If>
+		<TurnIn QuestName="Into the Academy" QuestId="37468" TurnInName="Thyrillion" TurnInId="89660" X="183.5035" Y="6342.241" Z="-30.70959" />
+
+		<PickUp QuestName="Dressing With Class" QuestId="37736" GiverName="Thyrillion" GiverId="89660" X="183.5035" Y="6342.241" Z="-30.70959" />
+		<PickUp QuestName="Hit the Books" QuestId="37678" GiverName="Andellis" GiverId="89849" X="182.6389" Y="6344.258" Z="-30.71036" />
+
+		<While Condition="DoQuest(37736)" >
+			<CustomBehavior File="InteractWith" MobId="238940" NonCompeteDistance="0" QuestId="37736" QuestObjectiveIndex="4" X="170.1302" Y="6332.236" Z="-30.29762" />
+			<CustomBehavior File="InteractWith" MobId="239744" NonCompeteDistance="0" QuestId="37736" QuestObjectiveIndex="1" X="152.7379" Y="6325.582" Z="-30.59168" />
+			<CustomBehavior File="InteractWith" MobId="239745" NonCompeteDistance="0" QuestId="37736" QuestObjectiveIndex="3" X="95.79514" Y="6272.96" Z="-15.24168" />
+			<CustomBehavior File="InteractWith" MobId="89669" NonCompeteDistance="0" QuestId="37736" QuestObjectiveIndex="2" X="54.71701" Y="6308.999" Z="-15.15834" />
+		</While>
+
+		<CustomBehavior File="KillUntilComplete" MobId="89834" QuestId="37678" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="98.15534" Y="6325.168" Z="-13.35211" />
+				<Hotspot X="96.94271" Y="6326.079" Z="-12.35709" />
+				<Hotspot X="47.83603" Y="6310.509" Z="-13.35912" />
+			</HuntingGrounds>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Dressing With Class" QuestId="37736" TurnInName="Thyrillion" TurnInId="89660" X="183.5035" Y="6342.241" Z="-30.7095" />
+		<TurnIn QuestName="Hit the Books" QuestId="37678" TurnInName="Andellis" TurnInId="89849" X="182.6389" Y="6344.258" Z="-30.71062" />
+
+		<PickUp QuestName="The Haunted Halls" QuestId="37518" GiverName="Thyrillion" GiverId="89660" X="183.5035" Y="6342.241" Z="-30.7095" />
+
+		<!-- <WoWItem Name="Mystical Frosh Hat" Entry="138873" /> -->
+		<If Condition="HasItem(138873)" >
+			<CustomBehavior File="UseItem" ItemId="138873" />
+		</If>
+		<If Condition="HasItem(138873)" >
+			<CustomBehavior File="DeleteItems" Ids="138873" />
+		</If>
+
+		<If Condition="QuestDone(37518) &amp;&amp; Me.Z &gt; -45" >
+			<CustomBehavior File="InteractWith" MobId="250264" NonCompeteDistance="0" X="174.3837" Y="6360.215" Z="-30.87125" />
+		</If>
+		<TurnIn QuestName="The Haunted Halls" QuestId="37518" TurnInName="Instructor Nidriel" TurnInId="89661" X="201.533" Y="6470.866" Z="-52.88773" />
+
+		<PickUp QuestName="Wanding 101" QuestId="42370" GiverName="Instructor Nidriel" GiverId="89661" X="201.533" Y="6470.866" Z="-52.88773" />
+		<While Condition="DoQuest(42370)" >
+			<MoveTo X="200.61" Y="6451.841" Z="-53.77652" />
+			<!-- NOTE: <LogicalCheck> : This code has no null check on the wandTarget var.  Need to test this and improve when bot is availible. -->
+			<CustomBehavior File="RunCode">
+				<![CDATA[
+						List<WoWGuid> targetBlacklist = new List<WoWGuid>();
+						await CommonCoroutines.StopMoving();
+						while (DoQuest(42370))
+						{
+							var wandTarget = ObjectManager.GetObjectsOfType<WoWUnit>().Where(u => !targetBlacklist.Contains(u.Guid) && u.Entry == 107279).OrderBy(u => u.DistanceSqr).FirstOrDefault();
+
+							if (wandTarget != null && wandTarget.IsValid)
+							{
+								targetBlacklist.Add(wandTarget.Guid);
+								wandTarget.Face();
+								await Coroutine.Sleep(350);
+								Lua.DoString("ExtraActionButton1:Click();");
+								await Coroutine.Sleep(950);
+							}
+							await Coroutine.Yield();
+						}
+					]]>
+			</CustomBehavior>
+		</While>
+		<TurnIn QuestName="Wanding 101" QuestId="42370" TurnInName="Instructor Nidriel" TurnInId="89661" X="201.533" Y="6470.866" Z="-52.88773" />
+
+		<PickUp QuestName="Study Hall: Combat Research" QuestId="42371" GiverName="Sythorne" GiverId="107334" X="191.3507" Y="6463.492" Z="-53.77644" />
+		<While Condition="DoQuest(42371)" >
+			<CustomBehavior File="Hooks\Avoid" AvoidName="PurpleSchtuff" ObjectType="AreaTrigger" ObjectId="12130" Radius="6" />
+			<CustomBehavior File="InteractWith" MobId="250373" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="42371" QuestObjectiveIndex="1" X="176.6024" Y="6470.679" Z="-52.18737" />
+			<CustomBehavior File="InteractWith" MobId="250362" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="42371" QuestObjectiveIndex="2" X="193.2257" Y="6463.796" Z="-53.77782" />
+			<CustomBehavior File="KillUntilComplete" MobId="107301" QuestId="42371" QuestObjectiveIndex="3" X="201.151" Y="6451.206" Z="-53.77752" />
+			<CustomBehavior File="InteractWith" MobId="250372" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="42371" QuestObjectiveIndex="4" X="178.9427" Y="6482.029" Z="-51.56589" />
+			<CustomBehavior File="InteractWith" MobId="250362" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="42371" QuestObjectiveIndex="5" X="193.2257" Y="6463.796" Z="-53.77782" />
+			<CustomBehavior File="KillUntilComplete" MobId="107300" QuestId="42371" QuestObjectiveIndex="6" X="197.2698" Y="6459.567" Z="-53.77698" />
+			<CustomBehavior File="InteractWith" MobId="250374" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="42371" QuestObjectiveIndex="7" X="184.6545" Y="6482.547" Z="-52.93493" />
+			<CustomBehavior File="InteractWith" MobId="250362" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="42371" QuestObjectiveIndex="8" X="193.2257" Y="6463.796" Z="-53.77782" />
+			<CustomBehavior File="KillUntilComplete" MobId="107299" QuestId="42371" QuestObjectiveIndex="9" X="195.5081" Y="6460.041" Z="-53.77731" />
+			<CustomBehavior File="Hooks\Avoid" AvoidName="PurpleSchtuff" Command="Remove" />
+		</While>
+		<TurnIn QuestName="Study Hall: Combat Research" QuestId="42371" TurnInName="Sythorne" TurnInId="107334" X="191.3507" Y="6463.492" Z="-53.7765" />
+
+		<PickUp QuestName="Pop Quiz: Advanced Rune Drawing" QuestId="37729" GiverName="Instructor Nidriel" GiverId="89661" X="201.533" Y="6470.866" Z="-52.8875" />
+		<While Condition="DoQuest(37729)" >
+			<!-- NOTE: <PerformanceIssue> : Figure out a better way to do this.  Object must have internal flag. -->
+
+			<MoveTo X="201.533" Y="6470.866" Z="-52.8875" />
+
+			<CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+			<CustomBehavior File="RunCode" Code="
+				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Disabling custom anti-stuck measures until this quest is complete.&quot;);
+				UseAntiStuck = false;
+			" />
+
+			<While Condition="!IsObjectiveComplete(1, 37729)" >
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="197.8543" Y="6453.159" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="197.5972" Y="6455.257" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="197.3995" Y="6457.006" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="198.555" Y="6457.955" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="199.783" Y="6458.788" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="201.6624" Y="6458.655" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="203.0731" Y="6457.694" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="204.0631" Y="6456.562" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="204.3315" Y="6454.967" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="203.7201" Y="6453.44" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="202.7193" Y="6452.503" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="201.4365" Y="6451.311" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="199.6352" Y="6451.639" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="198.1829" Y="6452.467" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="196.7318" Y="6452.894" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="195.2326" Y="6452.077" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="194.1221" Y="6450.734" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="193.9038" Y="6449.479" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="193.6296" Y="6448.1" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="194.4108" Y="6447.049" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="195.693" Y="6446.264" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="197.1499" Y="6445.521" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="198.6461" Y="6446.205" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="199.2866" Y="6447.224" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="200.3342" Y="6447.994" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="200.695" Y="6449.472" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="200.8372" Y="6450.515" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="200.8611" Y="6451.116" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="202.0276" Y="6452.301" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="203.6421" Y="6452.883" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="205.2478" Y="6452.524" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="206.5339" Y="6451.863" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="207.6404" Y="6450.305" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="207.8347" Y="6448.77" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="206.8405" Y="6447.306" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="205.6841" Y="6446.074" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="204.298" Y="6445.679" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="203.2713" Y="6445.981" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="1" X="201.9368" Y="6446.853" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="1" WaitTime="100" />
+			</While>
+			<While Condition="!IsObjectiveComplete(2, 37729)" >
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="200.6624" Y="6460.276" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="199.2063" Y="6459.303" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="198.1981" Y="6458.496" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="197.8715" Y="6457.319" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="198.0782" Y="6455.982" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="199.0371" Y="6454.953" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="200.4382" Y="6454.316" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="201.909" Y="6454.824" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="202.8036" Y="6455.932" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="203.1019" Y="6457.243" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="202.8323" Y="6458.548" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="201.6241" Y="6459.572" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="199.5416" Y="6459.87" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="198.2014" Y="6459.208" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="196.9538" Y="6457.612" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="196.1567" Y="6455.896" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="196.7556" Y="6454.212" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="197.5296" Y="6452.711" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="199.0911" Y="6452.021" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="200.423" Y="6451.493" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="200.6208" Y="6451.55" Z="-53.77625"  />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="202.0343" Y="6451.779" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="203.3743" Y="6452.459" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="204.2334" Y="6453.671" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="204.6429" Y="6455.082" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="204.9209" Y="6456.703" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="204.2317" Y="6457.667" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="202.3308" Y="6459.437" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="200.2381" Y="6460.199" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="198.5982" Y="6459.512" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="196.7309" Y="6458.501" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="195.3095" Y="6457.224" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="194.4811" Y="6455.484" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="194.0532" Y="6453.45" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="194.7266" Y="6451.354" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="195.3467" Y="6449.688" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="197.0191" Y="6448.162" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="198.6309" Y="6447.411" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="200.2226" Y="6447.031" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="201.9868" Y="6447.163" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="203.8959" Y="6447.962" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="205.5118" Y="6449.255" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="206.8777" Y="6450.965" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="206.9279" Y="6452.627" Z="-53.77754" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="206.6493" Y="6453.858" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="206.5966" Y="6455.769" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="205.5692" Y="6457.186" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="205.8534" Y="6459.612" Z="-53.77708" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="203.5409" Y="6459.586" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="202.0088" Y="6459.986" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="200.0368" Y="6460.18" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="199.7207" Y="6445.728" Z="-53.7778" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="196.8136" Y="6458.926" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="194.8609" Y="6458.007" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="193.4649" Y="6456.664" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="192.4449" Y="6454.603" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="191.8157" Y="6452.529" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="191.7769" Y="6450.132" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="192.4194" Y="6448.072" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="193.5367" Y="6446.032" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="195.2512" Y="6444.459" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="197.2831" Y="6443.117" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="199.5733" Y="6442.472" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="201.8941" Y="6442.726" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="203.9881" Y="6443.136" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="206.1293" Y="6444.327" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="207.6954" Y="6446.06" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="208.9259" Y="6448.086" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="209.2537" Y="6450.327" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="209.3161" Y="6452.679" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="208.6909" Y="6454.717" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="207.5343" Y="6456.539" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="205.748" Y="6458.367" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="203.5355" Y="6459.539" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="201.5243" Y="6460.218" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="206.6507" Y="6457.51" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="200.8358" Y="6442.388" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="201.8444" Y="6460.182" Z="-53.77625"  />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="2" X="197.9947" Y="6459.895" Z="-53.77706" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="2" WaitTime="100" />
+			</While>
+			<While Condition="!IsObjectiveComplete(3, 37729)" >
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="203.9721" Y="6455.886" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="202.8621" Y="6457.834" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="200.8136" Y="6458.799" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="198.6905" Y="6458.215" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="197.5174" Y="6456.516" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="197.367" Y="6454.075" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="198.7483" Y="6452.289" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="200.7997" Y="6451.742" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="202.8591" Y="6452.534" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="203.7244" Y="6454.063" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="203.7201" Y="6455.68" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="205.7525" Y="6455.877" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="207.1217" Y="6454.729" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="207.7156" Y="6453.172" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="207.6337" Y="6451.142" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="206.5152" Y="6449.747" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="204.2124" Y="6448.898" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="202.3748" Y="6449.59" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="201.4634" Y="6450.697" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="200.8111" Y="6452.142" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="201.3086" Y="6454.04" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="202.1444" Y="6455.073" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="203.2495" Y="6455.541" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="204.5635" Y="6456.023" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="200.2839" Y="6452.593" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="199.6085" Y="6454.326" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="198.5439" Y="6455.751" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="196.99" Y="6456.1" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="195.2079" Y="6455.743" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="193.7606" Y="6454.437" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="193.2134" Y="6452.706" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="193.8388" Y="6450.489" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="195.3404" Y="6449.371" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="197.44" Y="6449.137" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="199.0861" Y="6449.616" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="200.0818" Y="6450.711" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="201.2248" Y="6451.366" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="203.1515" Y="6451.679" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="204.7279" Y="6450.947" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="205.9389" Y="6449.777" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="206.3678" Y="6447.711" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="205.6106" Y="6445.813" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="203.9259" Y="6444.782" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="202.0426" Y="6444.625" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="200.3956" Y="6445.75" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="199.2717" Y="6447.629" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="199.4307" Y="6449.657" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="199.9972" Y="6451.431" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="197.4022" Y="6451.6" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="195.6799" Y="6450.33" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="194.6994" Y="6448.132" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="195.4026" Y="6445.939" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="196.9307" Y="6444.847" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="199.2064" Y="6444.826" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="200.6459" Y="6445.854" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="201.7595" Y="6447.37" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="202.18" Y="6449.156" Z="-53.77625" />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+				<CustomBehavior File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="194.884" Y="6447.604" Z="-53.77625"  />
+				<CustomBehavior File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
+			</While>
+
+			<CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+			<CustomBehavior File="RunCode" Code="
+				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Re-enabling custom anti-stuck measures.&quot;);
+				UseAntiStuck = true;
+			" />
+
+		</While>
+		<TurnIn QuestName="Pop Quiz: Advanced Rune Drawing" QuestId="37729" TurnInName="Instructor Nidriel" TurnInId="89661" X="201.533" Y="6470.866" Z="-52.8875" />
+
+		<PickUp QuestName="The Headmistress' Keys" QuestId="37730" GiverName="Instructor Nidriel" GiverId="89661" X="201.533" Y="6470.866" Z="-52.8875" />
+		<While Condition="DoQuest(37730)" >
+			<CustomBehavior File="InteractWith" MobId="88859" NonCompeteDistance="0" GossipOptions="1,1,1" QuestId="37730" QuestObjectiveIndex="1" X="219.6771" Y="6485.043" Z="-51.78056" TerminateWhen="Unit(88859, u =&gt; u.IsHostile) != null" />
+			<CustomBehavior File="WaitTimer" WaitTime="3000" />
+			<CustomBehavior File="KillUntilComplete" MobId="88859" QuestId="37730" QuestObjectiveIndex="1" X="217.0053" Y="6482.45" Z="-51.79022" TerminateWhen="Unit(88859, u =&gt; u.IsFriendly) != null" />
+		</While>
+		<If Condition="QuestDone(37730) &amp;&amp; Me.Z &lt;= -45" >
+			<MoveTo X="173.1906" Y="6363.35" Z="-31.34625" />
+			<CustomBehavior File="InteractWith" MobId="250264" NonCompeteDistance="0" X="174.3837" Y="6360.215" Z="-30.87125" />
+		</If>
+		<TurnIn QuestName="The Headmistress' Keys" QuestId="37730" TurnInName="Thyrillion" TurnInId="89660" X="183.5035" Y="6342.241" Z="-30.7088" />
+
+		<PickUp QuestName="The Tidestone: Shattered" QuestId="37469" GiverName="Thyrillion" GiverId="89660" X="183.5035" Y="6342.241" Z="-30.7088" />
+		<If Condition="DoQuest(37469) &amp;&amp; Me.Z &gt;= -40" >
+			<MoveTo X="185.8689" Y="6327.859" Z="-30.73165" />
+			<CustomBehavior File="InteractWith" MobId="238979" NonCompeteDistance="0" X="187.276" Y="6325.281" Z="-31.01249" />
+			<MoveTo X="242.9581" Y="6281.21" Z="-52.89844" />
+		</If>
+		<While Condition="DoQuest(37469)" >
+			<CustomBehavior File="InteractWith" MobIds="245483, 245485, 239341, 245484, 245486" InteractByLooting="true" NonCompeteDistance="0" QuestId="37469" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="260.9445" Y="6284.271" Z="-53.77681" />
+					<Hotspot X="254.2475" Y="6244.746" Z="-53.19658" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+		<If Condition="QuestDone(37469)" >
+			<TurnIn QuestName="The Tidestone: Shattered" QuestId="37469" TurnInType="Object" TurnInName="Tidestone Core" TurnInId="240552" X="303.5608" Y="6260.765" Z="-50.3312" />
+			<CustomBehavior File="WaitTimer" WaitTime="27000" />
+			<!-- NOTE: <Optimization?> : Could terminate this wait timer when the player's zone Id changes.  However, this may not be a good idea as it takes some time for the quest NPC to show up anyways. -->
+		</If>
+
+		<PickUp QuestName="Save Yourself" QuestId="37530" GiverName="Prince Farondis" GiverId="89009" X="-98.34375" Y="6018.329" Z="0.4202359" />
+		<While Condition="HasQuest(37530)" >
+			<DisableBehavior Name="All" />
+			<CustomBehavior File="InteractWith" MobId="89009" WaitTime="10000" NonCompeteDistance="0" GossipOptions="1" NumOfTimes="6" X="-98.34375" Y="6018.329" Z="0.4202359" TerminateWhen="Me.InVehicle" />
+
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[
+						async Task VehicleMove(WoWPoint moveTo)
+						{
+							while (Me.Location.Distance(moveTo) >= 5)
+							{
+								Navigator.MoveTo(moveTo);
+								await CombatAwareness();
+								await Coroutine.Yield();
+							}
+						}
+
+						async Task VehicleKill(uint unitId)
+						{
+							WoWUnit killMe = Unit(unitId);
+							if (killMe == null || Blacklist.Contains(killMe, BlacklistFlags.Combat)) return;
+
+							while (killMe != null && killMe.IsAlive)
+							{
+								while (Me.Location.Distance(killMe.Location) >= 39)
+								{
+									Navigator.MoveTo(killMe.Location);
+									await CombatAwareness();
+									await Coroutine.Yield();
+								}
+
+								if (killMe.IsAlive)
+								{
+									await VehicleCombat(killMe);
+									await Coroutine.Yield();
+								}
+								await Coroutine.Yield();
+							}
+						}
+
+						async Task VehicleCombat(WoWUnit vehicleKill)
+						{
+							if (Me.CurrentTarget != vehicleKill)
+							{
+								vehicleKill.Target();
+							}
+							await CommonCoroutines.StopMoving();
+							StyxWoW.Me.SetFacing(vehicleKill.Location);
+							await Coroutine.Sleep(150);
+							Styx.Helpers.KeyboardManager.KeyUpDown((char)System.Windows.Forms.Keys.D2);
+							Styx.Helpers.KeyboardManager.KeyUpDown((char)System.Windows.Forms.Keys.D1);
+							await Coroutine.Sleep(1050);
+						}
+
+						async Task CombatAwareness()
+						{
+							WoWUnit vehicleId = ObjectManager.GetObjectsOfType<WoWUnit>().FirstOrDefault(u => u.Entry == 89089);
+							var killArray = ObjectManager.GetObjectsOfType<WoWUnit>().Where(u => u.CurrentTarget == vehicleId);
+
+							if (killArray == null) return;
+
+							foreach (WoWUnit killMe in killArray)
+							{
+								await VehicleCombat(killMe);
+								await Coroutine.Yield();
+							}
+						}
+					]]>
+			</CustomBehavior>
+
+			<If Condition="Me.InVehicle" >
+				<CustomBehavior File="RunCode" Code="await VehicleMove(new WoWPoint(-3.882, 6276.46, 3.146761));" /> <!--  QuestId="37530" QuestObjectiveIndex="2" -->
+				<CustomBehavior File="RunCode" Code="await VehicleMove(new WoWPoint(-26.50426, 6178.747, 4.55294));" /> <!--  QuestId="37530" QuestObjectiveIndex="3" -->
+				<CustomBehavior File="RunCode" Code="await VehicleKill(89116);" /> <!--  QuestId="37530" QuestObjectiveIndex="4" -->
+				<CustomBehavior File="RunCode" Code="await VehicleMove(new WoWPoint(-11.47015, 5977.641, 0.7397661));" /> <!--  QuestId="37530" QuestObjectiveIndex="5" -->
+				<CustomBehavior File="WaitTimer" WaitTime="95000" /> <!--  QuestId="37530" QuestObjectiveIndex="6" -->
+				<MoveTo X="-98.56056" Y="6020.948" Z="0.3888235" />
+
+				<While Condition="QuestDone(37530) &amp;&amp; Me.InVehicle" >
+					<CustomBehavior File="InteractWith" MobId="89090" X="-101.252" Y="6021.44" Z="0.475772" TerminateWhen="!HasQuest(37530) || !Me.InVehicle" />
+					<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestInfoRewardsFrameQuestInfoItem1:Click();" TerminateWhen="!HasQuest(37530) || !Me.InVehicle" />
+					<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestFrameCompleteQuestButton:Click();" TerminateWhen="!HasQuest(37530) || !Me.InVehicle" />
+				</While>
+
+			</If>
+		</While>
+		<!-- NOTE: <CheckMe> : The NPC will show up as the player's name, but internally shows up as 'Your Doppleganger' - need to make sure bot properly interacts for the quest turnin. -->
+		<EnableBehavior Name="All" />
+
+
+		<PickUp QuestName="The Head of the Snake" QuestId="37470" GiverName="Prince Farondis" GiverId="89009" X="-98.34375" Y="6018.329" Z="0.4202499" />
+		<While Condition="DoQuest(37470)" >
+			<!-- NOTE: <AddAvoid> : Could use some avoids here for this boss.  Bubbles fall from sky with stun player.    Waves also spawn from boss.
+				Avoids aren't completely needed.  Boss is easy enough. -->
+			<DisableBehavior Name="Pull" />
+			<MoveTo X="-2.307292" Y="5697.265" Z="8.551732" />
+			<EnableBehavior Name="Pull" />
+			<CustomBehavior File="KillUntilComplete" MobId="88855" QuestId="37470" QuestObjectiveIndex="1" X="-2.307292" Y="5697.265" Z="8.551732" />
+		</While>
+		<TurnIn QuestName="The Head of the Snake" QuestId="37470" TurnInName="Prince Farondis" TurnInId="91403" X="0.9027778" Y="5765.165" Z="3.281234" />
+
+		<PickUp Nav="Fly" QuestName="Wrath of Azshara" QuestId="38286" GiverName="Prince Farondis" GiverId="91403" X="0.9027778" Y="5765.165" Z="3.281137" /> <!-- Dungeon Quest -->
+
+		<If Condition="DoQuest(37779) &amp;&amp; Me.Level &lt; 110" >
+			<CustomBehavior File="KillUntilComplete" MobIds="89024, 89025, 89811, 89025, 89808, 89803" TerminateWhen="IsQuestCompleted(37779)" >
+				<HuntingGrounds>
+					<Hotspot X="-142.6657" Y="5679.621" Z="9.960439" />
+					<Hotspot X="-26.14186" Y="5613.241" Z="0.3082983" />
+					<Hotspot X="123.995" Y="5702.112" Z="1.614869" />
+					<Hotspot X="99.32304" Y="5949.638" Z="7.360086" />
+					<Hotspot X="-73.44466" Y="5842.648" Z="0.4121386" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</If>
+
+		<!-- BO1 - Bot will need to move to the location: X="-57.18679" Y="6232.651" Z="1.533782" to trigger the bonus objective.
+			QuestId="37466"  -->
+	<!-- END Story: Azsuna versus Azshara -->
+
+	<!-- Felblaze Ingress Side Quests -->
+		<PickUp QuestName="Eye See You" QuestId="42375" GiverName="Tehd Shoemaker" GiverId="107244" X="534.8368" Y="5623.675" Z="77.29939" />
+		<While Condition="DoQuest(42375)" >
+			<DisableBehavior Name="Combat" />
+			<CustomBehavior File="Hooks\Avoid" AvoidName="EyeOfZoth" Command="Add" ObjectId="107352" Radius="8" AvoidWhen="Me.Pet != null &amp;&amp; Unit(107352, u =&gt; u.Location.Distance(Me.Pet.Location) &lt;= 8) != null" />
+			<CustomBehavior File="Message" Text="NOTE: Avoidance currently doesn't work for this quest.  It may take a few tries but the eyeball will eventually complete the quest." />
+			<If Condition="!Me.HasAura(212754)" >
+				<CustomBehavior File="InteractWith" MobId="107252" PreInteractMountStrategy="Dismount" QuestId="42375" X="532.7066" Y="5623.68" Z="76.85637" />
+			</If>
+			<!-- Perhaps one day MoveTo will support TerminateWhen  (movember) -->
+			<If Condition="!IsObjectiveComplete(2, 42375)" >
+				<CustomBehavior File="FlyTo" MovementBy="NavigatorOnly" QuestId="42375" QuestObjectiveIndex="2" X="664.234" Y="5562.51" Z="83.588" TerminateWhen="!Me.HasAura(212754)" />
+				<CustomBehavior File="FlyTo" MovementBy="NavigatorOnly" QuestId="42375" QuestObjectiveIndex="2" X="791.0264" Y="5448.871" Z="81.78674" TerminateWhen="!Me.HasAura(212754)" />
+				<CustomBehavior File="MyCTM" QuestId="42375" QuestObjectiveIndex="2" X="735.1036" Y="5396.43" Z="54.35085" TerminateWhen="(int)Me.Pet.X == 735 || !Me.HasAura(212754)" />
+				<CustomBehavior File="FlyTo" MovementBy="NavigatorOnly" QuestId="42375" QuestObjectiveIndex="2" X="706.5974" Y="5364.259" Z="53.24842" TerminateWhen="!Me.HasAura(212754)" />
+			</If>
+			<CustomBehavior File="FlyTo" MovementBy="NavigatorOnly" QuestId="42375" QuestObjectiveIndex="1" X="588.7422" Y="5416.725" Z="51.7391" TerminateWhen="!Me.HasAura(212754)" />
+			<CustomBehavior File="FlyTo" MovementBy="NavigatorOnly" QuestId="42375" QuestObjectiveIndex="3" X="486.6183" Y="5400.245" Z="36.47847" TerminateWhen="!Me.HasAura(212754)" />
+			<CustomBehavior File="Hooks\Avoid" AvoidName="EyeOfZoth" Command="Remove" />
+			<EnableBehavior Name="Combat" />
+		</While>
+		<If Condition="QuestDone(42375)" >
+			<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="PossessButton2:Click();" />
+			<TurnIn QuestName="Eye See You" QuestId="42375" TurnInName="Tehd Shoemaker" TurnInId="107244" X="534.8368" Y="5623.675" Z="77.29916" />
+		</If>
+
+		<PickUp QuestName="They're Doing it Wrong" QuestId="42369" GiverName="Tehd Shoemaker" GiverId="107244" X="534.8368" Y="5623.675" Z="77.29916" />
+		<PickUp QuestName="Quantity Over Quality" QuestId="42368" GiverName="Marius Felbane" GiverId="107245" X="537.368" Y="5622.202" Z="77.62994" />
+		<PickUp QuestName="Arkethrax" QuestId="42367" GiverName="Marius Felbane" GiverId="107245" X="537.368" Y="5622.202" Z="77.62994" />
+
+		<While Condition="DoQuest(42369)" >
+			<CustomBehavior File="InteractWith" MobId="250361" NonCompeteDistance="0" NumOfTimes="4" PreInteractMountStrategy="Dismount" QuestId="42369" QuestObjectiveIndex="1" X="589.074" Y="5387.316" Z="51.9563" />
+		</While>
+
+		<While Condition="DoQuest(42367)" >
+			<CustomBehavior File="KillUntilComplete" MobId="106583" QuestId="42367" QuestObjectiveIndex="1" X="457.2517" Y="5399.274" Z="36.3518" />
+		</While>
+
+		<While Condition="DoQuest(42368)" >
+			<CustomBehavior File="KillUntilComplete" MobIds="92447, 92445, 92450" QuestId="42368" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="551.8718" Y="5441.654" Z="52.55776" />
+					<Hotspot X="696.9565" Y="5473.462" Z="70.22731" />
+					<Hotspot X="682.4058" Y="5395.087" Z="54.88621" />
+					<Hotspot X="462.9832" Y="5525.989" Z="63.13039" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<TurnIn QuestName="They're Doing it Wrong" QuestId="42369" TurnInName="Tehd Shoemaker" TurnInId="107244" X="534.8368" Y="5623.675" Z="77.29911" />
+		<TurnIn QuestName="Quantity Over Quality" QuestId="42368" TurnInName="Marius Felbane" TurnInId="107245" X="537.368" Y="5622.202" Z="77.62996" />
+		<TurnIn QuestName="Arkethrax" QuestId="42367" TurnInName="Marius Felbane" TurnInId="107245" X="537.368" Y="5622.202" Z="77.62996" />-->
+	<!-- END Felblaze Ingress Side  Quests -->
+
+	<!-- Olivian Veil Side Quests -->
+		<If Condition="HasQuest(42238)" >
+			<!-- Breadcrumb quest  turn in -->
+			<TurnIn QuestName="Missing Demon" QuestId="42238" TurnInName="Daglop" TurnInId="91166" X="-447.5054" Y="5736.651" Z="35.47715" />
+		</If>
+
+		<PickUp QuestName="Let's Make A Deal" QuestId="38460" GiverName="Daglop" GiverId="91166" X="-451.318" Y="5718.224" Z="33.95066" />
+		<While Condition="DoQuest(38460)" >
+			<CustomBehavior File="InteractWith" MobId="91166" GossipOptions="2" QuestId="38460" QuestObjectiveIndex="1" X="-451.318" Y="5718.224" Z="33.95066" />
+		</While>
+		<TurnIn QuestName="Let's Make A Deal" QuestId="38460" TurnInName="Daglop" TurnInId="91166" X="-451.318" Y="5718.224" Z="33.95066" />
+
+		<PickUp QuestName="Minion! Kill Them!" QuestId="38232" GiverName="Daglop" GiverId="91166" X="-451.318" Y="5718.224" Z="33.95066" />
+		<While Condition="DoQuest(38232)" >
+			<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(38232)" >
+				<HuntingGrounds>
+					<Hotspot X="-439.4973" Y="5723.126" Z="35.29445" />
+					<Hotspot X="-371.8706" Y="5682.092" Z="47.91368" />
+					<Hotspot X="-371.9585" Y="5776.589" Z="52.82256" />
+					<Hotspot X="-378.8085" Y="5864.603" Z="56.5452" />
+					<Hotspot X="-417.754" Y="5597.248" Z="31.15229" />
+					<Hotspot X="-368.4402" Y="5686.257" Z="49.2266" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueUnit Id="105838" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 38232)" />
+					<PursueUnit Id="109351" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 38232)" />
+					<PursueUnit Id="109349" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(2, 38232)" />
+
+					<PursueGameObject Id="240346" PursueWhen="!IsObjectiveComplete(3, 38232)" />
+				</PursuitList>
+			</CustomBehavior>
+		</While>
+		<While Condition="QuestDone(38232)" >
+			<CustomBehavior File="InteractWith" MobId="91165" IgnoreLoSToTarget="true" X="-459.7767" Y="5711.571" Z="33.6305" TerminateWhen="!HasQuest(38232)" />
+			<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestFrameCompleteButton:Click();" TerminateWhen="!HasQuest(38232)" />
+			<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestFrameCompleteQuestButton:Click();" TerminateWhen="!HasQuest(38232)" />
+			<!-- Using special handling here because the NPC sits behind the player, and normal logic will mess up.
+					<TurnIn QuestName="Minion! Kill Them!" QuestId="38232" TurnInName="Daglop" TurnInId="91165" X="-459.7767" Y="5711.571" Z="33.6305" /> -->
+		</While>
+
+		<While Condition="NeedsQuest(38237)" >
+			<CustomBehavior File="InteractWith" MobId="91165" IgnoreLoSToTarget="true" X="-459.7767" Y="5711.571" Z="33.6305" TerminateWhen="HasQuest(38237)" />
+			<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="QuestFrameAcceptButton:Click();" TerminateWhen="HasQuest(38237)" />
+			<!-- Using special handling here because the NPC sits behind the player, and normal logic will mess up.
+				<PickUp QuestName="This IS In My Contract." QuestId="38237" GiverName="Daglop" GiverId="91165" X="-459.7767" Y="5711.571" Z="33.6305" /> -->
+		</While>
+		<While Condition="DoQuest(38237)" >
+			<CustomBehavior File="InteractWith" MobId="91185" GossipOptions="1" QuestId="38237" QuestObjectiveIndex="1" X="-519.2882" Y="5607.612" Z="4.513766" />
+			<CustomBehavior File="KillUntilComplete" MobId="91184" QuestId="38237" QuestObjectiveIndex="2" X="-546.0191" Y="5659.53" Z="2.766259" />
+		</While>
+		<TurnIn QuestName="This IS In My Contract." QuestId="38237" TurnInName="Daglop" TurnInId="91166" X="-447.5054" Y="5736.651" Z="35.47715" />
+	<!-- END Olivian Veil Side Quests -->
+
+	<!-- Story: Against the Giants -->
+		<TurnIn QuestName="Infiltrating Shipwreck Arena" QuestId="37496" TurnInName="Okuna Longtusk" TurnInId="88873" X="-327.2674" Y="6535.986" Z="1.660431" />
+
+		<PickUp QuestName="Boss Whalebelly's in Charge" QuestId="37507" GiverName="Okuna Longtusk" GiverId="88873" X="-327.2674" Y="6535.986" Z="1.660431" />
+
+		<!-- <WoWItem Name="Copy of Daglop's Contract" Entry="138878" /> -->
+		<If Condition="HasItem(138878)" >
+			<CustomBehavior File="UseItem" ItemId="138878" />
+		</If>
+		<If Condition="HasItem(138878)" >
+			<CustomBehavior File="DeleteItems" Ids="138878" />
+		</If>
+
+		<While Condition="DoQuest(37507)" >
+			<CustomBehavior File="InteractWith" MobId="88908" GossipOptions="1" QuestId="37507" QuestObjectiveIndex="1" X="-357.9028" Y="6595.123" Z="0.133169" />
+		</While>
+		<TurnIn QuestName="Boss Whalebelly's in Charge" QuestId="37507" TurnInName="Okuna Longtusk" TurnInId="88873" X="-327.2674" Y="6535.986" Z="1.660431" />
+
+		<PickUp QuestName="No Time for Tryouts" QuestId="37542" GiverName="Okuna Longtusk" GiverId="88873" X="-327.2674" Y="6535.986" Z="1.660431" />
+		<PickUp QuestName="Let Sleeping Giants Lie" QuestId="37528" GiverName="Okuna Longtusk" GiverId="88873" X="-327.2674" Y="6535.986" Z="1.660431" />
+
+		<While Condition="DoQuest(37528)" >
+			<MoveTo X="-404.9791" Y="6618.779" Z="0.1315016" />
+			<CustomBehavior File="MyCTM" X="-425.5161" Y="6586.762" Z="0.1339368" />
+			<CustomBehavior File="InteractWith" MobId="236931" QuestId="37528" QuestObjectiveIndex="1" X="-422.9809" Y="6578.921" Z="0.2701828" />
+			<CustomBehavior File="WaitTimer" WaitTime="18000" />
+			<!-- NOTE: <CheckTimer> : Make sure this timer is correct. -->
+		</While>
+
+		<While Condition="DoQuest(37542)" >
+			<MoveTo X="-294.9753" Y="6592.772" Z="0.05685078" />
+			<CustomBehavior File="KillUntilComplete" MobId="89082" QuestId="37542" X="-241.6094" Y="6588.263" Z="0.4715842" />
+			<MoveTo X="-294.9124" Y="6587.76" Z="0.05694889" />
+			<!-- Move away from hostile Skrog -->
+		</While>
+
+		<TurnIn QuestName="No Time for Tryouts" QuestId="37542" TurnInName="Okuna Longtusk" TurnInId="88873" X="-327.2674" Y="6535.986" Z="1.660431" />
+		<TurnIn QuestName="Let Sleeping Giants Lie" QuestId="37528" TurnInName="Okuna Longtusk" TurnInId="88873" X="-327.2674" Y="6535.986" Z="1.660431" />
+
+		<PickUp QuestName="Sternfathom's Champion" QuestId="37510" GiverName="Okuna Longtusk" GiverId="88873" X="-327.2674" Y="6535.986" Z="1.660406" />
+		<TurnIn QuestName="Sternfathom's Champion" QuestId="37510" TurnInName="Sternfathom" TurnInId="88923" X="-330.7951" Y="6673.232" Z="4.497787" />
+
+		<PickUp QuestName="Morale Booster" QuestId="37536" GiverName="Sternfathom" GiverId="88923" X="-330.7951" Y="6673.232" Z="4.497787" />
+		<While Condition="DoQuest(37536)" >
+			<CustomBehavior File="InteractWith" MobId="90086" GossipOptions="2" QuestId="37536" QuestObjectiveIndex="1" X="-380.3681" Y="6519.7" Z="3.524996" />
+		</While>
+		<TurnIn QuestName="Morale Booster" QuestId="37536" TurnInName="Sternfathom" TurnInId="89048" X="-334.2882" Y="6674.679" Z="3.734171" />
+
+		<PickUp QuestName="Round 1, Fight!" QuestId="37538" GiverName="Sternfathom" GiverId="89048" X="-330.7951" Y="6673.232" Z="4.497787" />
+		<If Condition="DoQuest(37538)" >
+			<CustomBehavior File="RunCode" Code="
+				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Disabling custom anti-stuck measures until this quest is complete.&quot;);
+				UseAntiStuck = false;
+			" />
+			<While Condition="DoQuest(37538)" >
+				<CustomBehavior File="InteractWith" MobId="89048" GossipOptions="1" NumOfTimes="10" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="37538" X="-330.7951" Y="6673.232" Z="4.49795" TerminateWhen="Me.InVehicle" />
+				<CustomBehavior File="KillUntilComplete" MobId="89050" MovementBy="NavigatorOnly" QuestId="37538" QuestObjectiveIndex="2" X="-351.4099" Y="6658.224" Z="0.8298512" TerminateAtMaxRunTimeSecs="200" />
+				<MoveTo X="-376.7884" Y="6610.452" Z="0.1315838" />
+			</While>
+			<CustomBehavior File="RunCode" Code="
+				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Disabling custom anti-stuck measures until this quest is complete.&quot;);
+				UseAntiStuck = true;
+			" />
+		</If>
+		<TurnIn QuestName="Round 1, Fight!" QuestId="37538" TurnInType="Object" TurnInName="Okuna Longtusk's Pack" TurnInId="239120" X="-482.0625" Y="6676.999" Z="-2.054145" />
+
+		<PickUp QuestName="The Right Weapon for the Job" QuestId="37565" GiverName="Okuna Longtusk's Pack" GiverId="239120" X="-482.0625" Y="6676.999" Z="-2.054145" />
+		<!-- NOTE: <AddAvoidNPC> Need to keep the bot away from <Mob Name="Cove Skrog" Entry="89097" /> -->
+		<CustomBehavior File="Hooks\Avoid" AvoidName="AvoidSkrog" IgnoreLootInAvoid="true" Command="Add" ObjectId="89097" Radius="20" AvoidWhen="!UNIT.Aggro &amp;&amp; UNIT.IsAlive" />
+		<While Condition="DoQuest(37565)" >
+			<CustomBehavior File="InteractWith" ObjectType="Npc" MobState="AliveNotInCombat" InteractByUsingItemId="118330" PreInteractMountStrategy="Dismount" QuestId="37565" QuestObjectiveIndex="1" >
+				<!-- ObjectType is legitimately needed here as npc:89112 shares the same ID as Mote of Harmony, and there could be a chance the player has this item in their bags. -->
+				<HuntingGrounds>
+					<Hotspot X="-536.6754" Y="6738.65" Z="-2.794719" />
+					<Hotspot X="-681.6241" Y="6636.557" Z="-1.385778" />
+					<Hotspot X="-710.1645" Y="6467.388" Z="-11.65405" />
+					<Hotspot X="-769.061" Y="6497.9" Z="-2.15184" />
+					<Hotspot X="-630.0587" Y="6576.996" Z="-3.422843" />
+					<Hotspot X="-648.387" Y="6637.819" Z="-1.482823" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueUnit Id="89104" PursueWhen="!UNIT.Combat &amp;&amp; !UNIT.IsMoving" />
+					<PursueUnit Id="89113" PursueWhen="!UNIT.Combat &amp;&amp; !UNIT.IsMoving" />
+					<PursueUnit Id="89110" PursueWhen="!UNIT.Combat &amp;&amp; !UNIT.IsMoving" />
+					<PursueUnit Id="89111" PursueWhen="!UNIT.Combat &amp;&amp; !UNIT.IsMoving" />
+					<PursueUnit Id="89112" PursueWhen="!UNIT.Combat &amp;&amp; !UNIT.IsMoving" />
+				</PursuitList>
+			</CustomBehavior>
+		</While>
+
+
+		<PickUp QuestName="A Favor for Mr. Shackle" QuestId="38857" GiverName="Seska Seafang" GiverId="88863" X="-874.5886" Y="6514.014" Z="3.660576" /> <!-- Mak'rana and the Fate of the Queen's Reprisal breadcrumb. -->
+		<While Condition="DoQuest(38857)" >
+			<CustomBehavior File="InteractWith" MobId="241905" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" Range="6" QuestId="38857" QuestObjectiveIndex="3" X="-873.283" Y="6444.548" Z="2.733908" />
+			<CustomBehavior File="InteractWith" MobId="241901" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" Range="6" QuestId="38857" QuestObjectiveIndex="1" X="-959.1094" Y="6608.879" Z="0.1156936" />
+			<CustomBehavior File="InteractWith" MobId="241902" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" Range="6" QuestId="38857" QuestObjectiveIndex="2" X="-787.2604" Y="6783.058" Z="5.482642" />
+		</While>
+
+		<!-- NOTE: <AddBonusObjective> : Problematical area due to Skrogs.
+			<PickUp Nav="Fly" QuestName="Plunder the Cove" QuestId="37495" GiverName="" GiverId="" />
+			<Objective QuestName="Plunder the Cove" QuestId="37495" Type="KillMob" Nav="Fly" MobId="90109" KillCount="40" />
+			<Objective QuestName="Plunder the Cove" QuestId="37495" Type="KillMob" Nav="Fly" MobId="89097" KillCount="7" />
+			<Objective QuestName="Plunder the Cove" QuestId="37495" Type="KillMob" Nav="Fly" MobId="112018" KillCount="25" />
+			<Objective QuestName="Plunder the Cove" QuestId="37495" Type="UseObject" Nav="Fly" ObjectId="241909" UseCount="20" />
+			<Objective QuestName="Plunder the Cove" QuestId="37495" Type="UseObject" Nav="Fly" ObjectId="245862" UseCount="20" />
+			<TurnIn Nav="Fly" QuestName="Plunder the Cove" QuestId="37495" TurnInName="" TurnInId="" /> -->
+
+		<TurnIn QuestName="The Right Weapon for the Job" QuestId="37565" TurnInName="Okuna Longtusk" TurnInId="89051" X="-957.2118" Y="6309.153" Z="29.77974" />
+
+		<CustomBehavior File="Hooks\Avoid" AvoidName="AvoidSkrog" Command="Remove" />
+
+		<PickUp QuestName="The Prince is Going Down" QuestId="37566" GiverName="Okuna Longtusk" GiverId="89051" X="-957.2118" Y="6309.153" Z="29.77974" />
+		<While Condition="DoQuest(37566)" >
+			<!-- NOTE: <AddAvoids> Need avoids here for this boss.  He spawns stuff on the ground, and does a melee-range AoE -->
+			<CustomBehavior File="Hooks\Avoid" AvoidName="DepthCharge" Command="Add" ObjectType="AreaTrigger" ObjectId="8716" Radius="6" />
+			<CustomBehavior File="Hooks\Avoid" AvoidName="Undertow" Command="Add" ObjectId="89101" Radius="21" AvoidWhen="UNIT.CastingSpellId == 182667" />
+			<CustomBehavior File="KillUntilComplete" MobId="89101" QuestId="37566" QuestObjectiveIndex="1" X="-1008.509" Y="6294.378" Z="28.70325" />
+			<CustomBehavior File="Hooks\Avoid" AvoidName="DepthCharge" Command="Remove" />
+			<CustomBehavior File="Hooks\Avoid" AvoidName="Undertow" Command="Remove" />
+		</While>
+		<TurnIn QuestName="The Prince is Going Down" QuestId="37566" TurnInName="Okuna Longtusk" TurnInId="109334" X="-908.1566" Y="6408.944" Z="3.573855" />
+	<!-- END Story: Against the Giants -->
+
+	<!-- Story: Mak'rana and the Fate of the Queen's Reprisal -->
+		<TurnIn QuestName="A Favor for Mr. Shackle" QuestId="38857" TurnInName="Mr. Shackle" TurnInId="91419" X="-812.4496" Y="6101.11" Z="7.006913" /> <!-- Breadcrumb. -->
+
+		<PickUp QuestName="Maritime Law" QuestId="37654" GiverName="Mr. Shackle" GiverId="91419" X="-812.4496" Y="6101.11" Z="7.006913" />
+		<PickUp QuestName="Making the World Safe for Profit" QuestId="37657" GiverName="Mr. Shackle" GiverId="91419" X="-812.4496" Y="6101.11" Z="7.006913" />
+
+		<If Condition="DoQuest(37657) &amp;&amp; Me.Specialization == WoWSpec.DruidFeral" >
+			<If Condition="SpellManager.HasSpell(155580)" >
+				<!-- Druid's Lunar Inspiration will bug out some CRs with this quest since the mob will be immune to attacks. -->
+				<MoveTo X="-820.9432" Y="6088.956" Z="2.937316" />
+				<CustomBehavior File="Misc\RunLua" Lua="LearnTalent(22363);" /> <!-- Learn Predator talent -->
+			</If>
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="MoveFromOublion" AllowUseDuringCombat="true" UseWhen="Unit(89350, u =&gt; u.DistanceSqr &lt;= 10 &amp;&amp; u.IsAlive &amp;&amp; u.HasAura(178902)) != null"  >
+				<MoveTo X="-981.2" Y="5607.345" Z="6.729728" />
+			</CustomBehavior>
+		</If>
+
+		<If Condition="(Me.IsAlliance &amp;&amp; NeedsQuest(42220)) || (Me.IsHorde &amp;&amp; NeedsQuest(42268))" >
+			<MoveTo X="-730.9786" Y="6006.806" Z="-0.4108924" />
+			<!-- Auto accept pickup.  QuestName="Shipwrecked Sailors" QuestId="42220" -->
+		</If>
+
+		<While Condition="DoQuest(37657) || DoQuest(42220) || DoQuest(42268)" >
+			<If Condition="Me.IsAlliance" >
+				<CustomBehavior File="KillUntilComplete" TerminateWhen="IsObjectiveComplete(1, 37657) &amp;&amp; IsQuestCompleted(42220)" >
+					<HuntingGrounds>
+						<Hotspot X="-810.4394" Y="5925.933" Z="-0.2683554" />
+						<Hotspot X="-903.2585" Y="5860.665" Z="0.4750468" />
+						<Hotspot X="-770.2274" Y="5694.72" Z="2.059582" />
+						<Hotspot X="-975.3858" Y="5667.039" Z="37.65124" />
+						<Hotspot X="-867.7207" Y="5613.289" Z="30.04423" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueUnit Id="89284" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
+						<PursueUnit Id="89283" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
+						<PursueUnit Id="89286" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
+						<PursueUnit Id="89053" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
+
+						<PursueUnit Id="89289" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsQuestCompleted(42220)" />
+						<!-- Shipwrecked Sailors quest -->
+					</PursuitList>
+				</CustomBehavior>
+			</If>
+			<If Condition="Me.IsHorde" >
+				<CustomBehavior File="KillUntilComplete" TerminateWhen="IsObjectiveComplete(1, 37657)" >
+					<HuntingGrounds>
+						<Hotspot X="-810.4394" Y="5925.933" Z="-0.2683554" />
+						<Hotspot X="-903.2585" Y="5860.665" Z="0.4750468" />
+						<Hotspot X="-770.2274" Y="5694.72" Z="2.059582" />
+						<Hotspot X="-975.3858" Y="5667.039" Z="37.65124" />
+						<Hotspot X="-867.7207" Y="5613.289" Z="30.04423" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueUnit Id="89284" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
+						<PursueUnit Id="89283" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
+						<PursueUnit Id="89286" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
+						<PursueUnit Id="89053" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsObjectiveComplete(1, 37657)" />
+					</PursuitList>
+				</CustomBehavior>
+				<CustomBehavior File="InteractWith" MobId="89289" QuestId="42268" QuestObjectiveIndex="1" >
+					<HuntingGrounds>
+						<Hotspot X="-810.4394" Y="5925.933" Z="-0.2683554" />
+						<Hotspot X="-903.2585" Y="5860.665" Z="0.4750468" />
+						<Hotspot X="-770.2274" Y="5694.72" Z="2.059582" />
+						<Hotspot X="-975.3858" Y="5667.039" Z="37.65124" />
+						<Hotspot X="-867.7207" Y="5613.289" Z="30.04423" />
+					</HuntingGrounds>
+				</CustomBehavior>
+			</If>
+
+			<If Condition="Me.IsAlliance" >
+				<TurnIn QuestName="Shipwrecked Sailors" QuestId="42220" />
+				<!-- Turn in Shipwrecked Sailors -->
+			</If>
+			<If Condition="Me.IsHorde" >
+				<TurnIn QuestName="Shipwrecked Sailors" QuestId="42268" />
+				<!-- Turn in Shipwrecked Sailors -->
+			</If>
+
+			<If Condition="!IsObjectiveComplete(2, 37657)" >
+				<!-- Get in cave -->
+				<MoveTo X="-904.0345" Y="5729.954" Z="1.235318" />
+				<MoveTo X="-874.127" Y="5709.781" Z="-1.426562" />
+				<CustomBehavior File="MyCTM" X="-895.646" Y="5694.116" Z="-12.60572" />
+				<CustomBehavior File="MyCTM" X="-961.7546" Y="5633.25" Z="3.230609" />
+
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="TargetSwitcher" LogExecution="false" AllowUseDuringCombat="true" UseAtInterval="3000" >
+					<!-- Using these hooks as a temporarily forced target switch since for whatever reason KUC isn't switching targets anymore...
+							Also doing it as interval because having two hooks to blacklist+whitelist was bugging out.. -->
+					<CustomBehavior File="RunCode">
+						<![CDATA[
+							var unitPoi = Unit(89350);
+							if (unitPoi == null)
+								return;
+
+							if (unitPoi.HasAura(178902) && !Blacklist.Contains(unitPoi, BlacklistFlags.Combat))
+								Blacklist.Add(Unit(89350), BlacklistFlags.Combat, TimeSpan.FromMinutes(1));
+						]]>
+					</CustomBehavior>
+
+					<CustomBehavior File="RunCode">
+						<![CDATA[
+							var unitPoi = Unit(89350);
+							if (unitPoi == null)
+								return;
+
+							if (!unitPoi.HasAura(178902) && Blacklist.Contains(unitPoi, BlacklistFlags.Combat))
+								Blacklist.Clear(u => u.Entry == 89350);
+						]]>
+					</CustomBehavior>
+				</CustomBehavior>
+				<CustomBehavior File="Hooks\Avoid" AvoidName="MassiveCrush_Avoid" ObjectId="89287" Radius="10" AvoidLocationProducer="UNIT.Location.RayCast(UNIT.Rotation, 8)" AvoidWhen="UNIT.IsCasting &amp;&amp; UNIT.IsAlive" />
+
+				<!-- NOTE: <ChangeTarget> : Attack Oublion <89350> to start fight.  Once he turns immune shield on, switch target to  <89287> to kill, then switch back to 89350. -->
+				<!-- MOTE: <AddAvoid> : Mob 89287 spits water on the ground, need to dodge it. -->
+				<CustomBehavior File="KillUntilComplete" QuestId="37657" QuestObjectiveIndex="2" X="-1001.184" Y="5626.036" Z="6.287228" >
+					<PursuitList>
+						<PursueUnit Id="89350" Priority="1" PursueWhen="!UNIT.HasAura(178902)" />
+						<PursuitUnit Id="89287" Priority="1000" PursueWhen="UNIT.IsHostile" />
+					</PursuitList>
+				</CustomBehavior>
+
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="TargetSwitcher" Command="Remove" />
+				<CustomBehavior File="Hooks\DoWhen" ActivityName="MoveFromOublion" Command="Remove" />
+
+				<!-- Get out of cave -->
+				<MoveTo X="-975.3384" Y="5626.203" Z="4.710858" />
+				<CustomBehavior File="MyCTM" X="-899.052" Y="5682.025" Z="-10.71182" />
+				<CustomBehavior File="MyCTM" X="-897.4653" Y="5734.594" Z="-1.259588" />
+				<MoveTo X="-916.111" Y="5746.806" Z="2.112487" />
+			</If>
+		</While>
+
+		<TurnIn QuestName="Maritime Law" QuestId="37654" TurnInName="Looper Allen" TurnInId="106881" X="-660.3785" Y="5596.917" Z="2.778686" />
+
+
+		<PickUp QuestName="The Captain's Foot Locker" QuestId="37659" GiverName="Looper Allen" GiverId="106881" X="-660.3785" Y="5596.917" Z="2.778686" />
+		<If Condition="QuestDone(37659)" >
+			<CustomBehavior File="DisablePlugin" Names="Anti Drown" />
+			<MoveTo X="-622.235" Y="5522.085" Z="3.750118" />
+			<CustomBehavior File="ForcedDismount" />
+			<DisableBehavior Name="Loot" />
+			<CustomBehavior File="MyCTM" X="-665.5331" Y="5515.288" Z="-9.221518" />
+			<CustomBehavior File="WaitTimer" WaitTime="1000" />
+			<CustomBehavior File="MyCTM" X="-673.2386" Y="5521.117" Z="-8.134248" />
+			<CustomBehavior File="MyCTM" X="-689.6155" Y="5512.386" Z="-9.447294" />
+			<CustomBehavior File="MyCTM" X="-694.2662" Y="5504.002" Z="-10.88912" />
+			<While Condition="QuestDone(37659)" >
+				<CustomBehavior File="InteractWith" MobId="239328" MovementBy="ClickToMoveOnly" X="-694.9913" Y="5502.919" Z="-10.44949" TerminateWhen="!HasQuest(37659)" />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+				<!--<TurnIn QuestName="The Captain's Foot Locker" QuestId="37659" TurnInType="Object" TurnInName="Captain's Foot Locker" TurnInId="239328" X="-694.9913" Y="5502.919" Z="-10.44949" />-->
+			</While>
+			<While Condition="Me.IsAlliance &amp;&amp; !HasQuest(40794)" >
+				<CustomBehavior File="InteractWith" MobId="239328" MovementBy="ClickToMoveOnly" X="-694.9913" Y="5502.919" Z="-10.44949" />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click();" />
+				<!--<PickUp QuestName="Fate of the Queen's Reprisal" QuestId="40794" GiverType="Object" GiverName="Captain's Foot Locker" GiverId="239328" X="-694.9913" Y="5502.919" Z="-10.44949" />-->
+			</While>
+			<While Condition="Me.IsHorde &amp;&amp; !HasQuest(42244)" >
+				<CustomBehavior File="InteractWith" MobId="239328" MovementBy="ClickToMoveOnly" X="-694.9913" Y="5502.919" Z="-10.44949" />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click();" />
+				<!-- <PickUp QuestName="Fate of the Queen's Reprisal" QuestId="42244" GiverType="Object" GiverName="Captain's Foot Locker" GiverId="239328" X="-694.9913" Y="5502.919" Z="-10.44949" />-->
+			</While>
+			<EnableBehavior Name="Loot" />
+			<CustomBehavior File="MyCTM" X="-692.7347" Y="5508.795" Z="-9.65338" />
+			<CustomBehavior File="MyCTM" X="-670.3221" Y="5530.21" Z="-8.188878" />
+			<CustomBehavior File="MyCTM" X="-658.4992" Y="5523.313" Z="-7.244068" />
+			<CustomBehavior File="MyCTM" X="-597.0092" Y="5520.338" Z="-1.074531" />
+		</If>
+
+		<If Condition="Me.IsAlliance &amp;&amp; !Me.IsSwimming &amp;&amp; NeedsQuest(40794)" >
+			<MoveTo X="-670.4435" Y="5585.708" Z="6.413455" />
+			<MoveTo X="-622.235" Y="5522.085" Z="3.750118" />
+			<CustomBehavior File="ForcedDismount" />
+			<DisableBehavior Name="Loot" />
+			<CustomBehavior File="MyCTM" X="-665.5331" Y="5515.288" Z="-9.221518" />
+			<CustomBehavior File="WaitTimer" WaitTime="1000" />
+			<CustomBehavior File="MyCTM" X="-673.2386" Y="5521.117" Z="-8.134248" />
+			<CustomBehavior File="MyCTM" X="-689.6155" Y="5512.386" Z="-9.447294" />
+			<CustomBehavior File="MyCTM" X="-694.2662" Y="5504.002" Z="-10.88912" />
+			<While Condition="Me.IsAlliance &amp;&amp; !HasQuest(40794)" >
+				<CustomBehavior File="InteractWith" MobId="239328" MovementBy="ClickToMoveOnly" X="-694.9913" Y="5502.919" Z="-10.44949" />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click();" />
+				<!--<PickUp QuestName="Fate of the Queen's Reprisal" QuestId="40794" GiverType="Object" GiverName="Captain's Foot Locker" GiverId="239328" X="-694.9913" Y="5502.919" Z="-10.44949" />-->
+			</While>
+			<EnableBehavior Name="Loot" />
+			<MoveTo X="-688.2496" Y="5513.995" Z="-10.34927" />
+			<CustomBehavior File="MyCTM" X="-688.2496" Y="5513.995" Z="-10.34927" />
+			<CustomBehavior File="MyCTM" X="-669.246" Y="5506.953" Z="-8.847418" />
+			<CustomBehavior File="MyCTM" X="-637.6852" Y="5519.481" Z="-1.93824" />
+		</If>
+		<If Condition="Me.IsHorde &amp;&amp; !Me.IsSwimming &amp;&amp; NeedsQuest(42244)" >
+			<MoveTo X="-670.4435" Y="5585.708" Z="6.413455" />
+			<MoveTo X="-622.235" Y="5522.085" Z="3.750118" />
+			<CustomBehavior File="ForcedDismount" />
+			<DisableBehavior Name="Loot" />
+			<CustomBehavior File="MyCTM" X="-665.5331" Y="5515.288" Z="-9.221518" />
+			<CustomBehavior File="WaitTimer" WaitTime="1000" />
+			<CustomBehavior File="MyCTM" X="-673.2386" Y="5521.117" Z="-8.134248" />
+			<CustomBehavior File="MyCTM" X="-689.6155" Y="5512.386" Z="-9.447294" />
+			<CustomBehavior File="MyCTM" X="-694.2662" Y="5504.002" Z="-10.88912" />
+			<While Condition="Me.IsHorde &amp;&amp; !HasQuest(42244)" >
+				<CustomBehavior File="InteractWith" MobId="239328" MovementBy="ClickToMoveOnly" X="-694.9913" Y="5502.919" Z="-10.44949" />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click();" />
+				<!-- <PickUp QuestName="Fate of the Queen's Reprisal" QuestId="42244" GiverType="Object" GiverName="Captain's Foot Locker" GiverId="239328" X="-694.9913" Y="5502.919" Z="-10.44949" />-->
+			</While>
+			<EnableBehavior Name="Loot" />
+			<MoveTo X="-588.1704" Y="5541.878" Z="1.40806" />
+			<CustomBehavior File="MyCTM" X="-688.2496" Y="5513.995" Z="-10.34927" />
+			<CustomBehavior File="MyCTM" X="-669.246" Y="5506.953" Z="-8.847418" />
+			<CustomBehavior File="MyCTM" X="-637.6852" Y="5519.481" Z="-1.93824" />
+		</If>
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+
+		<If Condition="QuestDone(37657)" >
+			<TurnIn QuestName="Making the World Safe for Profit" QuestId="37657" TurnInName="Mr. Shackle" TurnInId="91419" X="-812.4496" Y="6101.11" Z="7.005449" />
+			<If Condition="HasItem(133549)" >
+				<CustomBehavior File="UseItem" ItemId="133549" />
+			</If>
+		</If>
+		<If Condition="(QuestDone(40794) || QuestDone(42244)) &amp;&amp; Me.ZoneId != 7502" >
+			<CustomBehavior File="RunCode">
+				<![CDATA[
+					if (!(Me.ZoneId == 7502 || Me.ZoneId == 8392) && HasItem(140192))
+					{
+						Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, "[Azyul Navigator]: ", System.Windows.Media.Colors.LightGreen, "Using Dalaran Hearthstone!");
+						await CommonCoroutines.LandAndDismount("Using Hearthstone to reach Dalaran (Broken Isles)");
+						await CommonCoroutines.StopMoving(); 
+						WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+						if (dalaranHearth.CooldownTimeLeft <= TimeSpan.FromMinutes(3))
+						{
+							if (dalaranHearth.CooldownTimeLeft != TimeSpan.Zero)
+							{
+								Logging.Write(System.Windows.Media.Colors.Yellow, "[ProfileBase]: Awaiting cooldown before attempting hearth!");
+								await Coroutine.Wait(306000, () => dalaranHearth.CooldownTimeLeft == TimeSpan.Zero);
+							}
+							dalaranHearth.Interact();
+							var currentLoc = StyxWoW.Me.ZoneId;
+							await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
+							await Coroutine.Sleep(1500);
+						}
+					}
+					]]>
+			</CustomBehavior>
+		</If>
+		<If Condition="Me.IsAlliance &amp;&amp; QuestDone(40794)" >
+			<MoveTo X="-990.1125" Y="4636.522" Z="741.1978" />
+			<TurnIn QuestName="Fate of the Queen's Reprisal" QuestId="40794" TurnInName="Lieutenant Surtees" TurnInId="106930" X="-992.3577" Y="4638.888" Z="741.1998" />
+		</If>
+		<If Condition="Me.IsHorde &amp;&amp; QuestDone(42244)" >
+			<MoveTo X="-678.4109" Y="4378.012" Z="748.5895" />
+			<TurnIn QuestName="Fate of the Queen's Reprisal" QuestId="42244" TurnInName="Advisor Stillwater" TurnInId="106951" X="-676.4514" Y="4370.117" Z="748.589"/>
+		</If>
+	<!-- END Story: Mak'rana and the Fate of the Queen's Reprisal -->
+
+	<!-- Gathering Quests-->
+		<If Condition="HasQuest(40018)" >
+			<TurnIn Nav="Fly" QuestName="Dreamleaf Sample" QuestId="40018" TurnInName="Kuhuine Tenderstride" TurnInId="92464" />
+		</If>
+
+		<If Condition="HasQuest(40013)" >
+			<TurnIn Nav="Fly" QuestName="Aethril Sample" QuestId="40013" TurnInName="Kuhuine Tenderstride" TurnInId="92464" />
+		</If>
+
+		<If Condition="HasQuest(38777)" >
+			<TurnIn Nav="Fly" QuestName="Leystone Deposit Sample" QuestId="38777" TurnInName="Mama Diggs" TurnInId="93189" />
+		</If>
+
+		<If Condition="HasQuest(38784)" >
+			<TurnIn Nav="Fly" QuestName="Leystone Seam Sample" QuestId="38784" TurnInName="Mama Diggs" TurnInId="93189" />
+		</If>
+
+		<If Condition="HasQuest(38795)" >
+			<TurnIn Nav="Fly" QuestName="Felslate Deposit Sample" QuestId="38795" TurnInName="Mama Diggs" TurnInId="93189" />
+		</If>
+
+		<If Condition="HasQuest(40141)" >
+			<TurnIn Nav="Fly" QuestName="Stormscale Sample" QuestId="40141" TurnInName="Kondal Huntsworn" TurnInId="93541" />
+		</If>
+
+		<If Condition="HasQuest(38795) &amp;&amp; IsQuestCompleted(40131)" >
+			<TurnIn Nav="Fly" QuestName="Stonehide Leather Sample" QuestId="40131" TurnInName="Kondal Huntsworn" TurnInId="93541" />
+		</If>
+	<!-- END Gathering Quests -->
+
+	<!-- Load Class Hall stuff -->
+		<!--
+			NOTE <ImproveLater> : This is currently the easy solution.
+			I'm thinking a RunCode where Me.Class auto-fills the text with using ProfileManager.LoadNew to load the profilewould be more clean.
+			-->
+		<If Condition="Me.Class == WoWClass.Warrior" >
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Warrior" />
+		</If>
+		<If Condition="Me.Class == WoWClass.Paladin" >
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Paladin" />
+		</If>
+		<If Condition="Me.Class == WoWClass.Hunter" >
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Hunter" />
+		</If>
+		<If Condition="Me.Class == WoWClass.Rogue" >
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Rogue" />
+		</If>
+		<If Condition="Me.Class == WoWClass.Priest" >
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Priest" />
+		</If>
+		<If Condition="Me.Class == WoWClass.DeathKnight" >
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Death Knight" />
+		</If>
+		<If Condition="Me.Class == WoWClass.Shaman" >
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Shaman" />
+		</If>
+		<If Condition="Me.Class == WoWClass.Mage" >
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Mage" />
+		</If>
+		<If Condition="Me.Class == WoWClass.Warlock" >
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Warlock" />
+		</If>
+		<If Condition="Me.Class == WoWClass.Monk" >
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Monk" />
+		</If>
+		<If Condition="Me.Class == WoWClass.Druid" >
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Druid" />
+		</If>
+		<If Condition="Me.Class == WoWClass.DemonHunter" >
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Demon Hunter" />
+		</If>
+	<!-- END Load Class Hall stuff -->
+
+	</QuestOrder>
+</HBProfile>
+
+
+<!-- <PickUp QuestName="Plunder the Cove" QuestId="37495" GiverName="Cove Skrog" GiverId="1234" X="XXX" Y="YYY" Z="ZZZ" />,  bonus objective around the cave in Againts the Giants -->
+
+
+
+<!--Bonus for this ZoneId
+ Name="Withered Fanatic" Entry="90318" X="1155.731" Y="6163.251" Z="86.84489" -->

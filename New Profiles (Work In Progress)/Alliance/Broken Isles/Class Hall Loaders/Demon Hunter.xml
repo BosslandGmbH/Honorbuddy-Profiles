@@ -1,0 +1,909 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Demon Hunter Class Hall Loader ($Rev: 6042 $)</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Blackspots>
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+<!-- INITORDER COMMENT 
+	<InitOrder>
+		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> Use LevelBot default
+	</InitOrder>
+END INITORDER COMMENT -->
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					int currentZone = 0;
+					bool doAzsuna = false;
+					bool doValsharah = false;
+					bool doHighmountain = false;
+					bool doStormheim = false;
+
+					bool DoQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					bool NeedsBreadcrumbQuest(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (IsQuestCompleted(questId)) return false;
+						}
+						return true;
+					}
+					bool QuestDone(params uint[] questIds)
+					{
+						foreach (var questId in questIds)
+						{
+							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+						}
+						return false;
+					}
+					async Task DalaranHearth()
+					{
+						if (!(Me.ZoneId == 7502 || Me.ZoneId == 8392) && HasItem(140192))
+						{
+							Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, "[Azyul Navigator]: ", System.Windows.Media.Colors.LightGreen, "Using Dalaran Hearthstone!");
+							await CommonCoroutines.LandAndDismount("Using Hearthstone to reach Dalaran (Broken Isles)");
+							await CommonCoroutines.StopMoving(); 
+							WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+							if (dalaranHearth.CooldownTimeLeft <= TimeSpan.FromMinutes(3))
+							{
+								if (dalaranHearth.CooldownTimeLeft != TimeSpan.Zero)
+								{
+									Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
+									await Coroutine.Wait(306000, () => dalaranHearth.CooldownTimeLeft == TimeSpan.Zero);
+								}
+								dalaranHearth.Interact();
+								var currentLoc = StyxWoW.Me.ZoneId;
+								await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
+								await Coroutine.Sleep(1500);
+							}
+						}
+					}
+					async Task DoMission(int missionID, params int[] followerList)
+					{
+
+						foreach (int follower in followerList)
+						{
+							string luaString = $@"
+								local missionID = {missionID};
+								local followerID = {follower};
+								local allFollowers = C_Garrison.GetFollowers();
+								for i=1,#allFollowers do
+									if (allFollowers[i].garrFollowerID == followerID)  then  
+										C_Garrison.AddFollowerToMission(missionID, allFollowers[i].followerID);
+										break;
+									end
+								end
+							";
+							Lua.DoString(luaString);
+							await Coroutine.Sleep(750);
+						}
+
+						await Coroutine.Sleep(1000);
+						Lua.DoString($"C_Garrison.StartMission({missionID});");
+
+						await Coroutine.Sleep(2500);
+						Lua.DoString("OrderHallMissionFrame.CloseButton:Click();");
+					}
+
+					bool MissionComplete(int missionID)
+					{
+						string luaString = $@"
+							local missionNum = {missionID};
+							local allMissions = C_Garrison.GetInProgressMissions(LE_FOLLOWER_TYPE_GARRISON_7_0);
+							for i=1,#allMissions do
+								if (allMissions[i].missionID == missionNum)  then  
+									return allMissions[i].timeLeftSeconds
+								end
+							end
+						";
+						
+						int timeLeft = Lua.GetReturnVal<int>(luaString, 0);
+
+						if (timeLeft == 0)
+							return true;
+						else
+							return false;
+					}
+
+					bool MissionInProgress(int missionID)
+					{
+						string luaString = $@"
+							local missionNum = {missionID};
+							local allMissions = C_Garrison.GetInProgressMissions(LE_FOLLOWER_TYPE_GARRISON_7_0);
+							for i=1,#allMissions do
+								if (allMissions[i].missionID == missionNum)  then  
+									return allMissions[i].inProgress
+								end
+							end
+						";
+						return Lua.GetReturnVal<bool>(luaString, 0);
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- NOTE: 
+			The NPC changes depending on what the player chose while questing in the DemonHunter starting zone.
+			We can detect which NPC was chosen by checking which finale quest was completed.  The quest being: "Between Us and Freedom"
+			QuestId 39688 = Kayn Sunfury
+			QuestId 40255 = Altruis the Sufferer
+		-->
+
+		<!-- First Artifact Quest -->
+			<!-- Overly complicated due to either Kayn or Altruis being here -->
+				<If Condition="!IsQuestCompleted(40814) &amp;&amp; !IsQuestCompleted(40816)" >
+					<MoveTo X="-851.9022" Y="4256.646" Z="746.2833" />
+				</If>
+				<While Condition="!(IsQuestCompleted(39261) || IsQuestCompleted(39047))" >
+					<CustomBehavior File="InteractWith" MobId="99343" WaitForNpcs="false" NonCompeteDistance="0" X="-851.4608" Y="4257.401" Z="746.2826" />
+					<CustomBehavior File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click();" />
+					<CustomBehavior File="WaitTimer" WaitTime="3000" />
+				</While>
+				<If Condition="Unit(99247) != null " >  <!-- Kayn -->
+					<PickUp QuestName="Call of the Illidari" QuestId="39261" GiverName="Kor'vas Bloodthorn" GiverId="99343" X="-834.0088" Y="4394.81" Z="737.6318" />
+					<TurnIn QuestName="Call of the Illidari" QuestId="39261" TurnInName="Kayn Sunfury" TurnInId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
+
+					<PickUp QuestName="The Power to Survive" QuestId="40814" GiverName="Kayn Sunfury" GiverId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
+					<While Condition="DoQuest(40814)" >
+						<CustomBehavior File="Misc\RunLua" Lua="LoadAddOn(&quot;Blizzard_QuestChoice&quot;);" />
+				<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+							<CustomBehavior File="InteractWith" MobId="99247" GossipOptions="1" QuestId="40814" X="-852.2726" Y="4256.069" Z="746.2852" />
+						</If>
+
+						<CustomBehavior File="UserDialog" QuestId="40814" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" 
+						Text="Choose an artifact weapon.\n\nIf you do not choose within 5minutes, the bot will pick the one appropriate for your current specialization." />
+						
+						<If Condition="!IsQuestCompleted(40814)" >
+							<If Condition="Me.Specialization == WoWSpec.DemonHunterHavoc" >
+								<CustomBehavior File="Misc\RunLua" QuestId="40814" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1000" />
+							</If>
+							<If Condition="Me.Specialization == WoWSpec.DemonHunterVengeance" >
+								<CustomBehavior File="Misc\RunLua" QuestId="40814" Lua="QuestChoiceFrameOption2.OptionButton:Click()" WaitTime="1000" />
+							</If>
+							<CustomBehavior File="Misc\RunLua" QuestId="40814" Lua="StaticPopup1Button1:Click();" />
+						</If>
+					</While>
+					<TurnIn QuestName="The Power to Survive" QuestId="40814" TurnInName="Kayn Sunfury" TurnInId="99247" X="-852.2726" Y="4256.074" Z="746.285" />
+				</If>
+				<If Condition="Unit(99254) != null" >  <!-- Altruis -->
+					<PickUp QuestName="Call of the Illidari" QuestId="39047" GiverName="Kor'vas Bloodthorn" GiverId="99343" X="-834.0088" Y="4394.81" Z="737.6318" />
+					<TurnIn QuestName="Call of the Illidari" QuestId="39047" TurnInName="Altruis the Sufferer" TurnInId="99254" X="-852.2726" Y="4256.069" Z="746.2852" />
+
+					<PickUp QuestName="The Power to Survive" QuestId="40816" GiverName="Altruis the Sufferer" GiverId="99254" X="-852.2726" Y="4256.069" Z="746.2852" />
+					<While Condition="DoQuest(40816)" >
+						<CustomBehavior File="Misc\RunLua" Lua="LoadAddOn(&quot;Blizzard_QuestChoice&quot;);" />
+				<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+							<CustomBehavior File="InteractWith" MobId="99254" GossipOptions="1" QuestId="40816" X="-852.2726" Y="4256.069" Z="746.2852" />
+						</If>
+
+						<CustomBehavior File="UserDialog" QuestId="40816" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" 
+						Text="Choose an artifact weapon.\n\nIf you do not choose within 5minutes, the bot will pick the one appropriate for your current specialization." />
+						
+						<If Condition="!IsQuestCompleted(40816)" >
+							<If Condition="Me.Specialization == WoWSpec.DemonHunterHavoc" >
+								<CustomBehavior File="Misc\RunLua" QuestId="40816" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1000" />
+							</If>
+							<If Condition="Me.Specialization == WoWSpec.DemonHunterVengeance" >
+								<CustomBehavior File="Misc\RunLua" QuestId="40816" Lua="QuestChoiceFrameOption2.OptionButton:Click()" WaitTime="1000" />
+							</If>
+							<CustomBehavior File="Misc\RunLua" QuestId="40816" Lua="StaticPopup1Button1:Click();" />
+						</If>
+					</While>
+					<TurnIn QuestName="The Power to Survive" QuestId="40816" TurnInName="Altruis the Sufferer" TurnInId="99254" X="-852.2726" Y="4256.069" Z="746.2852" />
+				</If>
+			<!-- END last comment -->
+
+			<If Condition="((IsQuestCompleted(39688) &amp;&amp; !IsQuestCompleted(39247)) || (IsQuestCompleted(40255) &amp;&amp; !IsQuestCompleted(41119))) &amp;&amp; NeedsQuest(42869) &amp;&amp; Me.Specialization == WoWSpec.DemonHunterHavoc" > <!-- 39247+41119 = Kayn+Altruis  Twinblades of the Deceiver finale -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Demon Hunter - Havoc - Twinblades of the Deceiver.xml" />
+			</If>
+			<If Condition="((IsQuestCompleted(39688) &amp;&amp; !IsQuestCompleted(40249)) || (IsQuestCompleted(40255) &amp;&amp; !IsQuestCompleted(41863))) &amp;&amp; NeedsQuest(42869) &amp;&amp; Me.Specialization == WoWSpec.DemonHunterVengeance" > <!-- 40249+41863 = Kayn+Altruis   Aldrachi Warblades finale -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Demon Hunter - Vengeance - Aldrachi Warblades.xml" />
+			</If>
+		<!-- END First Artifact Quest -->
+
+		<!-- Introductory Class Hall Quests -->
+			<PickUp QuestName="Eternal Vigil" QuestId="42869" GiverName="Kor'vas Bloodthorn" GiverId="102799" X="-835.9722" Y="4265.393" Z="746.2537" />
+			<While Condition="HasQuest(42869) &amp;&amp; Me.Z &gt;= 665" >
+				<MoveTo X="-818.1966" Y="4265.469" Z="746.2773" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="MyCTM" X="-821.7453" Y="4236.09" Z="743.0304" />
+				<CustomBehavior File="WaitTimer" WaitTime="750" />
+				<CustomBehavior File="RunCode"><![CDATA[
+						Me.SetFacing(4);
+						await Coroutine.Sleep(750);
+						WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+						await Coroutine.Sleep(300);
+						WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+						SpellManager.Cast(131347);
+						await Coroutine.Sleep(4000);
+					]]>
+				</CustomBehavior>
+				<CustomBehavior File="MyCTM" X="-942.347" Y="4085.248" Z="648.2783" />
+			</While>
+			<TurnIn QuestName="Eternal Vigil" QuestId="42869" TurnInName="Jace Darkweaver" TurnInId="109196" X="-945.4254" Y="4090.016" Z="648.2668" />
+
+			<PickUp QuestName="Securing the Way" QuestId="42872" GiverName="Jace Darkweaver" GiverId="109196" X="-945.4254" Y="4090.016" Z="648.2668" />
+			<While Condition="DoQuest(42872)" >
+				<CustomBehavior File="WaitTimer" WaitTime="5000" QuestId="42872" QuestObjectiveIndex="1" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="3000" QuestId="42872" QuestObjectiveIndex="1" Lua="ExtraActionButton1:Click();" />
+				<CustomBehavior File="WaitTimer" WaitTime="7000" />
+				<CustomBehavior File="InteractWith" MobId="109273" WaitTime="3000" QuestId="42872" QuestObjectiveIndex="2" X="-964.0347" Y="4066.075" Z="648.1824" />
+			</While>
+			<TurnIn QuestName="Securing the Way" QuestId="42872" TurnInName="Jace Darkweaver" TurnInId="109196" X="-945.4254" Y="4090.016" Z="648.2668" />
+
+			<While Condition="(!HasQuest(41221) &amp;&amp; !IsQuestCompleted(41221)) &amp;&amp; (!HasQuest(41033) &amp;&amp; !IsQuestCompleted(41033))" >
+				<!--
+					 <PickUp QuestName="Return to Mardum" QuestId="41221" GiverName="Matron Mother Malevolence" GiverId="109295" X="-948.3802" Y="4091.924" Z="650.8849" />
+					 <PickUp QuestName="Return to Mardum" QuestId="41033" GiverName="Matron Mother Malevolence" GiverId="109295" X="-948.3802" Y="4091.924" Z="650.8849" />
+				-->
+				<CustomBehavior File="InteractWith" MobId="109295" X="-948.3802" Y="4091.924" Z="650.8849" />
+				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click();" WaitTime="850" />
+			</While>
+
+
+			<While Condition="DoQuest(41221, 41033)" >
+				<CustomBehavior File="InteractWith" MobId="251286" NonCompeteDistance="0" X="-963.8559" Y="4066.109" Z="648.1834" />
+			</While>
+
+			<If Condition="!IsQuestCompleted(41062) &amp;&amp; !IsQuestCompleted(41070)" >
+				<MoveTo X="1517.066" Y="1416.789" Z="243.6072" />
+			</If>
+
+			<If Condition="Unit(95240) != null" >  <!-- Kayn -->
+				<TurnIn QuestName="Return to Mardum" QuestId="41221" TurnInName="Kayn Sunfury" TurnInId="95240" X="1524.832" Y="1417.696" Z="243.9209" />
+
+				<PickUp QuestName="Unbridled Power" QuestId="41037" GiverName="Kayn Sunfury" GiverId="95240" X="1524.832" Y="1417.696" Z="243.9209" />
+				<While Condition="DoQuest(41037)" >
+					<CustomBehavior File="InteractWith" MobId="246881" QuestId="41037" QuestObjectiveIndex="1" InteractBlacklistTimeInSeconds="1" X="1527.5" Y="1412.491" Z="244.0878" />
+					<CustomBehavior File="WaitTimer" QuestId="41037" WaitTime="60000" />
+				</While>
+				<TurnIn QuestName="Unbridled Power" QuestId="41037" TurnInName="Kayn Sunfury" TurnInId="95240" X="1551.044" Y="1413.82" Z="237.1087" />
+
+				<PickUp QuestName="Spoils of Victory" QuestId="41062" GiverName="Kayn Sunfury" GiverId="95240" X="1551.044" Y="1413.82" Z="237.1087" />
+				<While Condition="DoQuest(41062)" >
+					<CustomBehavior File="InteractWith" MobId="98650" GossipOptions="1" QuestId="41062" QuestObjectiveIndex="1" X="1561.389" Y="1425.25" Z="237.1088" />
+					<MoveTo X="1583.775" Y="1412.066" Z="218.0267" />
+					<CustomBehavior File="WaitTimer" QuestId="41062" WaitTime="17000" />
+				</While>
+				<TurnIn QuestName="Spoils of Victory" QuestId="41062" TurnInName="Battlelord Gaardoun" TurnInId="103025" X="1584.427" Y="1409.263" Z="218.027" />
+			</If>
+			<If Condition="Unit(95237) != null" >  <!-- Altruis -->
+				<TurnIn QuestName="Return to Mardum" QuestId="41033" TurnInName="Altruis the Sufferer" TurnInId="95237" X="1524.832" Y="1417.696" Z="243.9209" />
+
+				<PickUp QuestName="Unbridled Power" QuestId="41060" GiverName="Altruis the Sufferer" GiverId="95237" X="1524.832" Y="1417.696" Z="243.9209" />
+				<While Condition="DoQuest(41060)" >
+					<CustomBehavior File="InteractWith" MobId="246881" NonCompeteDistance="0" Range="5" QuestId="41060" QuestObjectiveIndex="1" InteractBlacklistTimeInSeconds="1" X="1524.77" Y="1415.758" Z="244.005" />
+					<CustomBehavior File="WaitTimer" QuestId="41060" WaitTime="60000" />
+				</While>
+				<TurnIn QuestName="Unbridled Power" QuestId="41060" TurnInName="Altruis the Sufferer" TurnInId="95237" X="1551.044" Y="1413.82" Z="237.1087" />
+
+				<PickUp QuestName="Spoils of Victory" QuestId="41070" GiverName="Altruis the Sufferer" GiverId="95237" X="1551.044" Y="1413.82" Z="237.1087" />
+				<While Condition="DoQuest(41070)" >
+					<CustomBehavior File="InteractWith" MobId="98650" GossipOptions="1" QuestId="41070" QuestObjectiveIndex="1" X="1561.389" Y="1425.25" Z="237.1088" />
+					<MoveTo X="1583.775" Y="1412.066" Z="218.0267" />
+					<CustomBehavior File="WaitTimer" QuestId="41070" WaitTime="17000" />
+				</While>
+				<TurnIn QuestName="Spoils of Victory" QuestId="41070" TurnInName="Battlelord Gaardoun" TurnInId="103025" X="1584.427" Y="1409.263" Z="218.027" />
+			</If>
+
+			<PickUp QuestName="Cursed Forge of the Nathrezim" QuestId="41064" GiverName="Battlelord Gaardoun" GiverId="103025" X="1584.414" Y="1409.262" Z="218.027" />
+			<While Condition="DoQuest(41064)" >
+				<!-- /dump GetMouseFocus():GetPowerID(); C_ArtifactUI.AddPower(powerId); -->
+				<CustomBehavior File="InteractWith" MobId="250244" NonCompeteDistance="0" WaitTime="2000" QuestId="41064" X="1628.301" Y="1414.396" Z="208.9254" />
+				<If Condition="HasItem(127829)" > <!-- Twinblades of the Deceiver -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1330);" />
+				</If>
+				<If Condition="HasItem(128832)" > <!-- Aldrachi Warblades -->
+					<CustomBehavior File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1328);" />
+				</If>
+			</While>
+			<TurnIn QuestName="Cursed Forge of the Nathrezim" QuestId="41064" TurnInName="Battlelord Gaardoun" TurnInId="103025" X="1584.414" Y="1409.262" Z="218.027" />
+
+			<PickUp QuestName="The Hunter's Gaze" QuestId="41066" GiverName="Allari the Souleater" GiverId="95238" X="1568.799" Y="1410.712" Z="217.7683" />
+			<While Condition="DoQuest(41066)" >
+				<CustomBehavior File="InteractWith" MobId="250257" Range="5" GossipOptions="1" QuestId="41066" QuestObjectiveIndex="1" InteractBlacklistTimeInSeconds="1" X="1565.804" Y="1413.443" Z="217.7835" TerminateWhen="Me.ZoneId == 7543" />
+				<CustomBehavior File="WaitTimer" QuestId="41066" WaitTime="40000" />
+			</While>
+			<TurnIn QuestName="The Hunter's Gaze" QuestId="41066" TurnInName="Allari the Souleater" TurnInId="95238" X="1568.799" Y="1410.712" Z="217.7683" />
+
+
+			<If Condition="Unit(95240) != null" >  <!-- Kayn -->
+				<PickUp QuestName="Time is of the Essence" QuestId="41067" GiverName="Allari the Souleater" GiverId="95238" X="1568.799" Y="1410.712" Z="217.7683" />
+				<TurnIn QuestName="Time is of the Essence" QuestId="41067" TurnInName="Kayn Sunfury" TurnInId="95240" X="1551.054" Y="1413.816" Z="237.1085" />
+
+				<PickUp QuestName="Direct Our Wrath" QuestId="41069" GiverName="Kayn Sunfury" GiverId="95240" X="1551.054" Y="1413.816" Z="237.1085" />
+				<While Condition="DoQuest(41069)" >
+					<While Condition="DoQuest(41069)" >
+						<CustomBehavior File="InteractWith" MobId="98613" NonCompeteDistance="0" WaitTime="1500" QuestId="41069" X="1561.429" Y="1413.071" Z="237.1086" />
+						<If Condition="Chance(25)" > <!-- Azsuna -->
+							<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+							<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+
+						<ElseIf Condition="Chance(25)" > <!-- Val'sharah -->
+							<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39731);" WaitTime="1500" />
+							<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+						</ElseIf>
+						<ElseIf Condition="Chance(25)" > <!-- Highmountain -->
+							<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39733);" WaitTime="1500" />
+							<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+						</ElseIf>
+						<Else> <!-- Stormheim -->
+							<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39735); C_AdventureMap.StartQuest(39864);" WaitTime="1500" />
+							<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+						</Else>
+
+						</If>
+					</While>
+				</While>
+				<TurnIn QuestName="Direct Our Wrath" QuestId="41069" TurnInName="Kayn Sunfury" TurnInId="95240" X="1551.054" Y="1413.816" Z="237.1085" />
+			</If>
+			<If Condition="Unit(95237) != null" >  <!-- Altruis -->
+				<PickUp QuestName="Time is of the Essence" QuestId="41096" GiverName="Allari the Souleater" GiverId="95238" X="1568.799" Y="1410.712" Z="217.7683" />
+				<TurnIn QuestName="Time is of the Essence" QuestId="41096" TurnInName="Altruis the Sufferer" TurnInId="95237" X="1551.054" Y="1413.816" Z="237.1085" />
+
+				<PickUp QuestName="Direct Our Wrath" QuestId="41099" GiverName="Altruis the Sufferer" GiverId="95237" X="1551.054" Y="1413.816" Z="237.1085" />
+				<While Condition="DoQuest(41099)" >
+					<CustomBehavior File="InteractWith" MobId="98613" NonCompeteDistance="0" WaitTime="1500" QuestId="41099" X="1561.429" Y="1413.071" Z="237.1086" />
+					<If Condition="NeedsQuest(39718)" > <!-- Azsuna -->
+						<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</If>
+				</While>
+				<TurnIn QuestName="Direct Our Wrath" QuestId="41099" TurnInName="Altruis the Sufferer" TurnInId="95237" X="1551.054" Y="1413.816" Z="237.1085" />
+			</If>
+
+			<While Condition="DoQuest(39718)" >
+				<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" QuestId="39718" X="1457.668" Y="1411.165" Z="244.9198" /> <!-- NOTE: <ConditionalCheck> : UseWhen in Class Hall,  TerminateWhen Me In Dalaran -->
+				<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.HasAura(213170)" /> <!-- Walk off ledge -->
+				<CustomBehavior File="LoadProfile" ProfileName="../Azsuna.xml" />		
+			</While>
+		<!-- END Introductory Class Hall Quests -->
+
+		<!-- Determine Questing Status -->
+			<CustomBehavior File="RunCode"><![CDATA[
+				if ((!IsQuestCompleted(40794) && Me.IsAlliance) || (!IsQuestCompleted(42244) && Me.IsHorde)) doAzsuna = true;
+				if (!IsQuestCompleted(40890)) doValsharah = true;
+				if (!IsQuestCompleted(39656)) doHighmountain = true;
+				if ((!IsQuestCompleted(39122) && Me.IsAlliance) || (!IsQuestCompleted(38882) && Me.IsHorde)) doStormheim = true;
+
+				if (doAzsuna && !NeedsQuest(39718)) currentZone = 1;
+				else if (doValsharah && !NeedsQuest(39731)) currentZone = 2;
+				else if (doHighmountain && !NeedsQuest(39733)) currentZone = 3;
+				else if (doStormheim && ((Me.IsAlliance && !NeedsQuest(39735)) || (Me.IsHorde && !NeedsQuest(39864)))) currentZone = 4;
+				else if (!doAzsuna && !doValsharah && !doHighmountain && !doStormheim) currentZone = 5;
+				else currentZone = 0;
+			]]>
+			</CustomBehavior>
+			<!-- currentZone is checking if the player has started questing in a zone, but hasn't finished yet. -->
+		<!-- END Determine Questing Status -->
+
+		<!-- Tell the user what's good. -->
+			<CustomBehavior File="RunCode"><![CDATA[
+					if (currentZone == 0)
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Randomizing our next questing zone!");
+					else if (currentZone == 1)
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Continuing our questing in Azsuna.");
+					else if (currentZone == 2)
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Continuing our questing in Val'sharah.");
+					else if (currentZone == 3)
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Continuing our questing in Highmountain.");
+					else if (currentZone == 4)
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Continuing our questing in Stormheim.");
+					else if (currentZone == 5)
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: All questing zones done!");
+				]]>
+			</CustomBehavior>
+		<!-- END Tell the user what's good. -->
+
+		<!-- Randomize to a new zone -->
+			<While Condition="currentZone == 0" >
+				<!-- Azsuna -->
+				<If Condition="doAzsuna &amp;&amp; Chance(10)" >
+					<CustomBehavior File="RunCode"><![CDATA[
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Chose Aszuna as our next questing area.  You may stop->start the bot to have it randomize again!");
+					]]>
+					</CustomBehavior>
+					<If Condition="NeedsQuest(39718)" >
+						<If Condition="!Me.HasAura(213170)" >
+							<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+							<MoveTo X="-818.1966" Y="4265.469" Z="746.2773" />
+							<CustomBehavior File="ForcedDismount" />
+							<CustomBehavior File="MyCTM" X="-821.7453" Y="4236.09" Z="743.0304" />
+							<CustomBehavior File="WaitTimer" WaitTime="750" />
+							<CustomBehavior File="RunCode"><![CDATA[
+									Me.SetFacing(4);
+									await Coroutine.Sleep(750);
+									WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+									await Coroutine.Sleep(300);
+									WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+									SpellManager.Cast(131347);
+									await Coroutine.Sleep(4000);
+								]]>
+							</CustomBehavior>
+							<CustomBehavior File="MyCTM" X="-942.347" Y="4085.248" Z="648.2783" />
+							<CustomBehavior File="InteractWith" MobId="251286" NonCompeteDistance="0" X="-963.8559" Y="4066.109" Z="648.1834" />
+						</If>
+						<CustomBehavior File="InteractWith" MobId="98613" NonCompeteDistance="0" WaitTime="1500" X="1561.429" Y="1413.071" Z="237.1086" />
+						<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</If>
+
+					<If Condition="Me.HasAura(213170)" >
+						<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" />
+						<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.HasAura(213170)" /> <!-- Walk off ledge -->
+					</If>
+					<CustomBehavior File="LoadProfile" ProfileName="../Azsuna.xml" />
+				</If>
+				<!-- END Azsuna -->
+
+				<!-- Val'sharah -->
+				<If Condition="doValsharah &amp;&amp; Chance(10)" >
+					<CustomBehavior File="RunCode"><![CDATA[
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Chose Val'sharah as our next questing area.  You may stop->start the bot to have it randomize again!");
+					]]>
+					</CustomBehavior>
+					<If Condition="NeedsQuest(39731)" >
+						<If Condition="!Me.HasAura(213170)" >
+							<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+							<MoveTo X="-818.1966" Y="4265.469" Z="746.2773" />
+							<CustomBehavior File="ForcedDismount" />
+							<CustomBehavior File="MyCTM" X="-821.7453" Y="4236.09" Z="743.0304" />
+							<CustomBehavior File="WaitTimer" WaitTime="750" />
+							<CustomBehavior File="RunCode"><![CDATA[
+									Me.SetFacing(4);
+									await Coroutine.Sleep(750);
+									WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+									await Coroutine.Sleep(300);
+									WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+									SpellManager.Cast(131347);
+									await Coroutine.Sleep(4000);
+								]]>
+							</CustomBehavior>
+							<CustomBehavior File="MyCTM" X="-942.347" Y="4085.248" Z="648.2783" />
+							<CustomBehavior File="InteractWith" MobId="251286" NonCompeteDistance="0" X="-963.8559" Y="4066.109" Z="648.1834" />
+						</If>
+						<CustomBehavior File="InteractWith" MobId="98613" NonCompeteDistance="0" WaitTime="1500" X="1561.429" Y="1413.071" Z="237.1086" />
+						<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39731);" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</If>
+
+					<If Condition="Me.HasAura(213170)" >
+						<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" />
+						<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.HasAura(213170)" /> <!-- Walk off ledge -->
+					</If>
+					<CustomBehavior File="LoadProfile" ProfileName="../Val'sharah.xml" />
+				</If>
+				<!-- END Val'sharah -->
+
+				<!-- Highmountain -->
+				<If Condition="doHighmountain &amp;&amp; Chance(10)" >
+					<CustomBehavior File="RunCode"><![CDATA[
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Chose Highmountain as our next questing area.  You may stop->start the bot to have it randomize again!");
+					]]>
+					</CustomBehavior>
+					<If Condition="NeedsQuest(39733)" >
+						<If Condition="!Me.HasAura(213170)" >
+							<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+							<MoveTo X="-818.1966" Y="4265.469" Z="746.2773" />
+							<CustomBehavior File="ForcedDismount" />
+							<CustomBehavior File="MyCTM" X="-821.7453" Y="4236.09" Z="743.0304" />
+							<CustomBehavior File="WaitTimer" WaitTime="750" />
+							<CustomBehavior File="RunCode"><![CDATA[
+									Me.SetFacing(4);
+									await Coroutine.Sleep(750);
+									WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+									await Coroutine.Sleep(300);
+									WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+									SpellManager.Cast(131347);
+									await Coroutine.Sleep(4000);
+								]]>
+							</CustomBehavior>
+							<CustomBehavior File="MyCTM" X="-942.347" Y="4085.248" Z="648.2783" />
+							<CustomBehavior File="InteractWith" MobId="251286" NonCompeteDistance="0" X="-963.8559" Y="4066.109" Z="648.1834" />
+						</If>
+						<CustomBehavior File="InteractWith" MobId="98613" NonCompeteDistance="0" WaitTime="1500" X="1561.429" Y="1413.071" Z="237.1086" />
+						<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39733);" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</If>
+
+					<If Condition="Me.HasAura(213170)" >
+						<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" />
+						<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.HasAura(213170)" /> <!-- Walk off ledge -->
+					</If>
+					<CustomBehavior File="LoadProfile" ProfileName="../Highmountain.xml" />
+				</If>
+				<!-- END Highmountain -->
+
+				<!-- Stormheim -->
+				<If Condition="doStormheim &amp;&amp; Chance(10)" >
+					<CustomBehavior File="RunCode"><![CDATA[
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Chose Stormheim as our next questing area.  You may stop->start the bot to have it randomize again!");
+					]]>
+					</CustomBehavior>
+					<If Condition="(Me.IsAlliance &amp;&amp; NeedsQuest(39735)) || (Me.IsHorde &amp;&amp; NeedsQuest(39864))" >
+						<If Condition="!Me.HasAura(213170)" >
+							<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+							<MoveTo X="-818.1966" Y="4265.469" Z="746.2773" />
+							<CustomBehavior File="ForcedDismount" />
+							<CustomBehavior File="MyCTM" X="-821.7453" Y="4236.09" Z="743.0304" />
+							<CustomBehavior File="WaitTimer" WaitTime="750" />
+							<CustomBehavior File="RunCode"><![CDATA[
+									Me.SetFacing(4);
+									await Coroutine.Sleep(750);
+									WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+									await Coroutine.Sleep(300);
+									WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+									SpellManager.Cast(131347);
+									await Coroutine.Sleep(4000);
+								]]>
+							</CustomBehavior>
+							<CustomBehavior File="MyCTM" X="-942.347" Y="4085.248" Z="648.2783" />
+							<CustomBehavior File="InteractWith" MobId="251286" NonCompeteDistance="0" X="-963.8559" Y="4066.109" Z="648.1834" />
+						</If>
+						<CustomBehavior File="InteractWith" MobId="98613" NonCompeteDistance="0" WaitTime="1500" X="1561.429" Y="1413.071" Z="237.1086" />
+						<CustomBehavior File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39735); C_AdventureMap.StartQuest(39864);" WaitTime="1500" />
+						<CustomBehavior File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</If>
+
+					<If Condition="Me.HasAura(213170)" >
+						<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" />
+						<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.HasAura(213170)" /> <!-- Walk off ledge -->
+					</If>
+					<CustomBehavior File="LoadProfile" ProfileName="../Stormheim.xml" />
+				</If>
+				<!-- END Stormheim -->
+			</While>
+		<!-- END Randomize to a new zone -->
+
+		<!-- Load into existing zone -->
+			<!-- Azsuna -->
+			<If Condition="currentZone == 1" > 
+				<If Condition="Me.HasAura(213170)" >
+					<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" />
+					<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.HasAura(213170)" /> <!-- Walk off ledge -->
+				</If>
+				<CustomBehavior File="LoadProfile" ProfileName="../Azsuna.xml" />
+			</If>
+			<!-- END Azsuna -->
+
+			<!-- Val'sharah -->
+			<If Condition="currentZone == 2" > 
+				<If Condition="Me.HasAura(213170)" >
+					<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" />
+					<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.HasAura(213170)" /> <!-- Walk off ledge -->
+				</If>
+				<CustomBehavior File="LoadProfile" ProfileName="../Val'sharah.xml" />
+			</If>
+			<!-- END Val'sharah -->
+
+			<!-- Highmountain -->
+			<If Condition="currentZone == 3" >
+				<If Condition="Me.HasAura(213170)" >
+					<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" />
+					<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.HasAura(213170)" /> <!-- Walk off ledge -->
+				</If>
+				<CustomBehavior File="LoadProfile" ProfileName="../Highmountain.xml" />
+			</If>
+			<!-- END Highmountain -->
+
+			<!-- Stormheim -->
+			<If Condition="currentZone == 4" > 
+				<If Condition="Me.HasAura(213170)" >
+					<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" />
+					<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.HasAura(213170)" /> <!-- Walk off ledge -->
+				</If>
+				<CustomBehavior File="LoadProfile" ProfileName="../Stormheim.xml" />
+			</If>
+			<!-- END Stormheim -->
+		<!-- END Load into existing zone -->
+
+		<!-- Class Hall Tutorials -->
+			<If Condition="NeedsQuest(42681) || !MissionInProgress(954)" >
+				<If Condition="!Me.HasAura(213170)" > <!-- Go to Class Hall if not already -->
+					<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+					<MoveTo X="-818.1966" Y="4265.469" Z="746.2773" />
+					<CustomBehavior File="ForcedDismount" />
+					<CustomBehavior File="MyCTM" X="-821.7453" Y="4236.09" Z="743.0304" />
+					<CustomBehavior File="WaitTimer" WaitTime="750" />
+					<CustomBehavior File="RunCode"><![CDATA[
+							Me.SetFacing(4);
+							await Coroutine.Sleep(750);
+							WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+							await Coroutine.Sleep(300);
+							WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+							SpellManager.Cast(131347);
+							await Coroutine.Sleep(4000);
+						]]>
+					</CustomBehavior>
+					<CustomBehavior File="MyCTM" X="-942.347" Y="4085.248" Z="648.2783" />
+					<CustomBehavior File="InteractWith" MobId="251286" NonCompeteDistance="0" X="-963.8559" Y="4066.109" Z="648.1834" />
+				</If>
+
+				<If Condition="!IsQuestCompleted(42670) &amp;&amp; !IsQuestCompleted(42671)" >
+					<MoveTo X="1560.575" Y="1421.188" Z="237.1083" />
+				</If>
+				<If Condition="Unit(108571) != null" > <!-- Alturis -->
+					<PickUp Nav="Fly" QuestName="Rise, Champions" QuestId="42670" GiverName="Battlelord Gaardoun" GiverId="103025" X="1561.05" Y="1424.009" Z="237.109" />
+					<While Condition="DoQuest(42670)" >
+						<If Condition="!IsObjectiveComplete(1, 42670)" >
+							<CustomBehavior File="InteractWith" MobId="108571" QuestId="42670" X="1551.054" Y="1413.816" Z="237.1085" />
+							<CustomBehavior File="RunCode"><![CDATA[
+									await Coroutine.Sleep(1234);
+									Lua.DoString("GossipTitleButton1:Click();");
+									await Coroutine.Sleep(500);
+									Lua.DoString("QuestFrameCompleteQuestButton:Click();");
+									await Coroutine.Sleep(875);
+								]]>
+							</CustomBehavior>
+						</If>
+						<If Condition="!IsObjectiveComplete(2, 42670)" >
+							<CustomBehavior File="InteractWith" MobId="108326" QuestId="42670" X="1602.951" Y="1423.806" Z="243.475" />
+							<CustomBehavior File="RunCode"><![CDATA[
+									await Coroutine.Sleep(1275);
+									Lua.DoString("QuestFrameCompleteQuestButton:Click();");
+									await Coroutine.Sleep(875);
+								]]>
+							</CustomBehavior>
+						</If>
+					</While>
+					<TurnIn Nav="Fly" QuestName="Rise, Champions" QuestId="42670" TurnInName="Kor'vas Bloodthorn" TurnInId="103761" X="1551.464" Y="1410.891" Z="237.1088" />
+
+					<PickUp Nav="Fly" QuestName="Things Gaardoun Needs" QuestId="44161" GiverName="Kor'vas Bloodthorn" GiverId="103761" X="1551.464" Y="1410.891" Z="237.1088" />
+					<While Condition="DoQuest(44161)" >
+						<CustomBehavior File="InteractWith" MobId="98613" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+						<CustomBehavior File="RunCode"><![CDATA[
+							if (!MissionInProgress(1389))
+							{
+								await DoMission(missionID: 1389, followerList: 498);
+
+								Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Waiting for class hall mission to complete!");
+								await Coroutine.Wait(5000, () => MissionInProgress(1389));
+							}
+							]]>
+						</CustomBehavior>
+						<CustomBehavior File="WaitTimer" WaitTime="130000" TerminateWhen="MissionComplete(1389)" />
+						<CustomBehavior File="InteractWith" MobId="98613" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+						<CustomBehavior File="RunCode" ><![CDATA[
+							Lua.DoString("OrderHallMissionFrameMissions.CompleteDialog.BorderFrame.ViewButton:Click();");
+							await Coroutine.Sleep(1000);
+							Lua.DoString("C_Garrison.MissionBonusRoll(1389);");
+							await Coroutine.Sleep(1000);
+							Lua.DoString("OrderHallMissionFrame.CloseButton:Click();");
+							]]>
+						</CustomBehavior>
+					</While>
+					<TurnIn Nav="Fly" QuestName="Things Gaardoun Needs" QuestId="44161" TurnInName="Kor'vas Bloodthorn" TurnInId="103761" />
+				</If>
+				<If Condition="Unit(108572) != null" > <!-- Kayne -->
+					<PickUp Nav="Fly" QuestName="Rise, Champions" QuestId="42671" GiverName="Battlelord Gaardoun" GiverId="103025" X="1561.05" Y="1424.009" Z="237.109" />
+					<While Condition="DoQuest(42671)" >
+						<If Condition="!IsObjectiveComplete(1, 42671)" >
+							<CustomBehavior File="InteractWith" MobId="108572" QuestId="42671" X="1551.054" Y="1413.816" Z="237.1085" />
+							<CustomBehavior File="RunCode"><![CDATA[
+									await Coroutine.Sleep(1234);
+									Lua.DoString("GossipTitleButton1:Click();");
+									await Coroutine.Sleep(500);
+									Lua.DoString("QuestFrameCompleteQuestButton:Click();");
+									await Coroutine.Sleep(875);
+								]]>
+							</CustomBehavior>
+						</If>
+						<If Condition="!IsObjectiveComplete(2, 42671)" >
+							<CustomBehavior File="InteractWith" MobId="108326" QuestId="42671" X="1602.951" Y="1423.806" Z="243.475" />
+							<CustomBehavior File="RunCode"><![CDATA[
+									await Coroutine.Sleep(1275);
+									Lua.DoString("QuestFrameCompleteQuestButton:Click();");
+									await Coroutine.Sleep(875);
+								]]>
+							</CustomBehavior>
+						</If>
+					</While>
+					<TurnIn Nav="Fly" QuestName="Rise, Champions" QuestId="42671" TurnInName="Kor'vas Bloodthorn" TurnInId="103761" X="1551.464" Y="1410.891" Z="237.1088" />
+
+					<PickUp Nav="Fly" QuestName="Things Gaardoun Needs" QuestId="42677" GiverName="Kor'vas Bloodthorn" GiverId="103761" X="1551.464" Y="1410.891" Z="237.1088" />
+					<While Condition="DoQuest(42677)" >
+						<CustomBehavior File="InteractWith" MobId="98613" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+						<CustomBehavior File="RunCode"><![CDATA[
+							if (!MissionInProgress(953))
+							{
+								await DoMission(missionID: 953, followerList: 595);
+
+								Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Waiting for class hall mission to complete!");
+								await Coroutine.Wait(5000, () => MissionInProgress(953));
+							}
+							]]>
+						</CustomBehavior>
+						<CustomBehavior File="WaitTimer" WaitTime="130000" TerminateWhen="MissionComplete(953)" />
+						<CustomBehavior File="InteractWith" MobId="98613" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+						<CustomBehavior File="RunCode" ><![CDATA[
+							Lua.DoString("OrderHallMissionFrameMissions.CompleteDialog.BorderFrame.ViewButton:Click();");
+							await Coroutine.Sleep(1000);
+							Lua.DoString("C_Garrison.MissionBonusRoll(953);");
+							await Coroutine.Sleep(1000);
+							Lua.DoString("OrderHallMissionFrame.CloseButton:Click();");
+							]]>
+						</CustomBehavior>
+					</While>
+					<TurnIn Nav="Fly" QuestName="Things Gaardoun Needs" QuestId="42677" TurnInName="Kor'vas Bloodthorn" TurnInId="103761" />
+				</If>
+
+				<PickUp Nav="Fly" QuestName="Broken Warriors" QuestId="42679" GiverName="Kor'vas Bloodthorn" GiverId="103761" X="1551.464" Y="1410.891" Z="237.1088" />
+				<While Condition="DoQuest(42679)" >
+					<CustomBehavior File="InteractWith" MobId="103025" WaitTime="2000" QuestId="42679" X="1561.05" Y="1424.009" Z="237.109" />
+					<CustomBehavior File="Misc\RunLua" WaitTime="6000" Lua="GarrisonCapacitiveDisplayFrame.StartWorkOrderButton:Click();" />
+					<CustomBehavior File="WaitTimer" WaitTime="6000" />
+					<CustomBehavior File="InteractWith" MobId="250891" NonCompeteDistance="0" QuestId="42679" X="1558.469" Y="1426.495" Z="237.1086" />
+				</While>
+				<TurnIn Nav="Fly" QuestName="Broken Warriors" QuestId="42679" TurnInName="Kor'vas Bloodthorn" TurnInId="103761" X="1551.464" Y="1410.891" Z="237.1088" />
+
+
+				<PickUp Nav="Fly" QuestName="Loramus, Is That You?" QuestId="42681" GiverName="Kor'vas Bloodthorn" GiverId="103761" X="1551.464" Y="1410.891" Z="237.1088" />
+				<While Condition="DoQuest(42681) &amp;&amp; !MissionInProgress(954)" >
+					<CustomBehavior File="InteractWith" MobId="98613" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+					<CustomBehavior File="RunCode" Code="
+						if (!MissionInProgress(954))
+						{
+							if (Unit(108571) != null)
+								await DoMission(954, new int[]{498, 722, 665});
+
+							if (Unit(108572) != null)
+								await DoMission(954, new int[]{595, 722, 665});
+						}
+					" />
+				</While>
+			</If>
+		<!-- END Class Hall Tutorials -->
+
+		<!-- Post Questing Stuff -->
+			<!-- Get Second Artifact -->
+				<If Condition="!IsQuestCompleted(39247)" > <!-- Havoc, Twinblades of the Deciever -->
+					<If Condition="!Me.HasAura(213170)" >
+						<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+						<MoveTo X="-818.1966" Y="4265.469" Z="746.2773" />
+						<CustomBehavior File="ForcedDismount" />
+						<CustomBehavior File="MyCTM" X="-821.7453" Y="4236.09" Z="743.0304" />
+						<CustomBehavior File="WaitTimer" WaitTime="750" />
+						<CustomBehavior File="RunCode"><![CDATA[
+								Me.SetFacing(4);
+								await Coroutine.Sleep(750);
+								WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+								await Coroutine.Sleep(300);
+								WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+								SpellManager.Cast(131347);
+								await Coroutine.Sleep(4000);
+							]]>
+						</CustomBehavior>
+						<CustomBehavior File="MyCTM" X="-942.347" Y="4085.248" Z="648.2783" />
+						<CustomBehavior File="InteractWith" MobId="251286" NonCompeteDistance="0" X="-963.8559" Y="4066.109" Z="648.1834" />
+					</If>
+					<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Demon Hunter - Havoc - Twinblades of the Deceiver.xml" />
+				</If>
+				<If Condition="!IsQuestCompleted(41863)" > <!-- Vengeance, Aldrachi Warblades -->
+					<If Condition="!Me.HasAura(213170)" >
+						<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+						<MoveTo X="-818.1966" Y="4265.469" Z="746.2773" />
+						<CustomBehavior File="ForcedDismount" />
+						<CustomBehavior File="MyCTM" X="-821.7453" Y="4236.09" Z="743.0304" />
+						<CustomBehavior File="WaitTimer" WaitTime="750" />
+						<CustomBehavior File="RunCode"><![CDATA[
+								Me.SetFacing(4);
+								await Coroutine.Sleep(750);
+								WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+								await Coroutine.Sleep(300);
+								WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
+								SpellManager.Cast(131347);
+								await Coroutine.Sleep(4000);
+							]]>
+						</CustomBehavior>
+						<CustomBehavior File="MyCTM" X="-942.347" Y="4085.248" Z="648.2783" />
+						<CustomBehavior File="InteractWith" MobId="251286" NonCompeteDistance="0" X="-963.8559" Y="4066.109" Z="648.1834" />
+					</If>
+					<CustomBehavior File="LoadProfile" ProfileName="../Artifact Quests/Demon Hunter - Vengeance - Aldrachi Warblades.xml" />
+				</If>
+			<!-- END Get Second Artifact -->
+
+			<!-- Finish the 8hour mission -->
+				<If Condition="MissionComplete(954) &amp;&amp; HasQuest(42681)" >
+					<CustomBehavior File="InteractWith" MobId="98613" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+					<CustomBehavior File="RunCode" ><![CDATA[
+						Lua.DoString("OrderHallMissionFrameMissions.CompleteDialog.BorderFrame.ViewButton:Click();");
+						await Coroutine.Sleep(1000);
+						Lua.DoString("C_Garrison.MissionBonusRoll(954);");
+						await Coroutine.Sleep(1000);
+						Lua.DoString("OrderHallMissionFrame.CloseButton:Click();");
+						]]>
+					</CustomBehavior>
+					<TurnIn Nav="Fly" QuestName="Loramus, Is That You?" QuestId="42681" TurnInName="Kor'vas Bloodthorn" TurnInId="103761" X="1551.464" Y="1410.891" Z="237.1088" />
+				</If>
+			<!-- END Finish the 8hour mission -->
+
+			<!-- Upgrade Class Hall -->
+				<PickUp Nav="Fly" QuestName="Demonic Improvements" QuestId="42683" GiverName="Kor'vas Bloodthorn" GiverId="103761" X="1551.464" Y="1410.891" Z="237.1088" />
+				<While Condition="DoQuest(42683)" >
+					<CustomBehavior File="InteractWith" MobId="110599" GossipOptions="1" QuestId="42683" QuestObjectiveIndex="1" X="1541.236" Y="1426.747" Z="218.0267" />
+					<CustomBehavior File="UserDialog" QuestId="42683" QuestObjectiveIndex="2" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" Text="Choose an class hall upgrade.\n\nIf you do not choose within 5minutes, the bot will pick the one appropriate for questing benefits." />
+					<CustomBehavior File="Misc\RunLua" Lua="C_Garrison.ResearchTalent(413);" />
+				</While>
+				<TurnIn Nav="Fly" QuestName="Demonic Improvements" QuestId="42683" TurnInName="Matron Mother Malevolence" TurnInId="98632" X="1575.938" Y="1408.193" Z="237.1088" />
+			<!-- END Upgrade Class Hall -->
+
+			<!-- More Missions -->
+				<PickUp Nav="Fly" QuestName="Additional Accoutrements" QuestId="42682" GiverName="Matron Mother Malevolence" GiverId="98632" X="1575.938" Y="1408.193" Z="237.1088" />
+				<While Condition="DoQuest(42682) &amp;&amp; !MissionInProgress(1155)" >
+					<CustomBehavior File="InteractWith" MobId="98613" NonCompeteDistance="0" WaitTime="1500" X="1142.707" Y="7223.202" Z="101.8188" />
+					<CustomBehavior File="RunCode"><![CDATA[
+						if (!MissionInProgress(1155))
+						{
+							if (Unit(108571) != null)
+								await DoMission(1155, new int[]{498, 722, 665});
+
+							if (Unit(108572) != null)
+								await DoMission(1155, new int[]{595, 722, 665});
+
+							Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Waiting for class hall mission to complete!");
+							await Coroutine.Wait(5000, () => MissionInProgress(1155));
+						}
+						]]>
+					</CustomBehavior>
+				</While>
+				<If Condition="HasQuest(42682) &amp;&amp; MissionComplete(1155)" >
+					<TurnIn Nav="Fly" QuestName="Additional Accoutrements" QuestId="42682" TurnInName="Kor'vas Bloodthorn" TurnInId="103761" X="1575.938" Y="1408.193" Z="237.1088" />
+				</If>
+			<!-- END More Missions -->
+		<!-- END Post Questing Stuff -->
+	</QuestOrder>
+</HBProfile>
