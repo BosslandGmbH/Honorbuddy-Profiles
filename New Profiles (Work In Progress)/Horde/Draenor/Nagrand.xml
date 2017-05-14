@@ -255,6 +255,13 @@
 		</While>
 		<TurnIn QuestName="A Choice to Make" QuestId="34899" TurnInName="Thrall" TurnInId="80003" X="3221.197" Y="4605.405" Z="144.0762" />
 
+		<If Condition="SpellManager.HasSpell(164222) &amp;&amp; !CanFly()" >
+			<UseMount Value="false" />
+			<Code File="Hooks\DoWhen" ActivityName="SummonCombatMount" AllowUseInCombat="true" UseWhen="!Me.Mounted &amp;&amp; !Me.IsActuallyInCombat &amp;&amp; !Me.IsIndoors &amp;&amp; SpellManager.HasSpell(164222) &amp;&amp; !Me.HasAura(164222)" >
+				<Code File="RunCode" Code="await CommonCoroutines.StopMoving(); SpellManager.Cast(164222); await Coroutine.Wait(3000, () =&gt; Me.HasAura(164222));" />
+			</Code>
+		</If>
+
 		<TurnIn QuestName="The Friend of My Enemy" QuestId="34826" TurnInName="Thrall" TurnInId="80003" X="3221.197" Y="4605.405" Z="144.0762" />
 		<PickUp QuestName="Trouble at the Overwatch" QuestId="35150" GiverName="Draka" GiverId="81319" X="3221.197" Y="4605.405" Z="144.0762" />
 		<PickUp QuestName="Target of Opportunity: Telaar" QuestId="34914" GiverName="Aggra" GiverId="81189" X="3219.358" Y="4603.235" Z="143.7357" />
