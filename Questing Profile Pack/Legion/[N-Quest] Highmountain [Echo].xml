@@ -530,6 +530,7 @@ END INITORDER COMMENT -->
 						TreeRoot.StatusText = "Kicking fish into water";
 
 						await CommonCoroutines.StopMoving();
+						await CommonCoroutines.LandAndDismount();
 						Me.SetFacing(GetBestRiverLocation());
 						await Coroutine.Sleep(200);
 						_currentFish.Interact();
@@ -547,11 +548,11 @@ END INITORDER COMMENT -->
 
 			<CustomBehavior File="RunCode"><![CDATA[ TreeHooks.Instance.InsertHook("Questbot_Profile", 0, _kickfishHook ?? (_kickfishHook = new  CommonBehaviors.Actions.ActionRunCoroutine(ctx => KickFish()))); ]]></CustomBehavior>
 			<While Condition="DoQuest(39614)" >
-				<MoveTo X="4038.536" Y="4775.965" Z="623.6185" />
-				<MoveTo X="3985.755" Y="4902.08" Z="624.2513" />
-				<MoveTo X="3936.748" Y="4779.066" Z="625.9948" />
-				<MoveTo X="3936.509" Y="4943.055" Z="622.6791" />
-				<MoveTo X="3904.754" Y="5002.131" Z="627.1608" />
+				<MoveTo QuestId="39614" X="4038.536" Y="4775.965" Z="623.6185" />
+				<MoveTo QuestId="39614" X="3985.755" Y="4902.08" Z="624.2513" />
+				<MoveTo QuestId="39614" X="3936.748" Y="4779.066" Z="625.9948" />
+				<MoveTo QuestId="39614" X="3936.509" Y="4943.055" Z="622.6791" />
+				<MoveTo QuestId="39614" X="3904.754" Y="5002.131" Z="627.1608" />
 			</While>
 			<CustomBehavior File="RunCode"><![CDATA[ TreeHooks.Instance.RemoveHook("Questbot_Profile", _kickfishHook); ]]></CustomBehavior>
 			<CustomBehavior File="RunCode" Code="
@@ -561,7 +562,7 @@ END INITORDER COMMENT -->
 		</While>
 
 		<While Condition="DoQuest(39277)" >
-			<CustomBehavior File="InteractWith" MobIds="95013, 96124" InteractByUsingItemId="127988" MobState="Alive" Range="5" IgnoreCombat="true" PreInteractMountStrategy="Dismount" QuestId="39277" QuestObjectiveIndex="1" TerminateWhen="Me.HealthPercent &lt;= 20" >
+			<CustomBehavior File="InteractWith" MobIds="95013, 96124" InteractByUsingItemId="127988" MobState="Alive" Range="5" IgnoreCombat="true" PreInteractMountStrategy="Dismount" MovementBy="NavigatorOnly" QuestId="39277" QuestObjectiveIndex="1" TerminateWhen="Me.HealthPercent &lt;= 20" >
 				<HuntingGrounds>
 					<Hotspot X="4038.536" Y="4775.965" Z="623.6185" />
 					<Hotspot X="3985.755" Y="4902.08" Z="624.2513" />
@@ -578,7 +579,7 @@ END INITORDER COMMENT -->
 		</If>
 
 		<If Condition="!IsQuestCompleted(39274) &amp;&amp; Me.Level &lt; 110" > <!-- Bonus Objective: Defend the Riverlands -->
-			<CustomBehavior File="InteractWith" MobState="AliveNotInCombat" InteractByLooting="true" NumOfTimes="150" TerminateWhen="IsQuestCompleted(39274)" >
+			<CustomBehavior File="InteractWith" MobState="AliveNotInCombat" InteractByLooting="true" NumOfTimes="150" PreInteractMountStrategy="Dismount" TerminateWhen="IsQuestCompleted(39274)" >
 				<HuntingGrounds>
 					<Hotspot X="3941.23" Y="4936.438" Z="622.6931" />
 					<Hotspot X="4009.044" Y="4883.389" Z="627.3096" />
@@ -708,9 +709,9 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="The Drogbar" QuestId="39026" GiverName="Spiritwalker Ebonhorn" GiverId="93805" X="3737.774" Y="4959.208" Z="670.8829" />
 
 		<While Condition="DoQuest(39025)" >
-			<CustomBehavior File="InteractWith" MobId="97648" QuestId="39025" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestObjectiveIndex="2" X="3736.111" Y="4887.467" Z="675.6513" />
-			<CustomBehavior File="InteractWith" MobId="97648" QuestId="39025" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestObjectiveIndex="1" X="3649.892" Y="4908.655" Z="685.0859" />
-			<CustomBehavior File="InteractWith" MobId="97648" QuestId="39025" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestObjectiveIndex="3" X="3575.872" Y="4839.522" Z="700.2889" />
+			<CustomBehavior File="InteractWith" MobId="97648" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="39025" QuestObjectiveIndex="2" X="3736.111" Y="4887.467" Z="675.6513" />
+			<CustomBehavior File="InteractWith" MobId="97648" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="39025" QuestObjectiveIndex="1" X="3649.892" Y="4908.655" Z="685.0859" />
+			<CustomBehavior File="InteractWith" MobId="97648" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="39025" QuestObjectiveIndex="3" X="3575.872" Y="4839.522" Z="700.2889" />
 		</While>
 
 		<While Condition="DoQuest(39026)" >
@@ -1142,7 +1143,7 @@ END INITORDER COMMENT -->
 
 		<PickUp QuestName="Rocs vs Eagles" QuestId="38910" GiverName="Lasan Skyhorn" GiverId="93841" X="4855.699" Y="3979.478" Z="832.1546" />
 		<While Condition="DoQuest(38910)" >
-			<CustomBehavior File="InteractWith" MobId="94991" Range="5" NonCompeteDistance="0" QuestId="38910" QuestObjectiveIndex="1" >
+			<CustomBehavior File="InteractWith" MobId="94991" Range="5" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="38910" QuestObjectiveIndex="1" >
 				<HuntingGrounds>
 					<Hotspot X="4952.185" Y="4152.331" Z="821.8495" />
 					<Hotspot X="4882.544" Y="4119.929" Z="836.452" />
@@ -1154,7 +1155,7 @@ END INITORDER COMMENT -->
 		<!-- NOTE: <BonusObjective> : <PickUp QuestName="Siege of Crawliac" QuestId="39317" GiverName="Hati" GiverId="100324" XXXX /> -->
 
 		<While Condition="!IsQuestCompleted(39317) &amp;&amp; Me.Level &lt; 110" > <!-- Bonus Objective: Siege of Crawliac -->
-			<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(39317)" >
+			<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" PreInteractMountStrategy="Dismount" TerminateWhen="IsQuestCompleted(39317)" >
 				<HuntingGrounds>
 					<Hotspot X="4875.676" Y="4128.829" Z="839.3718" />
 					<Hotspot X="4984" Y="4181.067" Z="824.3726" />
@@ -1261,7 +1262,7 @@ END INITORDER COMMENT -->
 		</While>
 
 		<While Condition="!IsQuestCompleted(39371) &amp;&amp; Me.Level &lt; 110" > <!-- Bonus Objective: Witches of the Sky -->
-			<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(39371)" >
+			<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" PreInteractMountStrategy="Dismount" TerminateWhen="IsQuestCompleted(39371)" >
 				<HuntingGrounds>
 					<Hotspot X="5425.975" Y="4756.039" Z="665.6051" />
 					<Hotspot X="5561.418" Y="4789.268" Z="664.9429" />
