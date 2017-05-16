@@ -1,0 +1,67 @@
+<HBProfile>
+	<QuestOrder>
+
+		<CustomBehavior File="RunCode">
+		<![CDATA[
+			TreeHooks.Instance.InsertHook("Questbot_Profile", 0,
+				_treasureHuntComposite ?? (_treasureHuntComposite = new  CommonBehaviors.Actions.ActionRunCoroutine(ctx => TreasureHunt())));	
+		]]>
+		</CustomBehavior>
+
+		<CustomBehavior File="RunCode" Type="Definition" ><![CDATA[
+				private List<WoWGuid> _treasureBlacklist = new List<WoWGuid>();
+				private bool _treasureIsLogged = false;
+				private Styx.TreeSharp.Composite _treasureHuntComposite;
+				private WoWGameObject _treasurePoi;
+				private Vector3 _treasureLocation; 
+
+				public async Task<bool> TreasureHunt()
+				{
+					if (!_treasureLocation.Equals(new Vector3(0,0,0)) && _treasureLocation.DistanceSquared((WoWMovement.ActiveMover ?? StyxWoW.Me).Location) > 5 * 5)
+					{
+						TreeRoot.StatusText = $"Moving to interact with treasure: {_treasurePoi.Name}";
+						return (await CommonCoroutines.MoveTo(_treasureLocation)).IsSuccessful();
+					}
+
+					if (_treasurePoi == null || !_treasurePoi.IsValid)
+					{
+						_treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !_treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.SubType == WoWGameObjectType.Chest && obj.LockType == WoWLockType.Open && obj.CanUse() && obj.DistanceSqr <= 60f*60f);
+						if (_treasurePoi == null) return false;
+						if (Navigator.LookupPathInfo(_treasurePoi).Navigability != PathNavigability.Navigable)
+						{
+							_treasureBlacklist.Add(_treasurePoi.Guid);
+							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, $"[ProfileBase]: Treasure detected near us, but we can't navigate to it!\n	Name     :: {_treasurePoi.Name}\n	Entry    :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
+							_treasurePoi = null;
+							return false;
+						}
+						_treasureLocation = _treasurePoi.Location;
+						return true;
+					}
+
+					if (!_treasureIsLogged)
+					{
+						_treasureIsLogged = true;
+						Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, $"[ProfileBase]: Treasure detected near us!\n	Name     :: {_treasurePoi.Name}\n	Entry    :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
+					}
+
+					TreeRoot.StatusText = $"Interacting with treasure: {_treasurePoi.Name}";
+					await CommonCoroutines.LandAndDismount();
+					await CommonCoroutines.StopMoving();
+					_treasurePoi.Interact();
+					await Coroutine.Wait(2000, () => LootFrame.Instance.IsVisible);
+					LootFrame.Instance.LootAll();
+					await Coroutine.Wait(2000, () => _treasurePoi == null || !_treasurePoi.IsValid);
+
+					_treasureIsLogged = false;
+					_treasureLocation = new Vector3(0,0,0);
+					_treasureBlacklist.Add(_treasurePoi.Guid);
+
+					return true;
+				}
+		]]>
+		</CustomBehavior>
+
+
+
+	</QuestOrder>
+</HBProfile>

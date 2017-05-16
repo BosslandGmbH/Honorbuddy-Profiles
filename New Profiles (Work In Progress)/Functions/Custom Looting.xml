@@ -1,0 +1,48 @@
+<HBProfile>
+	<QuestOrder>
+
+
+		<!-- NOTE:  
+			We can use LootTargeting.Instance.RemoveTargetsFilter instead of doing it this way.
+			This is a temporary method, moreso as a proof of concept.
+		-->
+
+		<Code File="RunCode" Type="Definition" >
+			<![CDATA[
+			static bool IsNeededForQuestObjective(WoWUnit objectiveMob)
+			{
+				foreach (var playerQuest in Styx.WoWInternals.QuestLog.Instance.GetAllQuests())
+				{
+					if (playerQuest.IsCompleted || playerQuest.IsFailed)
+						continue;
+
+					var objectives = playerQuest.GetObjectives();
+
+					foreach (var objective in objectives)
+					{
+						if (objectiveMob.GetCachedInfo(out WoWCache.CreatureCacheEntry cacheEntry))
+						{
+							if (cacheEntry.QuestItems.ToList().Contains(objective.ID))
+								return true;
+						}
+					}
+				}
+				return false;
+			}
+			]]>
+		</Code>
+		<Code File="Hooks\DoWhen" ActivityName="ActiveLootBlacklister" TreeHookName="Loot_Main" LogExecution="false" AllowUseWhileMounted="true" AllowUseDuringCombat="true" UseWhen="ObjectManager.GetObjectsOfType&lt;WoWUnit&gt;().Any(unit =&gt; !Blacklist.Contains(unit, BlacklistFlags.Loot) &amp;&amp; unit.Lootable &amp;&amp; !IsNeededForQuestObjective(unit))" >
+			<Code File="RunCode">
+				<![CDATA[
+				var blacklistList = ObjectManager.GetObjectsOfType<WoWUnit>().Where(x => !Blacklist.Contains(x, BlacklistFlags.Loot) && x.Lootable && !IsNeededForQuestObjective(x));
+				foreach (WoWUnit blacklistMe in blacklistList)
+				{
+					Blacklist.Add(blacklistMe, BlacklistFlags.Loot, TimeSpan.FromMinutes(5), "Unit looting is not needed for quest completion.");
+				}
+				]]>
+			</Code>
+		</Code>
+
+
+	</QuestOrder>
+</HBProfile>
