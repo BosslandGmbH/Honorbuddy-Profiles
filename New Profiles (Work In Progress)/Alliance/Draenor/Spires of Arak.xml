@@ -981,9 +981,17 @@
 				<Hotspot X="21.61375" Y="1153.666" Z="80.67261" />
 			</HuntingGrounds>
 		</Code>
-		<TurnIn QuestName="We Have Him Now" QuestId="36048" TurnInName="Hulda Shadowblade" TurnInId="83900" X="-12.33942" Y="1219.873" Z="34.40654" /> <!-- 83904 -->
+		<While Condition="QuestDone(36048)" >
+			<!-- <TurnIn QuestName="We Have Him Now" QuestId="36048" TurnInName="Hulda Shadowblade" TurnInId="83900" X="-12.33942" Y="1219.873" Z="34.40654" /> --> <!-- 83904 -->
+			<Code File="InteractWith" MobIds="83900, 83904" NonCompeteDistance="0" X="-12.33942" Y="1219.873" Z="34.40654" TerminateWhen="!HasQuest(36048)" />
+			<Code File="RunCode" Code="QuestFrame.Instance.ClickContinue(); await Coroutine.Sleep(750); QuestFrame.Instance.CompleteQuest();" />
+		</While>
 
-		<PickUp QuestName="No Time to Waste" QuestId="36165" GiverName="Hulda Shadowblade" GiverId="83900" X="-12.33942" Y="1219.873" Z="34.40654" />
+		<While Condition="NeedsQuest(36165)" >
+			<!--<PickUp QuestName="No Time to Waste" QuestId="36165" GiverName="Hulda Shadowblade" GiverId="83900" X="-12.33942" Y="1219.873" Z="34.40654" /> -->
+			<Code File="InteractWith" MobIds="83900, 83904" NonCompeteDistance="0" X="-12.33942" Y="1219.873" Z="34.40654" TerminateWhen="!HasQuest(36165)" />
+			<Code File="RunCode" Code="QuestFrame.Instance.AcceptQuest(); await Coroutine.Sleep(750);" />
+		</While>
 		<While Condition="DoQuest(36165)" >
 			<If Condition="Unit(84261) == null" >
 				<Code File="ForcedDismount" />
