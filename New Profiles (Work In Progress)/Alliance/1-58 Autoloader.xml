@@ -77,7 +77,7 @@
 			]]>
 		</Code>
 
-		<If Condition="LoremasterCheckpointCheck(5)" > <!-- 1 -->
+		<If Condition="LoremasterCheckpointCheck(5) || Me.IsNeutralPandaren" > <!-- 1 -->
 			<If Condition="Me.Race == WoWRace.Human" >
 				<Code File="LoadProfile" ProfileName="Starters\Human.xml" RememberProfile="true" />
 			</If>
@@ -92,6 +92,12 @@
 			</If>
 			<If Condition="Me.Race == WoWRace.Draenei" >
 				<Code File="LoadProfile" ProfileName="Starters\Draenei.xml" RememberProfile="true" />
+			</If>
+			<If Condition="Me.IsNeutralPandaren" >
+				<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: We will finish the Pandaren starting zone as Alliance!&quot;);" />
+				<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: If you want to change the faction to Horde, you must load the 1-110 Autoloader and pick Horde!&quot;);" />
+				<CustomBehavior File="WaitTimer" WaitTime="5000" />
+				<CustomBehavior File="LoadProfile" ProfileName="Starters\Pandaren.xml" RememberProfile="true" />
 			</If>
 
 			<Code File="RunCode">

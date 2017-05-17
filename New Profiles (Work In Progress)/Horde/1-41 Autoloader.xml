@@ -26,28 +26,14 @@
 			}
 			bool InPriorityLocationKalimdor()
 			{
-				if (StyxWoW.Me.IsAlliance)
-				{
-					if (StyxWoW.Me.ZoneId == 6142 || StyxWoW.Me.ZoneId == 6553) return true; // Alliance Shrine
-				}
-				else
-				{
-					if (StyxWoW.Me.ZoneId == 6554 || StyxWoW.Me.ZoneId == 6141) return true; // Horde Shrine
-					if (StyxWoW.Me.ZoneId == 4395) return true; // Dalaran, portal to Orgrimmar only applies for Horde.
-				}
+				if (StyxWoW.Me.ZoneId == 6554 || StyxWoW.Me.ZoneId == 6141) return true; // Horde Shrine
+				if (StyxWoW.Me.ZoneId == 4395) return true; // Dalaran, portal to Orgrimmar only applies for Horde.
 				return false;
 			}
 			bool HearthIsPriorityLocationKalimdor()
 			{
-				if (StyxWoW.Me.IsAlliance)
-				{
-					if (StyxWoW.Me.HearthstoneAreaId == 6484) return true; // Alliance Shrine
-				}
-				else
-				{
-					if (StyxWoW.Me.HearthstoneAreaId == 6519) return true; // Horde Shrine
-					if (StyxWoW.Me.ZoneId == 4395) return true; // Dalaran, portal to Orgrimmar only applies for Horde.
-				}
+				if (StyxWoW.Me.HearthstoneAreaId == 6519) return true; // Horde Shrine
+				if (StyxWoW.Me.ZoneId == 4395) return true; // Dalaran, portal to Orgrimmar only applies for Horde.
 				if (Styx.WoWInternals.DBC.AreaTable.FromId(StyxWoW.Me.HearthstoneAreaId).MapId == 1) return true; // All Kalimdor inns.
 				return false;
 			}
@@ -77,7 +63,7 @@
 			]]>
 		</Code>
 
-		<If Condition="LoremasterCheckpointCheck(5)" > <!-- 1 -->
+		<If Condition="LoremasterCheckpointCheck(5) || Me.IsNeutralPandaren" > <!-- 1 -->
 			<If Condition="Me.Race == WoWRace.Orc" >
 				<Code File="LoadProfile" ProfileName="Starters\Orc.xml" RememberProfile="true" />
 			</If>
@@ -96,6 +82,12 @@
 
 			<If Condition="Me.Race == WoWRace.BloodElf" >
 				<Code File="LoadProfile" ProfileName="Starters\Blood Elf.xml" RememberProfile="true" />
+			</If>
+			<If Condition="Me.IsNeutralPandaren" >
+				<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: We will finish the Pandaren starting zone as Horde!&quot;);" />
+				<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: If you want to change the faction to Horde, you must load the 1-110 Autoloader and pick Alliance!&quot;);" />
+				<CustomBehavior File="WaitTimer" WaitTime="5000" />
+				<CustomBehavior File="LoadProfile" ProfileName="Starters\Pandaren.xml" RememberProfile="true" />
 			</If>
 
 			<Code File="RunCode">
