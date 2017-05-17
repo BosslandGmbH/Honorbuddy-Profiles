@@ -681,7 +681,7 @@ END INITORDER COMMENT -->
 
 		<While Condition="DoQuest(42884)" >
 			<CustomBehavior File="ForcedDismount" />
-			<CustomBehavior File="InteractWith" MobId="251434" MovementBy="NavigatorOnly" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="42884" QuestObjectiveIndex="1" >
+			<CustomBehavior File="InteractWith" MobId="251434" MovementBy="NavigatorOnly" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="42884" QuestObjectiveIndex="1" >
 				<HuntingGrounds>
 					<Hotspot X="2293.727" Y="5830.487" Z="166.4521" />
 					<Hotspot X="2255.833" Y="5824.078" Z="158.0858" />
@@ -835,7 +835,7 @@ END INITORDER COMMENT -->
 
 		<PickUp QuestName="The Demon's Trail" QuestId="38753" GiverName="Ysera" GiverId="92710" X="2717.447" Y="6027.452" Z="267.481" />
 		<While Condition="DoQuest(38753)" >
-			<MoveTo X="2867.59" Y="5890.754" Z="299.1172" />
+			<MoveTo X="2868.811" Y="5893.644" Z="299.0002" />
 			<!-- NOTE: <TerminationNeeded> : This MoveTo needs to terminate once the cutscene is detected so the cutscenes can be skipped.
 																		NOTE: <LocationCheck> : Make sure this MoveTo is close enough to trigger the cutscenes. -->
 			<CustomBehavior File="RunCode" Code="await SkipCutscene(3000, 5000);" />
@@ -1118,7 +1118,7 @@ END INITORDER COMMENT -->
 		</While>
 
 		<While Condition="DoQuest(38645)" >
-			<CustomBehavior File="KillUntilComplete" MobId="94046" QuestId="38645" QuestObjectiveIndex="1" >
+			<CustomBehavior File="KillUntilComplete" MobId="94046" MovementBy="NavigatorOnly" QuestId="38645" QuestObjectiveIndex="1" >
 				<HuntingGrounds>
 					<Hotspot X="2634.21" Y="7481.828" Z="6.105456" />
 					<Hotspot X="2695.519" Y="7536.521" Z="5.938887" />
@@ -1138,17 +1138,23 @@ END INITORDER COMMENT -->
 			<!-- Using if here because we need to pick up a quest during this. -->
 			<CustomBehavior File="Hooks\DoWhen" ActivityName="OpenCellar" UseWhen="ObjectManager.GetObjectsOfType&lt;WoWGameObject&gt;().FirstOrDefault(x =&gt; x.SubType == WoWGameObjectType.Door &amp;&amp; x.Distance &lt; 5 &amp;&amp; x.State == WoWGameObjectState.Ready) != null" >
 				<CustomBehavior File="RunCode" Code="
-							var gatePoi = ObjectManager.GetObjectsOfType&lt;WoWGameObject&gt;().FirstOrDefault(x =&gt; x.SubType == WoWGameObjectType.Door &amp;&amp; x.Distance &lt; 5 &amp;&amp; x.State == WoWGameObjectState.Ready);
+					var gatePoi = ObjectManager.GetObjectsOfType&lt;WoWGameObject&gt;().FirstOrDefault(x =&gt; x.SubType == WoWGameObjectType.Door &amp;&amp; x.Distance &lt; 5 &amp;&amp; x.State == WoWGameObjectState.Ready);
 
-							while (gatePoi.State == WoWGameObjectState.Ready) 
-							{
-								gatePoi.Interact();
-								await Coroutine.Sleep(1500);
-							}
-						" />
+					while (gatePoi.State == WoWGameObjectState.Ready) 
+					{
+						await CommonCoroutines.StopMoving();
+						gatePoi.Interact();
+						await Coroutine.Sleep(1500);
+					}
+				" />
 			</CustomBehavior>
 			<If Condition="!IsObjectiveComplete(1, 38644)" >
-				<CustomBehavior File="InteractWith" MobIds="92734" GossipOptions="1" MovementBy="NavigatorOnly" QuestId="38644" QuestObjectiveIndex="1" X="2571.091" Y="7506.483" Z="19.94402" />
+				<MoveTo X="2579.333" Y="7488.282" Z="28.0455" />
+				<MoveTo X="2567.768" Y="7486.591" Z="28.0416" />
+				<Code File="MyCTM" X="2557.309" Y="7486.325" Z="20.5112" />
+				<CustomBehavior File="InteractWith" MobId="92734" GossipOptions="1" MovementBy="NavigatorOnly" QuestId="38644" QuestObjectiveIndex="1" X="2568.674" Y="7503.814" Z="20.02671" />
+				<MoveTo X="2562.29" Y="7486.041" Z="25.17303" />
+				<Code File="MyCTM" X="2567.768" Y="7486.591" Z="28.0416" />
 			</If>
 			<CustomBehavior File="InteractWith" MobId="92618" NonCompeteDistance="0" MovementBy="NavigatorOnly" QuestId="38644" QuestObjectiveIndex="2" X="2707.609" Y="7462.568" Z="5.313876" />
 			<If Condition="!IsObjectiveComplete(3, 38644)" >
