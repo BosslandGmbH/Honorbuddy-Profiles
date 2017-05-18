@@ -30,6 +30,8 @@
 
 	<Blackspots>
 		<Blackspot X="833.6476" Y="4105.708" Z="205.9275" Radius="1" /> <!-- Defaced scroll in bad location -->
+		<Blackspot X="1376.848" Y="3674.168" Z="87.92664" Radius="1" /> <!-- Hanging Hozen -->
+		<Blackspot X="1370.387" Y="3662.507" Z="97.81139" Radius="5" /> <!-- Hozen on Roof -->
 		<Blackspot X="1263.536" Y="4311.373" Z="225.9749" Radius="1" /> <!-- Stolen Firework Bundle in bad location -->
 	</Blackspots>
 
@@ -250,6 +252,10 @@
 		<TurnIn QuestName="Huo, the Spirit of Fire" QuestId="29422" TurnInName="Huo" TurnInId="54787" X="1261.596" Y="3927.027" Z="124.0253" />
 
 		<PickUp QuestName="The Passion of Shen-zin Su" QuestId="29423" GiverName="Huo" GiverId="54787" X="1261.596" Y="3927.027" Z="124.0253" />
+		<If Condition="DoQuest(29423) &amp;&amp; Object(209800, o =&gt; o.DistanceSqr &lt; 50f*50f) != null" >
+			<MoveTo X="1296.034" Y="3920.068" Z="123.9767" />
+			<Code File="MyCTM" X="1349.865" Y="3898.41" Z="95.12643" />
+		</If>
 		<TurnIn QuestName="The Passion of Shen-zin Su" QuestId="29423" TurnInName="Master Shang Xi" TurnInId="54786" X="962.9198" Y="3605.357" Z="196.4478" />
 		<PickUp QuestName="The Singing Pools" QuestId="29521" GiverName="Master Shang Xi" GiverId="54786" X="962.9198" Y="3605.357" Z="196.4478" />
 		<PickUp QuestName="Stronger Than Reeds" QuestId="29662" GiverName="Jojo Ironbrow" GiverId="55021" X="1037.932" Y="3288.008" Z="128.9829" />
@@ -423,7 +429,7 @@
 		<PickUp QuestName="The Spirit and Body of Shen-zin Su" QuestId="29775" GiverName="Ji Firepaw" GiverId="55477" X="626.6132" Y="3141.15" Z="87.75348" />
 		<If Condition="QuestDone(29775) &amp;&amp; Unit(55477) != null" >
 			<Code File="InteractWith" MobId="59497" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="593.2482" Y="3165.053" Z="88.43601" />
-			<Code File="WaitTimer" WaitTime="80000" TerminateWhen="!Me.InVehicle" />
+			<Code File="WaitTimer" WaitTime="85000" TerminateWhen="!Me.InVehicle" />
 		</If>
 		<TurnIn QuestName="The Spirit and Body of Shen-zin Su" QuestId="29775" TurnInName="Master Shang Xi" TurnInId="54786" X="921.3694" Y="3602.099" Z="196.4705" />
 
@@ -494,9 +500,6 @@
 			<TurnIn QuestName="Monkey Advisory Warning" QuestId="29781" TurnInName="Ji Firepaw" TurnInId="56134" X="1247.577" Y="4294.976" Z="223.1747" />
 		</If>
 
-		<TurnIn QuestName="The Direct Solution" QuestId="29779" TurnInName="Ji Firepaw" TurnInId="56134" X="1247.577" Y="4294.976" Z="223.1747" />
-		<TurnIn QuestName="Do No Evil" QuestId="29780" TurnInName="Ji Firepaw" TurnInId="56134" X="1247.577" Y="4294.976" Z="223.1747" />
-		<TurnIn QuestName="Monkey Advisory Warning" QuestId="29781" TurnInName="Ji Firepaw" TurnInId="56134" X="1247.577" Y="4294.976" Z="223.1747" />
 		<PickUp QuestName="Balanced Perspective" QuestId="29784" GiverName="Ji Firepaw" GiverId="56134" X="1240.789" Y="4298.007" Z="222.903" />
 		<TurnIn QuestName="Stronger Than Bone" QuestId="29782" TurnInName="Jojo Ironbrow" TurnInId="55585" X="1076.206" Y="4183.817" Z="205.8079" />
 
@@ -527,7 +530,12 @@
 			</If>
 			<If Condition="Unit(55595, u =&gt; u.DistanceSqr &lt;= 8f*8f) != null" >
 				<TurnIn QuestName="Balanced Perspective" QuestId="29784" TurnInName="Aysa Cloudsinger" TurnInId="55595" X="1151.854" Y="4099.073" Z="196.4689" />
-				<PickUp QuestName="Dafeng, the Spirit of Air" QuestId="29785" GiverName="Aysa Cloudsinger" GiverId="55595" X="1151.476" Y="4099.095" Z="196.4411" />
+				<While Condition="NeedsQuest(29785)" >
+					<!-- Bot for whatever reason won't always pick this quest up, and starts complaining about path nav failures --> 
+						<PickUp QuestName="Dafeng, the Spirit of Air" QuestId="29785" GiverName="Aysa Cloudsinger" GiverId="55595" X="1151.476" Y="4099.095" Z="196.4411" /> -->
+					<Code File="InteractWith" MobId="55595" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" MovementBy="None" X="1151.476" Y="4099.095" Z="196.4411" TerminateWhen="HasQuest(29785)" />
+					<Code File="RunCode" Code="QuestFrame.Instance.AcceptQuest();" />
+				</While>
 				<Code File="MyCTM" X="1147.941" Y="4114.392" Z="188.5432" TerminateWhen="Me.IsSwimming" />
 			</If>
 		</While>
@@ -574,7 +582,6 @@
 			<Code File="Hooks\DoWhen" ActivityName="ClearCombat" Command="Remove" />
 			<TurnIn QuestName="Battle for the Skies" QuestId="29786" TurnInName="Master Shang Xi" TurnInId="55586" X="700.0252" Y="4181.633" Z="197.7911" />
 		</If>
-		<TurnIn QuestName="Battle for the Skies" QuestId="29786" TurnInName="Master Shang Xi" TurnInId="55586" X="708.8793" Y="4176.649" Z="197.6079" />
 
 		<PickUp QuestName="Worthy of Passing" QuestId="29787" GiverName="Master Shang Xi" GiverId="55586" X="708.8793" Y="4176.649" Z="197.6079" />
 		<Code File="KillUntilComplete" MobId="56274" QuestId="29787" X="846.086" Y="4364.83" Z="223.9807" />
@@ -617,8 +624,8 @@
 		<TurnIn QuestName="Small, But Significant" QuestId="29789" TurnInName="Master Shang Xi" TurnInId="55672" X="876.5661" Y="4456.585" Z="241.1234" />
 
 		<PickUp QuestName="Passing Wisdom" QuestId="29790" GiverName="Master Shang Xi" GiverId="55672" X="876.5661" Y="4456.585" Z="241.1234" />
-		<While Condition="DoQuest(55672)" >
-			<Code File="WaitTimer" WaitTime="90000" QuestId="55672" />
+		<While Condition="DoQuest(29790)" >
+			<Code File="WaitTimer" WaitTime="90000" QuestId="29790" />
 		</While>
 		<TurnIn QuestName="Passing Wisdom" QuestId="29790" TurnInName="Aysa Cloudsinger" TurnInId="56662" X="908.2838" Y="4555.492" Z="230.9696" />
 
@@ -723,6 +730,7 @@
 		<While Condition="DoQuest(30767)" >
 			<MoveTo X="232.6422" Y="4004.065" Z="87.63802" />
 			<Code File="WaitTimer" WaitTime="60000" QuestId="30767" />
+			<Code File="RunCode" Code="await SkipCutscene();" />
 		</While>
 		<TurnIn QuestName="Risking It All" QuestId="30767" TurnInName="Ji Firepaw" TurnInId="56418" X="258.8143" Y="3920.192" Z="68.9175" />
 
@@ -754,7 +762,7 @@
 		<PickUp QuestName="Joining the Horde" QuestId="31012" GiverName="Ji Firepaw" GiverId="60570" X="1363.75" Y="-4372.512" Z="26.08051" />
 		<TurnIn QuestName="Joining the Horde" QuestId="31012" TurnInName="Garrosh Hellscream" TurnInId="39605" X="1669.585" Y="-4343.08" Z="28.36278" />
 
-		<Code File="LoadProfile" ProfileName="..\1-58 Autoloader.xml" RememberProfile="true" />
+		<Code File="LoadProfile" ProfileName="..\1-41 Autoloader.xml" RememberProfile="true" />
 
 	</QuestOrder>
 </HBProfile>
