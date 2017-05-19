@@ -228,7 +228,7 @@
 			<Code File="RunCode" Code="QuestFrame.Instance.CompleteQuest();" />
 		</If>
 
-		<Code File="Hooks\Avoid" AvoidName="KirtrikAvoid" ObjectType="Npc" ObjectId="28683" Radius="12" />
+		<Code File="Hooks\Avoid" AvoidName="KirtrikAvoid" ObjectType="Npc" ObjectId="28683" Radius="20" />
 
 		<Code File="InteractWith" MobId="190691" CollectionDistance="200" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="12679" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
@@ -253,15 +253,15 @@
 			</PursuitList>
 		</Code>
 
+		<Code File="Hooks\Avoid" AvoidName="KirtrikAvoid" Command="Remove" />
+
 		<While Condition="DoQuest(12680)" >
-			<Code File="InteractWith" MobId="28605" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="12680" QuestObjectiveIndex="1" X="2215.517" Y="-5810.082" Z="101.3523" TerminateWhen="Me.InVehicle" />
+			<Code File="InteractWith" MobId="28605" CollectionDistance="200" NonCompeteDistance="0" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" QuestId="12680" QuestObjectiveIndex="1" X="2215.517" Y="-5810.082" Z="101.3523" TerminateWhen="Me.InVehicle" />
 			<DisableBehavior Name="All" />
 			<Code File="TargetAndMoveToMob" MobId="28653" MoveWithinMaxRangeOfMob="1" NonCompeteDistance="0" X="2349.283" Y="-5700.748" Z="155.912" />
 			<Code File="Misc\RunLua" Lua="CastPetAction(1);" />
 			<EnableBehavior Name="All" />
 		</While>
-
-		<Code File="Hooks\Avoid" AvoidName="KirtrikAvoid" Command="Remove" />
 
 		<TurnIn QuestName="Grand Theft Palomino" QuestId="12680" TurnInName="Salanar the Horseman" TurnInId="28653" X="2342.95" Y="-5693.186" Z="153.9232" />
 
@@ -293,8 +293,8 @@
 
 		<PickUp QuestName="Massacre At Light&apos;s Point" QuestId="12701" GiverName="Prince Valanar" GiverId="28377" X="2367.112" Y="-5704.113" Z="153.922" />
 		<While Condition="DoQuest(12701)" >
-			<If Condition="Unit(28833, u =&gt; u.DistanceSqr &gt;= 30f*30f) != null" >
-				<Code File="InteractWith" MobId="190767" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="12701" QuestObjectiveIndex="1" X="2390.383" Y="-5897.012" Z="109.1992" />
+			<If Condition="Unit(28833, u =&gt; u.DistanceSqr &lt;= 30f*30f) == null" >
+				<Code File="InteractWith" MobId="190767" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="12701" QuestObjectiveIndex="1" X="2390.383" Y="-5897.012" Z="109.1992" TerminateWhen="Me.InVehicle" />
 				<DisableBehavior Name="All" />
 				<Code File="WaitTimer" WaitTime="80000" TerminateWhen="!Me.InVehicle" />
 			</If>
@@ -437,59 +437,48 @@
 		<TurnIn QuestName="The Path Of The Righteous Crusader" QuestId="12724" TurnInName="Orbaz Bloodbane" TurnInId="28914" X="1365.287" Y="-5720.808" Z="136.4151" />
 		<TurnIn QuestName="A Cry For Vengeance!" QuestId="12738" TurnInName="Knight Commander Plaguefist" TurnInId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
 
-		<If Condition="Me.Race == WoWRace.Human">
-			<If Condition="!IsQuestCompleted(12742)" >
-				<PickUp QuestName="A Special Surprise" QuestId="12742" GiverName="Knight Commander Plaguefist" GiverId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
-				<MoveTo X="1321.46" Y="-5741.371" Z="137.456" />
-				<CustomBehavior File="KillUntilComplete" MobId="29061" QuestId="12742" X="1321.46" Y="-5741.371" Z="137.456" TerminateAtMaxRunTimeSecs="120000" />
-				<MoveTo X="1348.531" Y="-5754.407" Z="136.4477" /> <!-- Reset trigger -->
-				<TurnIn QuestName="A Special Surprise" QuestId="12742" TurnInName="Knight Commander Plaguefist" TurnInId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
-			</If>
+		<!-- Horde -->
+		<If Condition="Me.Race == WoWRace.BloodElf">
+			<PickUp QuestName="A Special Surprise" QuestId="12747" GiverName="Knight Commander Plaguefist" GiverId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
+			<MoveTo X="1329.184" Y="-5764.597" Z="137.8205" />
+			<CustomBehavior File="KillUntilComplete" MobId="29074" QuestId="12747" X="1329.184" Y="-5764.597" Z="137.8205" TerminateAtMaxRunTimeSecs="120000" />
+			<MoveTo X="1348.531" Y="-5754.407" Z="136.4477" /> <!-- Reset trigger -->
+			<TurnIn QuestName="A Special Surprise" QuestId="12747" TurnInName="Knight Commander Plaguefist" TurnInId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
 		</If>
-		<If Condition="Me.Race == WoWRace.NightElf">
-			<If Condition="!IsQuestCompleted(12743)" >
-				<PickUp QuestName="A Special Surprise" QuestId="12743" GiverName="Knight Commander Plaguefist" GiverId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
-				<MoveTo X="1319.091" Y="-5763.708" Z="137.815" />
-				<CustomBehavior File="KillUntilComplete" MobId="29065" QuestId="12743" X="1319.091" Y="-5763.708" Z="137.815" TerminateAtMaxRunTimeSecs="120000" />
-				<MoveTo X="1348.531" Y="-5754.407" Z="136.4477" /> <!-- Reset trigger -->
-				<TurnIn QuestName="A Special Surprise" QuestId="12743" TurnInName="Knight Commander Plaguefist" TurnInId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
-			</If>
+		<If Condition="Me.Race == WoWRace.Orc">
+			<PickUp QuestName="A Special Surprise" QuestId="12748" GiverName="Knight Commander Plaguefist" GiverId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
+			<MoveTo X="1330.117" Y="-5748.344" Z="137.3985" />
+			<CustomBehavior File="KillUntilComplete" MobId="29072" QuestId="12748" X="1330.117" Y="-5748.344" Z="137.3985" TerminateAtMaxRunTimeSecs="120000" />
+			<MoveTo X="1348.531" Y="-5754.407" Z="136.4477" /> <!-- Reset trigger -->
+			<TurnIn QuestName="A Special Surprise" QuestId="12748" TurnInName="Knight Commander Plaguefist" TurnInId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
 		</If>
-		<If Condition="Me.Race == WoWRace.Dwarf">
-			<If Condition="!IsQuestCompleted(12744)" >
-				<PickUp QuestName="A Special Surprise" QuestId="12744" GiverName="Knight Commander Plaguefist" GiverId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
-				<MoveTo X="1330.559" Y="-5756.007" Z="137.4874" />
-				<CustomBehavior File="KillUntilComplete" MobId="29067" QuestId="12744" X="1330.559" Y="-5756.007" Z="137.4874" TerminateAtMaxRunTimeSecs="120000" />
-				<MoveTo X="1348.531" Y="-5754.407" Z="136.4477" /> <!-- Reset trigger -->
-				<TurnIn QuestName="A Special Surprise" QuestId="12744" TurnInName="Knight Commander Plaguefist" TurnInId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
-			</If>
+		<If Condition="Me.Race == WoWRace.Troll">
+			<PickUp QuestName="A Special Surprise" QuestId="12749" GiverName="Knight Commander Plaguefist" GiverId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
+			<MoveTo X="1324.012" Y="-5749.29" Z="137.3751"  />
+			<CustomBehavior File="KillUntilComplete" MobId="29073" QuestId="12749" X="1324.012" Y="-5749.29" Z="137.3751"  TerminateAtMaxRunTimeSecs="120000" />
+			<MoveTo X="1348.531" Y="-5754.407" Z="136.4477" /> <!-- Reset trigger -->
+			<TurnIn QuestName="A Special Surprise" QuestId="12749" TurnInName="Knight Commander Plaguefist" TurnInId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
 		</If>
-		<If Condition="Me.Race == WoWRace.Gnome">
-			<If Condition="!IsQuestCompleted(12745)" >
-				<PickUp QuestName="A Special Surprise" QuestId="12745" GiverName="Knight Commander Plaguefist" GiverId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
-				<MoveTo X="1321.001" Y="-5753.735" Z="137.4113" />
-				<CustomBehavior File="KillUntilComplete" MobId="29068" QuestId="12745" X="1321.001" Y="-5753.735" Z="137.4113" TerminateAtMaxRunTimeSecs="120000" />
-				<MoveTo X="1348.531" Y="-5754.407" Z="136.4477" /> <!-- Reset trigger -->
-				<TurnIn QuestName="A Special Surprise" QuestId="12745" TurnInName="Knight Commander Plaguefist" TurnInId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
-			</If>
+		<If Condition="Me.Race == WoWRace.Undead">
+			<PickUp QuestName="A Special Surprise" QuestId="12750" GiverName="Knight Commander Plaguefist" GiverId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
+			<MoveTo X="1330.277" Y="-5742.156" Z="137.5444" />
+			<CustomBehavior File="KillUntilComplete" MobId="29071" QuestId="12750" X="1330.277" Y="-5742.156" Z="137.5444" TerminateAtMaxRunTimeSecs="120000" />
+			<MoveTo X="1348.531" Y="-5754.407" Z="136.4477" /> <!-- Reset trigger -->
+			<TurnIn QuestName="A Special Surprise" QuestId="12750" TurnInName="Knight Commander Plaguefist" TurnInId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
 		</If>
-		<If Condition="Me.Race == WoWRace.Draenei">
-			<If Condition="!IsQuestCompleted(12746)" >
-				<PickUp QuestName="A Special Surprise" QuestId="12746" GiverName="Knight Commander Plaguefist" GiverId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
-				<MoveTo X="1328.646" Y="-5771.513" Z="137.7735" />
-				<CustomBehavior File="KillUntilComplete" MobId="29070" QuestId="12746" X="1328.646" Y="-5771.513" Z="137.7735" TerminateAtMaxRunTimeSecs="120000" />
-				<MoveTo X="1348.531" Y="-5754.407" Z="136.4477" /> <!-- Reset trigger -->
-				<TurnIn QuestName="A Special Surprise" QuestId="12746" TurnInName="Knight Commander Plaguefist" TurnInId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
-			</If>
+		<If Condition="Me.Race == WoWRace.Tauren">
+			<PickUp QuestName="A Special Surprise" QuestId="12739" GiverName="Knight Commander Plaguefist" GiverId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
+			<MoveTo X="1320.289" Y="-5769.147" Z="137.7749" />
+			<CustomBehavior File="KillUntilComplete" MobId="29032" QuestId="12739" X="1320.289" Y="-5769.147" Z="137.7749" TerminateAtMaxRunTimeSecs="120000" />
+			<MoveTo X="1348.531" Y="-5754.407" Z="136.4477" /> <!-- Reset trigger -->
+			<TurnIn QuestName="A Special Surprise" QuestId="12739" TurnInName="Knight Commander Plaguefist" TurnInId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />		
 		</If>
-		<If Condition="Me.Race == WoWRace.Worgen">
-			<If Condition="!IsQuestCompleted(28649)" >
-				<PickUp QuestName="A Special Surprise" QuestId="28649" GiverName="Knight Commander Plaguefist" GiverId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
-				<MoveTo X="1329.867" Y="-5760.66" Z="137.6738" />
-				<CustomBehavior File="KillUntilComplete" MobId="49355" QuestId="28649" X="1329.867" Y="-5760.66" Z="137.6738" TerminateAtMaxRunTimeSecs="120000" />
-				<MoveTo X="1348.531" Y="-5754.407" Z="136.4477" /> <!-- Reset trigger -->
-				<TurnIn QuestName="A Special Surprise" QuestId="28649" TurnInName="Knight Commander Plaguefist" TurnInId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
-			</If>
+		<If Condition="Me.Race == WoWRace.Goblin">
+			<PickUp QuestName="A Special Surprise" QuestId="28650" GiverName="Knight Commander Plaguefist" GiverId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
+			<MoveTo X="1322.655" Y="-5759.51" Z="137.6409" />
+			<CustomBehavior File="KillUntilComplete" MobId="49356" QuestId="28650" X="1322.655" Y="-5759.51" Z="137.6409" TerminateAtMaxRunTimeSecs="120000" />
+			<MoveTo X="1348.531" Y="-5754.407" Z="136.4477" /> <!-- Reset trigger -->
+			<TurnIn QuestName="A Special Surprise" QuestId="28650" TurnInName="Knight Commander Plaguefist" TurnInId="29053" X="1365.287" Y="-5720.808" Z="136.4151" />
 		</If>
 
 		<PickUp QuestName="A Sort Of Homecoming" QuestId="12751" GiverName="Knight Commander Plaguefist" GiverId="29053" X="1353.818" Y="-5727.4" Z="136.4154" />
@@ -559,15 +548,15 @@
 		<TurnIn QuestName="The Light of Dawn" QuestId="12801" TurnInName="Highlord Darion Mograine" TurnInId="29173" X="2266.495" Y="-5290.446" Z="82.16772" />
 
 		<PickUp QuestName="Taking Back Acherus" QuestId="13165" GiverName="Highlord Darion Mograine" GiverId="29173" X="2266.495" Y="-5290.446" Z="82.16772" />
-		<If Condition="QuestDone(13165) &amp;&amp; Unit(29173) != null" >
+		<While Condition="QuestDone(13165) &amp;&amp; Unit(29173) != null" >
 			<Code File="RunCode" Code="SpellManager.Cast(50977);" />
-			<CustomBehavior File="WaitTimer" WaitTime="3000" TerminateWhen="!Me.IsCasting" />
-			<CustomBehavior File="InteractWith" NonCompeteDistance="0" WaitForNpcs="False" WaitTimer="3000" >
+			<CustomBehavior File="WaitTimer" WaitTime="3000" />
+			<CustomBehavior File="InteractWith" NonCompeteDistance="0" WaitTimer="3000" TerminateWhen="Unit(31084) != null" >
 				<PursuitList>
 					<PursueGameObject Id="190942" PursueWhen="GAMEOBJECT.CreatedBy == Me" />
 				</PursuitList>
 			</CustomBehavior>
-		</If>
+		</While>
 		<TurnIn QuestName="Taking Back Acherus" QuestId="13165" TurnInName="Highlord Darion Mograine" TurnInId="31084" X="2371.488" Y="-5652.525" Z="382.3846" />
 
 		<PickUp QuestName="The Battle For The Ebon Hold" QuestId="13166" GiverName="Highlord Darion Mograine" GiverId="31084" X="2371.488" Y="-5652.525" Z="382.3846" />

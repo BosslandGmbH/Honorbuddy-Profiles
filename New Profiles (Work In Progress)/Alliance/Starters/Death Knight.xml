@@ -228,7 +228,7 @@
 			<Code File="RunCode" Code="QuestFrame.Instance.CompleteQuest();" />
 		</If>
 
-		<Code File="Hooks\Avoid" AvoidName="KirtrikAvoid" ObjectType="Npc" ObjectId="28683" Radius="12" />
+		<Code File="Hooks\Avoid" AvoidName="KirtrikAvoid" ObjectType="Npc" ObjectId="28683" Radius="20" />
 
 		<Code File="InteractWith" MobId="190691" CollectionDistance="200" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="12679" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
@@ -253,16 +253,15 @@
 			</PursuitList>
 		</Code>
 
+		<Code File="Hooks\Avoid" AvoidName="KirtrikAvoid" Command="Remove" />
+
 		<While Condition="DoQuest(12680)" >
-			<Code File="InteractWith" MobId="28605" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="12680" QuestObjectiveIndex="1" X="2215.517" Y="-5810.082" Z="101.3523" TerminateWhen="Me.InVehicle" />
+			<Code File="InteractWith" MobId="28605" CollectionDistance="200" NonCompeteDistance="0" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" QuestId="12680" QuestObjectiveIndex="1" X="2215.517" Y="-5810.082" Z="101.3523" TerminateWhen="Me.InVehicle" />
 			<DisableBehavior Name="All" />
 			<Code File="TargetAndMoveToMob" MobId="28653" MoveWithinMaxRangeOfMob="1" NonCompeteDistance="0" X="2349.283" Y="-5700.748" Z="155.912" />
 			<Code File="Misc\RunLua" Lua="CastPetAction(1);" />
 			<EnableBehavior Name="All" />
 		</While>
-
-		<Code File="Hooks\Avoid" AvoidName="KirtrikAvoid" Command="Remove" />
-
 		<TurnIn QuestName="Grand Theft Palomino" QuestId="12680" TurnInName="Salanar the Horseman" TurnInId="28653" X="2342.95" Y="-5693.186" Z="153.9232" />
 
 		<PickUp QuestName="Into the Realm of Shadows" QuestId="12687" GiverName="Salanar the Horseman" GiverId="28653" X="2358.511" Y="-5710.078" Z="153.922" />
@@ -293,8 +292,8 @@
 
 		<PickUp QuestName="Massacre At Light&apos;s Point" QuestId="12701" GiverName="Prince Valanar" GiverId="28377" X="2367.112" Y="-5704.113" Z="153.922" />
 		<While Condition="DoQuest(12701)" >
-			<If Condition="Unit(28833, u =&gt; u.DistanceSqr &gt;= 30f*30f) != null" >
-				<Code File="InteractWith" MobId="190767" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="12701" QuestObjectiveIndex="1" X="2390.383" Y="-5897.012" Z="109.1992" />
+			<If Condition="Unit(28833, u =&gt; u.DistanceSqr &lt;= 30f*30f) == null" >
+				<Code File="InteractWith" MobId="190767" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="12701" QuestObjectiveIndex="1" X="2390.383" Y="-5897.012" Z="109.1992" TerminateWhen="Me.InVehicle" />
 				<DisableBehavior Name="All" />
 				<Code File="WaitTimer" WaitTime="80000" TerminateWhen="!Me.InVehicle" />
 			</If>
@@ -559,15 +558,15 @@
 		<TurnIn QuestName="The Light of Dawn" QuestId="12801" TurnInName="Highlord Darion Mograine" TurnInId="29173" X="2266.495" Y="-5290.446" Z="82.16772" />
 
 		<PickUp QuestName="Taking Back Acherus" QuestId="13165" GiverName="Highlord Darion Mograine" GiverId="29173" X="2266.495" Y="-5290.446" Z="82.16772" />
-		<If Condition="QuestDone(13165) &amp;&amp; Unit(29173) != null" >
+		<While Condition="QuestDone(13165) &amp;&amp; Unit(29173) != null" >
 			<Code File="RunCode" Code="SpellManager.Cast(50977);" />
-			<CustomBehavior File="WaitTimer" WaitTime="3000" TerminateWhen="!Me.IsCasting" />
-			<CustomBehavior File="InteractWith" NonCompeteDistance="0" WaitForNpcs="False" WaitTimer="3000" >
+			<CustomBehavior File="WaitTimer" WaitTime="3000" />
+			<CustomBehavior File="InteractWith" NonCompeteDistance="0" WaitTimer="3000" TerminateWhen="Unit(31084) != null" >
 				<PursuitList>
 					<PursueGameObject Id="190942" PursueWhen="GAMEOBJECT.CreatedBy == Me" />
 				</PursuitList>
 			</CustomBehavior>
-		</If>
+		</While>
 		<TurnIn QuestName="Taking Back Acherus" QuestId="13165" TurnInName="Highlord Darion Mograine" TurnInId="31084" X="2371.488" Y="-5652.525" Z="382.3846" />
 
 		<PickUp QuestName="The Battle For The Ebon Hold" QuestId="13166" GiverName="Highlord Darion Mograine" GiverId="31084" X="2371.488" Y="-5652.525" Z="382.3846" />
