@@ -332,10 +332,30 @@
 
 		<PickUp QuestName="Watching Our Back" QuestId="25695" GiverName="Warlord Dar&apos;toon" GiverId="19254" X="-11815.11" Y="-3186.479" Z="-30.59617" />
 		<While Condition="DoQuest(25695)" >
-			<Code File="InteractWith" MobId="203226" MovementBy="None" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="25695" QuestObjectiveIndex="1" X="-11807.82" Y="-3231.535" Z="-30.10377" TerminateWhen="Object(203226, u =&gt; u.DistanceSqr &gt; 3f*3f) != null" />
-			<MoveTo X="-11807.82" Y="-3231.535" Z="-30.10377" />
+			<Code File="InteractWith" MobId="203226" Range="7" MovementBy="None" IgnoreLoSToTarget="true" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="25695" QuestObjectiveIndex="1" X="-11807.82" Y="-3231.535" Z="-30.10377" TerminateWhen="Object(203226, u =&gt; u.DistanceSqr &gt; 7f*7f) != null" />
+			<MoveTo Precision="3.01" X="-11806.03" Y="-3222.554" Z="-30.65008" />
 			<Code File="ForcedDismount" />
+			<Code File="RunCode">
+				<![CDATA[
+					while (Me.Location.Distance(new Vector3(-11803.23f, -3232.761f, -28.5176f)) > 1f*1f)
+					{
+						WoWMovement.ClickToMove(new Vector3(-11803.23f, -3232.761f, -28.5176f));
+						await Coroutine.Yield();
+					}
+				]]>
+			</Code>
 		</While>
+		<If Condition="QuestDone(25695) &amp;&amp; Me.Location.Distance(new Vector3(-11803.23f, -3232.761f, -28.5176f)) &lt;= 1f*1f" >
+			<Code File="RunCode">
+				<![CDATA[
+					while (Me.Location.Distance(new Vector3(-11805.35f, -3222.034f, -30.63861f)) > 2f*2f)
+					{
+						WoWMovement.ClickToMove(new Vector3(-11805.35f, -3222.034f, -30.63861f));
+						await Coroutine.Yield();
+					}
+				]]>
+			</Code>
+		</If>
 		<TurnIn QuestName="Watching Our Back" QuestId="25695" TurnInName="Warlord Dar&apos;toon" TurnInId="19254" X="-11820.59" Y="-3188.565" Z="-30.72888" />
 
 		<PickUp QuestName="The Sunveil Excursion" QuestId="25696" GiverName="Warlord Dar&apos;toon" GiverId="19254" X="-11820.59" Y="-3188.565" Z="-30.72888" />
