@@ -258,7 +258,7 @@
 		<While Condition="DoQuest(12680)" >
 			<Code File="InteractWith" MobId="28605" CollectionDistance="200" NonCompeteDistance="0" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" QuestId="12680" QuestObjectiveIndex="1" X="2215.517" Y="-5810.082" Z="101.3523" TerminateWhen="Me.InVehicle" />
 			<DisableBehavior Name="All" />
-			<Code File="TargetAndMoveToMob" MobId="28653" MoveWithinMaxRangeOfMob="1" NonCompeteDistance="0" X="2349.283" Y="-5700.748" Z="155.912" />
+			<Code File="TargetAndMoveToMob" MobId="28653" MoveWithinMaxRangeOfMob="1" NonCompeteDistance="0" X="2349.283" Y="-5700.748" Z="155.912" TerminateWhen="!Me.InVehicle" />
 			<Code File="Misc\RunLua" Lua="CastPetAction(1);" />
 			<EnableBehavior Name="All" />
 		</While>
@@ -299,7 +299,7 @@
 				<Code File="WaitTimer" WaitTime="80000" TerminateWhen="!Me.InVehicle" />
 			</If>
 			<DisableBehavior Name="All" />
-			<Code File="InteractWith" MobId="28833" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="12701" QuestObjectiveIndex="1" TerminateWhen="Me.InVehicle" />
+			<Code File="InteractWith" MobId="28833" Range="3" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="12701" QuestObjectiveIndex="1" TerminateWhen="Me.InVehicle" />
 			<CustomBehavior File="Vehicles\CannonControl" VehicleId="28833" MobId="28834" QuestId="12701" MaxAngle="0.4363" MinAngle="-0.4563" Gravity="15" Velocity="75" Buttons="2,1" ExitButton="5" TerminateWhen="!Me.InVehicle" />
 
 			<CustomBehavior File="WaitTimer" WaitTime="10000" />
@@ -532,10 +532,10 @@
 
 		<PickUp QuestName="The Light of Dawn" QuestId="12801" GiverName="Scourge Commander Thalanor" GiverId="31082" X="2452.101" Y="-5125.353" Z="77.75299" />
 		<While Condition="DoQuest(12801)" >
-			<While Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return AlwaysUpFrame3Text:IsVisible();&quot;, 0)" >
-				<Code File="InteractWith" MobId="29173" GossipOptions="1" WaitForNpcs="false" CollectionDistance="20" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="2436.14" Y="-5134.87" Z="83.07302" TerminateWhen="Lua.GetReturnVal&lt;bool&gt;(&quot;return AlwaysUpFrame3Text:IsVisible();&quot;, 0)" />
+			<While Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return AlwaysUpFrame3Text ~= nil and AlwaysUpFrame3Text:IsVisible();&quot;, 0)" >
+				<Code File="InteractWith" MobId="29173" GossipOptions="1" WaitForNpcs="false" CollectionDistance="20" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="2436.14" Y="-5134.87" Z="83.07302" TerminateWhen="Lua.GetReturnVal&lt;bool&gt;(&quot;return AlwaysUpFrame3Text ~= nil and AlwaysUpFrame3Text:IsVisible();&quot;, 0)" />
 			</While>
-			<If Condition="Lua.GetReturnVal&lt;bool&gt;(&quot;return AlwaysUpFrame3Text:IsVisible();&quot;, 0)" >
+			<If Condition="Lua.GetReturnVal&lt;bool&gt;(&quot;return AlwaysUpFrame3Text ~= nil and AlwaysUpFrame3Text:IsVisible();&quot;, 0)" >
 				<MoveTo X="2432.051" Y="-5137.988" Z="83.83815" />
 				<Code File="WaitTimer" WaitTime="360000" TerminateWhen="Unit(29173, u =&gt; u.DistanceSqr &lt; 30f*30f) == null" />
 			</If>
