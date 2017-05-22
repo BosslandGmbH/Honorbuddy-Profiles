@@ -192,15 +192,21 @@
 			<Code File="Misc\RunLua" Lua="OverrideActionBarButton1:Click();" WaitTime="500" />
 		</Code>
 
-		<PickUp QuestName="Rolling with my Homies" QuestId="14071" GiverName="Megs Dreadshredder" GiverId="34874" X="-8420.236" Y="1340.621" Z="102.4914" />
+		<While Condition="NeedsQuest(14071)" > <!-- Rolling with my Homies -->
+			<!-- Setup this quest in this manner due to an issue where the quest won't trigger spawning the NPCs. -->
+			<!--<PickUp QuestName="Rolling with my Homies" QuestId="14071" GiverName="Megs Dreadshredder" GiverId="34874" X="-8420.236" Y="1340.621" Z="102.4914" /> -->
+			<CustomBehavior File="InteractWith" MobId="34874" NonCompeteDistance="0" X="-8419.259" Y="1341.816" Z="102.9598" TerminateWhen="HasQuest(14071)" />
+			<!-- <CustomBehavior File="RunCode" Code="QuestFrame.Instance.AcceptQuest();" /> -->
+			<CustomBehavior File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click();" />
+		</While>
 		<While Condition="DoQuest(14071)" >
 			<UseMount Value="false" />
-			<If Condition="!Me.HasAura(66392)" >
+			<If Condition="!Me.HasAura(66392) &amp;&amp; !Me.IsSwimming" >
 				<Code File="UseItem" ItemId="46856" QuestId="14071" TerminateWhen="Me.HasAura(66392)" />
 			</If>
-			<Code File="InteractWith" MobId="34890" NonCompeteDistance="0" QuestId="14071" QuestObjectiveIndex="2" X="-8503.145" Y="1340.723" Z="102.3403" TerminateWhen="!Me.HasAura(66392)" />
-			<Code File="InteractWith" MobId="34954" NonCompeteDistance="0" QuestId="14071" QuestObjectiveIndex="4" X="-8177.021" Y="1318.377" Z="28.18247" TerminateWhen="!Me.HasAura(66392)" />
-			<Code File="InteractWith" MobId="34892" NonCompeteDistance="0" QuestId="14071" QuestObjectiveIndex="3" X="-8072.705" Y="1478.581" Z="9.529713" TerminateWhen="!Me.HasAura(66392)" />
+			<Code File="InteractWith" MobId="34890" NonCompeteDistance="0" QuestId="14071" QuestObjectiveIndex="2" X="-8503.145" Y="1340.723" Z="102.3403" TerminateWhen="!Me.HasAura(66392) &amp;&amp; !Me.IsSwimming" />
+			<Code File="InteractWith" MobId="34954" NonCompeteDistance="0" QuestId="14071" QuestObjectiveIndex="4" X="-8177.021" Y="1318.377" Z="28.18247" TerminateWhen="!Me.HasAura(66392) &amp;&amp; !Me.IsSwimming" />
+			<Code File="InteractWith" MobId="34892" NonCompeteDistance="0" QuestId="14071" QuestObjectiveIndex="3" X="-8072.705" Y="1478.581" Z="9.529713" TerminateWhen="!Me.HasAura(66392) &amp;&amp; !Me.IsSwimming" />
 			<UseMount Value="true" />
 		</While>
 		<TurnIn QuestName="Rolling with my Homies" QuestId="14071" TurnInName="Megs Dreadshredder" TurnInId="34874" X="-8420.029" Y="1340.084" Z="102.4967" />
@@ -331,7 +337,12 @@
 			/>
 		</While>
 
-		<TurnIn QuestName="Life of the Party" QuestId="14153" TurnInName="Sassy Hardwrench" TurnInId="34668" X="-8423.569" Y="1363.972" Z="104.6805" />
+		<If Condition="Me.Gender == WoWGender.Male" >
+			<TurnIn QuestName="Life of the Party" QuestId="14113" TurnInName="Chip Endale" TurnInId="34668" X="-8423.569" Y="1363.972" Z="104.6805" />
+		</If>
+		<If Condition="Me.Gender == WoWGender.Female" >
+			<TurnIn QuestName="Life of the Party" QuestId="14153" TurnInName="Sassy Hardwrench" TurnInId="34668" X="-8423.569" Y="1363.972" Z="104.6805" />
+		</If>
 
 		<PickUp QuestName="Pirate Party Crashers" QuestId="14115" GiverName="Sassy Hardwrench" GiverId="34668" X="-8423.569" Y="1363.972" Z="104.6805" />
 		<Code File="KillUntilComplete" MobId="35200" QuestId="14115" >
