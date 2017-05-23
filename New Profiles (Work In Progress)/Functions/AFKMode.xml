@@ -1,0 +1,92 @@
+<HBProfile>
+	<QuestOrder>
+
+		<CustomBehavior File="RunCode">
+		<![CDATA[
+			TreeHooks.Instance.InsertHook("Questbot_Main", 0,
+				_afkModeComposite ?? (_afkModeComposite = new CommonBehaviors.Actions.ActionRunCoroutine(ctx => AFKMode())));	
+		]]>
+		</CustomBehavior>
+
+		<CustomBehavior File="RunCode" Type="Definition" ><![CDATA[
+				private static Styx.TreeSharp.Composite _afkModeComposite;
+				private static int _deletedItems = 0;
+				private static int _sellAllItems = 0;
+				private static int _openedItems = 0;
+				private static int _questlogCleanups = 0;
+				private static int _playerReactions = 0;
+
+
+				private async Task<bool> AFKMode()
+				{
+					if (Me == null || !Me.IsValid) return false;
+
+					if (QuestLog.Instance.GetAllQuests().Count() >= 20)
+					{
+						await Bots.DungeonBuddy.Helpers.ScriptHelpers.AbandonLowLevelQuests();
+						_questlogCleanups ++;
+					}
+
+					if (!Me.IsAlive || Me.IsActuallyInCombat) return false;
+
+					var inventoryManager = Me.BagItems;
+
+					if (inventoryManager.Any(item => item.IsOpenable))
+					{
+						var openList = inventoryManager.Where(item => item.IsOpenable);
+						foreach (WoWItem openMe in openList)
+						{
+							openMe.Use();
+							await Coroutine.Wait(1000, () => LootFrame.Instance.IsVisible);
+							LootFrame.Instance.LootAll();
+							await Coroutine.Wait(3000, () => !LootFrame.Instance.IsVisible);
+							_openedItems ++;
+						}
+					}
+
+					if (inventoryManager.Any(item => item.ItemInfo.SellPrice == 00 && (item.ItemInfo.Bond == WoWItemBondType.None || (item.ItemInfo.BeginQuestId != 0 && item.ItemInfo.RequiredLevel < (Me.Level - 5)))))
+					{
+						var deleteList = inventoryManager.Where(item => item.ItemInfo.SellPrice == 00 && (item.ItemInfo.Bond == WoWItemBondType.None || (item.ItemInfo.BeginQuestId != 0 && item.ItemInfo.RequiredLevel < (Me.Level - 5))));
+						foreach (WoWItem deleteMe in deleteList)
+						{
+							deleteMe.PickUp();
+							Lua.DoString("DeleteCursorItem();");
+							_deletedItems ++;
+						}
+					}
+
+					if (MerchantFrame.Instance.IsVisible)
+					{
+						var sellList = inventoryManager.Where(item => item.ItemInfo.SellPrice != 0);
+						foreach (WoWItem sellMe in sellList)
+						{
+							if (!MerchantFrame.Instance.IsVisible) break;
+							sellMe.UseContainerItem();
+							await Coroutine.Sleep(600);
+							_sellAllItems ++;
+						}
+					}
+
+					return false;
+				}
+
+				private static void KillAFKModeOnStop(EventArgs args)
+				{
+					OutputFunctionStats();
+					TreeHooks.Instance.RemoveHook("Questbot_Main", _afkModeComposite);
+					BotEvents.OnBotStopped -= KillAFKModeOnStop;
+				}
+				private static void OutputFunctionStats()
+				{
+					Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [AFKMode] ", System.Windows.Media.Colors.CornflowerBlue, $"\n     Items Deleted		::  {_deletedItems}\n     Items Opened		::  {_openedItems}\n     Items Sold		::  {_sellAllItems}\n     Questlog Cleanups	::  {_questlogCleanups}\n     Player Reactions	::  {_questlogCleanups}");
+				}
+		]]>
+		</CustomBehavior>
+
+		<Code File="RunCode" Code="BotEvents.OnBotStopped += KillAFKModeOnStop;" />
+
+
+
+
+	</QuestOrder>
+</HBProfile>
