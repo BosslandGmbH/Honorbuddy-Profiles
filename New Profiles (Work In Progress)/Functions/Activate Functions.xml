@@ -1,0 +1,427 @@
+<HBProfile>
+	<QuestOrder>
+
+
+		<!-- Toggle functions -->
+			<Code File="RunCode" Type="Definition" ><![CDATA[
+				static bool antiStuck = true;
+				static bool customLooting = true;
+				static bool afkMode = true;
+				static bool rareHunter = true;
+				static bool treasureHunter = true;
+			]]>
+			</Code>
+		<!-- END Toggle functions -->
+
+
+		<!-- Main Function Pulser -->
+			<Code File="RunCode">
+			<![CDATA[
+				TreeHooks.Instance.InsertHook("Questbot_Main", 0,
+					_activateFunctionsComposite ?? (_activateFunctionsComposite = new CommonBehaviors.Actions.ActionRunCoroutine(ctx => FunctionPulser())));	
+			]]>
+			</Code>
+			<Code File="RunCode" Type="Definition" ><![CDATA[
+				private static Styx.TreeSharp.Composite _activateFunctionsComposite;
+				private static Stopwatch _mainPulseTimer = new Stopwatch();
+				private static bool _functionRunning = false;
+
+				private async Task<bool> FunctionPulser()
+				{
+
+					if (!_mainPulseTimer.IsRunning)	_mainPulseTimer.Start();
+					if (StyxWoW.Me == null || !StyxWoW.Me.IsValid) return false;
+
+					if (_functionRunning)
+					{
+						if (rareHunter) await RareHunter();
+						if (treasureHunter) await TreasureHunter();
+					}
+
+					if (customLooting) await CustomLootingBlacklister();
+
+					if (_mainPulseTimer.Elapsed < TimeSpan.FromSeconds(5)) return false;
+					_mainPulseTimer.Restart();
+
+					if (afkMode) await AFKMode();
+					if (antiStuck) await CustomAntiStuck.StuckHandler();
+					if (rareHunter) await RareHunter();
+					if (treasureHunter) await TreasureHunter();
+
+					return false;
+				}
+			]]>
+			</Code>
+			<Code File="RunCode" Code="BotEvents.OnBotStopped += ShutDownFucntionsOnStop;" />
+		<!-- END Main Function Pulser -->
+
+
+
+		<!-- Main Function Definitions -->
+			<Code File="RunCode" Type="Definition" ><![CDATA[
+				private static void ShutDownFucntionsOnStop(EventArgs args)
+				{
+					OutputFunctionStats();
+					TreeHooks.Instance.RemoveHook("Questbot_Main", _activateFunctionsComposite);
+					BotEvents.OnBotStopped -= ShutDownFucntionsOnStop;
+				}
+
+				private static void OutputFunctionStats()
+				{
+					if (afkMode) FancyLog(Colors.MediumPurple, "> [AFKMode] ", Colors.CornflowerBlue, $"\n     Items Deleted		:: {_deletedItems}\n     Items Opened		:: {_openedItems}\n     Items Sold		:: {_sellAllItems}\n     Questlog Cleanups	:: {_questlogCleanups}\n     Player Reactions	:: {_questlogCleanups}\n");
+					if (customLooting) FancyLog(Colors.MediumPurple, "> [Custom Looting] ", Colors.CornflowerBlue, $"\n     Time Saved		:: {Honorbuddy.QuestBehaviorCore.Utility.PrettyTime(TimeSaved).ToString()}\n");
+					if (antiStuck) FancyLog(Colors.MediumPurple, "> [Anti Stuck] ", Colors.CornflowerBlue, $"\n     Short-Term Stucks	:: {_shortTermStucks}\n     Long-Term Stucks	:: {_longTermStucks}\n");
+					if (rareHunter) FancyLog(Colors.MediumPurple, "> [Rare Killer] ", Colors.CornflowerBlue, $"\n     Rares Killed		:: {_raresKilled}\n");
+					if (treasureHunter) FancyLog(Colors.MediumPurple, "> [Treasure Hunter] ", Colors.CornflowerBlue, $"\n     Treasures Found	:: {_treasuresFound}\n");
+
+					FancyLog(Colors.MediumPurple, "> [Function Engine] ", Colors.Yellow, "Main pulse shut down.  All functions have been deactivated.");
+				}
+
+				private static void FancyLog(System.Windows.Media.Color colorOne, string messageOne, System.Windows.Media.Color colorTwo, string messageTwo)
+				{
+					Bots.Professionbuddy.PBLog.Log(colorOne, $"{messageOne}", colorTwo, $"{messageTwo}");
+				}
+			]]>
+			</Code>
+		<!-- END Main Function Definitions -->
+
+
+
+		<!-- AFK Mode -->
+			<Code File="RunCode" Type="Definition" ><![CDATA[
+					private static int _deletedItems = 0;
+					private static int _sellAllItems = 0;
+					private static int _openedItems = 0;
+					private static int _questlogCleanups = 0;
+					private static int _playerReactions = 0;
+
+					private async Task<bool> AFKMode()
+					{
+						if (QuestLog.Instance.GetAllQuests().Count() >= 20)
+						{
+							await Bots.DungeonBuddy.Helpers.ScriptHelpers.AbandonLowLevelQuests();
+							_questlogCleanups ++;
+						}
+
+						if (!Me.IsAlive || Me.IsActuallyInCombat) return false;
+
+						var inventoryManager = Me.BagItems;
+
+						if (inventoryManager.Any(item => item.IsOpenable))
+						{
+							var openList = inventoryManager.Where(item => item.IsOpenable);
+							foreach (WoWItem openMe in openList)
+							{
+								openMe.Use();
+								await Coroutine.Wait(1000, () => LootFrame.Instance.IsVisible);
+								LootFrame.Instance.LootAll();
+								await Coroutine.Wait(3000, () => !LootFrame.Instance.IsVisible);
+								_openedItems ++;
+							}
+						}
+
+						if (inventoryManager.Any(item => item.ItemInfo.SellPrice == 00 && item.GetEffect(0) == null && (item.ItemInfo.Bond == WoWItemBondType.None || (item.ItemInfo.BeginQuestId != 0 && item.ItemInfo.RequiredLevel < (Me.Level - 5)))))
+						{
+							var deleteList = inventoryManager.Where(item => item.ItemInfo.SellPrice == 00 && item.GetEffect(0) == null && (item.ItemInfo.Bond == WoWItemBondType.None || (item.ItemInfo.BeginQuestId != 0 && item.ItemInfo.RequiredLevel < (Me.Level - 5))));
+							foreach (WoWItem deleteMe in deleteList)
+							{
+								deleteMe.PickUp();
+								Lua.DoString("DeleteCursorItem();");
+								_deletedItems ++;
+							}
+						}
+
+						if (MerchantFrame.Instance.IsVisible)
+						{
+							var sellList = inventoryManager.Where(item => item.ItemInfo.SellPrice != 0);
+							foreach (WoWItem sellMe in sellList)
+							{
+								if (!MerchantFrame.Instance.IsVisible) break;
+								sellMe.UseContainerItem();
+								await Coroutine.Sleep(500);
+								_sellAllItems ++;
+							}
+						}
+
+						return false;
+					}
+			]]>
+			</Code>
+		<!-- END AFK Mode -->
+
+		<!-- Anti-Stuck -->
+			<Code File="RunCode" Type="Definition"><![CDATA[
+				private static int _shortTermStucks = 0;
+				private static int _longTermStucks = 0;
+
+				private static class CustomAntiStuck
+				{
+					private static bool _useAntiStuck = true;
+					private static Stopwatch _antiStuckTimerLongTerm = new Stopwatch();
+
+					private static Vector3 LastPointLong = new Vector3(0f,0f,0f);
+					private static Vector3 LastPointShort = new Vector3(0f,0f,0f);
+
+					public static async Task<bool> StuckHandler()
+					{
+						if (!_antiStuckTimerLongTerm.IsRunning)
+							_antiStuckTimerLongTerm.Start();
+
+						if (_antiStuckTimerLongTerm.Elapsed > TimeSpan.FromMinutes(5))
+						{
+							_antiStuckTimerLongTerm.Restart();
+							if (IsStuck(false) && StyxWoW.Me.BagItems.Any(x => x.Entry == 6948))
+							{
+								_longTermStucks ++;
+								FancyLog(Colors.MediumPurple, "[Anti-Stuck]: ", Colors.Yellow, "Long-term stuck detection activated!");
+								await CommonCoroutines.StopMoving();
+								await CommonCoroutines.LandAndDismount();
+								WoWItem normalHearthstone = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 6948);
+								if (normalHearthstone.CooldownTimeLeft != TimeSpan.Zero) {
+									FancyLog(Colors.MediumPurple, "[Anti-Stuck]: ", Colors.Yellow, "Awaiting Hearthstone cooldown before attempting hearth!");
+									await Coroutine.Wait(901000, () => normalHearthstone.CooldownTimeLeft == TimeSpan.Zero);
+								}
+								normalHearthstone.Interact();
+								await Coroutine.Sleep(11500);
+								FancyLog(Colors.MediumPurple, "[Anti-Stuck]: ", Colors.Yellow, "Reloading profile.");
+								ProfileManager.LoadNew(ProfileManager.XmlLocation);
+								_antiStuckTimerLongTerm.Restart();
+								await Coroutine.Sleep(5000);
+								return true;
+							}
+							return false;
+						}
+
+						if (IsStuck(true)) 
+						{
+							if (!StyxWoW.Me.IsMoving)
+							{
+								LastPointShort = new Vector3(0f,0f,0f);
+								return false;
+							}
+
+							_shortTermStucks ++;
+							FancyLog(Colors.MediumPurple, "[Anti-Stuck]: ", Colors.Yellow, "Short-term stuck detection activated!");
+							await CommonCoroutines.StopMoving();
+							if (StyxWoW.Me.IsFlying)
+							{
+								WoWMovement.Move(WoWMovement.MovementDirection.Backwards, TimeSpan.FromMilliseconds(2000));
+								BlackspotManager.AddBlackspot(new Blackspot(LastPointShort, 5, 5));
+								await Coroutine.Sleep(2000);
+							}
+							else
+							{
+								WoWMovement.Move(WoWMovement.MovementDirection.Backwards, TimeSpan.FromMilliseconds(1000));
+								BlackspotManager.AddBlackspot(new Blackspot(LastPointShort, 5, 5));
+							}
+							return true;
+						}
+						return false;
+					}
+
+					private static bool IsStuck(bool shortTerm)
+					{
+						if (!_useAntiStuck) return false; 
+						if (StyxWoW.Me.IsDead) return false;
+						if (StyxWoW.Me.IsActuallyInCombat) return false;
+						if (StyxWoW.Me.HasAura("Resurrection Sickness")) return false;
+
+						var currentPoint = StyxWoW.Me.Location;
+
+						if (shortTerm)
+						{
+							bool isStuckShort = StyxWoW.Me.Location.DistanceSqr(LastPointShort) <= 5f * 5f;
+							LastPointShort = currentPoint;
+							return isStuckShort;
+						}
+						else if (!shortTerm)
+						{
+							bool isStuckLong = StyxWoW.Me.Location.DistanceSqr(LastPointLong) < 10f * 10f;
+							LastPointLong = currentPoint;
+							return isStuckLong;
+						}
+						return false;
+					}
+				}
+			]]>
+			</Code>
+		<!-- END Anti-Stuck -->
+
+		<!-- Custom Looting -->
+			<Code File="RunCode" Type="Definition" >
+				<![CDATA[
+				static TimeSpan TimeSaved = TimeSpan.Zero;
+
+				static bool IsNeededForQuestObjective(WoWUnit objectiveMob)
+				{
+					if (StyxWoW.Me.CurrentMap.ExpansionId == 1 || StyxWoW.Me.CurrentMap.ExpansionId == 2) return true; // Ignore Outlands and Northrend due to creature cache issues.
+					foreach (var playerQuest in Styx.WoWInternals.QuestLog.Instance.GetAllQuests())
+					{
+						if (playerQuest.IsCompleted || playerQuest.IsFailed)
+							continue;
+
+						var objectives = playerQuest.GetObjectives();
+
+						foreach (var objective in objectives)
+						{
+							if (objectiveMob.GetCachedInfo(out WoWCache.CreatureCacheEntry cacheEntry))
+							{
+								if (cacheEntry.QuestItems.ToList().Contains(objective.ID))
+									return true;
+							}
+						}
+					}
+					return false;
+				}
+
+				private async Task<bool> CustomLootingBlacklister()
+				{
+					var blacklistList = ObjectManager.GetObjectsOfType<WoWUnit>().Where(x => !Blacklist.Contains(x, BlacklistFlags.Loot) && x.Lootable && !IsNeededForQuestObjective(x));
+					if (!blacklistList.Any()) return false;
+
+					foreach (WoWUnit blacklistMe in blacklistList)
+						Blacklist.Add(blacklistMe, BlacklistFlags.Loot, TimeSpan.FromMinutes(3), "Unit looting is not needed for quest completion.");
+
+					TimeSaved = TimeSaved.Add(TimeSpan.FromMilliseconds(2623));
+					return false;
+				}
+				]]>
+			</Code>
+		<!-- END Custom Looting -->
+
+		<!-- Rare Hunter -->
+			<Code File="RunCode" Type="Definition" ><![CDATA[
+					private List<WoWGuid> _rareBlacklist = new List<WoWGuid>();
+					private bool _rareIsLogged = false;
+					private WoWUnit _rarePoi;
+					private Vector3 _rareLocation;
+					private static int _raresKilled = 0;
+
+					public async Task<bool> RareHunter()
+					{
+						if (!Me.IsAlive || Me.IsActuallyInCombat) return false;
+
+						if (!_rareLocation.Equals(new Vector3(0,0,0)) && _rareLocation.DistanceSquared((WoWMovement.ActiveMover ?? StyxWoW.Me).Location) > 5 * 5)
+						{
+							TreeRoot.StatusText = $"Moving to kill rare: {_rarePoi.Name}";
+							return (await CommonCoroutines.MoveTo(_rareLocation)).IsSuccessful();
+						}
+
+						if (_rarePoi == null || !_rarePoi.IsValid)
+						{
+							_rarePoi = ObjectManager.GetObjectsOfType<WoWUnit>().OrderBy(unit => unit.DistanceSqr).FirstOrDefault(unit => !_rareBlacklist.Contains(unit.Guid) && !BlackspotManager.IsBlackspotted(unit.Location) && unit.CreatureRank == WoWUnitClassificationType.Rare && !unit.IsTagged && unit.Attackable);
+							if (_rarePoi == null) return false;
+							if (Navigator.LookupPathInfo(_rarePoi).Navigability != PathNavigability.Navigable)
+							{
+								_rareBlacklist.Add(_rarePoi.Guid);
+								FancyLog(Colors.MediumPurple, $"[Rare Killer]: ", Colors.CornflowerBlue, "Rare NPC detected near us, but we can't navigate to it!\n	Name     :: {_rarePoi.Name}\n	Entry    :: {_rarePoi.Entry}\n	Location :: {_rarePoi.Location}");
+								_rarePoi = null;
+								return false;
+							}
+							_rareLocation = _rarePoi.Location;
+							_functionRunning = true;
+							return true;
+						}
+
+						if (!_rareIsLogged)
+						{
+							_rareIsLogged = true;
+							FancyLog(Colors.MediumPurple, $"[Rare Killer]: ", Colors.CornflowerBlue, "Rare detected near us!\n	Name     :: {_rarePoi.Name}\n	Entry    :: {_rarePoi.Entry}\n	Location :: {_rarePoi.Location}");
+						}
+						
+						if (_rarePoi == null || !_rarePoi.IsValid || _rarePoi.IsDead)
+						{
+							_functionRunning = false;
+							_rareIsLogged = false;
+							_rareLocation = new Vector3(0,0,0);
+							_rareBlacklist.Add(_rarePoi.Guid);
+							_raresKilled ++;
+							return false;
+						}
+
+						TreeRoot.StatusText = $"Killing rare: {_rarePoi.Name}";
+
+						if (_rarePoi.IsAlive)
+						{
+							_functionRunning = true;
+							BotPoi.Current = new BotPoi(_rarePoi, PoiType.Kill);
+							return true;
+						}
+
+						return false;
+					}
+			]]>
+			</Code>
+		<!-- END Rare Hunter -->
+
+		<!-- Treasure Hunter -->
+			<Code File="RunCode" Type="Definition" ><![CDATA[
+					private List<WoWGuid> _treasureBlacklist = new List<WoWGuid>();
+					private bool _treasureIsLogged = false;
+					private WoWGameObject _treasurePoi;
+					private Vector3 _treasureLocation;
+					private static int _treasuresFound = 0;
+
+
+					public async Task<bool> TreasureHunter()
+					{
+						if (!Me.IsAlive || Me.IsActuallyInCombat) return false;
+
+						if (!_treasureLocation.Equals(new Vector3(0,0,0)) && _treasureLocation.DistanceSquared((WoWMovement.ActiveMover ?? StyxWoW.Me).Location) > 5 * 5)
+						{
+							TreeRoot.StatusText = $"Moving to interact with treasure: {_treasurePoi.Name}";
+							return (await CommonCoroutines.MoveTo(_treasureLocation)).IsSuccessful();
+						}
+
+						if (_treasurePoi == null || !_treasurePoi.IsValid)
+						{
+							_treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !_treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.SubType == WoWGameObjectType.Chest && obj.LockType == WoWLockType.Open && obj.CanUse() && obj.DistanceSqr <= 60f*60f);
+							if (_treasurePoi == null) return false;
+							if (Navigator.LookupPathInfo(_treasurePoi).Navigability != PathNavigability.Navigable)
+							{
+								_treasureBlacklist.Add(_treasurePoi.Guid);
+								FancyLog(Colors.MediumPurple, $"[Treasure Hunter]: ", Colors.CornflowerBlue, "Treasure detected near us, but we can't navigate to it!\n	Name     :: {_treasurePoi.Name}\n	Entry    :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
+								_treasurePoi = null;
+								return false;
+							}
+							_treasureLocation = _treasurePoi.Location;
+							_functionRunning = true;
+							return true;
+						}
+
+						if (!_treasureIsLogged)
+						{
+							_treasureIsLogged = true;
+							FancyLog(Colors.MediumPurple, $"[Treasure Hunter]: ", Colors.CornflowerBlue, "Treasure detected near us!\n	Name     :: {_treasurePoi.Name}\n	Entry    :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
+						}
+
+						TreeRoot.StatusText = $"Interacting with treasure: {_treasurePoi.Name}";
+						await CommonCoroutines.LandAndDismount();
+						await CommonCoroutines.StopMoving();
+						_treasurePoi.Interact();
+						await Coroutine.Wait(2000, () => LootFrame.Instance.IsVisible);
+						LootFrame.Instance.LootAll();
+						await Coroutine.Wait(2000, () => _treasurePoi == null || !_treasurePoi.IsValid);
+
+						_treasureIsLogged = false;
+						_treasureLocation = new Vector3(0,0,0);
+						_treasureBlacklist.Add(_treasurePoi.Guid);
+						_treasuresFound ++;
+
+						_functionRunning = false;
+
+						return true;
+					}
+			]]>
+			</Code>
+		<!-- END Treasure Hunter -->
+
+		<Code File="LoadProfile" ProfileName="..\1-110 Autoloader.xml" RememberProfile="true" />
+
+
+		<Code File="WaitTimer" WaitTime="5000000" />
+
+
+
+	</QuestOrder>
+</HBProfile>
