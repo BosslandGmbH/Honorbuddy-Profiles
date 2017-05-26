@@ -24,7 +24,8 @@
 			<Code File="RunCode" Type="Definition" ><![CDATA[
 				private static Styx.TreeSharp.Composite _activateFunctionsComposite;
 				private static Stopwatch _mainPulseTimer = new Stopwatch();
-				private static bool _functionRunning = false;
+				private static bool _treasureFunctionRunning = false;
+				private static bool _rarehunterFunctionRunning = false;
 
 				private async Task<bool> FunctionPulser()
 				{
@@ -32,11 +33,8 @@
 					if (!_mainPulseTimer.IsRunning)	_mainPulseTimer.Start();
 					if (StyxWoW.Me == null || !StyxWoW.Me.IsValid) return false;
 
-					if (_functionRunning)
-					{
-						if (rareHunter) await RareHunter();
-						if (treasureHunter) await TreasureHunter();
-					}
+					if (_rarehunterFunctionRunning && rareHunter) await RareHunter();
+					if (_treasureFunctionRunning && treasureHunter) await TreasureHunter();
 
 					if (customLooting) await CustomLootingBlacklister();
 
@@ -48,7 +46,7 @@
 					if (rareHunter) await RareHunter();
 					if (treasureHunter) await TreasureHunter();
 
-					return false;
+					return (_treasureFunctionRunning || _rarehunterFunctionRunning);
 				}
 			]]>
 			</Code>
@@ -314,24 +312,24 @@
 							if (Navigator.LookupPathInfo(_rarePoi).Navigability != PathNavigability.Navigable)
 							{
 								_rareBlacklist.Add(_rarePoi.Guid);
-								FancyLog(Colors.MediumPurple, $"[Rare Killer]: ", Colors.CornflowerBlue, "Rare NPC detected near us, but we can't navigate to it!\n	Name     :: {_rarePoi.Name}\n	Entry    :: {_rarePoi.Entry}\n	Location :: {_rarePoi.Location}");
+								FancyLog(Colors.MediumPurple, "[Rare Killer]: ", Colors.CornflowerBlue, $"Rare NPC detected near us, but we can't navigate to it!\n	Name     :: {_rarePoi.Name}\n	Entry    :: {_rarePoi.Entry}\n	Location :: {_rarePoi.Location}");
 								_rarePoi = null;
 								return false;
 							}
 							_rareLocation = _rarePoi.Location;
-							_functionRunning = true;
+							_rarehunterFunctionRunning = true;
 							return true;
 						}
 
 						if (!_rareIsLogged)
 						{
 							_rareIsLogged = true;
-							FancyLog(Colors.MediumPurple, $"[Rare Killer]: ", Colors.CornflowerBlue, "Rare detected near us!\n	Name     :: {_rarePoi.Name}\n	Entry    :: {_rarePoi.Entry}\n	Location :: {_rarePoi.Location}");
+							FancyLog(Colors.MediumPurple, "[Rare Killer]: ", Colors.CornflowerBlue, $"Rare detected near us!\n	Name     :: {_rarePoi.Name}\n	Entry    :: {_rarePoi.Entry}\n	Location :: {_rarePoi.Location}");
 						}
 						
 						if (_rarePoi == null || !_rarePoi.IsValid || _rarePoi.IsDead)
 						{
-							_functionRunning = false;
+							_rarehunterFunctionRunning = false;
 							_rareIsLogged = false;
 							_rareLocation = new Vector3(0,0,0);
 							_rareBlacklist.Add(_rarePoi.Guid);
@@ -341,9 +339,9 @@
 
 						TreeRoot.StatusText = $"Killing rare: {_rarePoi.Name}";
 
-						if (_rarePoi.IsAlive)
+						if (BotPoi.Current.Type != PoiType.Kill && _rarePoi.IsAlive)
 						{
-							_functionRunning = true;
+							_rarehunterFunctionRunning = true;
 							BotPoi.Current = new BotPoi(_rarePoi, PoiType.Kill);
 							return true;
 						}
@@ -367,7 +365,7 @@
 					{
 						if (!Me.IsAlive || Me.IsActuallyInCombat) return false;
 
-						if (!_treasureLocation.Equals(new Vector3(0,0,0)) && _treasureLocation.DistanceSquared((WoWMovement.ActiveMover ?? StyxWoW.Me).Location) > 5 * 5)
+						if (!_treasureLocation.Equals(new Vector3(0,0,0)) && _treasureLocation.DistanceSquared((WoWMovement.ActiveMover ?? StyxWoW.Me).Location) > 5 * 5 && !_treasurePoi.InLineOfSight)
 						{
 							TreeRoot.StatusText = $"Moving to interact with treasure: {_treasurePoi.Name}";
 							return (await CommonCoroutines.MoveTo(_treasureLocation)).IsSuccessful();
@@ -375,42 +373,46 @@
 
 						if (_treasurePoi == null || !_treasurePoi.IsValid)
 						{
-							_treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !_treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.SubType == WoWGameObjectType.Chest && obj.LockType == WoWLockType.Open && obj.CanUse() && obj.DistanceSqr <= 60f*60f);
+							_treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !_treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.IsChest && obj.CanUse());
 							if (_treasurePoi == null) return false;
 							if (Navigator.LookupPathInfo(_treasurePoi).Navigability != PathNavigability.Navigable)
 							{
 								_treasureBlacklist.Add(_treasurePoi.Guid);
-								FancyLog(Colors.MediumPurple, $"[Treasure Hunter]: ", Colors.CornflowerBlue, "Treasure detected near us, but we can't navigate to it!\n	Name     :: {_treasurePoi.Name}\n	Entry    :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
+								FancyLog(Colors.MediumPurple, "[Treasure Hunter]: ", Colors.CornflowerBlue, $"Treasure detected near us, but we can't navigate to it!\n	Name     :: {_treasurePoi.Name}\n	Entry    :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
 								_treasurePoi = null;
 								return false;
 							}
 							_treasureLocation = _treasurePoi.Location;
-							_functionRunning = true;
+							_treasureFunctionRunning = true;
 							return true;
 						}
 
 						if (!_treasureIsLogged)
 						{
 							_treasureIsLogged = true;
-							FancyLog(Colors.MediumPurple, $"[Treasure Hunter]: ", Colors.CornflowerBlue, "Treasure detected near us!\n	Name     :: {_treasurePoi.Name}\n	Entry    :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
+							FancyLog(Colors.MediumPurple, "[Treasure Hunter]: ", Colors.CornflowerBlue, $"Treasure detected near us!\n	Name     :: {_treasurePoi.Name}\n	Entry    :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
+						}
+
+						if (_treasurePoi == null || !_treasurePoi.IsValid)
+						{
+							_treasureFunctionRunning = false;
+							_treasureIsLogged = false;
+							_treasureLocation = new Vector3(0,0,0);
+							_treasureBlacklist.Add(_treasurePoi.Guid);
+							_treasuresFound ++;
+							return false;
 						}
 
 						TreeRoot.StatusText = $"Interacting with treasure: {_treasurePoi.Name}";
-						await CommonCoroutines.LandAndDismount();
-						await CommonCoroutines.StopMoving();
-						_treasurePoi.Interact();
-						await Coroutine.Wait(2000, () => LootFrame.Instance.IsVisible);
-						LootFrame.Instance.LootAll();
-						await Coroutine.Wait(2000, () => _treasurePoi == null || !_treasurePoi.IsValid);
 
-						_treasureIsLogged = false;
-						_treasureLocation = new Vector3(0,0,0);
-						_treasureBlacklist.Add(_treasurePoi.Guid);
-						_treasuresFound ++;
+						if (BotPoi.Current.Type != PoiType.Harvest && _treasurePoi.CanUse())
+						{
+							_treasureFunctionRunning = true;
+							BotPoi.Current = new BotPoi(_treasurePoi, PoiType.Harvest);
+							return true;
+						}
 
-						_functionRunning = false;
-
-						return true;
+						return false;
 					}
 			]]>
 			</Code>

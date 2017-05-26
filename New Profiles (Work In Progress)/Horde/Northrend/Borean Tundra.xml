@@ -325,6 +325,12 @@
 		<While Condition="!IsQuestCompleted(11690)" >
 			<Code File="AbandonQuest" QuestId="11690" Type="Failed" />
 			<PickUp QuestName="Bring &apos;Em Back Alive" QuestId="11690" GiverName="Farmer Torp" GiverId="25607" X="2886.779" Y="6389.038" Z="92.58273" />
+			<Code File="Hooks\DoWhen" ActivityName="SwitchCombatOff" AllowUseDuringCombat="true" AllowUseWhileMounted="true" AllowUseInVehicle="true" UseWhen="Bots.Grind.LevelBot.BehaviorFlags.HasFlag(Bots.Grind.BehaviorFlags.Combat) &amp;&amp; Me.HasAura(45875)" >
+				<Code File="RunCode" Code="Bots.Grind.LevelBot.BehaviorFlags &amp;= ~Bots.Grind.BehaviorFlags.Combat;" />
+			</Code>
+			<Code File="Hooks\DoWhen" ActivityName="SwitchCombatOn" AllowUseDuringCombat="true" AllowUseWhileMounted="true" AllowUseInVehicle="true" UseWhen="!Bots.Grind.LevelBot.BehaviorFlags.HasFlag(Bots.Grind.BehaviorFlags.Combat) &amp;&amp; !Me.HasAura(45875)" >
+				<Code File="RunCode" Code="Bots.Grind.LevelBot.BehaviorFlags |= Bots.Grind.BehaviorFlags.Combat" />
+			</Code>
 			<Code File="InteractWith" CollectionDistance="200" InteractByUsingItemId="34954" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" QuestId="11690" QuestObjectiveIndex="1" TerminateWhen="Me.HasAura(45875)" >
 				<HuntingGrounds>
 					<Hotspot X="2967.51" Y="6424.288" Z="88.96277" />
@@ -343,6 +349,10 @@
 			</While>
 			<EnableBehavior Name="All" />
 		</While>
+		<If Condition="QuestDone(11690)" >
+			<Code File="Hooks\DoWhen" ActivityName="SwitchCombatOff" Command="Remove" />
+			<Code File="Hooks\DoWhen" ActivityName="SwitchCombatOn" Command="Remove" />
+		</If>
 
 		<TurnIn QuestName="Bring &apos;Em Back Alive" QuestId="11690" TurnInName="Farmer Torp" TurnInId="25607" X="2883.123" Y="6389.731" Z="92.5584" />
 		<TurnIn QuestName="Get to Getry" QuestId="11703" TurnInName="Shadowstalker Getry" TurnInId="25729" X="3116.425" Y="6575.736" Z="97.91401" />
@@ -472,7 +482,7 @@
 
 					public async Task<bool> CTMSimpleEscort()
 					{
-						if (IsQuestCompleted(11664)) return false;
+						if (NeedsQuest(11664) || QuestDone(11664)) return false;
 						if (!_throttleTimer.IsRunning)
 							_throttleTimer.Start();
 						if (_nearbyObjectPoi != null && _nearbyObjectPoi.IsValid)
