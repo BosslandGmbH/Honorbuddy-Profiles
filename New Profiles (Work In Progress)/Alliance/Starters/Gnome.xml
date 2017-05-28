@@ -41,6 +41,20 @@
 	</Blacklist>
 
 	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
+		<!-- Check function status -->
+			<Code File="RunCode" Type="Definition" >
+				<![CDATA[
+					bool? enabled = (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+				]]>
+			</Code>
+			<If Condition="enabled == false" >
+				<Code File="RunCode">
+					<![CDATA[ Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!"); ]]>
+				</Code>
+				<Code File="LoadProfile" ProfileName="..\..\Functions\Activate Functions.xml" />
+			</If>
+		<!-- END Check function status -->
+
 		<If Condition="Me.IsHorde" >
 			<Code File="LoadProfile" ProfileName="..\..\1-110 Autoloader.xml" RememberProfile="true" />
 		</If>
