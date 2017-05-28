@@ -46,6 +46,20 @@
 	</Blacklist>
 
 	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
+		<!-- Check function status -->
+			<Code File="RunCode" Type="Definition" >
+				<![CDATA[
+					bool? enabled = (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+				]]>
+			</Code>
+			<If Condition="enabled == false" >
+				<Code File="RunCode">
+					<![CDATA[ Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!"); ]]>
+				</Code>
+				<Code File="LoadProfile" ProfileName="..\..\Functions\Activate Functions.xml" />
+			</If>
+		<!-- END Check function status -->
+
 		<If Condition="Me.IsHorde" >
 			<Code File="LoadProfile" ProfileName="..\..\1-110 Autoloader.xml" RememberProfile="true" />
 		</If>
@@ -58,7 +72,6 @@
 				CharacterSettings.Instance.LootMobs = true;
 				CharacterSettings.Instance.Save();
 				Lua.DoString("for i=1,GetNumAddOns() do local relo=false if IsAddOnLoaded(i) then relo=true DisableAddOn(i) end if relo then relo=nil ReloadUI() end end");
-				await Coroutine.Sleep(1500);
 				Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
 			]]>
 			</Code>
@@ -236,7 +249,7 @@
 		</If>
 		<TurnIn QuestName="Note to William" QuestId="107" TurnInName="William Pestle" TurnInId="253" X="-9460.302" Y="31.93891" Z="56.96619" />
 
-		<Checkpoint Level="7" /> <!-- Eastvale Logging Camp -->
+		<!--<Checkpoint Level="7" />  Eastvale Logging Camp -->
 
 		<PickUp QuestName="A Bundle of Trouble" QuestId="5545" GiverName="Supervisor Raelen" GiverId="10616" X="-9469.795" Y="-1289.215" Z="41.34326" />
 		<PickUp QuestName="Fine Linen Goods" QuestId="83" GiverName="Sara Timberlain" GiverId="278" X="-9530.045" Y="-1222.585" Z="47.28948" />
