@@ -471,18 +471,17 @@
 							if (playerQuest.IsCompleted || playerQuest.IsFailed)
 								continue;
 
-							// var objectives = playerQuest.GetObjectives();
+							var allObjectiveIds = new List<uint>();
 
-							// foreach (var objective in objectives)
-							// {
-							// 	if (objectiveMob.GetCachedInfo(out WoWCache.CreatureCacheEntry cacheEntry))
-							// 	{
-							// 		if (cacheEntry.QuestItems.ToList().Contains(objective.ID))
-							// 			return true;
-							// 	}
-							// }
-							var objectiveId = playerQuest.NormalObjectiveRequiredCounts;
-							foreach (var objective in objectiveId)
+							var mainObjectives = playerQuest.GetObjectives();
+							var normalObjectives = playerQuest.NormalObjectiveRequiredCounts;
+
+							foreach (var objective in mainObjectives)
+								allObjectiveIds.Add(objective.ID);
+							foreach (var objective in normalObjectives)
+								allObjectiveIds.Add(objective);
+
+							foreach (var objective in allObjectiveIds)
 							{
 								if (objectiveMob.GetCachedInfo(out WoWCache.CreatureCacheEntry cacheEntry))
 								{
