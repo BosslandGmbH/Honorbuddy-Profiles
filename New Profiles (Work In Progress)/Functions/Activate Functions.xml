@@ -5,7 +5,7 @@
 
 		<!-- Profile Config -->
 			<!--Run on Profile Load-->
-			<CustomBehavior File="RunCode" Type="Definition">
+			<Code File="RunCode" Type="Definition">
 			<![CDATA[
 				public __CompiledBatchClass__()
 				{
@@ -14,10 +14,10 @@
 					System.Windows.Application.Current.Dispatcher.Invoke(ProfileConfig.AddButton);
 				}
 			]]>
-			</CustomBehavior>
+			</Code>
 
 			<!--Profile Config Button-->
-			<CustomBehavior File="RunCode" Type="Definition">
+			<Code File="RunCode" Type="Definition">
 			<![CDATA[
 				public static class ProfileConfig
 				{
@@ -52,10 +52,10 @@
 					}
 				}
 			]]>
-			</CustomBehavior>
+			</Code>
 
 			<!--Settings Model-->
-			<CustomBehavior File="RunCode" Type="Definition">
+			<Code File="RunCode" Type="Definition">
 			<![CDATA[
 				public class Settings : GarrisonBuddy.JsonSettings<Settings>
 				{
@@ -85,10 +85,10 @@
 					// TODO: Add RAF invite names?
 				}
 			]]>
-			</CustomBehavior>
+			</Code>
 
 			<!--Settings View-->
-			<CustomBehavior File="RunCode" Type="Definition">
+			<Code File="RunCode" Type="Definition">
 				<![CDATA[
 					public static class SettingsView
 					{
@@ -154,10 +154,10 @@
 						</UserControl>";
 					}
 				]]>
-			</CustomBehavior>
+			</Code>
 
 			<!--Settings View Model-->
-			<CustomBehavior File="RunCode" Type="Definition">
+			<Code File="RunCode" Type="Definition">
 				<![CDATA[
 					public class SettingsViewModel
 					{
@@ -193,7 +193,6 @@
 							window.Closed += (sender, args) => 
 							{
 									viewModel.Model.Save();
-									Logging.Write("Settings saved");
 									FancyLog(Colors.MediumPurple, "> [Function Engine] ", Colors.Yellow, "User settings saved!");
 							};
 		
@@ -213,7 +212,7 @@
 						}
 					}
 				]]>
-			</CustomBehavior>
+			</Code>
 		<!-- END Profile Config -->
 
 		<!-- Functions -->
@@ -254,6 +253,7 @@
 
 						if (Settings.Instance.AfkMode) await AFKMode();
 						if (Settings.Instance.UseAntiStuck) await CustomAntiStuck.StuckHandler();
+						if (Settings.Instance.UseActiveVendoring) ActiveVendorLogic();
 						if (Settings.Instance.HuntRareMobs) await RareHunter();
 						if (Settings.Instance.FindTreasureChests) await TreasureHunter();
 
@@ -279,10 +279,22 @@
 
 					private static void OutputFunctionStats()
 					{
+						if (Settings.Instance.AfkMode)
 						FancyLog(Colors.MediumPurple, "> [AFKMode] ", Colors.CornflowerBlue, $"\n     Items Deleted		:: {_deletedItems}\n     Items Opened		:: {_openedItems}\n     Items Sold		:: {_sellAllItems}\n     Questlog Cleanups	:: {_questlogCleanups}\n     Player Reactions	:: {_questlogCleanups}\n");
+
+						if (Settings.Instance.UseActiveVendoring)
+						FancyLog(Colors.MediumPurple, "> [Active Vendoring] ", Colors.CornflowerBlue, $"\n     Times Force Vendored		:: {_timesForceVendored}\n");
+
+						if (Settings.Instance.CustomLooting)
 						FancyLog(Colors.MediumPurple, "> [Custom Looting] ", Colors.CornflowerBlue, $"\n     Time Saved		:: {Honorbuddy.QuestBehaviorCore.Utility.PrettyTime(TimeSaved).ToString()}\n");
+
+						if (Settings.Instance.UseAntiStuck)
 						FancyLog(Colors.MediumPurple, "> [Anti Stuck] ", Colors.CornflowerBlue, $"\n     Short-Term Stucks	:: {_shortTermStucks}\n     Long-Term Stucks	:: {_longTermStucks}\n");
+
+						if (Settings.Instance.HuntRareMobs)
 						FancyLog(Colors.MediumPurple, "> [Rare Killer] ", Colors.CornflowerBlue, $"\n     Rares Killed		:: {_raresKilled}\n");
+
+						if (Settings.Instance.FindTreasureChests)
 						FancyLog(Colors.MediumPurple, "> [Treasure Hunter] ", Colors.CornflowerBlue, $"\n     Treasures Found	:: {_treasuresFound}\n");
 
 						FancyLog(Colors.MediumPurple, "> [Function Engine] ", Colors.Yellow, "Main pulse shut down.  All functions have been deactivated.");
@@ -510,6 +522,26 @@
 					]]>
 				</Code>
 			<!-- END Custom Looting -->
+
+			<!-- Active Vendoring -->
+				<Code File="RunCode" Type="Definition" ><![CDATA[
+					private static _timesForceVendored = 0;
+
+					private static void ActiveVendorLogic()
+					{
+						double _bagslotTotal = StyxWoW.Me.FreeNormalBagSlots + StyxWoW.Me.BagItems.Count();
+						double _bagslotPercentageDeficit = Math.Round((StyxWoW.Me.FreeNormalBagSlots/_bagslotTotal)*100);
+						bool _nearbyVendor = ObjectManager.GetObjectsOfType<WoWUnit>().Any(x => x.IsAlive && x.IsFriendly && x.IsAnyVendor && x.DistanceSqr <= 60f*60f);
+						if (!Vendors.ForceSell && _bagslotPercentageDeficit < 35 && _nearbyVendor)
+						{
+							FancyLog(Colors.MediumPurple, "> [Active Vendoring] ", Colors.Yellow, "Forcing the bot to vendor since we're near a vendor.");
+							Vendors.ForceSell = true;
+							_timesForceVendored ++;
+						}
+					}
+				]]>
+				</Code>
+			<!-- END Active Vendoring -->
 
 			<!-- Rare Hunter -->
 				<Code File="RunCode" Type="Definition" ><![CDATA[
