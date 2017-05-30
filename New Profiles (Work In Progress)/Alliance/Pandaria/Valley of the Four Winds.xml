@@ -122,50 +122,6 @@
 			</Code>
 		<!-- END RunCode Methods -->
 
-		<!-- Hooks -->
-			<Code File="RunCode" Type="Definition">
-				<![CDATA[ 
-					IEnumerable<WoWItem> GetExtraConsumables()
-					{
-						uint foodCount = 0;
-						uint drinkCount = 0;
-						// Skip conjured and buff comsumables.
-				
-						var extraConsumables = (from item in Me.BagItems
-										   where item != null && item.ItemInfo != null
-										   let isFood = Consumable.IsFood(item.ItemInfo)
-										   let isDrink = Consumable.IsDrink(item.ItemInfo)
-										   where (isFood || isDrink) && item.ItemInfo.SellPrice > 0 && item.Effects.Count == 1 && item.ItemInfo.RequiredLevel < Me.Level - 10                    
-										   select item).ToList();
-				
-				
-						var extraPotions = Me.BagItems
-							.Where(c => c != null && c.IsValid && c.ItemInfo != null && c.ItemInfo.SellPrice > 0 && c.Effects.Count == 1
-								&& (c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Potion
-								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Elixir
-								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Flask)
-								&& c.ItemInfo.RequiredLevel < Me.Level - 20);
-				
-						extraConsumables.AddRange(extraPotions);
-						return extraConsumables;
-					}
-					 
-					async Task SellExtraConsumables()
-					{
-						Logging.Write("Selling items in GetExtraConsumables()");
-						foreach (var item in GetExtraConsumables())
-						{
-							Logging.Write("Selling {0}.", item.Name);
-							item.UseContainerItem();
-							await Coroutine.Sleep(1337);
-						}
-					}
-				]]>
-			</Code>
-			<Code File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
-				<Code File="RunCode" Code="await SellExtraConsumables();"/>
-			</Code>
-		<!-- END Hooks -->
 
 		<PickUp QuestName="Chen and Li Li" QuestId="29907" GiverName="Chen Stormstout" GiverId="56133" X="518.2825" Y="-696.5137" Z="247.235" />
 		<While Condition="DoQuest(29907)" >
@@ -435,8 +391,11 @@
 		<PickUp QuestName="Watery Woes" QuestId="30267" GiverName="Gladecaster Lang" GiverId="58736" X="233.0818" Y="284.1239" Z="154.0809" />
 		<PickUp QuestName="Bottletoads" QuestId="29757" GiverName="Yan" GiverId="56773" X="211.6367" Y="299.7223" Z="153.7912" />
 
-		<Code File="KillUntilComplete" MobIds="58754, 58755" X="396.6352" Y="431.8252" Z="147.0932" TerminateWhen="IsQuestCompleted(30275) || HasItem(79238)" />
-		<PickUp QuestName="A Crocolisk Tale" QuestId="30275" GiverName="Enormous Crocolisk Tail" GiverId="79238" GiverType="Item" />
+		<!-- Custom loot and AFK Mode doesn't like this quest. 
+		<While Condition="!IsQuestCompleted(30275) &amp;&amp; !HasItem(79238)" >
+			<Code File="InteractWith" MobIds="58754, 58755" InteractByLooting="true" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="396.6352" Y="431.8252" Z="147.0932" TerminateWhen="IsQuestCompleted(30275) || HasItem(79238)" />
+		</While>
+		<PickUp QuestName="A Crocolisk Tale" QuestId="30275" GiverName="Enormous Crocolisk Tail" GiverId="79238" GiverType="Item" />-->
 
 		<Code File="InteractWith" MobId="57301" CollectionDistance="200" QuestId="30267" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
@@ -454,7 +413,7 @@
 			</HuntingGrounds>
 		</Code>
 
-		<TurnIn QuestName="A Crocolisk Tale" QuestId="30275" TurnInName="Yan" TurnInId="56773" X="211.8406" Y="300.6602" Z="153.7843" />
+		<!-- <TurnIn QuestName="A Crocolisk Tale" QuestId="30275" TurnInName="Yan" TurnInId="56773" X="211.8406" Y="300.6602" Z="153.7843" /> -->
 		<TurnIn QuestName="Watery Woes" QuestId="30267" TurnInName="Gladecaster Lang" TurnInId="58736" X="230.7151" Y="286.1886" Z="153.9258" />
 		<PickUp QuestName="Snap Judgment" QuestId="29600" GiverName="Zhang Yue" GiverId="56802" X="364.1727" Y="327.5682" Z="189.4294" />
 
@@ -465,7 +424,8 @@
 
 		<Code File="InteractWith" MobId="209987" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="29581" QuestObjectiveIndex="1" X="404.5248" Y="117.1289" Z="205.4144" />
 
-		<Code File="KillUntilComplete" MobId="56833" X="410.6185" Y="113.8056" Z="206.9708" TerminateWhen="IsQuestCompleted(29758)" />
+		<!-- Custom loot and AFK Mode doesn't like this quest. 
+			<Code File="KillUntilComplete" MobId="56833" X="410.6185" Y="113.8056" Z="206.9708" TerminateWhen="IsQuestCompleted(29758)" /> -->
 
 		<Code File="InteractWith" MobId="209950" CollectionDistance="200" PreInteractMountStrategy="Dismount" QuestId="29757" QuestObjectiveIndex="1" X="394.0701" Y="170.1468" Z="209.3254" />
 
@@ -474,10 +434,10 @@
 		<TurnIn QuestName="Snap Judgment" QuestId="29600" TurnInName="Zhang Yue" TurnInId="56802" X="366.6997" Y="329.9088" Z="189.5464" />
 		<If Condition="QuestDone(29581)" >
 			<TurnIn QuestName="The Golden Dream" QuestId="29581" TurnInName="Yan" TurnInId="56773" X="211.8404" Y="300.5714" Z="153.7856" />
-			<Code File="RunCode" Code="await SkipCutscene();" />
+			<Code File="RunCode" Code="await SkipCutscene(4500);" />
 		</If>
 		<TurnIn QuestName="Bottletoads" QuestId="29757" TurnInName="Yan" TurnInId="56773" X="211.8404" Y="300.5714" Z="153.7856" />
-		<TurnIn QuestName="Guess Whose Back" QuestId="29758" TurnInName="Yan" TurnInId="56773" X="211.8404" Y="300.5714" Z="153.7856" />
+		<!-- <TurnIn QuestName="Guess Whose Back" QuestId="29758" TurnInName="Yan" TurnInId="56773" X="211.8404" Y="300.5714" Z="153.7856" /> -->
 
 		<!--<Code File="SetHearthstone" AreaId="6354" MobId="59582" X="-223.6387" Y="518.2274" Z="190.8979" /> We never use it -->
 

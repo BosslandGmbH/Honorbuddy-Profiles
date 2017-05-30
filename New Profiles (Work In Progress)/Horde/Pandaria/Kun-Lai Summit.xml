@@ -123,50 +123,6 @@
 			</Code>
 		<!-- END RunCode Methods -->
 
-		<!-- Hooks -->
-			<Code File="RunCode" Type="Definition">
-				<![CDATA[ 
-					IEnumerable<WoWItem> GetExtraConsumables()
-					{
-						uint foodCount = 0;
-						uint drinkCount = 0;
-						// Skip conjured and buff comsumables.
-				
-						var extraConsumables = (from item in Me.BagItems
-										   where item != null && item.ItemInfo != null
-										   let isFood = Consumable.IsFood(item.ItemInfo)
-										   let isDrink = Consumable.IsDrink(item.ItemInfo)
-										   where (isFood || isDrink) && item.ItemInfo.SellPrice > 0 && item.Effects.Count == 1 && item.ItemInfo.RequiredLevel < Me.Level - 10                    
-										   select item).ToList();
-				
-				
-						var extraPotions = Me.BagItems
-							.Where(c => c != null && c.IsValid && c.ItemInfo != null && c.ItemInfo.SellPrice > 0 && c.Effects.Count == 1
-								&& (c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Potion
-								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Elixir
-								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Flask)
-								&& c.ItemInfo.RequiredLevel < Me.Level - 20);
-				
-						extraConsumables.AddRange(extraPotions);
-						return extraConsumables;
-					}
-					 
-					async Task SellExtraConsumables()
-					{
-						Logging.Write("Selling items in GetExtraConsumables()");
-						foreach (var item in GetExtraConsumables())
-						{
-							Logging.Write("Selling {0}.", item.Name);
-							item.UseContainerItem();
-							await Coroutine.Sleep(1337);
-						}
-					}
-				]]>
-			</Code>
-			<Code File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
-				<Code File="RunCode" Code="await SellExtraConsumables();"/>
-			</Code>
-		<!-- END Hooks -->
 
 		<PickUp QuestName="The Road to Kun-Lai" VariantQuestIds="31254, 31255" GiverName="Messenger Grummle" GiverId="63778" X="476.3332" Y="-71.71638" Z="177.9425" />
 		<Code File="InteractWith" MobId="62738" NonCompeteDistance="0" VariantQuestIds="31254, 31255" QuestObjectiveIndex="1" X="479.4644" Y="-71.89752" Z="177.8801" />
@@ -400,7 +356,7 @@
 			<While Condition="Me.InVehicle" >
 				<DisableBehavior Name="All" />
 				<Code File="Misc\RunLua" Lua="OverrideActionBarButton2:Click();" />
-				<MoveTo X="2732.439" Y="375.4294" Z="508.3669" />
+				<MoveTo Percision="3.0001" X="2738.443" Y="368.2168" Z="509.0924" />
 			</While>
 			<EnableBehavior Name="All" />
 		</While>

@@ -123,50 +123,6 @@
 			</Code>
 		<!-- END RunCode Methods -->
 
-		<!-- Hooks -->
-			<Code File="RunCode" Type="Definition">
-				<![CDATA[ 
-					IEnumerable<WoWItem> GetExtraConsumables()
-					{
-						uint foodCount = 0;
-						uint drinkCount = 0;
-						// Skip conjured and buff comsumables.
-				
-						var extraConsumables = (from item in Me.BagItems
-										   where item != null && item.ItemInfo != null
-										   let isFood = Consumable.IsFood(item.ItemInfo)
-										   let isDrink = Consumable.IsDrink(item.ItemInfo)
-										   where (isFood || isDrink) && item.ItemInfo.SellPrice > 0 && item.Effects.Count == 1 && item.ItemInfo.RequiredLevel < Me.Level - 10                    
-										   select item).ToList();
-				
-				
-						var extraPotions = Me.BagItems
-							.Where(c => c != null && c.IsValid && c.ItemInfo != null && c.ItemInfo.SellPrice > 0 && c.Effects.Count == 1
-								&& (c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Potion
-								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Elixir
-								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Flask)
-								&& c.ItemInfo.RequiredLevel < Me.Level - 20);
-				
-						extraConsumables.AddRange(extraPotions);
-						return extraConsumables;
-					}
-					 
-					async Task SellExtraConsumables()
-					{
-						Logging.Write("Selling items in GetExtraConsumables()");
-						foreach (var item in GetExtraConsumables())
-						{
-							Logging.Write("Selling {0}.", item.Name);
-							item.UseContainerItem();
-							await Coroutine.Sleep(1337);
-						}
-					}
-				]]>
-			</Code>
-			<Code File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
-				<Code File="RunCode" Code="await SellExtraConsumables();"/>
-			</Code>
-		<!-- END Hooks -->
 
 		<If Condition="NeedsQuest(34558)" >
 			<If Condition="Me.ZoneId == 6721" >
@@ -570,7 +526,7 @@
 					Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 112543).Use();
 				" />
 			</Code>
-			<Code File="KillUntilComplete" MobId="80335" QuestId="34912" QuestObjectiveIndex="1" X="1181.443" Y="1988.24" Z="356.6319" />
+			<Code File="KillUntilComplete" MobId="80335" QuestId="34912" QuestObjectiveIndex="1" X="1183.08" Y="2007.633" Z="356.6146" />
 			<Code File="Hooks\DoWhen" ActivityName="CallReinforcements" Command="Remove" />
 			<Code File="InteractWith" MobId="231056" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34912" QuestObjectiveIndex="2" X="1177.673" Y="1997.927" Z="356.6083" />
 		</While>
@@ -807,6 +763,14 @@
 			<Code File="RunCode" Code="QuestFrame.Instance.CompleteQuest();" />
 		</If>
 
+		<Code File="KillUntilComplete" MobIds="77490, 77541, 79125, 79110, 79187" TerminateWhen="Me.Level &gt;= 96" >
+			<HuntingGrounds>
+				<Hotspot X="1582.879" Y="3823.02" Z="195.545" />
+				<Hotspot X="1484.388" Y="3836.388" Z="178.6253" />
+				<Hotspot X="1374.658" Y="3778.552" Z="177.3798" />
+				<Hotspot X="1435.157" Y="3668.153" Z="161.4067" />
+			</HuntingGrounds>
+		</Code>
 
 		<Checkpoint Level="96.5" />
 

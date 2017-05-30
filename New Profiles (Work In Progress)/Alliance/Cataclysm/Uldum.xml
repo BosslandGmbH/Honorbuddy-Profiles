@@ -123,50 +123,6 @@
 			</Code>
 		<!-- END RunCode Methods -->
 
-		<!-- Hooks -->
-			<Code File="RunCode" Type="Definition">
-				<![CDATA[ 
-					IEnumerable<WoWItem> GetExtraConsumables()
-					{
-						uint foodCount = 0;
-						uint drinkCount = 0;
-						// Skip conjured and buff comsumables.
-				
-						var extraConsumables = (from item in Me.BagItems
-										   where item != null && item.ItemInfo != null
-										   let isFood = Consumable.IsFood(item.ItemInfo)
-										   let isDrink = Consumable.IsDrink(item.ItemInfo)
-										   where (isFood || isDrink) && item.ItemInfo.SellPrice > 0 && item.Effects.Count == 1 && item.ItemInfo.RequiredLevel < Me.Level - 10                    
-										   select item).ToList();
-				
-				
-						var extraPotions = Me.BagItems
-							.Where(c => c != null && c.IsValid && c.ItemInfo != null && c.ItemInfo.SellPrice > 0 && c.Effects.Count == 1
-								&& (c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Potion
-								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Elixir
-								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Flask)
-								&& c.ItemInfo.RequiredLevel < Me.Level - 20);
-				
-						extraConsumables.AddRange(extraPotions);
-						return extraConsumables;
-					}
-					 
-					async Task SellExtraConsumables()
-					{
-						Logging.Write("Selling items in GetExtraConsumables()");
-						foreach (var item in GetExtraConsumables())
-						{
-							Logging.Write("Selling {0}.", item.Name);
-							item.UseContainerItem();
-							await Coroutine.Sleep(1337);
-						}
-					}
-				]]>
-			</Code>
-			<Code File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
-				<Code File="RunCode" Code="await SellExtraConsumables();"/>
-			</Code>
-		<!-- END Hooks -->
 
 		<While Condition="Me.ZoneId != 5034 &amp;&amp; (!IsQuestCompleted(28363) || Me.Level &lt; 85)" > <!-- Go into Uldum -->
 			<Code File="InteractWith" MobId="207695" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="-8228.679" Y="419.4386" Z="117.5915" TerminateWhen="Me.ZoneId == 5034" />
@@ -611,7 +567,10 @@
 		<PickUp QuestName="Salhet&apos;s Secret" QuestId="28276" GiverName="Salhet" GiverId="48022" X="-10382.87" Y="-862.2347" Z="130.7271" />
 		<TurnIn QuestName="Salhet&apos;s Secret" QuestId="28276" TurnInName="Salhet" TurnInId="48237" X="-10606.23" Y="-1086.064" Z="155.8228" />
 
-		<PickUp QuestName="Salhet the Tactician" QuestId="28277" GiverName="Salhet" GiverId="48237" X="-10606.23" Y="-1086.064" Z="155.8228" />
+		<If Condition="NeedsQuest(28277)" >
+			<MoveTo X="-10606.23" Y="-1086.064" Z="155.8228" />
+			<PickUp QuestName="Salhet the Tactician" QuestId="28277" GiverName="Salhet" GiverId="48237" X="-10606.23" Y="-1086.064" Z="155.8228" />
+		</If>
 		<While Condition="DoQuest(28277)" >
 			<Code File="InteractWith" MobId="48237" NonCompeteDistance="0" GossipOptions="1" PreInteractMountStrategy="Dismount" QuestId="28277" QuestObjectiveIndex="1" X="-10606.23" Y="-1086.064" Z="155.8228" TerminateWhen="Me.InVehicle" />
 			<DisableBehavior Name="All" />
@@ -802,7 +761,10 @@
 				</HuntingGrounds>
 			</Code>
 		</While>
-		<TurnIn QuestName="Make Yourself Useful" QuestId="27969" TurnInName="Commander Schnottz" TurnInId="47159" X="-10677.47" Y="927.2639" Z="26.26381" />
+		<If Condition="QuestDone(27969)" >
+			<MoveTo X="-10668.75" Y="948.3596" Z="26.28255" />
+			<TurnIn Nav="Run" QuestName="Make Yourself Useful" QuestId="27969" TurnInName="Commander Schnottz" TurnInId="47159" X="-10677.47" Y="927.2639" Z="26.26381" />
+		</If>
 
 		<PickUp QuestName="Crisis Management" QuestId="28002" GiverName="Belloc Brightblade" GiverId="47670" X="-10692.1" Y="929.1157" Z="26.5889" />
 		<While Condition="DoQuest(28002)" >

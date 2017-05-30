@@ -126,50 +126,6 @@
 			</Code>
 		<!-- END RunCode Methods -->
 
-		<!-- Hooks -->
-			<Code File="RunCode" Type="Definition">
-				<![CDATA[ 
-					IEnumerable<WoWItem> GetExtraConsumables()
-					{
-						uint foodCount = 0;
-						uint drinkCount = 0;
-						// Skip conjured and buff comsumables.
-				
-						var extraConsumables = (from item in Me.BagItems
-										   where item != null && item.ItemInfo != null
-										   let isFood = Consumable.IsFood(item.ItemInfo)
-										   let isDrink = Consumable.IsDrink(item.ItemInfo)
-										   where (isFood || isDrink) && item.ItemInfo.SellPrice > 0 && item.Effects.Count == 1 && item.ItemInfo.RequiredLevel < Me.Level - 10                    
-										   select item).ToList();
-				
-				
-						var extraPotions = Me.BagItems
-							.Where(c => c != null && c.IsValid && c.ItemInfo != null && c.ItemInfo.SellPrice > 0 && c.Effects.Count == 1
-								&& (c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Potion
-								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Elixir
-								|| c.ItemInfo.ConsumableClass == WoWItemConsumableClass.Flask)
-								&& c.ItemInfo.RequiredLevel < Me.Level - 20);
-				
-						extraConsumables.AddRange(extraPotions);
-						return extraConsumables;
-					}
-					 
-					async Task SellExtraConsumables()
-					{
-						Logging.Write("Selling items in GetExtraConsumables()");
-						foreach (var item in GetExtraConsumables())
-						{
-							Logging.Write("Selling {0}.", item.Name);
-							item.UseContainerItem();
-							await Coroutine.Sleep(1337);
-						}
-					}
-				]]>
-			</Code>
-			<Code File="Hooks\DoWhen" AllowExecutionWhileNotAlive="false"  AllowUseWhileMounted="true" ActivityName="SellExtraConsumables" UseWhen="MerchantFrame.Instance.IsVisible &amp;&amp; GetExtraConsumables().Any()" >
-				<Code File="RunCode" Code="await SellExtraConsumables();"/>
-			</Code>
-		<!-- END Hooks -->
 
 		<PickUp QuestName="Beer Basted Boar Ribs" QuestId="384" GiverName="Ragnar Thunderbrew" GiverId="1267" X="-5597.977" Y="-503.7419" Z="400.524" />
 		<PickUp QuestName="Frostmane Aggression" QuestId="25724" GiverName="Captain Tharran" GiverId="40950" X="-5644.56" Y="-491.9539" Z="396.6046" />

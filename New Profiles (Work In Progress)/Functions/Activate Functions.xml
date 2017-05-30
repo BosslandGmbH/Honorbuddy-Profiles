@@ -252,6 +252,7 @@
 						_mainPulseTimer.Restart();
 
 						if (Settings.Instance.AfkMode) await AFKMode();
+						if (Settings.Instance.SanityEngine) await SanityEngine();
 						if (Settings.Instance.UseAntiStuck) await CustomAntiStuck.StuckHandler();
 						if (Settings.Instance.UseActiveVendoring) ActiveVendorLogic();
 						if (Settings.Instance.HuntRareMobs) await RareHunter();
@@ -283,7 +284,7 @@
 						FancyLog(Colors.MediumPurple, "> [AFKMode] ", Colors.CornflowerBlue, $"\n     Items Deleted		:: {_deletedItems}\n     Items Opened		:: {_openedItems}\n     Items Sold		:: {_sellAllItems}\n     Questlog Cleanups	:: {_questlogCleanups}\n     Player Reactions	:: {_questlogCleanups}\n");
 
 						if (Settings.Instance.UseActiveVendoring)
-						FancyLog(Colors.MediumPurple, "> [Active Vendoring] ", Colors.CornflowerBlue, $"\n     Times Force Vendored		:: {_timesForceVendored}\n");
+						FancyLog(Colors.MediumPurple, "> [Active Vendoring] ", Colors.CornflowerBlue, $"\n     Times Force Vendored	:: {_timesForceVendored}\n");
 
 						if (Settings.Instance.CustomLooting)
 						FancyLog(Colors.MediumPurple, "> [Custom Looting] ", Colors.CornflowerBlue, $"\n     Time Saved		:: {Honorbuddy.QuestBehaviorCore.Utility.PrettyTime(TimeSaved).ToString()}\n");
@@ -296,6 +297,10 @@
 
 						if (Settings.Instance.FindTreasureChests)
 						FancyLog(Colors.MediumPurple, "> [Treasure Hunter] ", Colors.CornflowerBlue, $"\n     Treasures Found	:: {_treasuresFound}\n");
+
+						if (Settings.Instance.SanityEngine)
+						FancyLog(Colors.MediumPurple, "> [Sanity Engine] ", Colors.CornflowerBlue, $"\n     Times Went Insane	:: {_insaneCounter}\n");
+
 
 						FancyLog(Colors.MediumPurple, "> [Function Engine] ", Colors.Yellow, "Main pulse shut down.  All functions have been deactivated.");
 					}
@@ -322,6 +327,7 @@
 						{
 							if (QuestLog.Instance.GetAllQuests().Count() >= 20)
 							{
+								FancyLog(Colors.MediumPurple, "[AFK Mode]: ", Colors.Yellow, "Cleaning up questlog of low level quests since it is almost full.");
 								await Bots.DungeonBuddy.Helpers.ScriptHelpers.AbandonLowLevelQuests();
 								_questlogCleanups ++;
 							}
@@ -335,6 +341,7 @@
 								var openList = inventoryManager.Where(item => item.IsOpenable);
 								foreach (WoWItem openMe in openList)
 								{
+									FancyLog(Colors.MediumPurple, "[AFK Mode]: ", Colors.Yellow, $"Opening > {openMe.Name}.");
 									openMe.Use();
 									await Coroutine.Wait(1000, () => LootFrame.Instance.IsVisible);
 									LootFrame.Instance.LootAll();
@@ -348,6 +355,7 @@
 								var deleteList = inventoryManager.Where(item => item.ItemInfo.SellPrice == 00 && item.GetEffect(0) == null && (item.ItemInfo.Bond == WoWItemBondType.None || (item.ItemInfo.BeginQuestId != 0 && item.ItemInfo.RequiredLevel < (Me.Level - 5))));
 								foreach (WoWItem deleteMe in deleteList)
 								{
+									FancyLog(Colors.MediumPurple, "[AFK Mode]: ", Colors.Yellow, $"Force deleting > {deleteMe.Name}.");
 									deleteMe.PickUp();
 									Lua.DoString("DeleteCursorItem();");
 									_deletedItems ++;
@@ -360,6 +368,7 @@
 								foreach (WoWItem sellMe in sellList)
 								{
 									if (!MerchantFrame.Instance.IsVisible) break;
+									FancyLog(Colors.MediumPurple, "[AFK Mode]: ", Colors.Yellow, $"Force selling > {sellMe.Name}.");
 									sellMe.UseContainerItem();
 									await Coroutine.Sleep(500);
 									_sellAllItems ++;
@@ -395,21 +404,42 @@
 								_antiStuckTimerLongTerm.Restart();
 								if (IsStuck(false) && StyxWoW.Me.BagItems.Any(x => x.Entry == 6948))
 								{
+									WoWItem hearthItem = null;
+									uint currentMapId = StyxWoW.Me.MapId;
+
 									_longTermStucks ++;
 									FancyLog(Colors.MediumPurple, "[Anti-Stuck]: ", Colors.Yellow, "Long-term stuck detection activated!");
 									await CommonCoroutines.StopMoving();
 									await CommonCoroutines.LandAndDismount();
-									WoWItem normalHearthstone = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 6948);
-									if (normalHearthstone.CooldownTimeLeft != TimeSpan.Zero) {
+
+									if (StyxWoW.Me.CurrentMap.ExpansionId == 5 && StyxWoW.Me.BagItems.Any(x => x.Entry == 110560)) // WoD Hearth
+										hearthItem = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 110560);
+									else if (StyxWoW.Me.CurrentMap.ExpansionId == 6 && StyxWoW.Me.BagItems.Any(x => x.Entry == 140192)) // Broken Isles Dalaran Hearth
+										hearthItem = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+									else 
+										hearthItem = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 6948); // Normal Hearth
+
+									if (hearthItem.CooldownTimeLeft != TimeSpan.Zero)
+									{
 										FancyLog(Colors.MediumPurple, "[Anti-Stuck]: ", Colors.Yellow, "Awaiting Hearthstone cooldown before attempting hearth!");
-										await Coroutine.Wait(901000, () => normalHearthstone.CooldownTimeLeft == TimeSpan.Zero);
+										await Coroutine.Wait(901000, () => hearthItem.CooldownTimeLeft == TimeSpan.Zero);
 									}
-									normalHearthstone.Interact();
+									hearthItem.Interact();
 									await Coroutine.Sleep(11500);
 									FancyLog(Colors.MediumPurple, "[Anti-Stuck]: ", Colors.Yellow, "Reloading profile.");
-									ProfileManager.LoadNew(ProfileManager.XmlLocation);
-									_antiStuckTimerLongTerm.Restart();
+
+									if (StyxWoW.Me.MapId != currentMapId)
+									{
+										FancyLog(Colors.MediumPurple, "[Anti-Stuck]: ", Colors.Yellow, "Our map location has changed, loading the autoloaders.");
+										string profilePath =  Path.GetDirectoryName(ProfileManager.XmlLocation) + "/../../1-110 Autoloader.xml";
+										string absolutePath = Path.GetFullPath(profilePath);
+										ProfileManager.LoadNew(absolutePath);
+									}
+									else
+										ProfileManager.LoadNew(ProfileManager.XmlLocation);
+
 									await Coroutine.Sleep(5000);
+									_antiStuckTimerLongTerm.Restart();
 									return true;
 								}
 								return false;
@@ -508,7 +538,7 @@
 
 					private async Task<bool> CustomLootingBlacklister()
 					{
-						if (Me.IsActuallyInCombat) return false;
+						if (BotPoi.Current.Type != PoiType.Loot) return false;
 
 						var blacklistList = ObjectManager.GetObjectsOfType<WoWUnit>().Where(x => !Blacklist.Contains(x, BlacklistFlags.Loot) && x.Lootable && !IsNeededForQuestObjective(x));
 						if (!blacklistList.Any()) return false;
@@ -607,6 +637,24 @@
 				]]>
 				</Code>
 			<!-- END Rare Hunter -->
+
+			<!-- Sanity Engine -->
+				<Code File="RunCode" Type="Definition" ><![CDATA[
+						private static int _insaneCounter = 0;
+
+						private async Task<bool> SanityEngine()
+						{
+							if (QuestFrame.Instance.IsVisible && QuestFrame.Instance.CurrentShownQuestId == 0 && Lua.GetReturnVal<bool>("return QuestFrameAcceptButton:IsVisible()", 0))
+							{
+								QuestFrame.Instance.Close();
+								FancyLog(Colors.MediumPurple, "> [Sanity Engine] ", Colors.CornflowerBlue, $"Sticky quest frame detected, closing it.");
+								_insaneCounter ++;
+							}
+							return false;
+						}
+				]]>
+				</Code>
+			<!-- END Sanity Engine -->
 
 			<!-- Treasure Hunter -->
 				<Code File="RunCode" Type="Definition" ><![CDATA[
