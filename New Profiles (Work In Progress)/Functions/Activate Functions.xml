@@ -561,9 +561,10 @@
 					{
 						double _bagslotTotal = StyxWoW.Me.FreeNormalBagSlots + StyxWoW.Me.BagItems.Count();
 						double _bagslotPercentageDeficit = Math.Round((StyxWoW.Me.FreeNormalBagSlots/_bagslotTotal)*100);
-						bool _nearbyVendor = ObjectManager.GetObjectsOfType<WoWUnit>().Any(x => x.IsAlive && x.IsFriendly && x.IsAnyVendor && x.DistanceSqr <= 60f*60f);
-						if (!Vendors.ForceSell && _bagslotPercentageDeficit < 35 && _nearbyVendor)
+						WoWUnit _nearbyVendor = ObjectManager.GetObjectsOfType<WoWUnit>().FirstOrDefault(x => x.IsAlive && x.IsFriendly && x.IsAnyVendor && x.DistanceSqr <= 60f*60f);
+						if (!Vendors.ForceSell && _bagslotPercentageDeficit < 35 && _nearbyVendor != null)
 						{
+							ProfileManager.CurrentProfile.VendorManager.ForcedVendors.Add(new Vendor((int)_nearbyVendor.Entry, _nearbyVendor.Name, Vendor.VendorType.Sell, _nearbyVendor.Location, NavType.Run));
 							FancyLog(Colors.MediumPurple, "> [Active Vendoring] ", Colors.Yellow, "Forcing the bot to vendor since we're near a vendor.");
 							Vendors.ForceSell = true;
 							_timesForceVendored ++;
