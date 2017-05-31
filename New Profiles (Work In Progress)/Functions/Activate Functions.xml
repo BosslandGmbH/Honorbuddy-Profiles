@@ -645,9 +645,24 @@
 
 						private async Task<bool> SanityEngine()
 						{
+							if (QuestFrame.Instance.IsVisible && QuestFrame.Instance.CurrentShownQuestId != 0 && Lua.GetReturnVal<bool>("return QuestFrameCompleteButton:IsVisible();", 0) && !Lua.GetReturnVal<bool>("return QuestFrameCompleteButton:IsEnabled();", 0))
+							{
+								//TurnIn bug where if the bot tries turning in the quest at the immediate second that the quest is completed, the quest will show on the frame as incomplete even though it is.
+								QuestFrame.Instance.Close();
+								FancyLog(Colors.MediumPurple, "> [Sanity Engine] ", Colors.CornflowerBlue, $"Sticky quest frame detected, closing it.");
+								_insaneCounter ++;
+							}
 							if (QuestFrame.Instance.IsVisible && QuestFrame.Instance.CurrentShownQuestId == 0 && Lua.GetReturnVal<bool>("return QuestFrameAcceptButton:IsVisible()", 0))
 							{
+								//Ghost frame bug.  Where the bot tries picking up a quest but there is no quest description, title or text.
 								QuestFrame.Instance.Close();
+								FancyLog(Colors.MediumPurple, "> [Sanity Engine] ", Colors.CornflowerBlue, $"Sticky quest frame detected, closing it.");
+								_insaneCounter ++;
+							}
+							if (TaxiFrame.Instance.IsVisible && (BotPoi.Current.Type == PoiType.QuestTurnIn || BotPoi.Current.Type == PoiType.QuestPickUp) && !Me.IsMoving)
+							{
+								//FlightMaster-QuestGiver bug.  Where if the quest giver is also a flight master and the bot leaves the taxi frame open while trying to turn in or pick up a quest.
+								TaxiFrame.Instance.Close();
 								FancyLog(Colors.MediumPurple, "> [Sanity Engine] ", Colors.CornflowerBlue, $"Sticky quest frame detected, closing it.");
 								_insaneCounter ++;
 							}
