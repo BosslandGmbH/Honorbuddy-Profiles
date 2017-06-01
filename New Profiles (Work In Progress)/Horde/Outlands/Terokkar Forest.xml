@@ -163,6 +163,7 @@
 						}
 						if (_escortPoi.DistanceSqr <= 13 * 13)
 						{
+							await CommonCoroutines.LandAndDismount();
 							TreeRoot.StatusText = $"Following Khadgar's Servant";
 							if (!_escortPoi.IsMoving) return true;
 							await Coroutine.Sleep(rnd.Next(500, 1500));
@@ -585,7 +586,10 @@
 			</PursuitList>
 		</Code>
 
-		<Code File="KillUntilComplete" MobId="18540" QuestId="9987" QuestObjectiveIndex="2" X="-1863.116" Y="3882.862" Z="4.13813" />
+		<If Condition="DoQuest(9987)" >
+			<MoveTo X="-1862.495" Y="3883.266" Z="4.251633" />
+			<Code File="KillUntilComplete" MobId="18540" MovementBy="NavigatorOnly" QuestId="9987" QuestObjectiveIndex="2" X="-1863.116" Y="3882.862" Z="4.13813" />
+		</If>
 
 		<Code File="KillUntilComplete" MobId="18595" QuestId="10000" >
 			<HuntingGrounds>

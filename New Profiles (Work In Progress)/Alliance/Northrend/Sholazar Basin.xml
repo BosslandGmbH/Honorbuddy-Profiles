@@ -333,19 +333,24 @@
 		<PickUp QuestName="Playing Along" QuestId="12528" GiverName="Tracker Gekgek" GiverId="28095" X="5067.211" Y="4730.374" Z="-131.3982" />
 		<TurnIn QuestName="Playing Along" QuestId="12528" TurnInName="High-Shaman Rakjak" TurnInId="28082" X="5277.18" Y="4531.402" Z="-81.38486" />
 
-		<PickUp QuestName="The Ape Hunter&apos;s Slave" QuestId="12529" GiverName="High-Shaman Rakjak" GiverId="28082" X="5277.18" Y="4531.402" Z="-81.38486" />
+		<If Condition="NeedsQuest(12529)" >
+			<PickUp QuestName="The Ape Hunter&apos;s Slave" QuestId="12529" GiverName="High-Shaman Rakjak" GiverId="28082" X="5277.18" Y="4531.402" Z="-81.38486" />
+			<Code File="WaitTimer" WaitTime="2000" /> <!-- Let item register in our bags -->
+		</If>
 		<While Condition="!IsQuestCompleted(12530) &amp;&amp; !HasItem(38619)" >
 			<Code File="InteractWith" MobId="28138" NonCompeteDistance="0" GossipOptions="1" X="5265.628" Y="4515.716" Z="-84.83878" TerminateWhen="HasItem(38619)" />
 		</While>
 
-		<If Condition="NeedsQuest(12530)" >
+		<While Condition="NeedsQuest(12530)" >
 			<While Condition="Unit(28214, u =&gt; u.CreatedByUnit == Me) == null" >
 				<Code File="ForcedDismount" />
 				<Code File="UseItem" ItemId="38619" TerminateWhen="!HasItem(38619) || Unit(28214, u =&gt; u.CreatedByUnit == Me) != null" />
 				<Code File="WaitTimer" WaitTime="2500" TerminateWhen="Unit(28214, u =&gt; u.CreatedByUnit == Me) != null" />
 			</While>
-			<PickUp QuestName="Tormenting the Softknuckles" QuestId="12530" GiverName="Goregek the Gorilla Hunter" GiverId="28214" X="5269.529" Y="4518.748" Z="-83.98974" />
-		</If>
+			<Code File="InteractWith" MobId="28214" NonCompeteDistance="0" X="5269.529" Y="4518.748" Z="-83.98974" TerminateWhen="Unit(28214, u =&gt; u.CreatedByUnit == Me) == null" />
+			<Code File="RunCode" Code="QuestFrame.Instance.AcceptQuest();" />
+			<!-- <PickUp QuestName="Tormenting the Softknuckles" QuestId="12530" GiverName="Goregek the Gorilla Hunter" GiverId="28214" X="5269.529" Y="4518.748" Z="-83.98974" /> -->
+		</While>
 
 		<While Condition="DoQuest(12530)" >
 			<Code File="InteractWith" MobId="28127" InteractByUsingItemId="38467" PreInteractMountStrategy="Dismount" CollectionDistance="200" NumOfTimes="20" QuestId="12530" X="5134.74" Y="4007.375" Z="-61.68164" TerminateWhen="Unit(28213) != null" />
