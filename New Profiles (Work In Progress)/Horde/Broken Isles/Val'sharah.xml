@@ -73,31 +73,36 @@
 END INITORDER COMMENT -->
 
 	<QuestOrder>
-		<!-- Init Settings -->
-			<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
-
-			<Code File="EnablePlugin" Names="Anti Drown" />
-			<Code File="EnablePlugin" Names="Refreshment Detection" />
-
-			<Code File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
-
-			<LootMobs Value="true" />
-			<TargetingDistance Value="45" />
-		<!-- END Init Settings -->
-
-		<!-- Profile Settings -->
-			<Code File="RunCode" Type="Definition">
-				<![CDATA[private static System.Windows.Window _uiWindow{get;set;}public static void Initialize(){Settings.Instance.Load();System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{var grid=(System.Windows.Controls.Grid)((Honorbuddy.MainWindow)System.Windows.Application.Current.MainWindow).Content;var profileConfigButton=grid.Children.OfType<System.Windows.Controls.Button>().FirstOrDefault(btn=>btn.Name=="btnProfileSettings");if(profileConfigButton!=null)return;profileConfigButton=new System.Windows.Controls.Button{Name="btnProfileSettings",HorizontalAlignment=System.Windows.HorizontalAlignment.Right,VerticalAlignment=System.Windows.VerticalAlignment.Bottom,Margin=new System.Windows.Thickness(0,0,8,86),Content="Profile Config",Height=20,Width=120};grid.Children.Add(profileConfigButton);profileConfigButton.Click+=(sender,args)=>{System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{if(_uiWindow!=null){_uiWindow.Close();_uiWindow=null;}Settings.Instance.Load();_uiWindow=UiWindow.GetWindow();_uiWindow.Show();_uiWindow.Closing+=(o,eventArgs)=>{Settings.Instance.Save();};}));};}));Styx.CommonBot.BotEvents.OnBotStopped+=args=>{System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{var grid=(System.Windows.Controls.Grid)((Honorbuddy.MainWindow)System.Windows.Application.Current.MainWindow).Content;var profileConfigButton=grid.Children.OfType<System.Windows.Controls.Button>().FirstOrDefault(btn=>btn.Name=="btnProfileSettings");grid.Children.Remove(profileConfigButton);_uiWindow.Close();}));};Styx.CommonBot.TreeRoot.OnShutdownRequested+=(sender,args)=>{System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{_uiWindow.Close();}));};}public static class UiWindow{public static System.Windows.Window GetWindow(){var window=new System.Windows.Window{Title="Profile Settings",SizeToContent=System.Windows.SizeToContent.WidthAndHeight,ResizeMode=System.Windows.ResizeMode.NoResize,DataContext=Settings.Instance};var grid=new System.Windows.Controls.Grid{Width=500,Height=550};window.Content=grid;var hbHeaderLogo=new System.Windows.Controls.MediaElement{LoadedBehavior=System.Windows.Controls.MediaState.Play,VerticalAlignment=System.Windows.VerticalAlignment.Top,HorizontalAlignment=System.Windows.HorizontalAlignment.Center};hbHeaderLogo.MediaEnded+=(sender,args)=>{hbHeaderLogo.Position=TimeSpan.FromMilliseconds(1);};grid.Children.Add(hbHeaderLogo);var discordButton=new System.Windows.Controls.Button{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(20,20,0,0),Style=new System.Windows.Style(),Background=System.Windows.Media.Brushes.Transparent,BorderThickness=new System.Windows.Thickness(0),Cursor=System.Windows.Input.Cursors.Hand};discordButton.Click+=(sender,args)=>{Process.Start("http://discord.gg/h74WjFY");};grid.Children.Add(discordButton);var discordImage=new System.Windows.Controls.Image{Height=36,Width=50,Style=new System.Windows.Style()};discordButton.Content=discordImage;var tabControl=new System.Windows.Controls.TabControl{Margin=new System.Windows.Thickness(0,150,0,0)};grid.Children.Add(tabControl);var changelogTab=new System.Windows.Controls.TabItem{Header="Changelog",Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255))};tabControl.Items.Add(changelogTab);changelogTab.GotFocus+=(sender,args)=>{changelogTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(73,96,210));};changelogTab.LostFocus+=(sender,args)=>{changelogTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255));};changelogTab.Focus();var changelogTextBox=new System.Windows.Controls.RichTextBox{Margin=new System.Windows.Thickness(10),VerticalScrollBarVisibility=System.Windows.Controls.ScrollBarVisibility.Auto,IsReadOnly=true,SelectionOpacity=0};changelogTab.Content=changelogTextBox;var generalTab=new System.Windows.Controls.TabItem{Header="General Settings",Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255))};tabControl.Items.Add(generalTab);generalTab.GotFocus+=(sender,args)=>{generalTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(73,96,210));};generalTab.LostFocus+=(sender,args)=>{generalTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255));};var generalGrid=new System.Windows.Controls.Grid();generalTab.Content=generalGrid;var useAPItemCheckBox=new System.Windows.Controls.CheckBox{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(50,50,0,0),Content="Use Artifact Power Items"};generalGrid.Children.Add(useAPItemCheckBox);useAPItemCheckBox.SetBinding(System.Windows.Controls.CheckBox.IsCheckedProperty,new System.Windows.Data.Binding(nameof(Settings.Instance.UseAPItems)){Source=Settings.Instance});var useCustomAntiStuckCheckBox=new System.Windows.Controls.CheckBox{HorizontalAlignment=System.Windows.HorizontalAlignment.Center,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(0,100,20,0),Content="Use Custom Anti-Stuck"};generalGrid.Children.Add(useCustomAntiStuckCheckBox);useCustomAntiStuckCheckBox.SetBinding(System.Windows.Controls.CheckBox.IsCheckedProperty,new System.Windows.Data.Binding(nameof(Settings.Instance.UseCustomAntiStuck)){Source=Settings.Instance});var generalTabLabel=new System.Windows.Controls.Label{HorizontalAlignment=System.Windows.HorizontalAlignment.Center,VerticalAlignment=System.Windows.VerticalAlignment.Bottom,Margin=new System.Windows.Thickness(0,0,0,50),Content="More settings coming soon!"};generalGrid.Children.Add(generalTabLabel);var farmTreasuresCheckBox=new System.Windows.Controls.CheckBox{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(270,50,0,0),Content="Passively Farm Treasures"};generalGrid.Children.Add(farmTreasuresCheckBox);farmTreasuresCheckBox.SetBinding(System.Windows.Controls.CheckBox.IsCheckedProperty,new System.Windows.Data.Binding(nameof(Settings.Instance.FarmTreasures)){Source=Settings.Instance});Task.WhenAll(LoadChangelogAsync(window,changelogTextBox),LoadDiscordImageAsync(window,discordImage),LoadHBLogoAsync(window,hbHeaderLogo));return window;}private static async Task LoadChangelogAsync(System.Windows.Window window,System.Windows.Controls.RichTextBox changelogTextBox){await window.Dispatcher.BeginInvoke(new Action(async()=>{using(var client=new System.Net.WebClient()){var str=await client.DownloadStringTaskAsync("http://ech-o.net/bForum/changelog");using(var stream=new MemoryStream(System.Text.Encoding.Default.GetBytes(str))){changelogTextBox.Selection.Load(stream,System.Windows.DataFormats.Rtf);}}}));}private static async Task LoadDiscordImageAsync(System.Windows.Window window,System.Windows.Controls.Image imageControl){await window.Dispatcher.BeginInvoke(new Action(async()=>{using(var client=new System.Net.WebClient()){var str=await client.DownloadDataTaskAsync("http://ech-o.net/bForum/discord.png");using(var stream=new MemoryStream(str)){var bitmap=new System.Windows.Media.Imaging.BitmapImage();bitmap.BeginInit();bitmap.StreamSource=stream;bitmap.CacheOption=System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;bitmap.EndInit();bitmap.Freeze();imageControl.Source=bitmap;}}}));}private static async Task LoadHBLogoAsync(System.Windows.Window window,System.Windows.Controls.MediaElement mediaElement){await window.Dispatcher.BeginInvoke(new Action(async()=>{var savedImagePath=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"Profile Settings","header.png");if(savedImagePath==null)return;if(File.Exists(savedImagePath)){mediaElement.Source=new Uri(savedImagePath);}else{mediaElement.Source=new Uri("http://ech-o.net/bForum/headerlowres.jpg");var directory=Path.GetDirectoryName(savedImagePath);if(directory==null)return;if(!Directory.Exists(directory)){Directory.CreateDirectory(directory);}using(var client=new System.Net.WebClient()){await client.DownloadFileTaskAsync("http://ech-o.net/bForum/header.png",savedImagePath);if(File.Exists(savedImagePath)){mediaElement.Source=new Uri(savedImagePath);}}}}));}}public class Settings : System.ComponentModel.INotifyPropertyChanged{private readonly string _filePath;private readonly string _jsonLocation;private bool _useAPItems=true;	private bool _useCustomAntiStuck=true;private bool _farmTreasures=false;private Settings(){var hbLocation=Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);_jsonLocation=Path.Combine(hbLocation,"Newtonsoft.Json.dll");_filePath=Path.Combine(Styx.Helpers.Settings.CharacterSettingsDirectory,"OfficialProfilePackSettings.json");}public bool UseAPItems{get{return _useAPItems;}set{if(value==_useAPItems)return;_useAPItems=value;OnPropertyChanged();}}public bool UseCustomAntiStuck{get{return _useCustomAntiStuck;}set{if(value==_useCustomAntiStuck)return;_useCustomAntiStuck=value;OnPropertyChanged();}}public static Settings Instance{get;private set;}=new Settings();public bool FarmTreasures{get{return _farmTreasures;}set{if(value==_farmTreasures)return;_farmTreasures=value;OnPropertyChanged();}}public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;public void Load(){try{if(File.Exists(_filePath)){var assembly=AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a=>a.FullName.Contains("Newtonsoft.Json"))?? System.Reflection.Assembly.LoadFrom(_jsonLocation);var jsonConvert=assembly.GetTypes().FirstOrDefault(a=>a.FullName=="Newtonsoft.Json.JsonConvert");var json=string.Empty;using(var streamReader=new StreamReader(_filePath)){json=streamReader.ReadToEnd();}var populateObject=jsonConvert.GetMethods().FirstOrDefault(m=>m.Name=="PopulateObject");populateObject.Invoke(null,new object[]{json,Instance});}}catch(Exception ex){Logging.Write(ex.Message);}}private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName=null){PropertyChanged?.Invoke(this,new System.ComponentModel.PropertyChangedEventArgs(propertyName));}public void Save(){try{var assembly=AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a=>a.FullName.Contains("Newtonsoft.Json"))?? System.Reflection.Assembly.LoadFrom(_jsonLocation);var jsonConvert=assembly.GetTypes().FirstOrDefault(a=>a.FullName=="Newtonsoft.Json.JsonConvert");var serializeObject=jsonConvert.GetMethods().FirstOrDefault(m=>m.Name=="SerializeObject");var content=(string)serializeObject.Invoke(null,new object[]{this});using(var streamWriter=new StreamWriter(_filePath)){streamWriter.WriteLine(content);}}catch(Exception ex){Logging.Write(ex.Message);}}}]]>
-			</Code>
-			<Code File="RunCode"><![CDATA[
-					Initialize();
-					string settingsLog = $"[ProfileBase]: Settings Activated\n	Use Artifact Power Items :: {Settings.Instance.UseAPItems}\n	Use Custom Anti-Stuck    :: {Settings.Instance.UseCustomAntiStuck}\n 	Passively Farm Treasures :: {Settings.Instance.FarmTreasures}\n\nUse the 'Profile Config' button above the bot's Stop/Start button to change these settings.\n";
-					Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, settingsLog);
+		<!-- Check function status -->
+			<Code File="RunCode" Type="Definition" >
+				<![CDATA[
+					bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
 				]]>
 			</Code>
-		<!-- END Profile Settings -->
+			<If Condition="profileFunctionsEnabled == null || profileFunctionsEnabled == false" >
+				<Code File="RunCode">
+					<![CDATA[ Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!"); ]]>
+				</Code>
+				<Code File="LoadProfile" ProfileName="..\..\Functions\Activate Functions.xml" />
+			</If>
+		<!-- END Check function status -->
 
+		<If Condition="Me.IsAlliance" >
+			<Code File="LoadProfile" ProfileName="..\..\1-110 Autoloader.xml" RememberProfile="true" />
+		</If>
 		<!-- RunCode Methods -->
+			<Code File="RunCode">
+			<![CDATA[
+				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
+				Lua.DoString("SetCVar('AutoLootDefault', 1);");
+				Lua.DoString("SetCVar('autoDismountFlying', 1);");
+				CharacterSettings.Instance.LootMobs = true;
+				CharacterSettings.Instance.Save();
+				Lua.DoString("for i=1,GetNumAddOns() do local relo=false if IsAddOnLoaded(i) then relo=true DisableAddOn(i) end if relo then relo=nil ReloadUI() end end");
+				await Coroutine.Sleep(1500);
+				Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
+			]]>
+			</Code>
 			<Code File="RunCode" Type="Definition">
 				<![CDATA[
 						bool DoQuest(params uint[] questIds)
@@ -132,7 +137,6 @@ END INITORDER COMMENT -->
 							}
 							return false;
 						}
-
 						bool QuestFlaggedCompleted(params uint[] questIds)
 						{
 							foreach (var questId in questIds)
@@ -141,7 +145,6 @@ END INITORDER COMMENT -->
 							}
 							return false;
 						}
-
 						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
 						{
 					// Add detection of cutscene here.
@@ -153,160 +156,6 @@ END INITORDER COMMENT -->
 					]]>
 			</Code>
 		<!-- END RunCode Methods -->
-
-		<!-- Anti-stuck hook -->
-			<Code File="RunCode" Type="Definition"><![CDATA[
-				static bool UseAntiStuck = true;
-
-				public static class StuckDetection
-				{
-					public static Vector3 LastPoint = new Vector3(0f,0f,0f);
-
-					public static bool IsStuck()
-					{
-						if (!Settings.Instance.UseCustomAntiStuck) return false;
-						if (!StyxWoW.Me.IsValid) return false;
-						if (StyxWoW.Me.IsDead) return false;
-						if (StyxWoW.Me.IsActuallyInCombat) return false;
-						if (StyxWoW.Me.HasAura("Resurrection Sickness")) return false;
-
-						var currentPoint = StyxWoW.Me.Location;
-						var isStuck = currentPoint.DistanceSqr(LastPoint) < 10f * 10f;
-						LastPoint = currentPoint;
-						return isStuck;
-					}
-				}
-			]]>
-			</Code>
-			<Code File="RunCode" Code="StuckDetection.LastPoint = new Vector3(0f,0f,0f);" /> <!-- Clean out stale data in case the user stop/starts the bot. -->
-			<Code File="Hooks\DoWhen" ActivityName="DoWhen_StuckDetector" AllowUseWhileMounted="true" LogExecution="false" UseAtInterval="210000" >
-				<If Condition="StuckDetection.IsStuck() &amp;&amp; HasItem(140192)" >
-					<Code File="RunCode"><![CDATA[
-						Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Stuck detection activated!");
-						await CommonCoroutines.StopMoving();
-						await CommonCoroutines.LandAndDismount();
-						WoWItem dalaranHearthstone = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
-						if (dalaranHearthstone.CooldownTimeLeft != TimeSpan.Zero) {
-							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Awaiting Dalaran Hearthstone cooldown before attempting hearth!");
-							await Coroutine.Wait(901000, () => dalaranHearthstone.CooldownTimeLeft == TimeSpan.Zero);
-						}
-						dalaranHearthstone.Interact();
-						await Coroutine.Sleep(11500);
-						Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Reloading profile.");
-						ProfileManager.LoadNew(ProfileManager.XmlLocation);
-					]]>
-					</Code>
-				</If>
-			</Code>
-		<!-- END Anti-stuck hook -->
-		
-		<!-- Activate Artifact Boost Items Usage -->
-			<Code File="RunCode" Type="Definition" ><![CDATA[
-					bool ReadyToEmpowerArtifact()
-					{
-						if (!Settings.Instance.UseAPItems) return false;
-						if (!Lua.GetReturnVal<bool>("return HasArtifactEquipped()", 0)) return false;
-						bool HaveItem = Me.BagItems.Any(x => x.ItemInfo.ConsumableClass == WoWItemConsumableClass.Other && x.GetEffect(0)?.Spell?.Name == "Empowering");
-						return HaveItem;
-					}
-				]]>
-			</Code>
-			<Code File="Hooks\DoWhen" LogExecution="false" AllowExecutionWhileNotAlive="false" ActivityName="UseArtifactBoostItems" UseWhen="ReadyToEmpowerArtifact()" >
-				<Code File="RunCode"><![CDATA[
-						Logging.Write(System.Windows.Media.Colors.Yellow, "[ProfileBase]: Using artifact power booster items.");
-						var artifactPowerItems = Me.BagItems.Where(x => x.ItemInfo.ConsumableClass == WoWItemConsumableClass.Other && x.GetEffect(0)?.Spell?.Name == "Empowering");
-						foreach (WoWItem useMe in artifactPowerItems)
-						{
-							if (!Me.IsValid || !Me.IsAlive || Me.IsActuallyInCombat)
-								break;
-							await CommonCoroutines.StopMoving();
-							useMe.Use();
-							await Coroutine.Sleep(500);
-							await Coroutine.Wait(1600, () => !SpellManager.GlobalCooldown);
-							await Coroutine.Wait(2500, () => !Me.IsCasting);
-						}
-					]]>
-				</Code>
-			</Code>
-		<!-- END Activate Artifact Boost Items Usage -->
-
-		<!-- Profession Items -->
-			<!-- <WoWItem Name="Skinning Technique: Unbroken Tooth" Entry="139893" /> -->
-			<If Condition="HasItem(139893)" >
-				<Code File="ForcedDismount" />
-				<Code File="UseItem" ItemId="139893" WaitTime="1337" />
-			</If>
-
-			<!-- <WoWItem Name="Skinning Technique: Unbroken Claw" Entry="139894" /> -->
-			<If Condition="HasItem(139894)" >
-				<Code File="ForcedDismount" />
-				<Code File="UseItem" ItemId="139894" WaitTime="1337" />
-			</If>
-		<!-- END Profession Items -->
-
-		<!-- Treasure Farm Hook -->
-			<Code File="RunCode">
-			<![CDATA[
-				TreeHooks.Instance.InsertHook("Questbot_Profile", 0,
-					_treasureHuntComposite ?? (_treasureHuntComposite = new  CommonBehaviors.Actions.ActionRunCoroutine(ctx => TreasureHunt())));	
-			]]>
-			</Code>
-
-			<Code File="RunCode" Type="Definition" ><![CDATA[
-					private List<WoWGuid> _treasureBlacklist = new List<WoWGuid>();
-					private bool _treasureIsLogged = false;
-					private Styx.TreeSharp.Composite _treasureHuntComposite;
-					private WoWGameObject _treasurePoi;
-					private Vector3 _treasureLocation; 
-
-					public async Task<bool> TreasureHunt()
-					{
-						if (!Settings.Instance.FarmTreasures) return false;
-
-						if (!_treasureLocation.Equals(new Vector3(0,0,0)) && _treasureLocation.DistanceSquared((WoWMovement.ActiveMover ?? StyxWoW.Me).Location) > 5 * 5)
-						{
-							TreeRoot.StatusText = $"Moving to interact with treasure: {_treasurePoi.Name}";
-							return (await CommonCoroutines.MoveTo(_treasureLocation)).IsSuccessful();
-						}
-
-						if (_treasurePoi == null || !_treasurePoi.IsValid)
-						{
-							_treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !_treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.SubType == WoWGameObjectType.Chest && obj.LockType == WoWLockType.Open && obj.CanUse() && obj.DistanceSqr <= 40f*40f);
-							if (_treasurePoi == null) return false;
-							if (Navigator.LookupPathInfo(_treasurePoi).Navigability != PathNavigability.Navigable)
-							{
-								_treasureBlacklist.Add(_treasurePoi.Guid);
-								Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, $"[ProfileBase]: Treasure detected near us, but we can't navigate to it!\n	Name     :: {_treasurePoi.Name}\n	Entry    :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
-								_treasurePoi = null;
-								return false;
-							}
-							_treasureLocation = _treasurePoi.Location;
-							return true;
-						}
-
-						if (!_treasureIsLogged)
-						{
-							_treasureIsLogged = true;
-							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, $"[ProfileBase]: Treasure detected near us!\n	Name     :: {_treasurePoi.Name}\n	Entry    :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
-						}
-
-						TreeRoot.StatusText = $"Interacting with treasure: {_treasurePoi.Name}";
-						await CommonCoroutines.LandAndDismount();
-						await CommonCoroutines.StopMoving();
-						_treasurePoi.Interact();
-						await Coroutine.Wait(2000, () => LootFrame.Instance.IsVisible);
-						LootFrame.Instance.LootAll();
-						await Coroutine.Wait(2000, () => _treasurePoi == null || !_treasurePoi.IsValid);
-
-						_treasureIsLogged = false;
-						_treasureLocation = new Vector3(0,0,0);
-						_treasureBlacklist.Add(_treasurePoi.Guid);
-
-						return true;
-					}
-			]]>
-			</Code>
-		<!-- END Treasure Farm Hook -->
 
 
 	<!-- Zone Introductory Quests -->

@@ -1,39 +1,39 @@
 <HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <!-- Original contribution by EchoTiger -->
-  <Name>Paladin - Retribution - Ashbringer ($Rev: 6043 $)</Name>
+<!-- Original contribution by EchoTiger -->
+<Name>Paladin - Retribution - Ashbringer ($Rev: 6043 $)</Name>
 
-  <MinDurability>0.3</MinDurability>
-  <MinFreeBagSlots>3</MinFreeBagSlots>
+<MinDurability>0.3</MinDurability>
+<MinFreeBagSlots>3</MinFreeBagSlots>
 
-  <SellGrey>true</SellGrey>
-  <SellWhite>true</SellWhite>
-  <SellGreen>true</SellGreen>
-  <SellBlue>true</SellBlue>
-  <SellPurple>false</SellPurple>
+<SellGrey>true</SellGrey>
+<SellWhite>true</SellWhite>
+<SellGreen>true</SellGreen>
+<SellBlue>true</SellBlue>
+<SellPurple>false</SellPurple>
 
-  <MailGrey>false</MailGrey>
-  <MailWhite>true</MailWhite>
-  <MailGreen>true</MailGreen>
-  <MailBlue>true</MailBlue>
-  <MailPurple>true</MailPurple>
+<MailGrey>false</MailGrey>
+<MailWhite>true</MailWhite>
+<MailGreen>true</MailGreen>
+<MailBlue>true</MailBlue>
+<MailPurple>true</MailPurple>
 
-  <TargetElites>true</TargetElites>
+<TargetElites>true</TargetElites>
 
-  <Blackspots>
-  </Blackspots>
+<Blackspots>
+</Blackspots>
 
-  <Blacklist>
-  </Blacklist>
+<Blacklist>
+</Blacklist>
 
-  <Mailboxes>
-  </Mailboxes>
+<Mailboxes>
+</Mailboxes>
 
-  <Vendors>
-  </Vendors>
+<Vendors>
+</Vendors>
 
-  <DefaultNavType>Fly</DefaultNavType>
+<DefaultNavType>Fly</DefaultNavType>
 
-  <!-- INITORDER COMMENT 
+<!-- INITORDER COMMENT 
 	<InitOrder>
 		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
 		<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
@@ -48,223 +48,258 @@
 	</InitOrder>
 END INITORDER COMMENT -->
 
-  <QuestOrder>
-    <!-- No checkpoints here. -->
-    <!-- RunCode Methods -->
-    <Code File="RunCode" Type="Definition">
-      <![CDATA[
-					bool DoQuest(params uint[] questIds)
-					{
-						foreach (var questId in questIds)
-						{
-							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
-						}
-						return false;
-					}
-					bool NeedsQuest(params uint[] questIds)
-					{
-						foreach (var questId in questIds)
-						{
-							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
-						}
-						return false;
-					}
-					bool NeedsBreadcrumbQuest(params uint[] questIds)
-					{
-						foreach (var questId in questIds)
-						{
-							if (IsQuestCompleted(questId)) return false;
-						}
-						return true;
-					}
-					bool QuestDone(params uint[] questIds)
-					{
-						foreach (var questId in questIds)
-						{
-							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
-						}
-						return false;
-					}
-					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
-					{
-				// Add detection of cutscene here.
-						await Coroutine.Sleep(preWait);
-				// Test and improve the working method.
-						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
-						await Coroutine.Sleep(postWait);
-					}
+	<QuestOrder>
+		<!-- Check function status -->
+			<Code File="RunCode" Type="Definition" >
+				<![CDATA[
+					bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
 				]]>
-    </Code>
-    <!-- END RunCode Methods -->
+			</Code>
+			<If Condition="profileFunctionsEnabled == null || profileFunctionsEnabled == false" >
+				<Code File="RunCode">
+					<![CDATA[ Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!"); ]]>
+				</Code>
+				<Code File="LoadProfile" ProfileName="..\..\Functions\Activate Functions.xml" />
+			</If>
+		<!-- END Check function status -->
 
-    <!-- Get Continuation Quest -->
-    <!-- END Get Continuation Quest -->
+		<If Condition="Me.IsAlliance" >
+			<Code File="LoadProfile" ProfileName="..\..\1-110 Autoloader.xml" RememberProfile="true" />
+		</If>
+		<!-- RunCode Methods -->
+			<Code File="RunCode">
+			<![CDATA[
+				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
+				Lua.DoString("SetCVar('AutoLootDefault', 1);");
+				Lua.DoString("SetCVar('autoDismountFlying', 1);");
+				CharacterSettings.Instance.LootMobs = true;
+				CharacterSettings.Instance.Save();
+				Lua.DoString("for i=1,GetNumAddOns() do local relo=false if IsAddOnLoaded(i) then relo=true DisableAddOn(i) end if relo then relo=nil ReloadUI() end end");
+				await Coroutine.Sleep(1500);
+				Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
+			]]>
+			</Code>
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</Code>
+		<!-- END RunCode Methods -->
 
-    <!-- Second Artifact -->
-    <!-- <PickUp Nav="Fly" QuestName="Bolstering Your Arsenal" QuestId="44063" GiverName="Lord Maxwell Tyrosus" GiverId="90259" />
-		<Objective QuestName="Bolstering Your Arsenal" QuestId="44063" Type="KillMob" Nav="Fly" MobId="112452" KillCount="1" />
-		<TurnIn Nav="Fly" QuestName="Bolstering Your Arsenal" QuestId="44063" TurnInName="Lord Maxwell Tyrosus" TurnInId="90259" /> -->
-    <!-- END Second Artifact -->
+		<!-- Get Continuation Quest -->
+		<!-- END Get Continuation Quest -->
 
-    <!-- Third Artifact -->
-    <!-- END Third Artifact -->
+		<!-- Second Artifact -->
+		<!-- <PickUp Nav="Fly" QuestName="Bolstering Your Arsenal" QuestId="44063" GiverName="Lord Maxwell Tyrosus" GiverId="90259" />
+			<Objective QuestName="Bolstering Your Arsenal" QuestId="44063" Type="KillMob" Nav="Fly" MobId="112452" KillCount="1" />
+			<TurnIn Nav="Fly" QuestName="Bolstering Your Arsenal" QuestId="44063" TurnInName="Lord Maxwell Tyrosus" TurnInId="90259" /> -->
+		<!-- END Second Artifact -->
 
-    <!-- Story: Artifact Weapon - Ashbringer -->
-    <!-- NOTE: <TechnicalCheck> : These NPC locations will vary depending on if this is the player's first artifact weapon or not.
-											This current XYZ/Id is for the first artifact weapon.  Add support for other artifact quests later. -->
-    <PickUp QuestName="Seeking Guidance" QuestId="42770" GiverName="Lord Maxwell Tyrosus" GiverId="90369" X="-847.9688" Y="4256.457" Z="746.2817" />
-    <!-- END: <Technical Check -->
-    <While Condition="DoQuest(42770)" >
-      <If Condition="Me.MapId != 0" >
-        <If Condition="Me.Z &gt; 605" >
-          <!-- NOTE: <CheckFunction> : Dalaran to Dalaran Portal Room -->
-          <MoveTo X="-850.0136" Y="4460.374" Z="735.6611" />
-          <Code File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" TerminateWhen="Me.Z &lt;= 605" />
-        </If>
-        <MoveTo X="-881.0235" Y="4507.995" Z="580.1562" />
-        <Code File="InteractWith" MobId="246008" WaitTime="1000" X="-880.408" Y="4511.733" Z="580.4584" />
-        <Code File="RunCode" Code="SpellManager.Cast(1022);" />
-        <!-- Blessing of Protection to prevent fall damage. -->
-        <Code File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsFalling" />
-      </If>
-      <Code File="FlyTo" DestName="Uther's Tomb" X="1098.106" Y="-1800.179" Z="62.13031" />
-    </While>
-    <TurnIn QuestName="Seeking Guidance" QuestId="42770" TurnInName="Lord Maxwell Tyrosus" TurnInId="108776" X="1100.592" Y="-1800.389" Z="62.01579" />
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
 
-    <If Condition="NeedsQuest(42772)" >
-      <!-- The bot can't recognize this quest has been picked up for some reason. -->
-      <Code File="InteractWith" MobId="108777" X="1101.53" Y="-1795.161" Z="61.77362" />
-      <Code File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click();" />
-    </If>
-    <PickUp QuestName="Keeping the Peace" QuestId="42771" GiverName="Mehlar Dawnblade" GiverId="108778" X="1101.997" Y="-1791.12" Z="61.89447" />
+		<!-- Story: Artifact Weapon - Ashbringer -->
+		<!-- NOTE: <TechnicalCheck> : These NPC locations will vary depending on if this is the player's first artifact weapon or not.
+												This current XYZ/Id is for the first artifact weapon.  Add support for other artifact quests later. -->
+		<PickUp QuestName="Seeking Guidance" QuestId="42770" GiverName="Lord Maxwell Tyrosus" GiverId="90369" X="-847.9688" Y="4256.457" Z="746.2817" />
+		<!-- END: <Technical Check -->
+		<While Condition="DoQuest(42770)" >
+			<If Condition="Me.MapId != 0" >
+				<If Condition="Me.Z &gt; 605" >
+				<!-- NOTE: <CheckFunction> : Dalaran to Dalaran Portal Room -->
+				<MoveTo X="-850.0136" Y="4460.374" Z="735.6611" />
+				<Code File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" TerminateWhen="Me.Z &lt;= 605" />
+				</If>
+				<MoveTo X="-881.0235" Y="4507.995" Z="580.1562" />
+				<Code File="InteractWith" MobId="246008" WaitTime="1000" X="-880.408" Y="4511.733" Z="580.4584" />
+				<Code File="RunCode" Code="SpellManager.Cast(1022);" />
+				<!-- Blessing of Protection to prevent fall damage. -->
+				<Code File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsFalling" />
+			</If>
+			<Code File="FlyTo" DestName="Uther's Tomb" X="1098.106" Y="-1800.179" Z="62.13031" />
+		</While>
+		<TurnIn QuestName="Seeking Guidance" QuestId="42770" TurnInName="Lord Maxwell Tyrosus" TurnInId="108776" X="1100.592" Y="-1800.389" Z="62.01579" />
 
-    <While Condition="DoQuest(42772)" >
-      <UseMount Value="false" />
-      <Code File="InteractWith" QuestId="42772" MovementBy="NavigatorPreferred" MobIds="251336, 251338, 251340, 251341, 251342, 251343" NumOfTimes="50" InteractBlacklistTimeInSeconds="15" >
-        <HuntingGrounds WaypointVisitStrategy="Random" >
-          <GameObject Name="Gravestone 0" X="1142.818" Y="-1725.26" Z="61.79371" />
-          <GameObject Name="Gravestone 1" X="1142.837" Y="-1725.241" Z="64.42095" />
-          <GameObject Name="Gravestone 2" X="1183.33" Y="-1777.835" Z="61.93257" />
-          <GameObject Name="Gravestone 3"  X="1183.33" Y="-1777.842" Z="61.46543" />
-          <GameObject Name="Gravestone 4" X="1064.783" Y="-1747.601" Z="61.63756" />
-          <GameObject Name="Gravestone 5" X="1064.783" Y="-1747.613" Z="63.08894" />
-        </HuntingGrounds>
-      </Code>
-    </While>
+		<If Condition="NeedsQuest(42772)" >
+			<!-- The bot can't recognize this quest has been picked up for some reason. -->
+			<Code File="InteractWith" MobId="108777" X="1101.53" Y="-1795.161" Z="61.77362" />
+			<Code File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click();" />
+		</If>
+		<PickUp QuestName="Keeping the Peace" QuestId="42771" GiverName="Mehlar Dawnblade" GiverId="108778" X="1101.997" Y="-1791.12" Z="61.89447" />
 
-    <While Condition="DoQuest(42771)" >
-      <Code File="KillUntilComplete" MobIds="108824, 108815" QuestId="42771" QuestObjectiveIndex="1" >
-        <HuntingGrounds>
-          <Hotspot X="1203.974" Y="-1749.853" Z="62.26963" />
-          <Hotspot X="1166.274" Y="-1719.526" Z="60.92463" />
-          <Hotspot X="1095.463" Y="-1668.225" Z="61.76325" />
-          <Hotspot X="1042.292" Y="-1718.173" Z="62.87202" />
-        </HuntingGrounds>
-      </Code>
-    </While>
-    <UseMount Value="false" />
+		<While Condition="DoQuest(42772)" >
+			<UseMount Value="false" />
+			<Code File="InteractWith" QuestId="42772" MovementBy="NavigatorPreferred" MobIds="251336, 251338, 251340, 251341, 251342, 251343" NumOfTimes="50" InteractBlacklistTimeInSeconds="15" >
+				<HuntingGrounds WaypointVisitStrategy="Random" >
+				<GameObject Name="Gravestone 0" X="1142.818" Y="-1725.26" Z="61.79371" />
+				<GameObject Name="Gravestone 1" X="1142.837" Y="-1725.241" Z="64.42095" />
+				<GameObject Name="Gravestone 2" X="1183.33" Y="-1777.835" Z="61.93257" />
+				<GameObject Name="Gravestone 3"  X="1183.33" Y="-1777.842" Z="61.46543" />
+				<GameObject Name="Gravestone 4" X="1064.783" Y="-1747.601" Z="61.63756" />
+				<GameObject Name="Gravestone 5" X="1064.783" Y="-1747.613" Z="63.08894" />
+				</HuntingGrounds>
+			</Code>
+		</While>
 
-    <TurnIn QuestName="Sacred Ground" QuestId="42772" TurnInName="High Priest Thel'danis" TurnInId="108777" X="1101.53" Y="-1795.161" Z="61.77359" />
-    <TurnIn QuestName="Keeping the Peace" QuestId="42771" TurnInName="Mehlar Dawnblade" TurnInId="108778" X="1101.997" Y="-1791.12" Z="61.89468" />
+		<While Condition="DoQuest(42771)" >
+			<Code File="KillUntilComplete" MobIds="108824, 108815" QuestId="42771" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+				<Hotspot X="1203.974" Y="-1749.853" Z="62.26963" />
+				<Hotspot X="1166.274" Y="-1719.526" Z="60.92463" />
+				<Hotspot X="1095.463" Y="-1668.225" Z="61.76325" />
+				<Hotspot X="1042.292" Y="-1718.173" Z="62.87202" />
+				</HuntingGrounds>
+			</Code>
+		</While>
+		<UseMount Value="false" />
 
-    <PickUp QuestName="The Light Reveals" QuestId="42773" GiverName="Lord Maxwell Tyrosus" GiverId="108776" X="1019.042" Y="-1802.556" Z="77.24113" />
-    <While Condition="DoQuest(42773)" >
-      <MoveTo X="980.5043" Y="-1821.989" Z="80.48727" />
-      <Code File="WaitTimer" QuestId="42773" QuestObjectiveIndex="1" WaitTime="25000" />
-      <Code File="InteractWith" MobId="251346" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="42773" QuestObjectiveIndex="2" X="979.3524" Y="-1822.806" Z="80.4986" />
-      <Code File="WaitTimer" QuestId="42773" QuestObjectiveIndex="2" WaitTime="90000" />
-    </While>
-    <If Condition="QuestDone(42773)" >
-      <!-- Player is stunned -->
-      <Code File="InteractWith" MobId="108776" X="981.9078" Y="-1823.849" Z="80.48733" />
-      <Code File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
-    </If>
+		<TurnIn QuestName="Sacred Ground" QuestId="42772" TurnInName="High Priest Thel'danis" TurnInId="108777" X="1101.53" Y="-1795.161" Z="61.77359" />
+		<TurnIn QuestName="Keeping the Peace" QuestId="42771" TurnInName="Mehlar Dawnblade" TurnInId="108778" X="1101.997" Y="-1791.12" Z="61.89468" />
 
-    <PickUp QuestName="Hope Prevails" QuestId="42774" GiverName="Lord Maxwell Tyrosus" GiverId="108776" X="981.9078" Y="-1823.849" Z="80.48733" />
-    <TurnIn Nav="Fly" QuestName="Hope Prevails" QuestId="42774" TurnInName="Lord Maxwell Tyrosus" TurnInId="90369" X="2273.372" Y="-5282.353" Z="81.99033" />
+		<PickUp QuestName="The Light Reveals" QuestId="42773" GiverName="Lord Maxwell Tyrosus" GiverId="108776" X="1019.042" Y="-1802.556" Z="77.24113" />
+		<While Condition="DoQuest(42773)" >
+			<MoveTo X="980.5043" Y="-1821.989" Z="80.48727" />
+			<Code File="WaitTimer" QuestId="42773" QuestObjectiveIndex="1" WaitTime="25000" />
+			<Code File="InteractWith" MobId="251346" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="42773" QuestObjectiveIndex="2" X="979.3524" Y="-1822.806" Z="80.4986" />
+			<Code File="WaitTimer" QuestId="42773" QuestObjectiveIndex="2" WaitTime="90000" />
+		</While>
+		<If Condition="QuestDone(42773)" >
+			<!-- Player is stunned -->
+			<Code File="InteractWith" MobId="108776" X="981.9078" Y="-1823.849" Z="80.48733" />
+			<Code File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+		</If>
 
-    <PickUp QuestName="The Search for the Highlord" QuestId="38376" GiverName="Lord Maxwell Tyrosus" GiverId="90369" X="2273.372" Y="-5282.353" Z="81.99033" />
-    <While Condition="DoQuest(38376)" >
-      <If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0 &amp;&amp; !HasItem(120978)" >
-        <Code File="InteractWith" MobId="90384" X="2278.236" Y="-5277.413" Z="82.07002" TerminateWhen="Me.InVehicle || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" />
-        <Code File="WaitTimer" WaitTime="23000" TerminateWhen="!Me.IsFlying" />
-      </If>
+		<PickUp QuestName="Hope Prevails" QuestId="42774" GiverName="Lord Maxwell Tyrosus" GiverId="108776" X="981.9078" Y="-1823.849" Z="80.48733" />
+		<TurnIn Nav="Fly" QuestName="Hope Prevails" QuestId="42774" TurnInName="Lord Maxwell Tyrosus" TurnInId="90369" X="2273.372" Y="-5282.353" Z="81.99033" />
 
-      <If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
-        <Code File="WaitTimer" WaitTime="15000" />
-        <!-- Wait for Maxwell's dialog -->
-        <Code File="KillUntilComplete" MobIds="97567, 97566, 95984, 96005" X="-2487.078" Y="111.5625" Z="7.805863" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
-        <Code File="Misc\RunLua" WaitTime="2000" Lua="ScenarioObjectiveBlock.currentLine.SpellButton:Click();" />
-        <!-- NOTE: <CheckThis> : Not sure if this works. SpellId 190359-->
-      </If>
+		<PickUp QuestName="The Search for the Highlord" QuestId="38376" GiverName="Lord Maxwell Tyrosus" GiverId="90369" X="2273.372" Y="-5282.353" Z="81.99033" />
+		<While Condition="DoQuest(38376)" >
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0 &amp;&amp; !HasItem(120978)" >
+				<Code File="InteractWith" MobId="90384" X="2278.236" Y="-5277.413" Z="82.07002" TerminateWhen="Me.InVehicle || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" />
+				<Code File="WaitTimer" WaitTime="23000" TerminateWhen="!Me.IsFlying" />
+			</If>
 
-      <If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-        <Code File="KillUntilComplete" MobIds="97567, 97566, 95984, 96005" X="-2493.3" Y="98.77257" Z="7.942018" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
-      </If>
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+				<Code File="WaitTimer" WaitTime="15000" />
+				<!-- Wait for Maxwell's dialog -->
+				<Code File="KillUntilComplete" MobIds="97567, 97566, 95984, 96005" X="-2487.078" Y="111.5625" Z="7.805863" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+				<Code File="Misc\RunLua" WaitTime="2000" Lua="ScenarioObjectiveBlock.currentLine.SpellButton:Click();" />
+				<!-- NOTE: <CheckThis> : Not sure if this works. SpellId 190359-->
+			</If>
 
-      <If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
-        <!-- NOTE: <AddAvoid> : Can add avoids for the fire funnels on the ground.  They don't seem to be a threat at all though - very low priority. -->
-        <!-- NOTE: <AddHook> : Check SpellId.  WowHead is showing two of the same Drain Life spells.  The other Id is: 182217 -->
-        <Code File="Hooks\DoWhen" ActivityName="RebukeDrainLife" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.ChanneledCastingSpellId == 221309 &amp;&amp; (SpellManager.CanCast(96231) || SpellManager.CanCast(853))" >
-          <Code File="RunCode" Code="
-								if (SpellManager.CanCast(96231)) SpellManager.Cast(96231);
-								else SpellManager.Cast(853);
-								await Coroutine.Sleep(500);
-						" />
-        </Code>
-        <Code File="KillUntilComplete" MobId="91672" X="-2758.635" Y="-71.2309" Z="46.63611" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
-        <Code File="Hooks\DoWhen" ActivityName="RebukeDrainLife" Command="Remove" />
-      </If>
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+				<Code File="KillUntilComplete" MobIds="97567, 97566, 95984, 96005" X="-2493.3" Y="98.77257" Z="7.942018" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+			</If>
 
-      <If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
-        <MoveTo X="-2750.021" Y="-325.1697" Z="38.16585" />
-        <Code File="InteractWith" MobId="247318" InteractByLooting="true" WaitTime="1500" X="-2746.764" Y="-327.8924" Z="39.76086" />
-        <Code File="Misc\RunLua" Lua="LootButton1:Click();" />
-        <!-- Extra code in case the IW doesn't loot. -->
-        <Code File="WaitTimer" WaitTime="10000" />
-        <!-- Wait for little cinematic. -->
-        <Code File="WaitTimer" WaitTime="45000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
-      </If>
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+				<!-- NOTE: <AddAvoid> : Can add avoids for the fire funnels on the ground.  They don't seem to be a threat at all though - very low priority. -->
+				<!-- NOTE: <AddHook> : Check SpellId.  WowHead is showing two of the same Drain Life spells.  The other Id is: 182217 -->
+				<Code File="Hooks\DoWhen" ActivityName="RebukeDrainLife" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.ChanneledCastingSpellId == 221309 &amp;&amp; (SpellManager.CanCast(96231) || SpellManager.CanCast(853))" >
+				<Code File="RunCode" Code="
+										if (SpellManager.CanCast(96231)) SpellManager.Cast(96231);
+										else SpellManager.Cast(853);
+										await Coroutine.Sleep(500);
+				" />
+				</Code>
+				<Code File="KillUntilComplete" MobId="91672" X="-2758.635" Y="-71.2309" Z="46.63611" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+				<Code File="Hooks\DoWhen" ActivityName="RebukeDrainLife" Command="Remove" />
+			</If>
 
-      <If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
-        <Code File="WaitTimer" WaitTime="11000" />
-        <Code File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
-        <Code File="WaitTimer" WaitTime="12000" />
-      </If>
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+				<MoveTo X="-2750.021" Y="-325.1697" Z="38.16585" />
+				<Code File="InteractWith" MobId="247318" InteractByLooting="true" WaitTime="1500" X="-2746.764" Y="-327.8924" Z="39.76086" />
+				<Code File="Misc\RunLua" Lua="LootButton1:Click();" />
+				<!-- Extra code in case the IW doesn't loot. -->
+				<Code File="WaitTimer" WaitTime="10000" />
+				<!-- Wait for little cinematic. -->
+				<Code File="WaitTimer" WaitTime="45000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+			</If>
 
-      <If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
-        <Code File="KillUntilComplete" MobId="90981" X="-2744.811" Y="-329.8924" Z="38.46474" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
-      </If>
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+				<Code File="WaitTimer" WaitTime="11000" />
+				<Code File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+				<Code File="WaitTimer" WaitTime="12000" />
+			</If>
 
-      <If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
-        <MoveTo X="-2747.607" Y="-79.14422" Z="46.63483" />
-        <Code File="WaitTimer" WaitTime="30000" />
-      </If>
-    </While>
-    <TurnIn QuestName="The Search for the Highlord" QuestId="38376" TurnInName="Lord Maxwell Tyrosus" TurnInId="91144" X="-2753.23" Y="-86.0365" Z="46.63651" />
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+				<Code File="KillUntilComplete" MobId="90981" X="-2744.811" Y="-329.8924" Z="38.46474" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+			</If>
 
-    <!-- NOTE: <CheckThis> : This is the same quest as introducted in the Paladin class hall.  This quest chunk may not exist if the player is seeking this artifact as their second or third. -->
-    <PickUp QuestName="We Meet at Light's Hope" QuestId="42811" GiverName="Lord Maxwell Tyrosus" GiverId="91144" X="-2753.23" Y="-86.0365" Z="46.63651" />
-    <While Condition="DoQuest(42811)" >
-      <If Condition="Me.MapId != 0" >
-        <Code File="InteractWith" MobId="91145" QuestId="42811" QuestObjectiveIndex="1" X="-2728.144" Y="-59.01439" Z="46.06541" />
-        <Code File="WaitTimer" WaitTime="17000" TerminateWhen="!Me.IsFlying" />
-      </If>
-      
-      <Code File="InteractWith" MovementBy="NavigatorPreferred" MobId="245526" NonCompeteDistance="0" IgnoreLoSToTarget="true" X="2300.601" Y="-5339.003" Z="90.37598" />
-      <MoveTo X="2296.906" Y="-5335.53" Z="90.75294" />
-      <Code File="MyCTM" DestName="Top of Stairs" X="2299.4" Y="-5337.292" Z="89.54803" />
-      <Code File="MyCTM" X="2321.091" Y="-5358.607" Z="71.31615" />
-    </While>
-    <TurnIn QuestName="We Meet at Light's Hope" QuestId="42811" TurnInName="Lord Maxwell Tyrosus" TurnInId="100031" X="2455.257" Y="-5433.205" Z="49.03492" />
-    <!-- END Story: Artifact Weapon - Ashbringer -->
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+				<MoveTo X="-2747.607" Y="-79.14422" Z="46.63483" />
+				<Code File="WaitTimer" WaitTime="30000" />
+			</If>
+		</While>
+		<TurnIn QuestName="The Search for the Highlord" QuestId="38376" TurnInName="Lord Maxwell Tyrosus" TurnInId="91144" X="-2753.23" Y="-86.0365" Z="46.63651" />
 
+		<!-- NOTE: <CheckThis> : This is the same quest as introducted in the Paladin class hall.  This quest chunk may not exist if the player is seeking this artifact as their second or third. -->
+		<PickUp QuestName="We Meet at Light's Hope" QuestId="42811" GiverName="Lord Maxwell Tyrosus" GiverId="91144" X="-2753.23" Y="-86.0365" Z="46.63651" />
+		<While Condition="DoQuest(42811)" >
+			<If Condition="Me.MapId != 0" >
+				<Code File="InteractWith" MobId="91145" QuestId="42811" QuestObjectiveIndex="1" X="-2728.144" Y="-59.01439" Z="46.06541" />
+				<Code File="WaitTimer" WaitTime="17000" TerminateWhen="!Me.IsFlying" />
+			</If>
 
-    <If Condition="!IsQuestCompleted(38566)" >
-      <Code File="LoadProfile" ProfileName="../Class Hall Loaders/Paladin.xml" />
-    </If>
+			<Code File="InteractWith" MovementBy="NavigatorPreferred" MobId="245526" NonCompeteDistance="0" IgnoreLoSToTarget="true" X="2300.601" Y="-5339.003" Z="90.37598" />
+			<MoveTo X="2296.906" Y="-5335.53" Z="90.75294" />
+			<Code File="MyCTM" DestName="Top of Stairs" X="2299.4" Y="-5337.292" Z="89.54803" />
+			<Code File="MyCTM" X="2321.091" Y="-5358.607" Z="71.31615" />
+		</While>
+		<TurnIn QuestName="We Meet at Light's Hope" QuestId="42811" TurnInName="Lord Maxwell Tyrosus" TurnInId="100031" X="2455.257" Y="-5433.205" Z="49.03492" />
+		<!-- END Story: Artifact Weapon - Ashbringer -->
 
-  </QuestOrder>
+		<If Condition="!IsQuestCompleted(38566)" >
+			<Code File="LoadProfile" ProfileName="../Class Hall Loaders/Paladin.xml" />
+		</If>
+
+	</QuestOrder>
 </HBProfile>
 
 <!-- Notes:
