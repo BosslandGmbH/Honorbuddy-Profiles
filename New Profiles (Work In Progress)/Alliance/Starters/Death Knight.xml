@@ -291,8 +291,8 @@
 		<PickUp QuestName="Nowhere To Run And Nowhere To Hide" QuestId="12719" GiverName="Prince Keleseth" GiverId="28911" X="1878.135" Y="-5761.824" Z="83.74572" />
 		<PickUp QuestName="Lambs To The Slaughter" QuestId="12722" GiverName="Baron Rivendare" GiverId="28910" X="1875.957" Y="-5772.48" Z="84.02564" />
 
-		<Code File="InteractWith" MobId="190937" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractByLooting="true" QuestId="12716" QuestObjectiveIndex="1" X="1784.568" Y="-5875.081" Z="109.4966" />
-		<Code File="InteractWith" MobId="190938" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractByLooting="true" QuestId="12716" QuestObjectiveIndex="2" X="1815.48" Y="-6006.681" Z="117.659" />
+		<Code File="InteractWith" MobId="190937" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractByLooting="true" InteractBlacklistTimeInSeconds="1" QuestId="12716" QuestObjectiveIndex="1" X="1784.568" Y="-5875.081" Z="109.4966" />
+		<Code File="InteractWith" MobId="190938" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractByLooting="true" InteractBlacklistTimeInSeconds="1" QuestId="12716" QuestObjectiveIndex="2" X="1815.48" Y="-6006.681" Z="117.659" />
 
 		<Code File="KillUntilComplete" MobId="28945" QuestId="12719" QuestObjectiveIndex="1" X="1576.575" Y="-5705.244" Z="121.6812" />
 
@@ -312,11 +312,11 @@
 				<PursueUnit Id="28941" PursueWhen="!IsObjectiveComplete(2, 12722)" />
 				<PursueUnit Id="28942" PursueWhen="!IsObjectiveComplete(2, 12722)" />
 
-				<PursueUnit Id="28939" PursueWhen="DoQuest(12722)" />
-				<PursueUnit Id="28610" PursueWhen="DoQuest(12722)" />
-				<PursueUnit Id="28941" PursueWhen="DoQuest(12722)" />
-				<PursueUnit Id="28942" PursueWhen="DoQuest(12722)" />
-				<PursueUnit Id="28940" PursueWhen="DoQuest(12722)" />
+				<PursueUnit Id="28939" PursueWhen="DoQuest(12716)" />
+				<PursueUnit Id="28610" PursueWhen="DoQuest(12716)" />
+				<PursueUnit Id="28941" PursueWhen="DoQuest(12716)" />
+				<PursueUnit Id="28942" PursueWhen="DoQuest(12716)" />
+				<PursueUnit Id="28940" PursueWhen="DoQuest(12716)" />
 			</PursuitList>
 		</Code>
 
@@ -495,6 +495,11 @@
 			<DisableBehavior Name="All" />
 			<!-- NOTE:  IMPROVE THIS.  This SpecificQuest behavior preforms VERY poorly as it casts the projectile before rotating to the target.
 					Replace it with a custom RunCode -->
+			<Code File="Hooks\DoWhen" ActivityName="SpamShot" TreeHookName="Botbase_Root" AllowUseInVehicle="true" UseAtInterval="250" >
+				<If Condition="Me.InVehicle &amp;&amp; Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.IsAlive" >
+					<Code File="Misc\RunLua" Lua="OverrideActionBarButton1:Click();" />
+				</If>
+			</Code>
 			<CustomBehavior File="SpecificQuests\DeathknightStart\AnEndToAllThings" VehicleId="28670" ItemId="39700" AttackSpellIndex="1" HealSpellIndex="3" KillNpcId="29104" HealNpcId="29102">
 				<Start X="1800.488" Y="-5774.659" Z="180.3334" />
 				<End X="2329.742" Y="-5724.388" Z="153.9203" />
@@ -503,6 +508,7 @@
 				<Hop X="1571.101" Y="-5953.635" Z="170.7214" />
 				<Hop X="1804.955" Y="-5931.821" Z="170.8009" />
 			</CustomBehavior>
+			<Code File="Hooks\DoWhen" ActivityName="SpamShot" Command="Remove" />
 			<EnableBehavior Name="All" />
 		</While>
 		<TurnIn QuestName="An End To All Things..." QuestId="12779" TurnInName="The Lich King" TurnInId="29110" X="2311.838" Y="-5739.884" Z="160.4388" />
