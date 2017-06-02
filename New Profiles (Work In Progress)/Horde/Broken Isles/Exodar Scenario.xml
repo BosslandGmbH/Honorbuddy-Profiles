@@ -38,12 +38,12 @@
 <!-- INITORDER COMMENT 
 	<InitOrder>
 		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
-		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+		<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
 
-		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
-		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+		<Code File="EnablePlugin" Names="Anti Drown" />
+		<Code File="EnablePlugin" Names="Refreshment Detection" />
 
-		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+		<Code File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 
 		<LootMobs Value="true" />
 		<TargetingDistance Value="45" /> Use LevelBot default
@@ -52,19 +52,19 @@ END INITORDER COMMENT -->
 
 	<QuestOrder>
 		<!-- Init Settings -->
-			<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+			<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
 
-			<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
-			<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+			<Code File="EnablePlugin" Names="Anti Drown" />
+			<Code File="EnablePlugin" Names="Refreshment Detection" />
 
-			<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+			<Code File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 
 			<LootMobs Value="true" />
 			<TargetingDistance Value="45" />
 		<!-- END Init Settings -->
 
 		<!-- RunCode Methods -->
-			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+			<Code File="RunCode" Type="Definition"><![CDATA[
 					bool DoQuest(params uint[] questIds)
 					{
 						foreach (var questId in questIds)
@@ -130,12 +130,12 @@ END INITORDER COMMENT -->
 						}
 					}
 				]]>
-			</CustomBehavior>
+			</Code>
 		<!-- END RunCode Methods -->
 
 		<!-- Zone Introductory Quests -->
 			<If Condition="(NeedsQuest(44009) &amp;&amp; Me.Class != WoWClass.Paladin) || (NeedsQuest(44004) &amp;&amp; Me.Class == WoWClass.Paladin)" >
-				<CustomBehavior File="RunCode"><![CDATA[
+				<Code File="RunCode"><![CDATA[
 					if (!(Me.ZoneId == 7502 || Me.ZoneId == 8392) && HasItem(140192))
 					{
 						Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, "[Azyul Navigator]: ", System.Windows.Media.Colors.LightGreen, "Using Dalaran Hearthstone!");
@@ -156,7 +156,7 @@ END INITORDER COMMENT -->
 						}
 					}
 					]]>
-				</CustomBehavior>
+				</Code>
 				<MoveTo X="-848.6059" Y="4635.94" Z="749.604" />
 				<If Condition="Me.Class != WoWClass.Paladin" >
 					<PickUp Nav="Fly" QuestName="A Falling Star" QuestId="44009" GiverName="Archmage Khadgar" GiverId="90417" />
@@ -166,33 +166,33 @@ END INITORDER COMMENT -->
 				</If>
 			</If>
 			<While Condition="DoQuest(44009) || DoQuest(44257)" >
-				<CustomBehavior File="Misc\RunLua" QuestId="44009" QuestObjectiveIndex="1" Lua="FlightMapFrameCloseButton:Click();" /> <!-- In case the flight path hook leaves it open. -->
-				<CustomBehavior File="InteractWith" MobId="96813" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" GossipOptions="2" QuestId="44009" QuestObjectiveIndex="1" X="-863.934" Y="4298.434" Z="745.3467" TerminateWhen="Me.InVehicle" />
-				<CustomBehavior File="WaitTimer" WaitTime="120000" TerminateWhen="!Me.InVehicle" /> 
+				<Code File="Misc\RunLua" QuestId="44009" QuestObjectiveIndex="1" Lua="FlightMapFrameCloseButton:Click();" /> <!-- In case the flight path hook leaves it open. -->
+				<Code File="InteractWith" MobId="96813" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" GossipOptions="2" QuestId="44009" QuestObjectiveIndex="1" X="-863.934" Y="4298.434" Z="745.3467" TerminateWhen="Me.InVehicle" />
+				<Code File="WaitTimer" WaitTime="120000" TerminateWhen="!Me.InVehicle" /> 
 				<If Condition="!IsObjectiveComplete(2, 44009)" >
 					<MoveTo X="1199.132" Y="1559.461" Z="-3.088161" />
 					<UseMount Value="false" />
-					<CustomBehavior File="ForcedDismount" />
-					<CustomBehavior File="MyCTM" X="1178.241" Y="1553.486" Z="-69.34457" />
-					<CustomBehavior File="MyCTM" X="1173.775" Y="1526.932" Z="-50.86546" />
+					<Code File="ForcedDismount" />
+					<Code File="MyCTM" X="1178.241" Y="1553.486" Z="-69.34457" />
+					<Code File="MyCTM" X="1173.775" Y="1526.932" Z="-50.86546" />
 				</If>
 				<If Condition="!IsObjectiveComplete(3, 44009)" >
 					<UseMount Value="false" />
-					<CustomBehavior File="MyCTM" X="1102.811" Y="1411.098" Z="-68.74443" />
-					<CustomBehavior File="MyCTM" X="1064.526" Y="1405.402" Z="-93.13731" />
-					<CustomBehavior File="MyCTM" X="1018.957" Y="1409.696" Z="-79.68024" />
+					<Code File="MyCTM" X="1102.811" Y="1411.098" Z="-68.74443" />
+					<Code File="MyCTM" X="1064.526" Y="1405.402" Z="-93.13731" />
+					<Code File="MyCTM" X="1018.957" Y="1409.696" Z="-79.68024" />
 				</If>
 				<If Condition="!IsObjectiveComplete(4, 44009)" >
-					<CustomBehavior File="Hooks\Avoid" AvoidName="DepthCharge" ObjectId="8716" ObjectType="AreaTrigger" Radius="4" />
-					<CustomBehavior File="KillUntilComplete" MobId="112477" QuestId="44009" QuestObjectiveIndex="4" X="958.2222" Y="1416.762" Z="-76.49252" />
-					<CustomBehavior File="Hooks\Avoid" AvoidName="DepthCharge" Command="Remove" />
+					<Code File="Hooks\Avoid" AvoidName="DepthCharge" ObjectId="8716" ObjectType="AreaTrigger" Radius="4" />
+					<Code File="KillUntilComplete" MobId="112477" QuestId="44009" QuestObjectiveIndex="4" X="958.2222" Y="1416.762" Z="-76.49252" />
+					<Code File="Hooks\Avoid" AvoidName="DepthCharge" Command="Remove" />
 				</If>
 			</While>
 			<If Condition="QuestDone(44009)" >
 				<If Condition="Me.ZoneId == 7637" >
 					<MoveTo X="987.1364" Y="1437.808" Z="-79.02431" />
 				</If>
-				<CustomBehavior File="RunCode"><![CDATA[
+				<Code File="RunCode"><![CDATA[
 					if (!(Me.ZoneId == 7502 || Me.ZoneId == 8392) && HasItem(140192))
 					{
 						Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Using Dalaran Hearthstone!");
@@ -210,43 +210,43 @@ END INITORDER COMMENT -->
 						await Coroutine.Sleep(1500);
 					}
 					]]>
-				</CustomBehavior>
+				</Code>
 			</If>
 			<If Condition="QuestDone(44009)" >
 				<TurnIn Nav="Fly" QuestName="A Falling Star" QuestId="44009" TurnInName="Archmage Khadgar" TurnInId="112130" X="-804.6111" Y="4517.198" Z="603.9421" />
-				<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+				<Code File="RunCode" Code="await SkipCutscene();" />
 			</If>
 			<PickUp Nav="Fly" QuestName="Bringer of the Light" QuestId="44004" GiverName="Archmage Khadgar" GiverId="112130" X="-804.6111" Y="4517.198" Z="603.9421" />
 			<While Condition="DoQuest(44004)" >
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0 &amp;&amp; DoQuest(44004)" >
-					<CustomBehavior File="InteractWith" MobId="253930" NonCompeteDistance="0" X="-802.0938" Y="4512.076" Z="604.0203" />
+					<Code File="InteractWith" MobId="253930" NonCompeteDistance="0" X="-802.0938" Y="4512.076" Z="604.0203" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
 					<DisableBehavior Name="Pull" />
 					<MoveTo X="-4074.229" Y="-11429.63" Z="-141.4344" />
-					<CustomBehavior File="InteractWith" MobId="109143" InteractBlacklistTimeInSeconds="1" NumOfTimes="2" X="-4077.104" Y="-11426.16" Z="-141.4544" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+					<Code File="InteractWith" MobId="109143" InteractBlacklistTimeInSeconds="1" NumOfTimes="2" X="-4077.104" Y="-11426.16" Z="-141.4544" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
 					<DisableBehavior Name="Combat" /> <!-- Avoid from running outside of the bubble -->
 					<MoveTo X="-4077.104" Y="-11426.16" Z="-141.4544" />
-					<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+					<Code File="WaitTimer" WaitTime="50000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
 					<EnableBehavior Name="Combat,Pull" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-					<CustomBehavior File="Hooks\Avoid" AvoidName="StayAwayFromHukroth" ObjectId="110486" Radius="50" />
+					<Code File="Hooks\Avoid" AvoidName="StayAwayFromHukroth" ObjectId="110486" Radius="50" />
 
 					<While Condition="DoQuest(43705) || NeedsQuest(43705)" >
 						<DisableBehavior Name="Pull" />
 						<PickUp Nav="Fly" QuestName="Nobundo's Last Stand" QuestId="43705" GiverName="Farseer Nobundo" GiverId="110695" X="-3675.411" Y="-11541.09" Z="-129.458" />
 						<EnableBehavior Name="Pull" />
-						<CustomBehavior File="InteractWith" MobId="110695" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" GossipOptions="1" QuestId="43705" QuestObjectiveIndex="1" X="-3675.411" Y="-11541.09" Z="-129.458" />
+						<Code File="InteractWith" MobId="110695" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" GossipOptions="1" QuestId="43705" QuestObjectiveIndex="1" X="-3675.411" Y="-11541.09" Z="-129.458" />
 						<UseMount Value="false" />
-						<CustomBehavior File="EscortGroup" EscortCompleteWhen="QuestObjectiveComplete" QuestId="43705" QuestObjectiveIndex="5" NonCompeteDistance="0" EscortMaxFollowDistance="10" EscortCountMax="1" EscortNpcId1="110695" EscortNpcId2="110775" EscortMaxFightDistance="30" SearchForNpcsRadius="100" TerminateWhen="Unit(110695) == null" >
+						<Code File="EscortGroup" EscortCompleteWhen="QuestObjectiveComplete" QuestId="43705" QuestObjectiveIndex="5" NonCompeteDistance="0" EscortMaxFollowDistance="10" EscortCountMax="1" EscortNpcId1="110695" EscortNpcId2="110775" EscortMaxFightDistance="30" SearchForNpcsRadius="100" TerminateWhen="Unit(110695) == null" >
 							<SearchPath>
 								<Hotspot X="-4073.189" Y="-11432.89" Z="-141.4359" />
 							</SearchPath>
-						</CustomBehavior>
-						<!-- <CustomBehavior File="AbandonQuest" QuestId="43705" /> -->
+						</Code>
+						<!-- <Code File="AbandonQuest" QuestId="43705" /> -->
 						<UseMount Value="true" />
 					</While>
 					<If Condition="QuestDone(43705)" >
@@ -254,7 +254,7 @@ END INITORDER COMMENT -->
 					</If>
 
 
-					<CustomBehavior File="InteractWith" CollectionDistance="200" Range="3" NumOfTimes="50" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" >
+					<Code File="InteractWith" CollectionDistance="200" Range="3" NumOfTimes="50" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" >
 						<HuntingGrounds>
 							<Hotspot X="-4004.073" Y="-11378.32" Z="-122.8449" />
 							<Hotspot X="-4001.455" Y="-11462.03" Z="-137.0844" />
@@ -272,41 +272,41 @@ END INITORDER COMMENT -->
 							<PursueUnit Id="109701" PursueWhen="!IsScenarioCriteriaComplete(1)" />
 							<PursueUnit Id="109712" PursueWhen="!IsScenarioCriteriaComplete(1)" />
 						</PursuitList>
-					</CustomBehavior>
-					<CustomBehavior File="Hooks\Avoid" AvoidName="StayAwayFromHukroth" Command="Remove" />
+					</Code>
+					<Code File="Hooks\Avoid" AvoidName="StayAwayFromHukroth" Command="Remove" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
 					<DisableBehavior Name="Pull" />
 					<MoveTo X="-4074.229" Y="-11429.63" Z="-141.4344" />
-					<CustomBehavior File="InteractWith" MobId="109143" InteractBlacklistTimeInSeconds="1" NumOfTimes="2" X="-4077.104" Y="-11426.16" Z="-141.4544" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
-					<CustomBehavior File="WaitTimer" WaitTime="30000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+					<Code File="InteractWith" MobId="109143" InteractBlacklistTimeInSeconds="1" NumOfTimes="2" X="-4077.104" Y="-11426.16" Z="-141.4544" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+					<Code File="WaitTimer" WaitTime="30000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
 					<EnableBehavior Name="Pull" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
-					<CustomBehavior File="InteractWith" MobId="109143" GossipOptions="1" InteractBlacklistTimeInSeconds="1" NumOfTimes="2" X="-4077.104" Y="-11426.16" Z="-141.4544" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
-					<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+					<Code File="InteractWith" MobId="109143" GossipOptions="1" InteractBlacklistTimeInSeconds="1" NumOfTimes="2" X="-4077.104" Y="-11426.16" Z="-141.4544" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+					<Code File="WaitTimer" WaitTime="15000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
-					<CustomBehavior File="InteractWith" MobId="109143" GossipOptions="1" InteractBlacklistTimeInSeconds="1" X="-4077.104" Y="-11426.16" Z="-141.4544" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5 || Unit(109143, u =&gt; u.Location.Distance(new WoWPoint(-4076.724, -11426.59, -141.4511)) &gt; 10) != null" />
-					<CustomBehavior File="EscortGroup" EscortCompleteWhen="QuestObjectiveComplete" QuestId="44004" QuestObjectiveIndex="1" NonCompeteDistance="0" EscortMaxFollowDistance="4" EscortCountMax="1" EscortNpcId="109143" EscortMaxFightDistance="15" SearchForNpcsRadius="100" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5 || Unit(109143, u =&gt; u.Location.Distance(new WoWPoint(-4076.724, -11426.59, -141.4511)) &lt;= 10) != null" >
+					<Code File="InteractWith" MobId="109143" GossipOptions="1" InteractBlacklistTimeInSeconds="1" X="-4077.104" Y="-11426.16" Z="-141.4544" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5 || Unit(109143, u =&gt; u.Location.Distance(new WoWPoint(-4076.724, -11426.59, -141.4511)) &gt; 10) != null" />
+					<Code File="EscortGroup" EscortCompleteWhen="QuestObjectiveComplete" QuestId="44004" QuestObjectiveIndex="1" NonCompeteDistance="0" EscortMaxFollowDistance="4" EscortCountMax="1" EscortNpcId="109143" EscortMaxFightDistance="15" SearchForNpcsRadius="100" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5 || Unit(109143, u =&gt; u.Location.Distance(new WoWPoint(-4076.724, -11426.59, -141.4511)) &lt;= 10) != null" >
 						<SearchPath>
 							<Hotspot X="-4073.189" Y="-11432.89" Z="-141.4359" />
 						</SearchPath>
-					</CustomBehavior>
+					</Code>
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
-					<CustomBehavior File="Hooks\Avoid" AvoidName="WarStomp" ObjectId="111652" Radius="10" AvoidLocationProducer="UNIT.Location.RayCast(UNIT.Rotation, 10)" AvoidWhen="UNIT.CastingSpellId == 205306" />
-					<CustomBehavior File="WaitTimer" WaitTime="5000" /> <!-- Wait for reinforcements. -->
-					<CustomBehavior File="KillUntilComplete" MobId="111652" X="-3901.377" Y="-11682.55" Z="-302.9408" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
-					<CustomBehavior File="Hooks\Avoid" AvoidName="WarStomp" Command="Remove" />
+					<Code File="Hooks\Avoid" AvoidName="WarStomp" ObjectId="111652" Radius="10" AvoidLocationProducer="UNIT.Location.RayCast(UNIT.Rotation, 10)" AvoidWhen="UNIT.CastingSpellId == 205306" />
+					<Code File="WaitTimer" WaitTime="5000" /> <!-- Wait for reinforcements. -->
+					<Code File="KillUntilComplete" MobId="111652" X="-3901.377" Y="-11682.55" Z="-302.9408" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+					<Code File="Hooks\Avoid" AvoidName="WarStomp" Command="Remove" />
 				</If>
 			</While>
 			<If Condition="QuestDone(44004)" >
-				<CustomBehavior File="UseItem" ItemId="140319" TerminateWhen="Me.ZoneId != 8277" />
+				<Code File="UseItem" ItemId="140319" TerminateWhen="Me.ZoneId != 8277" />
 				<TurnIn Nav="Fly" QuestName="Bringer of the Light" QuestId="44004" TurnInName="Archmage Khadgar" TurnInId="90417" X="-848.4618" Y="4638.848" Z="749.5474" />
 			</If>
 
@@ -314,10 +314,10 @@ END INITORDER COMMENT -->
 			<While Condition="QuestDone(44153)" >
 				<If Condition="Me.Class == WoWClass.Warrior" >
 					<If Condition="!Me.HasAura(213170)" >
-						<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+						<Code File="RunCode" Code="await DalaranHearth();" />
 						<MoveTo Precision="1" X="-842.1536" Y="4253.124" Z="746.4725" />
-						<CustomBehavior File="WaitTimer" WaitTime="1000" />
-						<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+						<Code File="WaitTimer" WaitTime="1000" />
+						<Code File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
 					</If>
 					<TurnIn Nav="Fly" QuestName="Light's Charge" QuestId="44153" TurnInName="Light's Heart" TurnInId="112953" X="1058.22" Y="7322.966" Z="109.2007" />
 				</If>
@@ -325,103 +325,103 @@ END INITORDER COMMENT -->
 					<If Condition="!Me.HasAura(213170)" >
 						<If Condition="Me.IsAlliance" >
 							<MoveTo X="-961.5208" Y="4600.507" Z="735.2455" />
-							<CustomBehavior File="InteractWith" MobId="251304" X="-966.7309" Y="4604.499" Z="735.2952" />
+							<Code File="InteractWith" MobId="251304" X="-966.7309" Y="4604.499" Z="735.2952" />
 						</If>
 						<If Condition="Me.IsHorde" >
 							<MoveTo X="-660.4494" Y="4364.643" Z="748.5765" />
-							<CustomBehavior File="InteractWith" MobId="251305" X="-657.9705" Y="4363.978" Z="748.5759" />
+							<Code File="InteractWith" MobId="251305" X="-657.9705" Y="4363.978" Z="748.5759" />
 						</If>
 					</If>
 					<TurnIn Nav="Fly" QuestName="Light's Charge" QuestId="44153" TurnInName="Light's Heart" TurnInId="112953" X="2360.693" Y="-5385.677" Z="56.14384" />
 				</If>
 				<If Condition="Me.Class == WoWClass.Hunter" >
 					<If Condition="!Me.HasAura(213170)" >
-						<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+						<Code File="RunCode" Code="await DalaranHearth();" />
 						<MoveTo X="-813.4112" Y="4277.193" Z="746.2777" />
-						<CustomBehavior File="InteractWith" MobId="108868" NonCompeteDistance="0" GossipOptions="1"  X="-809.467" Y="4273.58" Z="746.2848" />
+						<Code File="InteractWith" MobId="108868" NonCompeteDistance="0" GossipOptions="1"  X="-809.467" Y="4273.58" Z="746.2848" />
 					</If>
 					<TurnIn Nav="Fly" QuestName="Light's Charge" QuestId="44153" TurnInName="Light's Heart" TurnInId="112953" X="4552.819" Y="5254.5" Z="863.4009" />
 				</If>
 				<If Condition="Me.Class == WoWClass.Rogue" >
 					<If Condition="!Me.HasAura(213170)" >
-						<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+						<Code File="RunCode" Code="await DalaranHearth();" />
 						<MoveTo X="-969.955" Y="4438.092" Z="735.7391" />
-						<CustomBehavior File="WaitTimer" WaitTime="1000" />
-						<CustomBehavior File="InteractWith" MobId="97004" NonCompeteDistance="0" GossipOptions="1" X="-973.3143" Y="4435.202" Z="735.7391" />
+						<Code File="WaitTimer" WaitTime="1000" />
+						<Code File="InteractWith" MobId="97004" NonCompeteDistance="0" GossipOptions="1" X="-973.3143" Y="4435.202" Z="735.7391" />
 						<MoveTo X="-940.8552" Y="4421.019" Z="706.36" />
 					</If>
 					<TurnIn Nav="Fly" QuestName="Light's Charge" QuestId="44153" TurnInName="Light's Heart" TurnInId="112953" X="-909.5226" Y="4550.677" Z="706.1118" />
 				</If>
 				<If Condition="Me.Class == WoWClass.Priest" >
 					<If Condition="!Me.HasAura(213170)" >
-						<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+						<Code File="RunCode" Code="await DalaranHearth();" />
 						<If Condition="Me.IsAlliance" >
 							<MoveTo X="-898.0295" Y="4552.3" Z="744.436" />
-							<CustomBehavior File="InteractWith" MobId="251306" NonCompeteDistance="0" X="-897.5434" Y="4547.79" Z="744.4398" />
+							<Code File="InteractWith" MobId="251306" NonCompeteDistance="0" X="-897.5434" Y="4547.79" Z="744.4398" />
 						</If>
 						<If Condition="Me.IsHorde" >
 							<MoveTo X="-680.4219" Y="4354.915" Z="748.5759" />
-							<CustomBehavior File="InteractWith" MobId="251307" NonCompeteDistance="0" X="-680.4219" Y="4354.915" Z="748.5759" />
+							<Code File="InteractWith" MobId="251307" NonCompeteDistance="0" X="-680.4219" Y="4354.915" Z="748.5759" />
 						</If>
 					</If>
 					<TurnIn Nav="Fly" QuestName="Light's Charge" QuestId="44153" TurnInName="Light's Heart" TurnInId="112953" X="1400.832" Y="1344.146" Z="178.2701" />
 				</If>
 				<If Condition="Me.Class == WoWClass.DeathKnight" >
 					<While Condition="!Me.HasAura(213170)" >
-						<CustomBehavior File="RunCode"><![CDATA[
+						<Code File="RunCode"><![CDATA[
 								Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Teleporting to class hall.");
 								await CommonCoroutines.StopMoving(); 
 								SpellManager.Cast(50977);
 							]]>
-						</CustomBehavior>
-						<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsCasting || Object(190942, u =&gt; u.ToGameObject().CreatedByGuid == Me.Guid) != null" />
-						<CustomBehavior File="InteractWith" MobId="190942" NonCompeteDistance="0" WaitForNpcs="false" />
+						</Code>
+						<Code File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsCasting || Object(190942, u =&gt; u.ToGameObject().CreatedByGuid == Me.Guid) != null" />
+						<Code File="InteractWith" MobId="190942" NonCompeteDistance="0" WaitForNpcs="false" />
 					</While>
 					<TurnIn Nav="Fly" QuestName="Light's Charge" QuestId="44153" TurnInName="Light's Heart" TurnInId="112953" X="-1582.507" Y="1032.462" Z="314.8577" />
 				</If>
 				<If Condition="Me.Class == WoWClass.Shaman" >
 					<If Condition="!Me.HasAura(213170)" >
-						<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+						<Code File="RunCode" Code="await DalaranHearth();" />
 						<MoveTo X="-843.2033" Y="4320.319" Z="744.7213" />
-						<CustomBehavior File="InteractWith" MobId="251311" NonCompeteDistance="0" X="-847.5868" Y="4321.365" Z="744.8328" />
+						<Code File="InteractWith" MobId="251311" NonCompeteDistance="0" X="-847.5868" Y="4321.365" Z="744.8328" />
 					</If>
 					<TurnIn Nav="Fly" QuestName="Light's Charge" QuestId="44153" TurnInName="Light's Heart" TurnInId="112953" X="1137.248" Y="1067.365" Z="3.366582" />
 				</If>
 				<If Condition="Me.Class == WoWClass.Mage" >
 					<While Condition="!Me.HasAura(213170)" >
-						<CustomBehavior File="RunCode"><![CDATA[
+						<Code File="RunCode"><![CDATA[
 								Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Teleporting to class hall.");
 								await CommonCoroutines.StopMoving(); 
 								SpellManager.Cast(193759);
 							]]>
-						</CustomBehavior>
-						<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsCasting" />
+						</Code>
+						<Code File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsCasting" />
 					</While>
 					<TurnIn Nav="Fly" QuestName="Light's Charge" QuestId="44153" TurnInName="Light's Heart" TurnInId="112953" X="-820.1996" Y="4621.244" Z="919.5603" />
 				</If>
 				<If Condition="Me.Class == WoWClass.Warlock" >
 					<While Condition="!Me.HasAura(213170)" >
-						<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+						<Code File="RunCode" Code="await DalaranHearth();" />
 						<MoveTo X="-798.684" Y="4577.701" Z="700.5798" />
-						<CustomBehavior File="InteractWith" MobId="251302" Range="5" NonCompeteDistance="0" X="-795.9913" Y="4582.382" Z="700.575" />
+						<Code File="InteractWith" MobId="251302" Range="5" NonCompeteDistance="0" X="-795.9913" Y="4582.382" Z="700.575" />
 					</While>
 					<TurnIn Nav="Fly" QuestName="Light's Charge" QuestId="44153" TurnInName="Light's Heart" TurnInId="112953" X="3114.773" Y="988.8958" Z="258.3669" />
 				</If>
 				<If Condition="Me.Class == WoWClass.Monk" >
 					<While Condition="!Me.HasAura(213170)" >
-						<CustomBehavior File="RunCode"><![CDATA[
+						<Code File="RunCode"><![CDATA[
 								Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Teleporting to class hall.");
 								await CommonCoroutines.StopMoving(); 
 								SpellManager.Cast(126892);
 							]]>
-						</CustomBehavior>
-						<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="Me.HasAura(213170)" />
+						</Code>
+						<Code File="WaitTimer" WaitTime="15000" TerminateWhen="Me.HasAura(213170)" />
 					</While>
 					<TurnIn Nav="Fly" QuestName="Light's Charge" QuestId="44153" TurnInName="Light's Heart" TurnInId="112953" X="929.3906" Y="3596.45" Z="197.4272" />
 				</If>
 				<If Condition="Me.Class == WoWClass.Druid" >
 					<While Condition="!Me.HasAura(213170)" >
-						<CustomBehavior File="RunCode"><![CDATA[
+						<Code File="RunCode"><![CDATA[
 								if (!(Me.ZoneId == 7979 || Me.ZoneId == 7846))
 								{
 									Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Teleporting to class hall.");
@@ -429,22 +429,22 @@ END INITORDER COMMENT -->
 									SpellManager.Cast(193753);
 								}
 							]]>
-						</CustomBehavior>
-						<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsCasting" />
+						</Code>
+						<Code File="WaitTimer" WaitTime="10000" TerminateWhen="!Me.IsCasting" />
 						<MoveTo X="1766.435" Y="1508.679" Z="7.188321" />
-						<CustomBehavior File="MyCTM" X="1784.506" Y="1504.145" Z="9.844843" TerminateWhen="Me.ZoneId == 7846" />
-						<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Me.HasAura(213170)" />
+						<Code File="MyCTM" X="1784.506" Y="1504.145" Z="9.844843" TerminateWhen="Me.ZoneId == 7846" />
+						<Code File="WaitTimer" WaitTime="5000" TerminateWhen="Me.HasAura(213170)" />
 					</While>
 					<TurnIn Nav="Fly" QuestName="Light's Charge" QuestId="44153" TurnInName="Light's Heart" TurnInId="112953" X="3969.161" Y="7257.173" Z="29.84316" />
 				</If>
 				<If Condition="Me.Class == WoWClass.DemonHunter" >
 					<If Condition="!Me.HasAura(213170)" >
-						<CustomBehavior File="RunCode" Code="await DalaranHearth();" />
+						<Code File="RunCode" Code="await DalaranHearth();" />
 						<MoveTo X="-818.1966" Y="4265.469" Z="746.2773" />
-						<CustomBehavior File="ForcedDismount" />
-						<CustomBehavior File="MyCTM" X="-821.7453" Y="4236.09" Z="743.0304" />
-						<CustomBehavior File="WaitTimer" WaitTime="750" />
-						<CustomBehavior File="RunCode"><![CDATA[
+						<Code File="ForcedDismount" />
+						<Code File="MyCTM" X="-821.7453" Y="4236.09" Z="743.0304" />
+						<Code File="WaitTimer" WaitTime="750" />
+						<Code File="RunCode"><![CDATA[
 								Me.SetFacing(4);
 								await Coroutine.Sleep(750);
 								WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
@@ -453,9 +453,9 @@ END INITORDER COMMENT -->
 								SpellManager.Cast(131347);
 								await Coroutine.Sleep(4000);
 							]]>
-						</CustomBehavior>
-						<CustomBehavior File="MyCTM" X="-942.347" Y="4085.248" Z="648.2783" />
-						<CustomBehavior File="InteractWith" MobId="251286" NonCompeteDistance="0" X="-963.8559" Y="4066.109" Z="648.1834" />
+						</Code>
+						<Code File="MyCTM" X="-942.347" Y="4085.248" Z="648.2783" />
+						<Code File="InteractWith" MobId="251286" NonCompeteDistance="0" X="-963.8559" Y="4066.109" Z="648.1834" />
 					</If>
 					<TurnIn Nav="Fly" QuestName="Light's Charge" QuestId="44153" TurnInName="Light's Heart" TurnInId="112953" X="1591.632" Y="1413.59" Z="237.4545" />
 				</If>
@@ -469,40 +469,40 @@ END INITORDER COMMENT -->
 			I'm thinking a RunCode where Me.Class auto-fills the text with using ProfileManager.LoadNew to load the profilewould be more clean.
 			-->
 			<If Condition="Me.Class == WoWClass.Warrior" >
-				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Warrior" />
+				<Code File="LoadProfile" ProfileName="Class Hall Loaders/Warrior" />
 			</If>
 			<If Condition="Me.Class == WoWClass.Paladin" >
-				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Paladin" />
+				<Code File="LoadProfile" ProfileName="Class Hall Loaders/Paladin" />
 			</If>
 			<If Condition="Me.Class == WoWClass.Hunter" >
-				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Hunter" />
+				<Code File="LoadProfile" ProfileName="Class Hall Loaders/Hunter" />
 			</If>
 			<If Condition="Me.Class == WoWClass.Rogue" >
-				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Rogue" />
+				<Code File="LoadProfile" ProfileName="Class Hall Loaders/Rogue" />
 			</If>
 			<If Condition="Me.Class == WoWClass.Priest" >
-				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Priest" />
+				<Code File="LoadProfile" ProfileName="Class Hall Loaders/Priest" />
 			</If>
 			<If Condition="Me.Class == WoWClass.DeathKnight" >
-				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Death Knight" />
+				<Code File="LoadProfile" ProfileName="Class Hall Loaders/Death Knight" />
 			</If>
 			<If Condition="Me.Class == WoWClass.Shaman" >
-				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Shaman" />
+				<Code File="LoadProfile" ProfileName="Class Hall Loaders/Shaman" />
 			</If>
 			<If Condition="Me.Class == WoWClass.Mage" >
-				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Mage" />
+				<Code File="LoadProfile" ProfileName="Class Hall Loaders/Mage" />
 			</If>
 			<If Condition="Me.Class == WoWClass.Warlock" >
-				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Warlock" />
+				<Code File="LoadProfile" ProfileName="Class Hall Loaders/Warlock" />
 			</If>
 			<If Condition="Me.Class == WoWClass.Monk" >
-				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Monk" />
+				<Code File="LoadProfile" ProfileName="Class Hall Loaders/Monk" />
 			</If>
 			<If Condition="Me.Class == WoWClass.Druid" >
-				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Druid" />
+				<Code File="LoadProfile" ProfileName="Class Hall Loaders/Druid" />
 			</If>
 			<If Condition="Me.Class == WoWClass.DemonHunter" >
-				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Demon Hunter" />
+				<Code File="LoadProfile" ProfileName="Class Hall Loaders/Demon Hunter" />
 			</If>
 		<!-- END Load Class Hall stuff -->
 

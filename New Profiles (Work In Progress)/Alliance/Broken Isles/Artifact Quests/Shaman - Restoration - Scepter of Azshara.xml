@@ -37,12 +37,12 @@
 <!-- INITORDER COMMENT 
 	<InitOrder>
 		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
-		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+		<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
 
-		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
-		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+		<Code File="EnablePlugin" Names="Anti Drown" />
+		<Code File="EnablePlugin" Names="Refreshment Detection" />
 
-		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+		<Code File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 
 		<LootMobs Value="true" />
 		<TargetingDistance Value="45" /> Use LevelBot default
@@ -51,7 +51,7 @@ END INITORDER COMMENT -->
 
 	<QuestOrder> <!-- No checkpoints here. -->
 		<!-- RunCode Methods -->
-			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+			<Code File="RunCode" Type="Definition"><![CDATA[
 					bool DoQuest(params uint[] questIds)
 					{
 						foreach (var questId in questIds)
@@ -93,11 +93,11 @@ END INITORDER COMMENT -->
 						await Coroutine.Sleep(postWait);
 					}
 				]]>
-			</CustomBehavior>
+			</Code>
 		<!-- END RunCode Methods -->
 
 		<!-- Heal Routine -->
-			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+			<Code File="RunCode" Type="Definition"><![CDATA[
 					WoWUnit PurifyPriority()
 					{
 						return ObjectManager.GetObjectsOfType<WoWUnit>(true, true).Where(x => new[]{105298, 102828, 104853}.Contains((int)x.Entry) || x.IsMe).OrderBy(x => x.GetPredictedHealthPercent(true)).FirstOrDefault(x => x.HasAura("Heart of Frost"));
@@ -179,7 +179,7 @@ END INITORDER COMMENT -->
 						}
 					}
 				]]>
-			</CustomBehavior>
+			</Code>
 		<!-- END Heal Routine -->
 
 		<!-- Get Continuation Quest -->
@@ -192,19 +192,19 @@ END INITORDER COMMENT -->
 		<!-- END Third Artifact -->
 
 		<!-- Story: Artifact Weapon - Scepter of Azshara -->
-			<CustomBehavior File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text=":::WARNING\n\nIf you are seeing this message, then that means this artifact profile has NOT been tested yet.\n\nPlease do not report bugs for this profile until this message is no longer visible." />
+			<Code File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text=":::WARNING\n\nIf you are seeing this message, then that means this artifact profile has NOT been tested yet.\n\nPlease do not report bugs for this profile until this message is no longer visible." />
 			<PickUp QuestName="To the Deeps" QuestId="43644" GiverName="Erunak Stonespeaker" GiverId="96530" X="833.8368" Y="1047.934" Z="48.43444" />
 			<While Condition="DoQuest(43644)" >
-				<CustomBehavior File="InteractWith" MobId="111309" QuestId="43644" QuestObjectiveIndex="1" X="835.625" Y="1053.377" Z="50.64884" />
-				<CustomBehavior File="WaitTimer" QuestId="43644" WaitTime="250000" />
+				<Code File="InteractWith" MobId="111309" QuestId="43644" QuestObjectiveIndex="1" X="835.625" Y="1053.377" Z="50.64884" />
+				<Code File="WaitTimer" QuestId="43644" WaitTime="250000" />
 			</While>
 			<TurnIn QuestName="To the Deeps" QuestId="43644" TurnInName="Erunak Stonespeaker" TurnInId="96530" X="-6800.905" Y="4566.531" Z="-605.7632" />
 
 			<PickUp QuestName="Wavespeaker's Trail" QuestId="43645" GiverName="Erunak Stonespeaker" GiverId="96530" X="-6800.905" Y="4566.531" Z="-605.7632" />
 			<While Condition="DoQuest(43645)" >
-				<CustomBehavior File="InteractWith" MobId="252304" QuestId="43645" QuestObjectiveIndex="2" X="-6583.663" Y="4782.382" Z="-594.514" />
-				<CustomBehavior File="InteractWith" MobId="111104" QuestId="43645" QuestObjectiveIndex="3" X="-6932.208" Y="5076.835" Z="-610.0037" />
-				<CustomBehavior File="InteractWith" MobId="111102" QuestId="43645" QuestObjectiveIndex="1" X="-7180.413" Y="4717.078" Z="-595.9041" />
+				<Code File="InteractWith" MobId="252304" QuestId="43645" QuestObjectiveIndex="2" X="-6583.663" Y="4782.382" Z="-594.514" />
+				<Code File="InteractWith" MobId="111104" QuestId="43645" QuestObjectiveIndex="3" X="-6932.208" Y="5076.835" Z="-610.0037" />
+				<Code File="InteractWith" MobId="111102" QuestId="43645" QuestObjectiveIndex="1" X="-7180.413" Y="4717.078" Z="-595.9041" />
 			</While>
 			<TurnIn QuestName="Wavespeaker's Trail" QuestId="43645" TurnInName="Erunak Stonespeaker" TurnInId="96530" X="-6800.905" Y="4566.531" Z="-605.7632" />
 
@@ -212,15 +212,15 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="Azshara's Power" QuestId="40341" GiverName="Erunak Stonespeaker" GiverId="96530" X="-6800.905" Y="4566.531" Z="-605.7632" />
 			<While Condition="DoQuest(40341)" >
 				<MoveTo QuestId="40341" QuestObjectiveIndex="1" X="-5686.999" Y="5363.817" Z="-1118.149" /> <!-- Abyssal Breach -->
-				<CustomBehavior File="MyCTM" QuestId="40341" QuestObjectiveIndex="1" X="0.2291485" Y="-3.129899" Z="8.991887" TerminateWhen="Me.IsFalling" />
-				<CustomBehavior File="WaitTimer" QuestId="40341" QuestObjectiveIndex="1" WaitTime="15000" TerminateWhen="Me.IsSwimming" />
+				<Code File="MyCTM" QuestId="40341" QuestObjectiveIndex="1" X="0.2291485" Y="-3.129899" Z="8.991887" TerminateWhen="Me.IsFalling" />
+				<Code File="WaitTimer" QuestId="40341" QuestObjectiveIndex="1" WaitTime="15000" TerminateWhen="Me.IsSwimming" />
 				<!-- NOTE: <AddFunction> : Need to CTM into the instance portal. The load trigger is large - so I got hit by it before I could capture the coordinates. -->
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
 					<If Condition="!IsScenarioCriteriaComplete(1)" >
 						<DisableBehavior Name="Combat" />
 						<MoveTo X="-593.0642" Y="808.5642" Z="244.8095" />
-						<CustomBehavior File="RunCode"><![CDATA[
+						<Code File="RunCode"><![CDATA[
 								var grashPoi = Unit(105298);
 
 								while (grashPoi != null && grashPoi.HealthPercent < 100)
@@ -230,13 +230,13 @@ END INITORDER COMMENT -->
 								}
 
 							]]>
-						</CustomBehavior>
+						</Code>
 					</If>
 					<If Condition="!IsScenarioCriteriaComplete(2)" >
 						<EnableBehavior Name="Combat" />
-						<CustomBehavior File="KillUntilComplete" MobId="102792" X="-576.6647" Y="806.6" Z="244.8095" TerminateWhen="IsScenarioCriteriaComplete(2)" />
+						<Code File="KillUntilComplete" MobId="102792" X="-576.6647" Y="806.6" Z="244.8095" TerminateWhen="IsScenarioCriteriaComplete(2)" />
 						<!-- Healing Grash back to full before we speak to him. -->
-						<CustomBehavior File="RunCode"><![CDATA[
+						<Code File="RunCode"><![CDATA[
 								var grashPoi = Unit(105298);
 
 								while (grashPoi != null && grashPoi.HealthPercent < 100)
@@ -246,66 +246,66 @@ END INITORDER COMMENT -->
 								}
 
 							]]>
-						</CustomBehavior>
+						</Code>
 					</If>
-					<CustomBehavior File="WaitTimer" WaitTime="8000" /> <!-- Wait a little bit until Grash is interactable. -->
-					<CustomBehavior File="InteractWith" MobId="105298" GossipOptions="4,1" X="-561.2934" Y="807.2466" Z="245.1142" TerminateWhen="IsScenarioCriteriaComplete(3)" />
+					<Code File="WaitTimer" WaitTime="8000" /> <!-- Wait a little bit until Grash is interactable. -->
+					<Code File="InteractWith" MobId="105298" GossipOptions="4,1" X="-561.2934" Y="807.2466" Z="245.1142" TerminateWhen="IsScenarioCriteriaComplete(3)" />
 					<MoveTo X="-524.0342" Y="806.226" Z="256.9002" />
-					<CustomBehavior File="WaitTimer" WaitTime="30000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+					<Code File="WaitTimer" WaitTime="30000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
 					<If Condition="!IsScenarioCriteriaComplete(1)" >
 						<DisableBehavior Name="Combat" />
 						<MoveTo X="-438.0906" Y="802.5275" Z="248.5818" />
-						<CustomBehavior File="RunCode"><![CDATA[
+						<Code File="RunCode"><![CDATA[
 								while (HealPriority() != null && !IsScenarioCriteriaComplete(1))
 								{
 									await HealRoutine(HealPriority());
 									await Coroutine.Yield();
 								}
 							]]>
-						</CustomBehavior>
+						</Code>
 					</If>
 					<If Condition="!IsScenarioCriteriaComplete(2)" >
-						<CustomBehavior File="InteractWith" MobId="104853" X="-358.875" Y="807.5417" Z="258.4809" TerminateWhen="IsScenarioCriteriaComplete(2)" />
-						<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+						<Code File="InteractWith" MobId="104853" X="-358.875" Y="807.5417" Z="258.4809" TerminateWhen="IsScenarioCriteriaComplete(2)" />
+						<Code File="WaitTimer" WaitTime="10000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
 					</If>
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
 					<DisableBehavior Name="Combat" />
 					<If Condition="!IsScenarioCriteriaComplete(1)" >
-						<CustomBehavior File="InteractWith" MobId="105298" GossipOptions="1" X="-379.2809" Y="809.8109" Z="248.2059" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+						<Code File="InteractWith" MobId="105298" GossipOptions="1" X="-379.2809" Y="809.8109" Z="248.2059" TerminateWhen="IsScenarioCriteriaComplete(1)" />
 						<MoveTo X="-304.9862" Y="809.462" Z="260.6023" />
 					</If>
 
-					<CustomBehavior File="RunCode"><![CDATA[
+					<Code File="RunCode"><![CDATA[
 							while (Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3 && !IsScenarioCriteriaComplete(2))
 							{
 								await HealRoutine(HealPriority());
 								await Coroutine.Yield();
 							}
 						]]>
-					</CustomBehavior>
+					</Code>
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
-					<CustomBehavior File="InteractWith" MobId="113903" X="-215.6302" Y="808.6042" Z="263.8079" TerminateWhen="IsScenarioCriteriaComplete(1)" />
-					<CustomBehavior File="WaitTimer" WaitTime="30000" />
+					<Code File="InteractWith" MobId="113903" X="-215.6302" Y="808.6042" Z="263.8079" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+					<Code File="WaitTimer" WaitTime="30000" />
 					<While Condition="!IsScenarioCriteriaComplete(2)" >
-						<CustomBehavior File="RunCode" Code="if (!Me.HasAura(2645)) SpellManager.Cast(2645);" />
+						<Code File="RunCode" Code="if (!Me.HasAura(2645)) SpellManager.Cast(2645);" />
 						<MoveTo X="-21.13715" Y="802.283" Z="807.3605" />
 					</While>
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
 					<DisableBehavior Name="Combat" />
-					<CustomBehavior File="InteractWith" MobId="105298" GossipOptions="1" X="-44.9583" Y="801.682" Z="797.1661" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+					<Code File="InteractWith" MobId="105298" GossipOptions="1" X="-44.9583" Y="801.682" Z="797.1661" TerminateWhen="IsScenarioCriteriaComplete(1)" />
 
 					<If Condition="!IsScenarioCriteriaComplete(2)" >
 						<MoveTo X="34.08841" Y="802.3474" Z="806.3171" />
-						<CustomBehavior File="RunCode"><![CDATA[
+						<Code File="RunCode"><![CDATA[
 								var zithreenPoi = Unit(104856);
 								while (Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5 && !IsScenarioCriteriaComplete(2))
 								{
@@ -322,24 +322,24 @@ END INITORDER COMMENT -->
 									await Coroutine.Yield();
 								}
 							]]>
-						</CustomBehavior>
+						</Code>
 					</If>
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
-					<CustomBehavior File="InteractWith" MobId="249342" InteractByLooting="true" WaitTime="1500" X="50.57813" Y="802.3924" Z="805.731" />
-					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
-					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+					<Code File="InteractWith" MobId="249342" InteractByLooting="true" WaitTime="1500" X="50.57813" Y="802.3924" Z="805.731" />
+					<Code File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<Code File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
 				</If>
 
-				<CustomBehavior File="InteractWith" MobId="105819" QuestId="40341" QuestObjectiveIndex="4" X="50.57813" Y="802.3924" Z="805.7307" />
+				<Code File="InteractWith" MobId="105819" QuestId="40341" QuestObjectiveIndex="4" X="50.57813" Y="802.3924" Z="805.7307" />
 			</While>
 			<TurnIn QuestName="Azshara's Power" QuestId="40341" TurnInName="Stormcaller Mylra" TurnInId="96539" X="829.4097" Y="1050.967" Z="48.45243" />
 		<!-- END Story: Artifact Weapon - Scepter of Azshara -->
 
 
 		<If Condition="!IsQuestCompleted(40225)" >
-			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/Shaman.xml" />
+			<Code File="LoadProfile" ProfileName="../Class Hall Loaders/Shaman.xml" />
 		</If>
 
 	</QuestOrder>

@@ -37,12 +37,12 @@
 <!-- INITORDER COMMENT 
 	<InitOrder>
 		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
-		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+		<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
 
-		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
-		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+		<Code File="EnablePlugin" Names="Anti Drown" />
+		<Code File="EnablePlugin" Names="Refreshment Detection" />
 
-		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+		<Code File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 
 		<LootMobs Value="true" />
 		<TargetingDistance Value="45" /> Use LevelBot default
@@ -51,7 +51,7 @@ END INITORDER COMMENT -->
 
 	<QuestOrder> <!-- No checkpoints here. -->
 		<!-- RunCode Methods -->
-			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+			<Code File="RunCode" Type="Definition"><![CDATA[
 					bool DoQuest(params uint[] questIds)
 					{
 						foreach (var questId in questIds)
@@ -93,23 +93,23 @@ END INITORDER COMMENT -->
 						await Coroutine.Sleep(postWait);
 					}
 				]]>
-			</CustomBehavior>
+			</Code>
 		<!-- END RunCode Methods -->
 
 		<!-- Get Continuation Quest -->
 			<If Condition="IsQuestCompleted(42869) &amp;&amp; !(IsQuestCompleted(40249) || IsQuestCompleted(41863)) &amp;&amp; NeedsQuest(44379, 44383)" > <!-- Using On Eternal Vigil (42869) to determine if we've already got the first artifact. -->
-				<CustomBehavior File="InteractWith" MobIds="108572, 108571" WaitTime="1250" X="1551.054" Y="1413.816" Z="237.1085" />
-				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="QuestFrameAcceptButton:Click();" />
-				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="QuestChoiceFrameOption1.OptionButton:Click();" />
-				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="StaticPopup1Button2:Click();" />
+				<Code File="InteractWith" MobIds="108572, 108571" WaitTime="1250" X="1551.054" Y="1413.816" Z="237.1085" />
+				<Code File="Misc\RunLua" WaitTime="1500" Lua="QuestFrameAcceptButton:Click();" />
+				<Code File="Misc\RunLua" WaitTime="1500" Lua="QuestChoiceFrameOption1.OptionButton:Click();" />
+				<Code File="Misc\RunLua" WaitTime="1500" Lua="StaticPopup1Button2:Click();" />
 			</If>
 		<!-- END Get Continuation Quest -->
 
 		<!-- Second Artifact -->
 			<If Condition="QuestDone(44379, 44383)" >
-				<CustomBehavior File="InteractWith" MobIds="108572, 108571" WaitTime="1250" X="1551.054" Y="1413.816" Z="237.1085" />
-				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="GossipTitleButton1:Click();" />
-				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+				<Code File="InteractWith" MobIds="108572, 108571" WaitTime="1250" X="1551.054" Y="1413.816" Z="237.1085" />
+				<Code File="Misc\RunLua" WaitTime="1500" Lua="GossipTitleButton1:Click();" />
+				<Code File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
 			</If>
 		<!-- END Second Artifact -->
 
@@ -118,8 +118,8 @@ END INITORDER COMMENT -->
 
 		<!-- Overly complicated due to either Kayn or Altruis being here -->
 			<If Condition="(HasQuest(40247) || HasQuest(41803)) &amp;&amp; Me.HasAura(213170)" > <!-- Picked up Making Arragements for second artifact weapon. -->
-				<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" TerminateWhen="!Me.HasAura(213170)" />
-				<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.Z &lt; 746" /> <!-- Walk off ledge -->
+				<Code File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" TerminateWhen="!Me.HasAura(213170)" />
+				<Code File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.Z &lt; 746" /> <!-- Walk off ledge -->
 			</If>
 
 			<If Condition="(!IsQuestCompleted(40247) || !IsQuestCompleted(41803)) &amp;&amp; !Me.HasAura(213170)" >
@@ -132,8 +132,8 @@ END INITORDER COMMENT -->
 				</If>
 				<If Condition="Me.HasAura(213170) || (DoQuest(40247) &amp;&amp; Me.HasAura(213170))" > <!-- Second artifact weapon, class hall -->
 					<PickUp Nav="Fly" QuestName="Asking a Favor" QuestId="40247" GiverName="Kayn Sunfury" GiverId="108572" X="1550.898" Y="1413.856" Z="237.1085" />
-					<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" TerminateWhen="!Me.HasAura(213170)" />
-					<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.Z &lt; 746" /> <!-- Walk off ledge -->
+					<Code File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" TerminateWhen="!Me.HasAura(213170)" />
+					<Code File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.Z &lt; 746" /> <!-- Walk off ledge -->
 					<TurnIn QuestName="Asking a Favor" QuestId="40247" TurnInName="Archmage Khadgar" TurnInId="90417" X="-848.4618" Y="4638.848" Z="749.5472" />
 				</If>
 			</If>
@@ -144,8 +144,8 @@ END INITORDER COMMENT -->
 				</If>
 				<If Condition="HasQuest(41803) || (DoQuest(41803) &amp;&amp; Me.HasAura(213170))" > <!-- Second artifact weapon, class hall -->
 					<PickUp QuestName="Asking a Favor" QuestId="41803" GiverName="Altruis the Sufferer" GiverId="108571" X="-852.2726" Y="4256.074" Z="746.2851" />
-					<CustomBehavior File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" TerminateWhen="!Me.HasAura(213170)" />
-					<CustomBehavior File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.Z &lt; 746" /> <!-- Walk off ledge -->
+					<Code File="InteractWith" MobId="247007" WaitTime="3500" X="1457.668" Y="1411.165" Z="244.9198" TerminateWhen="!Me.HasAura(213170)" />
+					<Code File="MyCTM" X="-845.8937" Y="4257.475" Z="746.2807" TerminateWhen="Me.Z &lt; 746" /> <!-- Walk off ledge -->
 					<TurnIn QuestName="Asking a Favor" QuestId="41803" TurnInName="Archmage Khadgar" TurnInId="90417" X="-848.4618" Y="4638.848" Z="749.5472" />
 				</If>
 			</If>
@@ -154,8 +154,8 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Ask and You Shall Receive" QuestId="41804" GiverName="Archmage Khadgar" GiverId="90417" X="-848.4618" Y="4638.848" Z="749.5472" />
 		<While Condition="DoQuest(41804)" >
 			<MoveTo X="-832.459" Y="4661.465" Z="767.7195" />
-			<CustomBehavior File="WaitTimer" QuestId="41804" QuestObjectiveIndex="1" WaitTime="65000" />
-			<CustomBehavior File="InteractWith" MobId="248521" NonCompeteDistance="0" InteractByLooting="true" QuestId="41804" QuestObjectiveIndex="2" X="-829.4028" Y="4653.744" Z="768.9847" />
+			<Code File="WaitTimer" QuestId="41804" QuestObjectiveIndex="1" WaitTime="65000" />
+			<Code File="InteractWith" MobId="248521" NonCompeteDistance="0" InteractByLooting="true" QuestId="41804" QuestObjectiveIndex="2" X="-829.4028" Y="4653.744" Z="768.9847" />
 		</While>
 		<TurnIn QuestName="Ask and You Shall Receive" QuestId="41804" TurnInName="Archmage Khadgar" TurnInId="90417" X="-848.4639" Y="4638.844" Z="749.5472" />
 
@@ -164,8 +164,8 @@ END INITORDER COMMENT -->
 
 		<PickUp QuestName="Establishing a Connection" QuestId="41807" GiverName="Jace Darkweaver" GiverId="99262" X="-864.8663" Y="4260.524" Z="745.1188" />
 		<While Condition="DoQuest(41807)" >
-			<CustomBehavior File="InteractWith" MobId="248531" QuestId="41807" QuestObjectiveIndex="1" X="-868.2986" Y="4261.415" Z="745.0586" />
-			<CustomBehavior File="WaitTimer" QuestId="41807" WaitTime="60000" />
+			<Code File="InteractWith" MobId="248531" QuestId="41807" QuestObjectiveIndex="1" X="-868.2986" Y="4261.415" Z="745.0586" />
+			<Code File="WaitTimer" QuestId="41807" WaitTime="60000" />
 		</While>
 		<TurnIn QuestName="Establishing a Connection" QuestId="41807" TurnInName="Jace Darkweaver" TurnInId="99262" X="-864.8663" Y="4260.524" Z="745.1188" />
 
@@ -183,66 +183,66 @@ END INITORDER COMMENT -->
 		<While Condition="DoQuest(40249, 41863)" >
 
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0 &amp;&amp; !HasItem(128832)" >
-				<CustomBehavior File="InteractWith" MobId="99250" WaitForNpcs="false" X="-844.6129" Y="4253.909" Z="746.2827" />
-				<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="!Me.InVehicle" />
+				<Code File="InteractWith" MobId="99250" WaitForNpcs="false" X="-844.6129" Y="4253.909" Z="746.2827" />
+				<Code File="WaitTimer" WaitTime="25000" TerminateWhen="!Me.InVehicle" />
 			</If>
 
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
-				<CustomBehavior File="InteractWith" MobId="98882" X="-2507.5" Y="115.4566" Z="9.387377" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+				<Code File="InteractWith" MobId="98882" X="-2507.5" Y="115.4566" Z="9.387377" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
 			</If>
 
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
 				<DisableBehavior Name="Pull" />
 				<MoveTo X="-2602.782" Y="78.46842" Z="34.11992" />
-				<CustomBehavior File="InteractWith" MobId="248517" WaitForNpcs="false" IgnoreCombat="true" X="-2617.91" Y="79.28299" Z="38.78796" />
+				<Code File="InteractWith" MobId="248517" WaitForNpcs="false" IgnoreCombat="true" X="-2617.91" Y="79.28299" Z="38.78796" />
 
 				<MoveTo X="-2635.686" Y="38.81975" Z="44.22474" />
-				<CustomBehavior File="InteractWith" MobId="248573" WaitForNpcs="false" IgnoreCombat="true" X="-2649.646" Y="20.09896" Z="48.62485" />
+				<Code File="InteractWith" MobId="248573" WaitForNpcs="false" IgnoreCombat="true" X="-2649.646" Y="20.09896" Z="48.62485" />
 				<EnableBehavior Name="Pull" />
 			</If>
 
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
-				<CustomBehavior File="KillUntilComplete" MobIds="105095, 105094" X="-2751.17" Y="-69.86459" Z="46.63633" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+				<Code File="KillUntilComplete" MobIds="105095, 105094" X="-2751.17" Y="-69.86459" Z="46.63633" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
 			</If>
 
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
-				<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepMoving" AllowUseDuringCombat="true" UseAtInterval="2000" >
+				<Code File="Hooks\DoWhen" ActivityName="KeepMoving" AllowUseDuringCombat="true" UseAtInterval="2000" >
 					<If Condition="Me.Combat" >
 						<If Condition="Chance(50)" >
-							<CustomBehavior File="RunCode" Code="WoWMovement.Move(WoWMovement.MovementDirection.StrafeLeft, TimeSpan.FromMilliseconds(850));" />
+							<Code File="RunCode" Code="WoWMovement.Move(WoWMovement.MovementDirection.StrafeLeft, TimeSpan.FromMilliseconds(850));" />
 							<Else>
-								<CustomBehavior File="RunCode" Code="WoWMovement.Move(WoWMovement.MovementDirection.StrafeLeft, TimeSpan.FromMilliseconds(850));" />
+								<Code File="RunCode" Code="WoWMovement.Move(WoWMovement.MovementDirection.StrafeLeft, TimeSpan.FromMilliseconds(850));" />
 							</Else>
 						</If>
 					</If>
-				</CustomBehavior>
+				</Code>
 				<MoveTo X="-2748.475" Y="-77.36726" Z="46.63644" /> 
-				<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Me.Combat" /> <!-- Let Gorgonnash get away from lava. -->
-				<CustomBehavior File="KillUntilComplete" MobId="99046" X="-2784.061" Y="-95.17535" Z="47.39761" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
-				<CustomBehavior File="Hooks\DoWhen" ActivityName="KeepMoving" Command="Remove" />
+				<Code File="WaitTimer" WaitTime="5000" TerminateWhen="Me.Combat" /> <!-- Let Gorgonnash get away from lava. -->
+				<Code File="KillUntilComplete" MobId="99046" X="-2784.061" Y="-95.17535" Z="47.39761" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+				<Code File="Hooks\DoWhen" ActivityName="KeepMoving" Command="Remove" />
 			</If>
 
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
 				<MoveTo X="-2740.7" Y="-133.0053" Z="48.47334" />
-				<CustomBehavior File="RunCode" Code="SpellManager.Cast(188501);" />
-				<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+				<Code File="RunCode" Code="SpellManager.Cast(188501);" />
+				<Code File="WaitTimer" WaitTime="5000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
 			</If>
 
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
-				<CustomBehavior File="InteractWith" Range="9" MobId="245119" WaitForNpcs="false" X="-2739.22" Y="-137.7965" Z="48.47856" />
-				<CustomBehavior File="KillUntilComplete" MobId="99184" X="-2748.21" Y="-327.561" Z="38.2853" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+				<Code File="InteractWith" Range="9" MobId="245119" WaitForNpcs="false" X="-2739.22" Y="-137.7965" Z="48.47856" />
+				<Code File="KillUntilComplete" MobId="99184" X="-2748.21" Y="-327.561" Z="38.2853" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
 			</If>
 
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
-				<CustomBehavior File="InteractWith" MobId="248785" InteractByLooting="true" WaitTime="1500" X="-2748.406" Y="-328.1875" Z="38.34308" />
-				<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
-				<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+				<Code File="InteractWith" MobId="248785" InteractByLooting="true" WaitTime="1500" X="-2748.406" Y="-328.1875" Z="38.34308" />
+				<Code File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+				<Code File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
 			</If>
 
-			<CustomBehavior File="InteractWith" MobId="99227" QuestId="40249" QuestObjectiveIndex="3" X="-2742.73" Y="-301.316" Z="30.97247" />
-			<CustomBehavior File="InteractWith" MobId="99227" QuestId="41863" QuestObjectiveIndex="3" X="-2742.73" Y="-301.316" Z="30.97247" />
+			<Code File="InteractWith" MobId="99227" QuestId="40249" QuestObjectiveIndex="3" X="-2742.73" Y="-301.316" Z="30.97247" />
+			<Code File="InteractWith" MobId="99227" QuestId="41863" QuestObjectiveIndex="3" X="-2742.73" Y="-301.316" Z="30.97247" />
 
-			<CustomBehavior File="WaitTimer" WaitTime="18000" />
+			<Code File="WaitTimer" WaitTime="18000" />
 		</While>
 
 		<If Condition="HasQuest(40249)" >
@@ -252,10 +252,10 @@ END INITORDER COMMENT -->
 			<If Condition="IsQuestCompleted(42869)" > <!-- Prevent this turnin from running if we're on the second artifact quest -->
 				<If Condition="!Me.HasAura(213170)" >
 					<MoveTo X="-818.1966" Y="4265.469" Z="746.2773" />
-					<CustomBehavior File="ForcedDismount" />
-					<CustomBehavior File="MyCTM" X="-821.7453" Y="4236.09" Z="743.0304" />
-					<CustomBehavior File="WaitTimer" WaitTime="750" />
-					<CustomBehavior File="RunCode"><![CDATA[
+					<Code File="ForcedDismount" />
+					<Code File="MyCTM" X="-821.7453" Y="4236.09" Z="743.0304" />
+					<Code File="WaitTimer" WaitTime="750" />
+					<Code File="RunCode"><![CDATA[
 							Me.SetFacing(4);
 							await Coroutine.Sleep(750);
 							WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
@@ -264,9 +264,9 @@ END INITORDER COMMENT -->
 							SpellManager.Cast(131347);
 							await Coroutine.Sleep(4000);
 						]]>
-					</CustomBehavior>
-					<CustomBehavior File="MyCTM" X="-942.347" Y="4085.248" Z="648.2783" />
-					<CustomBehavior File="InteractWith" MobId="251286" NonCompeteDistance="0" X="-963.8559" Y="4066.109" Z="648.1834" />
+					</Code>
+					<Code File="MyCTM" X="-942.347" Y="4085.248" Z="648.2783" />
+					<Code File="InteractWith" MobId="251286" NonCompeteDistance="0" X="-963.8559" Y="4066.109" Z="648.1834" />
 				</If>
 				<If Condition="HasQuest(40249)" > <!-- Second artifact turn in -->
 					<TurnIn QuestName="Vengeance Will Be Ours" QuestId="40249" TurnInName="Kor'vas Bloodthorn" TurnInId="103761" X="1551.464" Y="1410.891" Z="237.1088" />
@@ -280,10 +280,10 @@ END INITORDER COMMENT -->
 			<If Condition="IsQuestCompleted(42869)" > <!-- Prevent this turnin from running if we're on the second artifact quest -->
 				<If Condition="!Me.HasAura(213170)" >
 					<MoveTo X="-818.1966" Y="4265.469" Z="746.2773" />
-					<CustomBehavior File="ForcedDismount" />
-					<CustomBehavior File="MyCTM" X="-821.7453" Y="4236.09" Z="743.0304" />
-					<CustomBehavior File="WaitTimer" WaitTime="750" />
-					<CustomBehavior File="RunCode"><![CDATA[
+					<Code File="ForcedDismount" />
+					<Code File="MyCTM" X="-821.7453" Y="4236.09" Z="743.0304" />
+					<Code File="WaitTimer" WaitTime="750" />
+					<Code File="RunCode"><![CDATA[
 							Me.SetFacing(4);
 							await Coroutine.Sleep(750);
 							WoWMovement.Move(WoWMovement.MovementDirection.JumpAscend);
@@ -292,9 +292,9 @@ END INITORDER COMMENT -->
 							SpellManager.Cast(131347);
 							await Coroutine.Sleep(4000);
 						]]>
-					</CustomBehavior>
-					<CustomBehavior File="MyCTM" X="-942.347" Y="4085.248" Z="648.2783" />
-					<CustomBehavior File="InteractWith" MobId="251286" NonCompeteDistance="0" X="-963.8559" Y="4066.109" Z="648.1834" />
+					</Code>
+					<Code File="MyCTM" X="-942.347" Y="4085.248" Z="648.2783" />
+					<Code File="InteractWith" MobId="251286" NonCompeteDistance="0" X="-963.8559" Y="4066.109" Z="648.1834" />
 				</If>
 				<If Condition="HasQuest(41863)" > <!-- Second artifact turn in -->
 					<TurnIn QuestName="Vengeance Will Be Ours" QuestId="41863" TurnInName="Kor'vas Bloodthorn" TurnInId="103761" X="1551.464" Y="1410.891" Z="237.1088" />
@@ -307,7 +307,7 @@ END INITORDER COMMENT -->
 
 
 		<If Condition="!IsQuestCompleted(42869)" >
-			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/Demon Hunter.xml" />
+			<Code File="LoadProfile" ProfileName="../Class Hall Loaders/Demon Hunter.xml" />
 		</If>
 
 	</QuestOrder>

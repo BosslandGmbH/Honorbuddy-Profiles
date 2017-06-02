@@ -37,12 +37,12 @@
 <!-- INITORDER COMMENT 
 	<InitOrder>
 		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
-		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+		<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
 
-		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
-		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+		<Code File="EnablePlugin" Names="Anti Drown" />
+		<Code File="EnablePlugin" Names="Refreshment Detection" />
 
-		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+		<Code File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 
 		<LootMobs Value="true" />
 		<TargetingDistance Value="45" /> Use LevelBot default
@@ -51,7 +51,7 @@ END INITORDER COMMENT -->
 
 	<QuestOrder> <!-- No checkpoints here. -->
 		<!-- RunCode Methods -->
-			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+			<Code File="RunCode" Type="Definition"><![CDATA[
 					bool DoQuest(params uint[] questIds)
 					{
 						foreach (var questId in questIds)
@@ -93,13 +93,13 @@ END INITORDER COMMENT -->
 						await Coroutine.Sleep(postWait);
 					}
 				]]>
-			</CustomBehavior>
+			</Code>
 		<!-- END RunCode Methods -->
 
 		<!-- Get Continuation Quest -->
 			<If Condition="IsQuestCompleted(41255) &amp;&amp; NeedsQuest(40649) &amp;&amp; !HasQuest(43980) &amp;&amp; !HasQuest(44431) &amp;&amp; !HasQuest(44443)" > <!-- Using Sowing the Seed (41255) to determine if we've already got the first artifact. -->
-				<CustomBehavior File="InteractWith" MobId="101195" WaitTime="1250" X="3969.634" Y="7393.945" Z="23.9389" />
-				<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="QuestFrameAcceptButton:Click();" />
+				<Code File="InteractWith" MobId="101195" WaitTime="1250" X="3969.634" Y="7393.945" Z="23.9389" />
+				<Code File="Misc\RunLua" WaitTime="1250" Lua="QuestFrameAcceptButton:Click();" />
 			</If>
 		<!-- END Get Continuation Quest -->
 
@@ -107,11 +107,11 @@ END INITORDER COMMENT -->
 			<If Condition="HasQuest(43980)" >
 				<While Condition="DoQuest(43980)" >
 					<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
-						<CustomBehavior File="InteractWith" MobId="101195" GossipOptions="1" QuestId="43980" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
+						<Code File="InteractWith" MobId="101195" GossipOptions="1" QuestId="43980" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
 					</If>
 					<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.  
-					<CustomBehavior File="Misc\RunLua" QuestId="43980" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
-					<CustomBehavior File="UserDialog" QuestId="43980" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
+					<Code File="Misc\RunLua" QuestId="43980" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
+					<Code File="UserDialog" QuestId="43980" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
 				</While>
 				<TurnIn QuestName="Another Weapon of Old" QuestId="43980" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.9389" />
 			</If>
@@ -121,11 +121,11 @@ END INITORDER COMMENT -->
 			<If Condition="HasQuest(44431)" >
 				<While Condition="DoQuest(44431)" >
 					<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
-						<CustomBehavior File="InteractWith" MobId="101195" GossipOptions="1" QuestId="44431" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
+						<Code File="InteractWith" MobId="101195" GossipOptions="1" QuestId="44431" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
 					</If>
 					<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.  
-					<CustomBehavior File="Misc\RunLua" QuestId="44431" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
-					<CustomBehavior File="UserDialog" QuestId="44431" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
+					<Code File="Misc\RunLua" QuestId="44431" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
+					<Code File="UserDialog" QuestId="44431" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
 				</While>
 				<TurnIn QuestName="More Weapons of Old" QuestId="44431" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.93885" />
 			</If>
@@ -135,9 +135,9 @@ END INITORDER COMMENT -->
 			<If Condition="HasQuest(44443)" >
 				<While Condition="DoQuest(44443)" >
 					<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
-						<CustomBehavior File="InteractWith" MobId="101195" WaitTime="2000" GossipOptions="1" QuestId="44443" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
+						<Code File="InteractWith" MobId="101195" WaitTime="2000" GossipOptions="1" QuestId="44443" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
 					</If>
-					<CustomBehavior File="Misc\RunLua" QuestId="44443" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1200" /> <!-- Should always be 1. -->
+					<Code File="Misc\RunLua" QuestId="44443" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1200" /> <!-- Should always be 1. -->
 				</While>
 				<TurnIn QuestName="Weapons of the Ancients" QuestId="44443" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.93913" />
 			</If>
@@ -152,8 +152,8 @@ END INITORDER COMMENT -->
 
 			<PickUp QuestName="Necessary Preparations" QuestId="41422" GiverName="Mylune" GiverId="113525" X="3964.885" Y="7326.858" Z="29.21814" />
 			<While Condition="DoQuest(41422)" >
-				<CustomBehavior File="InteractWith" MobId="247901" InteractByLooting="true" QuestId="41422" QuestObjectiveIndex="1" X="4123.917" Y="7475.272" Z="50.17471" />
-				<CustomBehavior File="InteractWith" MobId="97989" GossipOptions="1,1" WaitTime="3500" QuestId="41422" QuestObjectiveIndex="2" X="4102.716" Y="7499.057" Z="51.01068" />
+				<Code File="InteractWith" MobId="247901" InteractByLooting="true" QuestId="41422" QuestObjectiveIndex="1" X="4123.917" Y="7475.272" Z="50.17471" />
+				<Code File="InteractWith" MobId="97989" GossipOptions="1,1" WaitTime="3500" QuestId="41422" QuestObjectiveIndex="2" X="4102.716" Y="7499.057" Z="51.01068" />
 			</While>
 			<If Condition="QuestDone(41422)" >
 				<MoveTo X="3983.808" Y="7309.492" Z="29.32501" /> <!-- Avoid getting stuck on command map. -->
@@ -167,64 +167,64 @@ END INITORDER COMMENT -->
 			<While Condition="DoQuest(41436)" >
 				<If Condition="!Me.HasAura(206556)"> <!-- NOTE: <Add-CheckAura> : Drink potion for dreamwalking aura, need to check for 'The Emerald Dream' aura.  If dont have aura, useitem -->
 					<MoveTo X="4300.369" Y="7422.058" Z="-17.13339" /> <!-- Go to bed. -->
-					<CustomBehavior File="UseItem" ItemId="135506" />
-					<CustomBehavior File="WaitTimer" WaitTime="15000" />
+					<Code File="UseItem" ItemId="135506" />
+					<Code File="WaitTimer" WaitTime="15000" />
 				</If>
 
-				<CustomBehavior File="Hooks\DoWhen" ActivityName="PreventCorruption" AllowUseDuringCombat="true" UseWhen="Me.HasAura(206556) &amp;&amp; (!Me.HasAura(774) || !Me.HasAura(33763))" > <!-- NOTE: <Add-CheckAura> : If have dreamwalking aura.  Same aura as mentioned in the note above. -->
+				<Code File="Hooks\DoWhen" ActivityName="PreventCorruption" AllowUseDuringCombat="true" UseWhen="Me.HasAura(206556) &amp;&amp; (!Me.HasAura(774) || !Me.HasAura(33763))" > <!-- NOTE: <Add-CheckAura> : If have dreamwalking aura.  Same aura as mentioned in the note above. -->
 					<!-- All that may be needed here is Lifebloom.  It's able to surpress the corruption very efficiently on its own. -->
-					<CustomBehavior File="RunCode" Code="Me.Target();" />
+					<Code File="RunCode" Code="Me.Target();" />
 					<If Condition="!Me.HasAura(774)" > <!-- Rejuvenation -->
-						<CustomBehavior File="RunCode" Code="SpellManager.Cast(774); await Coroutine.Wait(2000, ()=&gt; !SpellManager.GlobalCooldown);" />
+						<Code File="RunCode" Code="SpellManager.Cast(774); await Coroutine.Wait(2000, ()=&gt; !SpellManager.GlobalCooldown);" />
 					</If>
 					<If Condition="!Me.HasAura(33763)" > <!-- Lifebloom -->
-						<CustomBehavior File="RunCode" Code="SpellManager.Cast(33763);" />
+						<Code File="RunCode" Code="SpellManager.Cast(33763);" />
 					</If>
-				</CustomBehavior>
+				</Code>
 
 				<MoveTo X="4239.719" Y="7390.257" Z="-5.799763" />
-				<CustomBehavior File="RunCode"><![CDATA[
+				<Code File="RunCode"><![CDATA[
 						var bashanaPoi = Unit(104398);
 						bashanaPoi.Target();
 						SpellManager.Cast(88423);
 					]]>
-				</CustomBehavior>
+				</Code>
 				<DisableBehavior Name="Combat" />
-				<CustomBehavior File="WaitTimer" WaitTime="25000" /> <!-- NOTE: <Optimize> : Roots do not go null.  Need to check object state to see if they are removed. -->
+				<Code File="WaitTimer" WaitTime="25000" /> <!-- NOTE: <Optimize> : Roots do not go null.  Need to check object state to see if they are removed. -->
 
 				<MoveTo X="4220.129" Y="7371.49" Z="-5.967033" />
 				<!-- Wait for mob to move out of way -->
-				<CustomBehavior File="WaitTimer" WaitTime="80000" TerminateWhen="Unit(104515, u =&gt; u.Location.Distance(new Vector3(4208.401f, 7385.235f, -5.897796f)) &lt; 1) != null &amp;&amp; Me.HealthPercent &gt;= 99" />
+				<Code File="WaitTimer" WaitTime="80000" TerminateWhen="Unit(104515, u =&gt; u.Location.Distance(new Vector3(4208.401f, 7385.235f, -5.897796f)) &lt; 1) != null &amp;&amp; Me.HealthPercent &gt;= 99" />
 				<MoveTo X="4190.211" Y="7381.423" Z="-0.4116783" />
 				<!-- Heal up before moving on -->
-				<CustomBehavior File="Hooks\Avoid" AvoidName="CongealedNightmare" ObjectId="104533" Radius="1.75" AvoidWhen="UNIT.ZDiff &lt; 8" />
-				<CustomBehavior File="Hooks\Avoid" AvoidName="CongealedNightmareTrail" ObjectId="10956" ObjectType="AreaTrigger" Radius="1.75" AvoidWhen="AREATRIGGER.ZDiff &lt; 8" />
-				<CustomBehavior File="RunCode" Type="Definition" ><![CDATA[
+				<Code File="Hooks\Avoid" AvoidName="CongealedNightmare" ObjectId="104533" Radius="1.75" AvoidWhen="UNIT.ZDiff &lt; 8" />
+				<Code File="Hooks\Avoid" AvoidName="CongealedNightmareTrail" ObjectId="10956" ObjectType="AreaTrigger" Radius="1.75" AvoidWhen="AREATRIGGER.ZDiff &lt; 8" />
+				<Code File="RunCode" Type="Definition" ><![CDATA[
 					bool InDeepSlumber_MoveOn => Me.HealthPercent >= 99 && Lua.GetReturnVal<int>("return UnitPower('player', ALTERNATE_POWER_INDEX)", 0) < 10;
-				]]></CustomBehavior>
-				<CustomBehavior File="WaitTimer" WaitTime="40000" TerminateWhen="InDeepSlumber_MoveOn" />
+				]]></Code>
+				<Code File="WaitTimer" WaitTime="40000" TerminateWhen="InDeepSlumber_MoveOn" />
 				<MoveTo X="4218.505" Y="7414.767" Z="9.159934" />
-				<CustomBehavior File="WaitTimer" WaitTime="40000" TerminateWhen="InDeepSlumber_MoveOn" />
+				<Code File="WaitTimer" WaitTime="40000" TerminateWhen="InDeepSlumber_MoveOn" />
 				<MoveTo X="4102.368" Y="7374.856" Z="22.9132" />
-				<CustomBehavior File="WaitTimer" WaitTime="40000" TerminateWhen="InDeepSlumber_MoveOn" />
+				<Code File="WaitTimer" WaitTime="40000" TerminateWhen="InDeepSlumber_MoveOn" />
 				
-				<CustomBehavior File="Hooks\DoWhen" ActivityName="PreventCorruption" Command="Remove" />
+				<Code File="Hooks\DoWhen" ActivityName="PreventCorruption" Command="Remove" />
 
-				<CustomBehavior File="Hooks\DoWhen" ActivityName="RemoveRoots" AllowUseDuringCombat="true" UseWhen="Me.HasAura(186456)" >
-					<CustomBehavior File="RunCode" Code="SpellManager.Cast(783); Lua.DoString(&quot;CancelShapeshiftForm();&quot;);" />
-				</CustomBehavior>
+				<Code File="Hooks\DoWhen" ActivityName="RemoveRoots" AllowUseDuringCombat="true" UseWhen="Me.HasAura(186456)" >
+					<Code File="RunCode" Code="SpellManager.Cast(783); Lua.DoString(&quot;CancelShapeshiftForm();&quot;);" />
+				</Code>
 				<UseMount Value="false" />
-				<CustomBehavior File="RunCode" Code="SpellManager.Cast(5215);" />
+				<Code File="RunCode" Code="SpellManager.Cast(5215);" />
 				<MoveTo X="4102.635" Y="7357.067" Z="23.05971" />
 
 				<MoveTo X="3951.587" Y="7357.427" Z="23.35148" />
 				<EnableBehavior Name="Combat" />
-				<CustomBehavior File="Hooks\Avoid" AvoidName="CongealedNightmare" Command="Remove" />
-				<CustomBehavior File="Hooks\Avoid" AvoidName="CongealedNightmareTrail" Command="Remove" />
-				<CustomBehavior File="Hooks\Avoid" AvoidName="RemoveRoots" Command="Remove" />
+				<Code File="Hooks\Avoid" AvoidName="CongealedNightmare" Command="Remove" />
+				<Code File="Hooks\Avoid" AvoidName="CongealedNightmareTrail" Command="Remove" />
+				<Code File="Hooks\Avoid" AvoidName="RemoveRoots" Command="Remove" />
 
-				<CustomBehavior File="InteractWith" MobId="248098" InteractByLooting="true" QuestId="41436" QuestObjectiveIndex="2" X="3975.752" Y="7390.431" Z="25.86293" TerminateWhen="!Me.HasAura(206556)" />
-				<CustomBehavior File="WaitTimer" WaitTime="12000" TerminateWhen="!Me.HasAura(206556)" />
+				<Code File="InteractWith" MobId="248098" InteractByLooting="true" QuestId="41436" QuestObjectiveIndex="2" X="3975.752" Y="7390.431" Z="25.86293" TerminateWhen="!Me.HasAura(206556)" />
+				<Code File="WaitTimer" WaitTime="12000" TerminateWhen="!Me.HasAura(206556)" />
 				<UseMount Value="true" />
 			</While>
 			<TurnIn QuestName="In Deep Slumber" QuestId="41436" TurnInName="Naralex" TurnInId="104349" X="4294.677" Y="7422.983" Z="-17.58418" />
@@ -236,22 +236,22 @@ END INITORDER COMMENT -->
 			<While Condition="DoQuest(41689)" >
 				<If Condition="Me.ZoneId == 7846" >  <!-- NOTE: <CheckID> : Leaving Class Hall, entering Dreamway. -->
 					<MoveTo X="4141.608" Y="7302.58" Z="22.75611" />
-					<CustomBehavior File="MyCTM" X="4150.013" Y="7293.335" Z="22.77204" TerminateWhen="Me.ZoneId == 7979" /> <!-- Shut off when entered Dreamway -->
+					<Code File="MyCTM" X="4150.013" Y="7293.335" Z="22.77204" TerminateWhen="Me.ZoneId == 7979" /> <!-- Shut off when entered Dreamway -->
 				</If>
 				<If Condition="Me.MapId == 1540" >  <!-- NOTE: <Add-CheckMapId> : Leaving Dreamway, entering Hyjal. -->
 					<MoveTo X="1638.552" Y="1452.757" Z="11.00389" />
-					<CustomBehavior File="MyCTM" X="1634.344" Y="1440.743" Z="11.02077" TerminateWhen="Me.ZoneId == 616" /> <!-- Shut off when entered Hyjal -->
+					<Code File="MyCTM" X="1634.344" Y="1440.743" Z="11.02077" TerminateWhen="Me.ZoneId == 616" /> <!-- Shut off when entered Hyjal -->
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
-					<CustomBehavior File="InteractWith" MobId="104620" GossipOptions="1" X="5469.116" Y="-3455.974" Z="1557.269" />
-					<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+					<Code File="InteractWith" MobId="104620" GossipOptions="1" X="5469.116" Y="-3455.974" Z="1557.269" />
+					<Code File="WaitTimer" WaitTime="20000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
 					<If Condition="!IsScenarioCriteriaComplete(2)" >
 						<MoveTo X="5450.778" Y="-3487.522" Z="1556.124" />
-						<CustomBehavior File="RunCode"><![CDATA[
+						<Code File="RunCode"><![CDATA[
 								var celestinePoi = Unit(104657);
 								celestinePoi.Target();
 								StyxWoW.Me.SetFacing(celestinePoi.Location);
@@ -262,11 +262,11 @@ END INITORDER COMMENT -->
 									await Coroutine.Yield();
 								}
 							]]>
-						</CustomBehavior>
+						</Code>
 					</If>
 					<If Condition="!IsScenarioCriteriaComplete(1)" >
 						<MoveTo X="5450.64" Y="-3531.731" Z="1556.107" />
-						<CustomBehavior File="RunCode"><![CDATA[
+						<Code File="RunCode"><![CDATA[
 								var hamuulPoi = Unit(104659);
 								hamuulPoi.Target();
 								StyxWoW.Me.SetFacing(hamuulPoi.Location);
@@ -277,18 +277,18 @@ END INITORDER COMMENT -->
 									await Coroutine.Yield();
 								}
 							]]>
-						</CustomBehavior>
+						</Code>
 					</If>
 					<If Condition="!IsScenarioCriteriaComplete(3)" >
 						<MoveTo X="5488.877" Y="-3513.985" Z="1555.88" />
-						<CustomBehavior File="RunCode"><![CDATA[
+						<Code File="RunCode"><![CDATA[
 								var zentabraPoi = Unit(104658);
 								zentabraPoi.Target();
 								StyxWoW.Me.SetFacing(zentabraPoi.Location);
 								await Coroutine.Sleep(750);
 								SpellManager.Cast(88423);
 							]]>
-						</CustomBehavior>
+						</Code>
 					</If>
 				</If>
 
@@ -297,13 +297,13 @@ END INITORDER COMMENT -->
 				<While Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
 					<!-- Start event -->
 					<DisableBehavior Name="Combat, Loot" />
-					<CustomBehavior File="WaitTimer" WaitTime="30000" TerminateWhen="Unit(104628, u =&gt; u.CanInteract) != null" />
-					<CustomBehavior File="InteractWith" MobId="104628" InteractBlacklistTimeInSeconds="1" X="5475.65" Y="-3488.561" Z="1555.676" />
-					<CustomBehavior File="Misc\RunLua" WaitTime="1250" Lua="GossipTitleButton1:Click();" />
-					<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click();" />
-					<CustomBehavior File="WaitTimer" WaitTime="90000" TerminateWhen="Unit(104659, u =&gt; u.Combat) != null" />
+					<Code File="WaitTimer" WaitTime="30000" TerminateWhen="Unit(104628, u =&gt; u.CanInteract) != null" />
+					<Code File="InteractWith" MobId="104628" InteractBlacklistTimeInSeconds="1" X="5475.65" Y="-3488.561" Z="1555.676" />
+					<Code File="Misc\RunLua" WaitTime="1250" Lua="GossipTitleButton1:Click();" />
+					<Code File="Misc\RunLua" Lua="StaticPopup1Button1:Click();" />
+					<Code File="WaitTimer" WaitTime="90000" TerminateWhen="Unit(104659, u =&gt; u.Combat) != null" />
 
-					<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					<Code File="RunCode" Type="Definition"><![CDATA[
 							string healMeName = "";
 
 							WoWUnit HealPriority()
@@ -412,11 +412,11 @@ END INITORDER COMMENT -->
 								}
 							}
 						]]>
-					</CustomBehavior>
+					</Code>
 
-					<CustomBehavior File="Hooks\Avoid" AvoidName="FelFire" ObjectId="11145" ObjectType="AreaTrigger" Radius="5" />
+					<Code File="Hooks\Avoid" AvoidName="FelFire" ObjectId="11145" ObjectType="AreaTrigger" Radius="5" />
 
-					<CustomBehavior File="RunCode"><![CDATA[
+					<Code File="RunCode"><![CDATA[
 							var destromathPoi = Unit(104619);
 							var lyessaPoi = Unit(104628);
 
@@ -427,43 +427,43 @@ END INITORDER COMMENT -->
 							}
 
 						]]>
-					</CustomBehavior>
+					</Code>
 
-					<CustomBehavior File="Hooks\Avoid" AvoidName="FelFire" Command="Remove" />
+					<Code File="Hooks\Avoid" AvoidName="FelFire" Command="Remove" />
 				</While>
 
 				<EnableBehavior Name="Combat, Loot" />
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
-					<CustomBehavior File="InteractWith" IgnoreCombat="true" MobId="104628" X="5474.202" Y="-3500.13" Z="1555.479" />
-					<CustomBehavior File="WaitTimer" WaitTime="20000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+					<Code File="InteractWith" IgnoreCombat="true" MobId="104628" X="5474.202" Y="-3500.13" Z="1555.479" />
+					<Code File="WaitTimer" WaitTime="20000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
-					<CustomBehavior File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
-					<CustomBehavior File="WaitTimer" WaitTime="7000" />
+					<Code File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+					<Code File="WaitTimer" WaitTime="7000" />
 
-					<CustomBehavior File="InteractWith" MobId="248499" InteractByLooting="true" WaitTime="1500" X="5473.997" Y="-3501.368" Z="1557.297" />
-					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
-					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+					<Code File="InteractWith" MobId="248499" InteractByLooting="true" WaitTime="1500" X="5473.997" Y="-3501.368" Z="1557.297" />
+					<Code File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<Code File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
 					<MoveTo X="5462.992" Y="-3519.076" Z="1556.247" />
-					<CustomBehavior File="Misc\RunLua" Lua="ScenarioObjectiveBlock.currentLine.SpellButton:Click();" /> <!-- NOTE: <CheckMe> : Make sure this works. -->
-					<CustomBehavior File="WaitTimer" QuestId="41689" WaitTime="40000" />
+					<Code File="Misc\RunLua" Lua="ScenarioObjectiveBlock.currentLine.SpellButton:Click();" /> <!-- NOTE: <CheckMe> : Make sure this works. -->
+					<Code File="WaitTimer" QuestId="41689" WaitTime="40000" />
 				</If>
 			</While>
 
 			<If Condition="HasItem(128306) &amp;&amp; QuestDone(41689)" >
 				<If Condition="Me.ZoneId == 616" >  <!-- NOTE: <Add-CheckMapId> : Leaving Hyjal, entering Dreamway. -->
 					<MoveTo X="5460.457" Y="-3442.266" Z="1560.056" />
-					<CustomBehavior File="MyCTM" X="5451.568" Y="-3434.243" Z="1559.89" TerminateWhen="Me.ZoneId != 616" /> <!-- Shut off when entered Dreamway -->
-					<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="Me.MapId == 1540" />
+					<Code File="MyCTM" X="5451.568" Y="-3434.243" Z="1559.89" TerminateWhen="Me.ZoneId != 616" /> <!-- Shut off when entered Dreamway -->
+					<Code File="WaitTimer" WaitTime="5000" TerminateWhen="Me.MapId == 1540" />
 				</If>
 				<If Condition="Me.MapId == 1540" >  <!-- NOTE: <Add-CheckMapId> : Leaving Dreamway, entering Class Hall. -->
 					<MoveTo X="1772.043" Y="1507.481" Z="7.891945" />
-					<CustomBehavior File="MyCTM" X="1783.71" Y="1500.368" Z="10.05346" TerminateWhen="Me.HasAura(213170)" /> <!-- <CheckMapId~>  Probably ZoneId for this - Shut off when entered Class Hall -->
+					<Code File="MyCTM" X="1783.71" Y="1500.368" Z="10.05346" TerminateWhen="Me.HasAura(213170)" /> <!-- <CheckMapId~>  Probably ZoneId for this - Shut off when entered Class Hall -->
 				</If>
 			</If>
 			<TurnIn QuestName="Cleansing the Mother Tree" QuestId="41689" TurnInName="Lyessa Bloomwatcher" TurnInId="104577" X="3970.218" Y="7389.277" Z="23.91248" />	
@@ -473,7 +473,7 @@ END INITORDER COMMENT -->
 		<If Condition="!IsQuestCompleted(41255)" >
 			<PickUp QuestName="Sowing The Seed" QuestId="41255" GiverName="Rensar Greathoof" GiverId="101195" X="3974.796" Y="7395.398" Z="23.94462" />
 			<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
-			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/Druid.xml" />
+			<Code File="LoadProfile" ProfileName="../Class Hall Loaders/Druid.xml" />
 		</If>
 
 	</QuestOrder>

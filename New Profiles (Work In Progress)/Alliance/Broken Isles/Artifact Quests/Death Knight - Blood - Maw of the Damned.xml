@@ -37,12 +37,12 @@
 <!-- INITORDER COMMENT 
 	<InitOrder>
 		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
-		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+		<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
 
-		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
-		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+		<Code File="EnablePlugin" Names="Anti Drown" />
+		<Code File="EnablePlugin" Names="Refreshment Detection" />
 
-		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+		<Code File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
 
 		<LootMobs Value="true" />
 		<TargetingDistance Value="45" /> Use LevelBot default
@@ -51,7 +51,7 @@ END INITORDER COMMENT -->
 
 	<QuestOrder> <!-- No checkpoints here. -->
 		<!-- RunCode Methods -->
-			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+			<Code File="RunCode" Type="Definition"><![CDATA[
 					bool DoQuest(params uint[] questIds)
 					{
 						foreach (var questId in questIds)
@@ -93,25 +93,25 @@ END INITORDER COMMENT -->
 						await Coroutine.Sleep(postWait);
 					}
 				]]>
-			</CustomBehavior>
+			</Code>
 		<!-- END RunCode Methods -->
 
 		<!-- Get Continuation Quest -->
 			<If Condition="IsQuestCompleted(39757) &amp;&amp; NeedsQuest(40740) &amp;&amp; NeedsQuest(43962, 44401)" > <!-- Using Grand Master Siegesmith Corvus (39757) to determine if we've already got the first artifact. -->
-				<CustomBehavior File="InteractWith" MobId="109788" WaitTime="1250" X="-1537.278" Y="1016.035" Z="313.6463" />
-				<CustomBehavior File="Misc\RunLua" WaitTime="2000" Lua="QuestFrameAcceptButton:Click();" />
-				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="if QuestChoiceFrameOption2.OptionButton:IsVisible() then QuestChoiceFrameOption2.OptionButton:Click() else QuestChoiceFrameOption1.OptionButton:Click() end" />
+				<Code File="InteractWith" MobId="109788" WaitTime="1250" X="-1537.278" Y="1016.035" Z="313.6463" />
+				<Code File="Misc\RunLua" WaitTime="2000" Lua="QuestFrameAcceptButton:Click();" />
+				<Code File="Misc\RunLua" WaitTime="1500" Lua="if QuestChoiceFrameOption2.OptionButton:IsVisible() then QuestChoiceFrameOption2.OptionButton:Click() else QuestChoiceFrameOption1.OptionButton:Click() end" />
 				<!-- If this isn't our last artifact, then there will be a second dialog box here.  This code is uncommented out to ignore it since this should typically be our last artifact 
-					<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="StaticPopup1Button1:Click();" /> -->
-				<CustomBehavior File="Misc\RunLua" WaitTime="1000" Lua="StaticPopup1Button2:Click();" /> <!-- Decline changing specs -->
+					<Code File="Misc\RunLua" WaitTime="1500" Lua="StaticPopup1Button1:Click();" /> -->
+				<Code File="Misc\RunLua" WaitTime="1000" Lua="StaticPopup1Button2:Click();" /> <!-- Decline changing specs -->
 			</If>
 		<!-- END Get Continuation Quest -->
 
 		<!-- Second+Third Artifact -->
 			<If Condition="QuestDone(43962, 44401)" >
-				<CustomBehavior File="InteractWith" MobId="109788" WaitTime="1250" X="-1537.278" Y="1016.035" Z="313.6463" />
-				<CustomBehavior File="Misc\RunLua" WaitTime="1500" Lua="GossipTitleButton1:Click();" />
-				<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+				<Code File="InteractWith" MobId="109788" WaitTime="1250" X="-1537.278" Y="1016.035" Z="313.6463" />
+				<Code File="Misc\RunLua" WaitTime="1500" Lua="GossipTitleButton1:Click();" />
+				<Code File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
 			</If>
 		<!-- END Second+Third Artifact -->
 
@@ -122,97 +122,97 @@ END INITORDER COMMENT -->
 			<!-- END: <Technical Check -->
 			<While Condition="DoQuest(40740)" >
 				<If Condition="Me.HasAura(213170)" > <!-- Class Hall -->
-					<CustomBehavior File="InteractWith" MobId="244556" WaitTime="3000" X="-1454.17" Y="1170.668" Z="275.2434" />
+					<Code File="InteractWith" MobId="244556" WaitTime="3000" X="-1454.17" Y="1170.668" Z="275.2434" />
 				</If>
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0 &amp;&amp; !HasItem(128402)" >
-					<CustomBehavior File="InteractWith" MobId="102403" QuestId="40740" X="-846.1805" Y="4269.471" Z="746.2685" TerminateWhen="Me.ZoneId == 7543" />
-					<CustomBehavior File="WaitTimer" WaitTime="40000" TerminateWhen="!Me.IsFlying" />
+					<Code File="InteractWith" MobId="102403" QuestId="40740" X="-846.1805" Y="4269.471" Z="746.2685" TerminateWhen="Me.ZoneId == 7543" />
+					<Code File="WaitTimer" WaitTime="40000" TerminateWhen="!Me.IsFlying" />
 					<MoveTo X="-831.0263" Y="3676.253" Z="26.44035" />
-					<CustomBehavior File="MyCTM" X="-820.9525" Y="3686.912" Z="27.03755" TerminateWhen="Me.MapId != 1220" /> <!-- NOTE: <CheckMapId> -->
-					<CustomBehavior File="WaitTimer" WaitTime="10000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 0" />
+					<Code File="MyCTM" X="-820.9525" Y="3686.912" Z="27.03755" TerminateWhen="Me.MapId != 1220" /> <!-- NOTE: <CheckMapId> -->
+					<Code File="WaitTimer" WaitTime="10000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 0" />
 				</If>
 
-				<CustomBehavior File="Hooks\Avoid" AvoidName="ArcingSmash" ObjectId="102244" Radius="10" AvoidWhen="UNIT.IsCasting" AvoidLocationProducer="UNIT.Location.RayCast(UNIT.Rotation, 8)" />
+				<Code File="Hooks\Avoid" AvoidName="ArcingSmash" ObjectId="102244" Radius="10" AvoidWhen="UNIT.IsCasting" AvoidLocationProducer="UNIT.Location.RayCast(UNIT.Rotation, 8)" />
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
 					<!-- NOTE: <AddHook> : Check SpellId.  WowHead is showing two of the same Drain Life spells.  The other Id is: 182217 -->
-					<CustomBehavior File="Hooks\DoWhen" ActivityName="MindFreezeDrainLife" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.ChanneledCastingSpellId == 221309 &amp;&amp; SpellManager.CanCast(47528)" >
-						<CustomBehavior File="RunCode" Code="
+					<Code File="Hooks\DoWhen" ActivityName="MindFreezeDrainLife" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.ChanneledCastingSpellId == 221309 &amp;&amp; SpellManager.CanCast(47528)" >
+						<Code File="RunCode" Code="
 								SpellManager.Cast(47528);
 								await Coroutine.Sleep(500);
 						" />
-					</CustomBehavior>
-					<CustomBehavior File="KillUntilComplete" MobId="102362" X="296.9983" Y="1924.648" Z="-30.88714" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
-					<CustomBehavior File="Hooks\DoWhen" ActivityName="MindFreezeDrainLife" Command="Remove" />
+					</Code>
+					<Code File="KillUntilComplete" MobId="102362" X="296.9983" Y="1924.648" Z="-30.88714" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+					<Code File="Hooks\DoWhen" ActivityName="MindFreezeDrainLife" Command="Remove" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-					<CustomBehavior File="KillUntilComplete" MobId="102244" X="266.7483" Y="1870.892" Z="-11.93534" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+					<Code File="KillUntilComplete" MobId="102244" X="266.7483" Y="1870.892" Z="-11.93534" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
-					<CustomBehavior File="RunCode"><![CDATA[
+					<Code File="RunCode"><![CDATA[
 						foreach (var blacklistUnit in ObjectManager.GetObjectsOfType<WoWUnit>()) {
 							if (blacklistUnit.Entry == 102244) {
 								Blacklist.Add(blacklistUnit, BlacklistFlags.Combat, TimeSpan.FromMinutes(10));
 							}
 						}
 						]]>
-					</CustomBehavior>
+					</Code>
 					<MoveTo X="282.214" Y="1862.272" Z="-11.51741" />
-					<CustomBehavior File="WaitTimer" WaitTime="30000" TerminateWhenm="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
-					<CustomBehavior File="RunCode" Code="
+					<Code File="WaitTimer" WaitTime="30000" TerminateWhenm="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+					<Code File="RunCode" Code="
 						Blacklist.Clear(u =&gt; u.Entry == 102244);
 					" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
-					<CustomBehavior File="KillUntilComplete" MobId="102244" TerminateWhen="Me.Location.Distance(new WoWPoint(292.5597, 1714.693, -48.50489)) &lt;= 25">
+					<Code File="KillUntilComplete" MobId="102244" TerminateWhen="Me.Location.Distance(new WoWPoint(292.5597, 1714.693, -48.50489)) &lt;= 25">
 						<HuntingGrounds>
 							<Hotspot X="263.1198" Y="1804.116" Z="-21.91172" />
 							<Hotspot X="287.4055" Y="1761.415" Z="-34.19277" />
 							<Hotspot X="292.5597" Y="1714.693" Z="-48.50489" />
 						</HuntingGrounds>
-					</CustomBehavior>
+					</Code>
 					<MoveTo X="288.8437" Y="1673.418" Z="-66.42319" />
-					<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+					<Code File="WaitTimer" WaitTime="50000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
 					<UseMount Value="false" />
-					<CustomBehavior File="KillUntilComplete" MobIds="102304, 102245" X="375.0486" Y="1582.425" Z="-83.69869" TerminateWhen="Object(102955) != null" />
+					<Code File="KillUntilComplete" MobIds="102304, 102245" X="375.0486" Y="1582.425" Z="-83.69869" TerminateWhen="Object(102955) != null" />
 					<UseMount Value="true" />
-					<CustomBehavior File="InteractWith" MobId="102955" X="376.9028" Y="1587.251" Z="-82.68958" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+					<Code File="InteractWith" MobId="102955" X="376.9028" Y="1587.251" Z="-82.68958" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
 					<If Condition="Me.IsAlliance" >
-						<CustomBehavior File="InteractWith" MobId="102560" X="286.526" Y="1674.392" Z="-64.94347" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+						<Code File="InteractWith" MobId="102560" X="286.526" Y="1674.392" Z="-64.94347" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
 					</If>
 					<If Condition="Me.IsHorde" >
-						<CustomBehavior File="InteractWith" MobId="102561" X="286.526" Y="1674.392" Z="-64.94347" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+						<Code File="InteractWith" MobId="102561" X="286.526" Y="1674.392" Z="-64.94347" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
 					</If>
-					<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+					<Code File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
-					<CustomBehavior File="WaitTimer" WaitTime="15000" /> <!-- Let our helpers charge in and grab aggro first. -->
+					<Code File="WaitTimer" WaitTime="15000" /> <!-- Let our helpers charge in and grab aggro first. -->
 					<MoveTo X="196.3298" Y="1523.698" Z="-32.13142" />
-					<CustomBehavior File="KillUntilComplete" X="196.3298" Y="1523.698" Z="-32.13142" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 7" >
+					<Code File="KillUntilComplete" X="196.3298" Y="1523.698" Z="-32.13142" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 7" >
 						<PursuitList>
 							<PursueUnit Id="102861" PursueWhen="UNIT.Y &gt; 1500" />
 							<PursueUnit Id="102861" PursueWhen="UNIT.Y &gt; 1500" />
 							<PursueUnit Id="102549" PursueWhen="UNIT.Y &gt; 1500" />
 							<PursueUnit Id="102244" PursueWhen="UNIT.Y &gt; 1500" /> 
 						</PursuitList>
-					</CustomBehavior>
+					</Code>
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8" >
 					<DisableBehavior Name="Combat" />
 					<MoveTo Precision="1" X="207.7547" Y="1486.049" Z="-31.27179" />
-					<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="SpellManager.CanCast(49576)" />
-					<CustomBehavior File="RunCode"><![CDATA[
+					<Code File="WaitTimer" WaitTime="25000" TerminateWhen="SpellManager.CanCast(49576)" />
+					<Code File="RunCode"><![CDATA[
 							var repulsionTumorPoi = Unit(104575, u => u.Location.Distance(new WoWPoint(203.5139, 1468.184, -29.90998)) <= 5);
 
 							if (repulsionTumorPoi != null)
@@ -226,15 +226,15 @@ END INITORDER COMMENT -->
 								await Coroutine.Sleep(1000);
 							}
 						]]>
-					</CustomBehavior>
+					</Code>
 					<EnableBehavior Name="Combat" />
 
 					<MoveTo Precision="1" X="200.4075" Y="1454.938" Z="-34.22131" />
-					<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="SpellManager.CanCast(49576)" />
+					<Code File="WaitTimer" WaitTime="25000" TerminateWhen="SpellManager.CanCast(49576)" />
 					<MoveTo Precision="1" X="200.4075" Y="1454.938" Z="-34.22131" />
-					<CustomBehavior File="WaitTimer" WaitTime="25000" TerminateWhen="SpellManager.CanCast(49576)" /> <!-- In case mobs aggro'd, and it was used during battle. -->
+					<Code File="WaitTimer" WaitTime="25000" TerminateWhen="SpellManager.CanCast(49576)" /> <!-- In case mobs aggro'd, and it was used during battle. -->
 					<DisableBehavior Name="Combat" />
-					<CustomBehavior File="RunCode"><![CDATA[
+					<Code File="RunCode"><![CDATA[
 							var repulsionTumorPoi = Unit(104575, u => u.Location.Distance(new WoWPoint(184.7188, 1440.561, -32.71073)) <= 5);
 
 							if (repulsionTumorPoi != null)
@@ -248,38 +248,38 @@ END INITORDER COMMENT -->
 								await Coroutine.Sleep(1000);
 							}
 						]]>
-					</CustomBehavior>
+					</Code>
 					<EnableBehavior Name="Combat" />
 
 					<MoveTo Precision="1" X="180.2417" Y="1437.186" Z="-35.78662" />
-					<CustomBehavior File="MyCTM" X="176.998" Y="1403.17" Z="-43.003" />
+					<Code File="MyCTM" X="176.998" Y="1403.17" Z="-43.003" />
 
 					<MoveTo X="176.3741" Y="1347.984" Z="-55.41851" />
-					<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+					<Code File="RunCode" Code="await SkipCutscene();" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 9" >
 					<!-- NOTE: <AddAvoid> : Super easy fight.  But fel slimes attack leaving a puddle when they die.  It doesn't seem to be much threat at all, but we can avoid it easy.  Low priority. -->
-					<CustomBehavior File="KillUntilComplete" MobId="101778" X="182.4045" Y="1296.993" Z="-59.08212" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 9" />
+					<Code File="KillUntilComplete" MobId="101778" X="182.4045" Y="1296.993" Z="-59.08212" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 9" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 10" >
-					<CustomBehavior File="InteractWith" MobId="247566" InteractByLooting="true" WaitTime="1500" X="179.9306" Y="1309.724" Z="-57.21556" />
-					<CustomBehavior File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
-					<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+					<Code File="InteractWith" MobId="247566" InteractByLooting="true" WaitTime="1500" X="179.9306" Y="1309.724" Z="-57.21556" />
+					<Code File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<Code File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
 				</If>
 
-				<CustomBehavior File="Hooks\Avoid" AvoidName="ArcingSmash" Command="Remove" />
+				<Code File="Hooks\Avoid" AvoidName="ArcingSmash" Command="Remove" />
 			</While>
 
 			<While Condition="Me.MapId == 1489" >
-				<CustomBehavior File="InteractWith" MobId="102959" X="173.9392" Y="1325.568" Z="-59.08218" TerminateWhen="Me.MapId != 1489" />
+				<Code File="InteractWith" MobId="102959" X="173.9392" Y="1325.568" Z="-59.08218" TerminateWhen="Me.MapId != 1489" />
 			</While>
 			<If Condition="Me.MapId == 1480" >
 				<MoveTo X="430.6553" Y="-2123.757" Z="864.7502" /> <!-- Go up to Lich King -->
-				<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Object(242469) != null" /> <!-- Wait for him to open the portal. -->
+				<Code File="WaitTimer" WaitTime="50000" TerminateWhen="Object(242469) != null" /> <!-- Wait for him to open the portal. -->
 				<While Condition="Object(242469) != null" >
-					<CustomBehavior File="InteractWith" MobId="242469" X="429.026" Y="-2118.351" Z="864.8716" TerminateWhen="Object(242469) == null" /> <!-- Enter portal. -->
+					<Code File="InteractWith" MobId="242469" X="429.026" Y="-2118.351" Z="864.8716" TerminateWhen="Object(242469) == null" /> <!-- Enter portal. -->
 				</While>
 			</If>
 
@@ -289,7 +289,7 @@ END INITORDER COMMENT -->
 
 
 		<If Condition="!IsQuestCompleted(39757)" >
-			<CustomBehavior File="LoadProfile" ProfileName="../Class Hall Loaders/Death Knight.xml" />
+			<Code File="LoadProfile" ProfileName="../Class Hall Loaders/Death Knight.xml" />
 		</If>
 
 	</QuestOrder>

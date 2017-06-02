@@ -11,7 +11,7 @@
 			<Code File="LoadProfile" ProfileName="..\1-110 Autoloader.xml" RememberProfile="true" />
 		</If>
 
-		<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+		<Code File="RunCode" Type="Definition"><![CDATA[
 			bool NeedsQuest(params uint[] questIds)
 			{
 				foreach (var questId in questIds)
@@ -72,25 +72,25 @@
 				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, "[Azyul Navigator]: ", color, $"{message}");
 			}
 			]]>
-		</CustomBehavior>
+		</Code>
 
 		<If Condition="!HasArrivedDraenor() &amp;&amp; LoremasterCheckpointCheck(100, 9833)" >
-			<CustomBehavior File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;Going to Draenor!&quot;);" />
+			<Code File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;Going to Draenor!&quot;);" />
 
 			<If Condition="HasItem(110560)" >
 				<If Condition="Me.BagItems.FirstOrDefault(h => h.Entry == 110560).CooldownTimeLeft.TotalMilliseconds &gt; 120000" >
-					<CustomBehavior File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;Garrison Hearth is on cooldown!  Traveling to Draenor manually...&quot;);" />
+					<Code File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;Garrison Hearth is on cooldown!  Traveling to Draenor manually...&quot;);" />
 				</If>
 				<If Condition="Me.BagItems.FirstOrDefault(h => h.Entry == 110560).CooldownTimeLeft.TotalMilliseconds &lt;= 120000 &amp;&amp; Me.BagItems.FirstOrDefault(h => h.Entry == 110560).CooldownTimeLeft.TotalMilliseconds &gt; 0" >
-					<CustomBehavior File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;Garrison Hearth is on cooldown! Waiting until it's off...&quot;);" />
-					<CustomBehavior File="WaitTimer" WaitTime="130000" TerminateWhen="Me.BagItems.FirstOrDefault(h => h.Entry == 110560).CooldownTimeLeft.TotalMilliseconds == 0" />
+					<Code File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;Garrison Hearth is on cooldown! Waiting until it's off...&quot;);" />
+					<Code File="WaitTimer" WaitTime="130000" TerminateWhen="Me.BagItems.FirstOrDefault(h => h.Entry == 110560).CooldownTimeLeft.TotalMilliseconds == 0" />
 				</If>
 				<If Condition="Me.BagItems.FirstOrDefault(h => h.Entry == 110560).CooldownTimeLeft.TotalMilliseconds == 0" >
-					<CustomBehavior File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;Using our Garrison Hearthstone to reach Draenor!&quot;);" />
-					<CustomBehavior File="ForcedDismount" />
+					<Code File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;Using our Garrison Hearthstone to reach Draenor!&quot;);" />
+					<Code File="ForcedDismount" />
 					<While Condition="!(Me.ZoneId == 7078 || Me.ZoneId == 7004)" >
-						<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(110560);" WaitTime="500" />
-						<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="!(Me.ZoneId == 7078 || Me.ZoneId == 7004) || Me.Combat || !Me.IsCasting" />
+						<Code File="Misc\RunLua" Lua="UseItemByName(110560);" WaitTime="500" />
+						<Code File="WaitTimer" WaitTime="50000" TerminateWhen="!(Me.ZoneId == 7078 || Me.ZoneId == 7004) || Me.Combat || !Me.IsCasting" />
 					</While>
 				</If>
 			</If>
@@ -98,42 +98,42 @@
 			<If Condition="NeedsQuest(34398) || Me.ZoneId != 4" >
 				<!-- /// Mage Logic /// -->
 				<If Condition="Me.ZoneId != 1519 &amp;&amp; SpellManager.CanCast(3561)" > <!-- Checks if we're a mage and spell is fully learnt+castable -->
-					<CustomBehavior File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're a Mage! Teleporting to Stormwind.&quot;);" />
-					<CustomBehavior File="ForcedDismount" />
+					<Code File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're a Mage! Teleporting to Stormwind.&quot;);" />
+					<Code File="ForcedDismount" />
 					<While Condition="Me.ZoneId != 1519" >
-						<CustomBehavior File="Misc\RunLua" Lua="CastSpellByID(3561);" WaitTime="500" />
-						<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Me.ZoneId == 1519 || Me.Combat || !Me.IsCasting" />
+						<Code File="Misc\RunLua" Lua="CastSpellByID(3561);" WaitTime="500" />
+						<Code File="WaitTimer" WaitTime="50000" TerminateWhen="Me.ZoneId == 1519 || Me.Combat || !Me.IsCasting" />
 					</While>
 				</If>
 				<!-- /// Item Teleportation Logic.   Teleport to area that has portals (Shrine/etc) or teleport to destination /// -->
 				<If Condition="!HasArrivedDraenor() &amp;&amp; HearthIsPriorityLocationDraenor() &amp;&amp; !InPriorityLocationDraenor() &amp;&amp; HasHearthDraenor()" >
-					<CustomBehavior File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;Hearthing would be faster to reach our destination, attempting to Hearth!&quot;);" />
-					<CustomBehavior File="ForcedDismount" />
+					<Code File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;Hearthing would be faster to reach our destination, attempting to Hearth!&quot;);" />
+					<Code File="ForcedDismount" />
 					<While Condition="!(HasArrivedDraenor() || InPriorityLocationDraenor())" >
-						<CustomBehavior File="RunCode" Code="await Coroutine.Wait(1800000, () => HearthIsReadyDraenor() || InPriorityLocationDraenor());" />
-						<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(6948); UseItemByName(64488); CastSpellByID(556);" WaitTime="500" />
-						<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="HasArrivedDraenor() || InPriorityLocationDraenor() || CastingInterruptedDraenor()" />
+						<Code File="RunCode" Code="await Coroutine.Wait(1800000, () => HearthIsReadyDraenor() || InPriorityLocationDraenor());" />
+						<Code File="Misc\RunLua" Lua="UseItemByName(6948); UseItemByName(64488); CastSpellByID(556);" WaitTime="500" />
+						<Code File="WaitTimer" WaitTime="50000" TerminateWhen="HasArrivedDraenor() || InPriorityLocationDraenor() || CastingInterruptedDraenor()" />
 					</While>
 				</If>
 				<!-- /// Generic Logic /// -->
 				<If Condition="Me.MapId == 870" > <!-- Pandaria -->
-					<CustomBehavior File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're in Pandaria, using the Shrine portal to Stormwind.&quot;);" />
+					<Code File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're in Pandaria, using the Shrine portal to Stormwind.&quot;);" />
 					<If Condition="Me.ZoneId != 6553" > <!-- If not inside of Shrine building -->
 						<MoveTo Nav="Fly" X="861.8756" Y="283.1115" Z="503.678" />
 					</If>
 					<MoveTo X="827.9234" Y="179.0442" Z="519.5684" />
 					<While Condition="Me.MapId != 0" >
-						<CustomBehavior File="InteractWith" MobId="215119" X="828.2266" Y="176.9051" Z="519.9392" TerminateWhen="Me.MapId == 0" />
-						<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Me.MapId == 0 || Me.Combat" />
+						<Code File="InteractWith" MobId="215119" X="828.2266" Y="176.9051" Z="519.9392" TerminateWhen="Me.MapId == 0" />
+						<Code File="WaitTimer" WaitTime="50000" TerminateWhen="Me.MapId == 0 || Me.Combat" />
 					</While>
 				</If>
 				<If Condition="Me.MapId == 571" > <!-- Northrend -->
 					<If Condition="Me.Y &gt;= 3000 &amp;&amp; Me.MapId == 571" > <!-- Western Northrend, Valiance Keep to Stormwind -->
-						<CustomBehavior File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're in Western Northrend, using the Valiance Keep boat to Stormwind.&quot;);" />
+						<Code File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're in Western Northrend, using the Valiance Keep boat to Stormwind.&quot;);" />
 						<MoveTo Nav="Fly" X="2232.81" Y="5135.507" Z="5.343734" />
-						<CustomBehavior File="ForcedDismount" />
+						<Code File="ForcedDismount" />
 						<DisableBehavior Name="FlightPath" />
-						<CustomBehavior File="UseTransport" TransportId="190536"
+						<Code File="UseTransport" TransportId="190536"
 							WaitAtX="2229.971" WaitAtY="5130.375" WaitAtZ="5.343726" 
 							TransportStartX="2218.391" TransportStartY="5119.588" TransportStartZ="0.02626281"
 							StandOnX="2224.698" StandOnY="5120.346" StandOnZ="9.452395"
@@ -143,18 +143,18 @@
 						<EnableBehavior Name="FlightPath" />
 					</If>
 					<If Condition="Me.Y &lt; 3000 &amp;&amp; Me.Y &gt; -2200 &amp;&amp; Me.MapId == 571" > <!-- Middle Northrend, Dalaran to Stormwind -->
-						<CustomBehavior File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're in Mid-Northrend, using the Dalaran portal to Stormwind.&quot;);" />
+						<Code File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're in Mid-Northrend, using the Dalaran portal to Stormwind.&quot;);" />
 						<MoveTo Nav="Fly" X="5719.701" Y="722.6963" Z="641.6025" />
 						<While Condition="Me.MapId != 0" >
-							<CustomBehavior File="InteractWith" MobId="190960" X="5719.184" Y="719.6667" Z="641.7278" TerminateWhen="Me.MapId == 0" />
-							<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Me.MapId == 0 || Me.Combat" />
+							<Code File="InteractWith" MobId="190960" X="5719.184" Y="719.6667" Z="641.7278" TerminateWhen="Me.MapId == 0" />
+							<Code File="WaitTimer" WaitTime="50000" TerminateWhen="Me.MapId == 0 || Me.Combat" />
 						</While>
 					</If>
 					<If Condition="Me.Y &lt;= -2200 &amp;&amp; Me.MapId == 571" > <!-- Eastern Northrend, Valgarde Port to Stormwind -->
-						<CustomBehavior File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're in Eastern Northrend, using the Valgarde Port boat to Menethil Harbor.&quot;);" />
+						<Code File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're in Eastern Northrend, using the Valgarde Port boat to Menethil Harbor.&quot;);" />
 						<MoveTo X="589.7719" Y="-5100.328" Z="5.261706" />
 						<DisableBehavior Name="FlightPath" />
-						<CustomBehavior File="UseTransport" TransportId="181688"
+						<Code File="UseTransport" TransportId="181688"
 							WaitAtX="593.5266" WaitAtY="-5103.054" WaitAtZ="5.260394"
 							StandOnX="589.7733" StandOnY="-5118.479" StandOnZ="9.560918"
 							TransportStartX="584.0138" TransportStartY="-5118.855" TransportStartZ="0.04796536"
@@ -165,44 +165,44 @@
 					</If>
 				</If>
 				<If Condition="Me.ZoneId == 4080" > <!-- Isle of Quel'Danas -->
-					<CustomBehavior File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're in Isle of Quel'Danas, using the Flight Master to Stormwind.&quot;);" />
+					<Code File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're in Isle of Quel'Danas, using the Flight Master to Stormwind.&quot;);" />
 					<MoveTo DestName="Ohura, the flight master." X="13009.74" Y="-6910.024" Z="9.584676" />
-					<CustomBehavior File="InteractWith" MobId="26560" X="13012.39" Y="-6911.189" Z="9.586156" WaitTime="850" />
-					<CustomBehavior File="Hooks\DoWhen" ActivityName="LandAndHearth" UseWhen="Me.BagItems.FirstOrDefault(h => h.Entry == 110560).CooldownTimeLeft.TotalMilliseconds == 0" >
-						<CustomBehavior File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;Aborting flight since our Garrison Hearth is off cooldown..&quot;);" />
-						<CustomBehavior File="Misc\RunLua" Lua="MainMenuBarVehicleLeaveButton:Click();" WaitTime="1000" />
+					<Code File="InteractWith" MobId="26560" X="13012.39" Y="-6911.189" Z="9.586156" WaitTime="850" />
+					<Code File="Hooks\DoWhen" ActivityName="LandAndHearth" UseWhen="Me.BagItems.FirstOrDefault(h => h.Entry == 110560).CooldownTimeLeft.TotalMilliseconds == 0" >
+						<Code File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;Aborting flight since our Garrison Hearth is off cooldown..&quot;);" />
+						<Code File="Misc\RunLua" Lua="MainMenuBarVehicleLeaveButton:Click();" WaitTime="1000" />
 						<While Condition="Me.MapId != 1331" >
-							<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(110560);" WaitTime="500" />
-							<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Me.MapId == 1331 || Me.Combat || !Me.IsCasting" />
+							<Code File="Misc\RunLua" Lua="UseItemByName(110560);" WaitTime="500" />
+							<Code File="WaitTimer" WaitTime="50000" TerminateWhen="Me.MapId == 1331 || Me.Combat || !Me.IsCasting" />
 						</While>
-						<CustomBehavior File="Hooks\DoWhen" ActivityName="LandAndHearth" Command="Remove" />
-					</CustomBehavior>
-					<CustomBehavior File="Misc\RunLua" Lua="TaxiButton1:Click();" WaitTime="1000" />
-					<CustomBehavior File="WaitTimer" WaitTime="600000" TerminateWhen="!Me.OnTaxi" />
-					<CustomBehavior File="Hooks\DoWhen" ActivityName="LandAndHearth" Command="Remove" />
+						<Code File="Hooks\DoWhen" ActivityName="LandAndHearth" Command="Remove" />
+					</Code>
+					<Code File="Misc\RunLua" Lua="TaxiButton1:Click();" WaitTime="1000" />
+					<Code File="WaitTimer" WaitTime="600000" TerminateWhen="!Me.OnTaxi" />
+					<Code File="Hooks\DoWhen" ActivityName="LandAndHearth" Command="Remove" />
 				</If>
 				<If Condition="(Me.ZoneId == 3557 || Me.ZoneId == 3524 || Me.ZoneId == 6456 || Me.ZoneId == 3525)" > <!-- Instanced Draenei Zone, shares MapId with Outlands so we're using ZoneId -->
-					<CustomBehavior File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're a in Azure/Bloodmyst Isle, using the Exodar portal to Darnassus.&quot;);" />
+					<Code File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're a in Azure/Bloodmyst Isle, using the Exodar portal to Darnassus.&quot;);" />
 					<MoveTo DestName="The Vault of Lights, portal to Darnassus." X="-4040.254" Y="-11569.56" Z="-138.4055" />
 					<While Condition="Me.MapId != 1" >
-						<CustomBehavior File="InteractWith" MobId="207996" X="-4047.53" Y="-11569.33" Z="-138.4902" TerminateWhen="Me.MapId == 1" />
-						<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Me.MapId == 1 || Me.Combat" />
+						<Code File="InteractWith" MobId="207996" X="-4047.53" Y="-11569.33" Z="-138.4902" TerminateWhen="Me.MapId == 1" />
+						<Code File="WaitTimer" WaitTime="50000" TerminateWhen="Me.MapId == 1 || Me.Combat" />
 					</While>
 				</If>
 				<If Condition="Me.MapId == 530" > <!-- Outlands -->
-					<CustomBehavior File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're in Outlands, using the Shattrath portal to Stormwind.&quot;);" />
+					<Code File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're in Outlands, using the Shattrath portal to Stormwind.&quot;);" />
 					<MoveTo Nav="Fly" X="-1892.768" Y="5392.862" Z="-12.4277" />
 					<While Condition="Me.MapId != 0" >
-						<CustomBehavior File="InteractWith" MobId="183325" X="-1894.189" Y="5387.939" Z="-12.42825" TerminateWhen="Me.MapId == 0" />
-						<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Me.MapId == 0 || Me.Combat" />
+						<Code File="InteractWith" MobId="183325" X="-1894.189" Y="5387.939" Z="-12.42825" TerminateWhen="Me.MapId == 0" />
+						<Code File="WaitTimer" WaitTime="50000" TerminateWhen="Me.MapId == 0 || Me.Combat" />
 					</While>
 				</If>
 				<If Condition="Me.MapId == 1" > <!-- Kalimdor -->
 					<If Condition="Me.X &gt;= 4555 &amp;&amp; Me.MapId == 1" >  <!-- Northern Kalimdor, Rut'theran Village to Stormwind -->
-						<CustomBehavior File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're in Northern Kalimdor, using the Rut'theran Village boat to Stormwind.&quot;);" />
+						<Code File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're in Northern Kalimdor, using the Rut'theran Village boat to Stormwind.&quot;);" />
 						<MoveTo Nav="Fly" X="8181.456" Y="1002.158" Z="7.062304" />
-						<CustomBehavior File="ForcedDismount" />
-						<CustomBehavior File="UseTransport" TransportId="176310"
+						<Code File="ForcedDismount" />
+						<Code File="UseTransport" TransportId="176310"
 							WaitAtX="8177.582" WaitAtY="1003.428" WaitAtZ="6.633576" 
 							TransportStartX="8162.587" TransportStartY="1005.365" TransportStartZ="-0.04886735"
 							StandOnX="8171.134" StandOnY="1005.961" StandOnZ="6.141735"
@@ -211,9 +211,9 @@
 						/>
 					</If>
 					<If Condition="Me.X &lt; 4555 &amp;&amp; Me.MapId == 1" > <!-- Southern Kalimdor, Ratchet to Booty Bay -->
-						<CustomBehavior File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're in Kalimdor, using the Ratchet boat to Booty Bay.&quot;);" />
+						<Code File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're in Kalimdor, using the Ratchet boat to Booty Bay.&quot;);" />
 						<MoveTo Nav="Fly" X="-995.5635" Y="-3827.638" Z="5.630721" />
-						<CustomBehavior File="UseTransport" TransportId="20808"
+						<Code File="UseTransport" TransportId="20808"
 							WaitAtX="-996.8669" WaitAtY="-3826.07" WaitAtZ="5.536246" 
 							TransportStartX="-1005.613" TransportStartY="-3841.648" TransportStartZ="0.01553879"
 							StandOnX="-997.3311" StandOnY="-3836.707" StandOnZ="6.030852"
@@ -223,36 +223,36 @@
 					</If>
 				</If>
 				<If Condition="Me.MapId == 646" > <!-- Deepholm -->
-					<CustomBehavior File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're in Deepholm, using the portal for Stormwind.&quot;);" />
+					<Code File="RunCode" Code="DraenorLog(Colors.LightGreen, &quot;We're in Deepholm, using the portal for Stormwind.&quot;);" />
 					<MoveTo Nav="Fly" X="968.8371" Y="573.3804" Z="-44.5801" />
 					<While Condition="Me.MapId != 0" >
-						<CustomBehavior File="InteractWith" MobId="205272" X="965.25" Y="577.229" Z="-44.2583" TerminateWhen="Me.MapId == 0" />
-						<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Me.MapId == 0 || Me.Combat" />
+						<Code File="InteractWith" MobId="205272" X="965.25" Y="577.229" Z="-44.2583" TerminateWhen="Me.MapId == 0" />
+						<Code File="WaitTimer" WaitTime="50000" TerminateWhen="Me.MapId == 0 || Me.Combat" />
 					</While>
 				</If>
 				<If Condition="Me.ZoneId == 1519 || Me.ZoneId == 12" > <!-- Stormwind Portal to Blasted Lands -->
 					<If Condition="(!HasQuest(34398) &amp;&amp; !IsQuestCompleted(34398)) &amp;&amp; (!HasQuest(36881) &amp;&amp; !IsQuestCompleted(36881))" > <!-- Pick up Draenor Intro Quest -->
-						<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, &quot;[Azyul Navigator]: &quot;, System.Windows.Media.Colors.LightGreen, &quot;Picking up Draenor introductory quest.&quot;);" />
-						<CustomBehavior File="FlyTo" DestName="Callboard quest" X="-8825.006" Y="628.1646" Z="94.37568" />
+						<Code File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, &quot;[Azyul Navigator]: &quot;, System.Windows.Media.Colors.LightGreen, &quot;Picking up Draenor introductory quest.&quot;);" />
+						<Code File="FlyTo" DestName="Callboard quest" X="-8825.006" Y="628.1646" Z="94.37568" />
 						<PickUp QuestName="The Dark Portal" QuestId="34398" GiverName="Hero&apos;s Call Board" GiverId="206111" X="-8825.006" Y="628.1646" Z="94.37568" />
 					</If>
 					<MoveTo Nav="Fly" X="-9007.301" Y="872.2969" Z="129.6921" />
 					<While Condition="Me.ZoneId == 1519" >
-						<CustomBehavior File="InteractWith" MobId="235882" X="-9007.301" Y="872.2969" Z="129.6921" TerminateWhen="Me.ZoneId != 1519" />
-						<CustomBehavior File="WaitTimer" WaitTime="50000" TerminateWhen="Me.ZoneId != 1519 || Me.Combat" />
+						<Code File="InteractWith" MobId="235882" X="-9007.301" Y="872.2969" Z="129.6921" TerminateWhen="Me.ZoneId != 1519" />
+						<Code File="WaitTimer" WaitTime="50000" TerminateWhen="Me.ZoneId != 1519 || Me.Combat" />
 					</While>
 				</If>
 			</If>
 			<!-- Eastern Kingdoms to Draenor via Dark Portal -->
 			<If Condition="HasQuest(34398) || HasQuest(36881)" > <!-- Stop at Khadgar for the Draenor Intro Quests -->
-				<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, &quot;[Azyul Navigator]: &quot;, System.Windows.Media.Colors.LightGreen, &quot;We're near the Dark Poral, interacting with Khadgar.&quot;);" />
+				<Code File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, &quot;[Azyul Navigator]: &quot;, System.Windows.Media.Colors.LightGreen, &quot;We're near the Dark Poral, interacting with Khadgar.&quot;);" />
 				<DisableBehavior Name="Pull" />
 				<MoveTo DestName="Dark Portal" Nav="Fly" X="-11773.5" Y="-3177.272" Z="-28.37646" />
 				<EnableBehavior Name="Pull" />
 				<Else> <!-- Go into Dark Portal if intro quests are already complete. -->
-					<CustomBehavior File="FlyTo" X="-11855.01" Y="-3203.732" Z="-0.9383372" /> <!-- Fly up above packs of mobs. -->
-					<CustomBehavior File="FlyTo" X="-11919.09" Y="-3209.106" Z="-14.2238" TerminateWhen="Me.MapId != 0" /> <!-- Enter Dark Portal. -->
-					<CustomBehavior File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, &quot;[Azyul Navigator]: &quot;, System.Windows.Media.Colors.LightGreen, &quot;We have reached Draenor!&quot;);" />
+					<Code File="FlyTo" X="-11855.01" Y="-3203.732" Z="-0.9383372" /> <!-- Fly up above packs of mobs. -->
+					<Code File="FlyTo" X="-11919.09" Y="-3209.106" Z="-14.2238" TerminateWhen="Me.MapId != 0" /> <!-- Enter Dark Portal. -->
+					<Code File="RunCode" Code="Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, &quot;[Azyul Navigator]: &quot;, System.Windows.Media.Colors.LightGreen, &quot;We have reached Draenor!&quot;);" />
 				</Else>
 			</If>
 		</If>
