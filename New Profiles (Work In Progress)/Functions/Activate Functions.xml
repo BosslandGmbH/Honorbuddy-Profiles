@@ -224,6 +224,14 @@
 				</Code>
 			<!-- END Tell Honorbuddy that the functions are running. -->
 
+			<!-- Get AppData information -->
+				<Code File="RunCode" Type="Definition" >
+					<![CDATA[
+						static bool? antiStuckToggle => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_AntiStuckToggle");
+					]]>
+				</Code>
+			<!-- END Get AppData information -->
+
 			<!-- Main Function Pulser -->
 				<Code File="RunCode">
 				<![CDATA[
@@ -448,6 +456,8 @@
 
 							if (IsStuck(true)) 
 							{
+								if (antiStuckToggle == null || antiStuckToggle == false) return false;
+								
 								if (!StyxWoW.Me.IsMoving)
 								{
 									LastPointShort = new Vector3(0f,0f,0f);

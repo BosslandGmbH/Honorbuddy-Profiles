@@ -161,6 +161,119 @@ END INITORDER COMMENT -->
 			</Code>
 		<!-- END RunCode Methods -->
 
+		<!-- Highmountain Vehicle Handler -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+					async Task VehicleMove(WoWPoint moveTo)
+					{
+						while (StyxWoW.Me.InVehicle && Me.Location.Distance(moveTo) >= 5)
+						{
+							Navigator.MoveTo(moveTo);
+							await CombatAwareness();
+							await Coroutine.Yield();
+						}
+					}
+
+					async Task VehicleKill(uint unitId)
+					{
+						if (!StyxWoW.Me.InVehicle) return;
+						WoWUnit killMe = Unit(unitId, u => u.IsAlive && !Blacklist.Contains(u, BlacklistFlags.Combat));
+						if (killMe == null) return;
+
+						while (StyxWoW.Me.InVehicle && killMe != null && killMe.IsAlive)
+						{
+							await VehicleMove(killMe.Location);
+							await VehicleCombat(killMe);
+							await Coroutine.Yield();
+						}
+					}
+
+					async Task VehicleCombat(WoWUnit vehicleKill)
+					{
+						if (!StyxWoW.Me.InVehicle) return;
+						if (vehicleKill == null) return;
+						if (!vehicleKill.IsAlive) return;
+						if (vehicleKill.Distance > 5) return;
+						if (Me.CurrentTarget != vehicleKill)
+							vehicleKill.Target();
+						Me.SetFacing(vehicleKill.Location);
+						if (Me.ZoneId == 7503)
+						{
+							Styx.Helpers.KeyboardManager.KeyUpDown((char)System.Windows.Forms.Keys.D2); // For murloc quest mostly.
+							SpellManager.ClickRemoteLocation(vehicleKill.Location);
+						}
+						Styx.Helpers.KeyboardManager.KeyUpDown((char)System.Windows.Forms.Keys.D1);
+						await Coroutine.Sleep(1050);
+					}
+
+					async Task CombatAwareness()
+					{
+						if (!StyxWoW.Me.InVehicle) return;
+						var killArray = ObjectManager.GetObjectsOfType<WoWUnit>().Where(u => u.IsTargetingMeOrPet && u.Distance <= 5 && u.IsHostile);
+						if (killArray == null) return;
+
+						foreach (WoWUnit killMe in killArray)
+						{
+							while (StyxWoW.Me.InVehicle && killMe != null && killMe.IsTargetingMeOrPet && killMe.Distance <= 5)
+							{
+								await CommonCoroutines.StopMoving();
+								StyxWoW.Me.SetFacing(killMe.Location);
+								await VehicleCombat(killMe);
+								await Coroutine.Yield();
+							}
+						}
+					}
+
+					async Task VehiclePickUp(uint questId, uint unitId, WoWPoint giverSpot)
+					{
+						if (!StyxWoW.Me.InVehicle) return;
+						if (!NeedsQuest(questId)) return;
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[ProfileBase]: Moving to PickUp questId {questId}");
+
+						await VehicleMove(giverSpot);
+
+						var unitPoi = Unit(unitId);
+						if (unitPoi == null) await Coroutine.Wait(10000, () => unitPoi != null);
+
+						while (StyxWoW.Me.InVehicle && !HasQuest(questId))
+						{
+							await VehicleMove(unitPoi.Location);
+
+							unitPoi.Interact();
+							await Coroutine.Sleep(500);
+							Lua.DoString("QuestFrameAcceptButton:Click();");
+
+							await Coroutine.Yield();
+						}
+					}
+
+					async Task VehicleTurnIn(uint questId, uint unitId, WoWPoint giverSpot)
+					{
+						if (!StyxWoW.Me.InVehicle) return;
+						if (!QuestDone(questId)) return;
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[ProfileBase]: Moving to TurnIn questId {questId}");
+
+						await VehicleMove(giverSpot);
+
+						var unitPoi = Unit(unitId);
+						if (unitPoi == null) await Coroutine.Wait(10000, () => unitPoi != null);
+
+						while (StyxWoW.Me.InVehicle && HasQuest(questId))
+						{
+							await VehicleMove(unitPoi.Location);
+
+							unitPoi.Interact();
+							await Coroutine.Sleep(500);
+							Lua.DoString("QuestInfoRewardsFrameQuestInfoItem1:Click();");
+							await Coroutine.Sleep(300);
+							Lua.DoString("QuestFrameCompleteQuestButton:Click();");
+
+							await Coroutine.Yield();
+						}
+					}
+				]]>
+			</CustomBehavior>
+		<!-- END Highmountain Vehicle Handler -->
+
 	<!-- Zone Introductory Quests -->
 		<If Condition="QuestDone(39733)" >
 			<TurnIn QuestName="The Lone Mountain" QuestId="39733" TurnInName="Warbrave Oro" TurnInId="97666" X="-827.2934" Y="4292.502" Z="746.2735" /> <!-- Breadcrumb from Class Hall -->
@@ -227,7 +340,7 @@ END INITORDER COMMENT -->
 		<While Condition="DoQuest(39614)" >
 			<Code File="RunCode" Code="
 				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Disabling custom anti-stuck measures until this quest is complete.&quot;);
-				UseAntiStuck = false;
+				AppDomain.CurrentDomain.SetData(&quot;QuestingProfiles_AntiStuckToggle&quot;, false);
 			" />
 			<Code File="RunCode" Type="Definition" ><![CDATA[
 					private Styx.TreeSharp.Composite _kickfishHook;
@@ -297,7 +410,7 @@ END INITORDER COMMENT -->
 			<Code File="RunCode"><![CDATA[ TreeHooks.Instance.RemoveHook("Questbot_Profile", _kickfishHook); ]]></Code>
 			<Code File="RunCode" Code="
 				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Re-enabling custom anti-stuck measures.&quot;);
-				UseAntiStuck = true;
+				AppDomain.CurrentDomain.SetData(&quot;QuestingProfiles_AntiStuckToggle&quot;, true);
 			" />
 		</While>
 
@@ -777,7 +890,7 @@ END INITORDER COMMENT -->
 			if (!IsQuestCompleted(40345))
 			{
 				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Disabling custom anti-stuck measures until this quest is complete.&quot;);
-				UseAntiStuck = false;
+				AppDomain.CurrentDomain.SetData(&quot;QuestingProfiles_AntiStuckToggle&quot;, false);
 			}
 		" />
 
@@ -811,7 +924,7 @@ END INITORDER COMMENT -->
 			if (QuestDone(40345))
 			{
 				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Re-enabling custom anti-stuck measures.&quot;);
-				UseAntiStuck = true;
+				AppDomain.CurrentDomain.SetData(&quot;QuestingProfiles_AntiStuckToggle&quot;, true);
 			}
 		" />
 		<TurnIn QuestName="Burn the Candle at Both Ends" QuestId="40345" TurnInName="Bluewax Gatekeeper" TurnInId="97130" X="4992.387" Y="3781.002" Z="734.2791" />

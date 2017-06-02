@@ -41,7 +41,91 @@
 END INITORDER COMMENT -->
 
 	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- Check function status -->
+			<Code File="RunCode" Type="Definition" >
+				<![CDATA[
+					bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+				]]>
+			</Code>
+			<If Condition="profileFunctionsEnabled == null || profileFunctionsEnabled == false" >
+				<Code File="RunCode">
+					<![CDATA[ Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!"); ]]>
+				</Code>
+				<Code File="LoadProfile" ProfileName="..\..\..\Functions\Activate Functions.xml" />
+			</If>
+		<!-- END Check function status -->
+
+		<If Condition="Me.IsAlliance" >
+			<Code File="LoadProfile" ProfileName="..\..\..\1-110 Autoloader.xml" RememberProfile="true" />
+		</If>
 		<!-- RunCode Methods -->
+			<Code File="RunCode">
+			<![CDATA[
+				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
+				Lua.DoString("SetCVar('AutoLootDefault', 1);");
+				Lua.DoString("SetCVar('autoDismountFlying', 1);");
+				CharacterSettings.Instance.LootMobs = true;
+				CharacterSettings.Instance.Save();
+				Lua.DoString("for i=1,GetNumAddOns() do local relo=false if IsAddOnLoaded(i) then relo=true DisableAddOn(i) end if relo then relo=nil ReloadUI() end end");
+				await Coroutine.Sleep(1500);
+				Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
+			]]>
+			</Code>
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</Code>
+		<!-- END RunCode Methods -->
+
+		<!-- ClassHall RunCode Methods -->
 			<Code File="RunCode" Type="Definition"><![CDATA[
 					int currentZone = 0;
 					bool doAzsuna = false;
@@ -49,46 +133,6 @@ END INITORDER COMMENT -->
 					bool doHighmountain = false;
 					bool doStormheim = false;
 
-					bool DoQuest(params uint[] questIds)
-					{
-						foreach (var questId in questIds)
-						{
-							if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
-						}
-						return false;
-					}
-					bool NeedsQuest(params uint[] questIds)
-					{
-						foreach (var questId in questIds)
-						{
-							if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
-						}
-						return false;
-					}
-					bool NeedsBreadcrumbQuest(params uint[] questIds)
-					{
-						foreach (var questId in questIds)
-						{
-							if (IsQuestCompleted(questId)) return false;
-						}
-						return true;
-					}
-					bool QuestDone(params uint[] questIds)
-					{
-						foreach (var questId in questIds)
-						{
-							if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
-						}
-						return false;
-					}
-					async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
-					{
-				// Add detection of cutscene here.
-						await Coroutine.Sleep(preWait);
-				// Test and improve the working method.
-						Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
-						await Coroutine.Sleep(postWait);
-					}
 					async Task DalaranHearth()
 					{
 						if (!(Me.ZoneId == 7502 || Me.ZoneId == 8392) && HasItem(140192))
@@ -111,9 +155,69 @@ END INITORDER COMMENT -->
 							}
 						}
 					}
+					async Task DoMission(int missionID, params int[] followerList)
+					{
+
+						foreach (int follower in followerList)
+						{
+							string luaString = $@"
+								local missionID = {missionID};
+								local followerID = {follower};
+								local allFollowers = C_Garrison.GetFollowers();
+								for i=1,#allFollowers do
+									if (allFollowers[i].garrFollowerID == followerID)  then  
+										C_Garrison.AddFollowerToMission(missionID, allFollowers[i].followerID);
+										break;
+									end
+								end
+							";
+							Lua.DoString(luaString);
+							await Coroutine.Sleep(750);
+						}
+
+						await Coroutine.Sleep(1000);
+						Lua.DoString($"C_Garrison.StartMission({missionID});");
+
+						await Coroutine.Sleep(2500);
+						Lua.DoString("OrderHallMissionFrame.CloseButton:Click();");
+					}
+
+					bool MissionComplete(int missionID)
+					{
+						string luaString = $@"
+							local missionNum = {missionID};
+							local allMissions = C_Garrison.GetInProgressMissions(LE_FOLLOWER_TYPE_GARRISON_7_0);
+							for i=1,#allMissions do
+								if (allMissions[i].missionID == missionNum)  then  
+									return allMissions[i].timeLeftSeconds
+								end
+							end
+						";
+						
+						int timeLeft = Lua.GetReturnVal<int>(luaString, 0);
+
+						if (timeLeft == 0)
+							return true;
+						else
+							return false;
+					}
+
+					bool MissionInProgress(int missionID)
+					{
+						string luaString = $@"
+							local missionNum = {missionID};
+							local allMissions = C_Garrison.GetInProgressMissions(LE_FOLLOWER_TYPE_GARRISON_7_0);
+							for i=1,#allMissions do
+								if (allMissions[i].missionID == missionNum)  then  
+									return allMissions[i].inProgress
+								end
+							end
+						";
+						return Lua.GetReturnVal<bool>(luaString, 0);
+					}
 				]]>
 			</Code>
-		<!-- END RunCode Methods -->
+		<!-- END ClassHall RunCode Methods -->
 
 		<!-- First Artifact Quest -->
 			<If Condition="Me.IsAlliance" >
