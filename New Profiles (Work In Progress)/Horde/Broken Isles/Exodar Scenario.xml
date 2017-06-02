@@ -135,30 +135,38 @@ END INITORDER COMMENT -->
 			</Code>
 		<!-- END RunCode Methods -->
 
-		<!-- Zone Introductory Quests -->
-			<If Condition="(NeedsQuest(44009) &amp;&amp; Me.Class != WoWClass.Paladin) || (NeedsQuest(44004) &amp;&amp; Me.Class == WoWClass.Paladin)" >
-				<Code File="RunCode"><![CDATA[
-					if (!(Me.ZoneId == 7502 || Me.ZoneId == 8392) && HasItem(140192))
+		<!-- Dalaran Hearth Task -->
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[
+					async Task DalaranHearth()
 					{
-						Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, "[Azyul Navigator]: ", System.Windows.Media.Colors.LightGreen, "Using Dalaran Hearthstone!");
-						await CommonCoroutines.LandAndDismount("Using Hearthstone to reach Dalaran (Broken Isles)");
-						await CommonCoroutines.StopMoving(); 
-						WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
-						if (dalaranHearth.CooldownTimeLeft <= TimeSpan.FromMinutes(3))
+						if (!(Me.ZoneId == 7502 || Me.ZoneId == 8392) && HasItem(140192))
 						{
-							if (dalaranHearth.CooldownTimeLeft != TimeSpan.Zero)
+							Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, "[Azyul Navigator]: ", System.Windows.Media.Colors.LightGreen, "Using Dalaran Hearthstone!");
+							await CommonCoroutines.LandAndDismount("Using Hearthstone to reach Dalaran (Broken Isles)");
+							await CommonCoroutines.StopMoving(); 
+							WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+							if (dalaranHearth.CooldownTimeLeft <= TimeSpan.FromMinutes(3))
 							{
-								Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
-								await Coroutine.Wait(306000, () => dalaranHearth.CooldownTimeLeft == TimeSpan.Zero);
+								if (dalaranHearth.CooldownTimeLeft != TimeSpan.Zero)
+								{
+									Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
+									await Coroutine.Wait(306000, () => dalaranHearth.CooldownTimeLeft == TimeSpan.Zero);
+								}
+								dalaranHearth.Interact();
+								var currentLoc = StyxWoW.Me.ZoneId;
+								await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
+								await Coroutine.Sleep(1500);
 							}
-							dalaranHearth.Interact();
-							var currentLoc = StyxWoW.Me.ZoneId;
-							await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
-							await Coroutine.Sleep(1500);
 						}
 					}
 					]]>
-				</Code>
+			</Code>
+		<!-- END Dalaran Hearth Task -->
+
+		<!-- Zone Introductory Quests -->
+			<If Condition="(NeedsQuest(44009) &amp;&amp; Me.Class != WoWClass.Paladin) || (NeedsQuest(44004) &amp;&amp; Me.Class == WoWClass.Paladin)" >
+				<Code File="RunCode" Code="await DalaranHearth();" />
 				<MoveTo X="-848.6059" Y="4635.94" Z="749.604" />
 				<If Condition="Me.Class != WoWClass.Paladin" >
 					<PickUp Nav="Fly" QuestName="A Falling Star" QuestId="44009" GiverName="Archmage Khadgar" GiverId="90417" />

@@ -134,6 +134,35 @@ END INITORDER COMMENT -->
 			</Code>
 		<!-- END RunCode Methods -->
 
+		<!-- Dalaran Hearth Task -->
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[
+					async Task DalaranHearth()
+					{
+						if (!(Me.ZoneId == 7502 || Me.ZoneId == 8392) && HasItem(140192))
+						{
+							Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, "[Azyul Navigator]: ", System.Windows.Media.Colors.LightGreen, "Using Dalaran Hearthstone!");
+							await CommonCoroutines.LandAndDismount("Using Hearthstone to reach Dalaran (Broken Isles)");
+							await CommonCoroutines.StopMoving(); 
+							WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+							if (dalaranHearth.CooldownTimeLeft <= TimeSpan.FromMinutes(3))
+							{
+								if (dalaranHearth.CooldownTimeLeft != TimeSpan.Zero)
+								{
+									Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
+									await Coroutine.Wait(306000, () => dalaranHearth.CooldownTimeLeft == TimeSpan.Zero);
+								}
+								dalaranHearth.Interact();
+								var currentLoc = StyxWoW.Me.ZoneId;
+								await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
+								await Coroutine.Sleep(1500);
+							}
+						}
+					}
+					]]>
+			</Code>
+		<!-- END Dalaran Hearth Task -->
+
 		<!-- Get Continuation Quest -->
 			<If Condition="IsQuestCompleted(40953) &amp;&amp; NeedsQuest(41541) &amp;&amp; NeedsQuest(44043, 44366)" > <!-- Using On Eagle's Wings (40953) to determine if we've already got the first artifact. -->
 				<If Condition="!Me.HasAura(213170)" >
