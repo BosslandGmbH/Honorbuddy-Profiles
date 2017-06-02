@@ -1,6 +1,6 @@
 <HBProfile xsi:noNamespaceSchemaLocation="../Schemas/EchoSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<!-- Original contribution by EchoTiger -->
-	<Name>Highmountain ($Rev: 6119 $)</Name>
+	<Name>Highmountain ($Rev: 6125 $)</Name>
 
 	<MinDurability>0.3</MinDurability>
 	<MinFreeBagSlots>3</MinFreeBagSlots>
@@ -89,7 +89,7 @@ END INITORDER COMMENT -->
 
 		<!-- Profile Settings -->
 			<CustomBehavior File="RunCode" Type="Definition">
-				<![CDATA[private static System.Windows.Window _uiWindow{get;set;}public static void Initialize(){Settings.Instance.Load();System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{var grid=(System.Windows.Controls.Grid)((Honorbuddy.MainWindow)System.Windows.Application.Current.MainWindow).Content;var profileConfigButton=grid.Children.OfType<System.Windows.Controls.Button>().FirstOrDefault(btn=>btn.Name=="btnProfileSettings");if(profileConfigButton!=null)return;profileConfigButton=new System.Windows.Controls.Button{Name="btnProfileSettings",HorizontalAlignment=System.Windows.HorizontalAlignment.Right,VerticalAlignment=System.Windows.VerticalAlignment.Bottom,Margin=new System.Windows.Thickness(0,0,8,86),Content="Profile Config",Height=20,Width=120};grid.Children.Add(profileConfigButton);profileConfigButton.Click+=(sender,args)=>{System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{if(_uiWindow!=null){_uiWindow.Close();_uiWindow=null;}Settings.Instance.Load();_uiWindow=UiWindow.GetWindow();_uiWindow.Show();_uiWindow.Closing+=(o,eventArgs)=>{Settings.Instance.Save();};}));};}));Styx.CommonBot.BotEvents.OnBotStopped+=args=>{System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{var grid=(System.Windows.Controls.Grid)((Honorbuddy.MainWindow)System.Windows.Application.Current.MainWindow).Content;var profileConfigButton=grid.Children.OfType<System.Windows.Controls.Button>().FirstOrDefault(btn=>btn.Name=="btnProfileSettings");grid.Children.Remove(profileConfigButton);_uiWindow.Close();}));};Styx.CommonBot.TreeRoot.OnShutdownRequested+=(sender,args)=>{System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{_uiWindow.Close();}));};}public static class UiWindow{public static System.Windows.Window GetWindow(){var window=new System.Windows.Window{Title="Profile Settings",SizeToContent=System.Windows.SizeToContent.WidthAndHeight,ResizeMode=System.Windows.ResizeMode.NoResize,DataContext=Settings.Instance};var grid=new System.Windows.Controls.Grid{Width=500,Height=550};window.Content=grid;var hbHeaderLogo=new System.Windows.Controls.MediaElement{LoadedBehavior=System.Windows.Controls.MediaState.Play,VerticalAlignment=System.Windows.VerticalAlignment.Top,HorizontalAlignment=System.Windows.HorizontalAlignment.Center};hbHeaderLogo.MediaEnded+=(sender,args)=>{hbHeaderLogo.Position=TimeSpan.FromMilliseconds(1);};grid.Children.Add(hbHeaderLogo);var discordButton=new System.Windows.Controls.Button{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(20,20,0,0),Style=new System.Windows.Style(),Background=System.Windows.Media.Brushes.Transparent,BorderThickness=new System.Windows.Thickness(0),Cursor=System.Windows.Input.Cursors.Hand};discordButton.Click+=(sender,args)=>{Process.Start("http://discord.gg/h74WjFY");};grid.Children.Add(discordButton);var discordImage=new System.Windows.Controls.Image{Height=36,Width=50,Style=new System.Windows.Style()};discordButton.Content=discordImage;var paypalButton=new System.Windows.Controls.Button{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(25,80,0,0),Style=new System.Windows.Style(),Background=System.Windows.Media.Brushes.Transparent,BorderThickness=new System.Windows.Thickness(0),Cursor=System.Windows.Input.Cursors.Hand};paypalButton.Click+=(sender,args)=>{Process.Start("https://www.paypal.me/EchoTiger/");};grid.Children.Add(paypalButton);var paypalImage=new System.Windows.Controls.Image{Height=50,Width=38,Style=new System.Windows.Style()};paypalButton.Content=paypalImage;var tabControl=new System.Windows.Controls.TabControl{Margin=new System.Windows.Thickness(0,150,0,0)};grid.Children.Add(tabControl);var changelogTab=new System.Windows.Controls.TabItem{Header="Changelog",Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255))};tabControl.Items.Add(changelogTab);changelogTab.GotFocus+=(sender,args)=>{changelogTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(73,96,210));};changelogTab.LostFocus+=(sender,args)=>{changelogTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255));};changelogTab.Focus();var changelogTextBox=new System.Windows.Controls.RichTextBox{Margin=new System.Windows.Thickness(10),VerticalScrollBarVisibility=System.Windows.Controls.ScrollBarVisibility.Auto,IsReadOnly=true,SelectionOpacity=0};changelogTab.Content=changelogTextBox;var generalTab=new System.Windows.Controls.TabItem{Header="General Settings",Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255))};tabControl.Items.Add(generalTab);generalTab.GotFocus+=(sender,args)=>{generalTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(73,96,210));};generalTab.LostFocus+=(sender,args)=>{generalTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255));};var generalGrid=new System.Windows.Controls.Grid();generalTab.Content=generalGrid;var useAPItemCheckBox=new System.Windows.Controls.CheckBox{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(50,50,0,0),Content="Use Artifact Power Items"};generalGrid.Children.Add(useAPItemCheckBox);useAPItemCheckBox.SetBinding(System.Windows.Controls.CheckBox.IsCheckedProperty,new System.Windows.Data.Binding(nameof(Settings.Instance.UseAPItems)){Source=Settings.Instance});var useCustomAntiStuckCheckBox=new System.Windows.Controls.CheckBox{HorizontalAlignment=System.Windows.HorizontalAlignment.Center,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(0,100,20,0),Content="Use Custom Anti-Stuck"};generalGrid.Children.Add(useCustomAntiStuckCheckBox);useCustomAntiStuckCheckBox.SetBinding(System.Windows.Controls.CheckBox.IsCheckedProperty,new System.Windows.Data.Binding(nameof(Settings.Instance.UseCustomAntiStuck)){Source=Settings.Instance});var generalTabLabel=new System.Windows.Controls.Label{HorizontalAlignment=System.Windows.HorizontalAlignment.Center,VerticalAlignment=System.Windows.VerticalAlignment.Bottom,Margin=new System.Windows.Thickness(0,0,0,50),Content="More settings coming soon!"};generalGrid.Children.Add(generalTabLabel);var farmTreasuresCheckBox=new System.Windows.Controls.CheckBox{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(270,50,0,0),Content="Passively Farm Treasures"};generalGrid.Children.Add(farmTreasuresCheckBox);farmTreasuresCheckBox.SetBinding(System.Windows.Controls.CheckBox.IsCheckedProperty,new System.Windows.Data.Binding(nameof(Settings.Instance.FarmTreasures)){Source=Settings.Instance});Task.WhenAll(LoadChangelogAsync(window,changelogTextBox),LoadDiscordImageAsync(window,discordImage),LoadPaypalImageAsync(window,paypalImage),LoadHBLogoAsync(window,hbHeaderLogo));return window;}private static async Task LoadChangelogAsync(System.Windows.Window window,System.Windows.Controls.RichTextBox changelogTextBox){await window.Dispatcher.BeginInvoke(new Action(async()=>{using(var client=new System.Net.WebClient()){var str=await client.DownloadStringTaskAsync("http://ech-o.net/bForum/changelog");using(var stream=new MemoryStream(System.Text.Encoding.Default.GetBytes(str))){changelogTextBox.Selection.Load(stream,System.Windows.DataFormats.Rtf);}}}));}private static async Task LoadDiscordImageAsync(System.Windows.Window window,System.Windows.Controls.Image imageControl){await window.Dispatcher.BeginInvoke(new Action(async()=>{using(var client=new System.Net.WebClient()){var str=await client.DownloadDataTaskAsync("http://ech-o.net/bForum/discord.png");using(var stream=new MemoryStream(str)){var bitmap=new System.Windows.Media.Imaging.BitmapImage();bitmap.BeginInit();bitmap.StreamSource=stream;bitmap.CacheOption=System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;bitmap.EndInit();bitmap.Freeze();imageControl.Source=bitmap;}}}));}private static async Task LoadPaypalImageAsync(System.Windows.Window window,System.Windows.Controls.Image imageControl){await window.Dispatcher.BeginInvoke(new Action(async()=>{using(var client=new System.Net.WebClient()){var str=await client.DownloadDataTaskAsync("http://ech-o.net/bForum/paypaltrasnp.png");using(var stream=new MemoryStream(str)){var bitmap=new System.Windows.Media.Imaging.BitmapImage();bitmap.BeginInit();bitmap.StreamSource=stream;bitmap.CacheOption=System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;bitmap.EndInit();bitmap.Freeze();imageControl.Source=bitmap;}}}));}private static async Task LoadHBLogoAsync(System.Windows.Window window,System.Windows.Controls.MediaElement mediaElement){await window.Dispatcher.BeginInvoke(new Action(async()=>{var savedImagePath=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"Profile Settings","header.png");if(savedImagePath==null)return;if(File.Exists(savedImagePath)){mediaElement.Source=new Uri(savedImagePath);}else{mediaElement.Source=new Uri("http://ech-o.net/bForum/headerlowres.jpg");var directory=Path.GetDirectoryName(savedImagePath);if(directory==null)return;if(!Directory.Exists(directory)){Directory.CreateDirectory(directory);}using(var client=new System.Net.WebClient()){await client.DownloadFileTaskAsync("http://ech-o.net/bForum/header.png",savedImagePath);if(File.Exists(savedImagePath)){mediaElement.Source=new Uri(savedImagePath);}}}}));}}public class Settings : System.ComponentModel.INotifyPropertyChanged{private readonly string _filePath;private readonly string _jsonLocation;private bool _useAPItems=true;	private bool _useCustomAntiStuck=true;private bool _farmTreasures=false;private Settings(){var hbLocation=Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);_jsonLocation=Path.Combine(hbLocation,"Newtonsoft.Json.dll");_filePath=Path.Combine(Styx.Helpers.Settings.CharacterSettingsDirectory,"OfficialProfilePackSettings.json");}public bool UseAPItems{get{return _useAPItems;}set{if(value==_useAPItems)return;_useAPItems=value;OnPropertyChanged();}}public bool UseCustomAntiStuck{get{return _useCustomAntiStuck;}set{if(value==_useCustomAntiStuck)return;_useCustomAntiStuck=value;OnPropertyChanged();}}public static Settings Instance{get;private set;}=new Settings();public bool FarmTreasures{get{return _farmTreasures;}set{if(value==_farmTreasures)return;_farmTreasures=value;OnPropertyChanged();}}public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;public void Load(){try{if(File.Exists(_filePath)){var assembly=AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a=>a.FullName.Contains("Newtonsoft.Json"))?? System.Reflection.Assembly.LoadFrom(_jsonLocation);var jsonConvert=assembly.GetTypes().FirstOrDefault(a=>a.FullName=="Newtonsoft.Json.JsonConvert");var json=string.Empty;using(var streamReader=new StreamReader(_filePath)){json=streamReader.ReadToEnd();}var populateObject=jsonConvert.GetMethods().FirstOrDefault(m=>m.Name=="PopulateObject");populateObject.Invoke(null,new object[]{json,Instance});}}catch(Exception ex){Logging.Write(ex.Message);}}private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName=null){PropertyChanged?.Invoke(this,new System.ComponentModel.PropertyChangedEventArgs(propertyName));}public void Save(){try{var assembly=AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a=>a.FullName.Contains("Newtonsoft.Json"))?? System.Reflection.Assembly.LoadFrom(_jsonLocation);var jsonConvert=assembly.GetTypes().FirstOrDefault(a=>a.FullName=="Newtonsoft.Json.JsonConvert");var serializeObject=jsonConvert.GetMethods().FirstOrDefault(m=>m.Name=="SerializeObject");var content=(string)serializeObject.Invoke(null,new object[]{this});using(var streamWriter=new StreamWriter(_filePath)){streamWriter.WriteLine(content);}}catch(Exception ex){Logging.Write(ex.Message);}}}]]>
+				<![CDATA[private static System.Windows.Window _uiWindow{get;set;}public static void Initialize(){Settings.Instance.Load();System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{var grid=(System.Windows.Controls.Grid)((Honorbuddy.MainWindow)System.Windows.Application.Current.MainWindow).Content;var profileConfigButton=grid.Children.OfType<System.Windows.Controls.Button>().FirstOrDefault(btn=>btn.Name=="btnProfileSettings");if(profileConfigButton!=null)return;profileConfigButton=new System.Windows.Controls.Button{Name="btnProfileSettings",HorizontalAlignment=System.Windows.HorizontalAlignment.Right,VerticalAlignment=System.Windows.VerticalAlignment.Bottom,Margin=new System.Windows.Thickness(0,0,8,86),Content="Profile Config",Height=20,Width=120};grid.Children.Add(profileConfigButton);profileConfigButton.Click+=(sender,args)=>{System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{if(_uiWindow!=null){_uiWindow.Close();_uiWindow=null;}Settings.Instance.Load();_uiWindow=UiWindow.GetWindow();_uiWindow.Show();_uiWindow.Closing+=(o,eventArgs)=>{Settings.Instance.Save();};}));};}));Styx.CommonBot.BotEvents.OnBotStopped+=args=>{System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{var grid=(System.Windows.Controls.Grid)((Honorbuddy.MainWindow)System.Windows.Application.Current.MainWindow).Content;var profileConfigButton=grid.Children.OfType<System.Windows.Controls.Button>().FirstOrDefault(btn=>btn.Name=="btnProfileSettings");grid.Children.Remove(profileConfigButton);_uiWindow.Close();}));};Styx.CommonBot.TreeRoot.OnShutdownRequested+=(sender,args)=>{System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{_uiWindow.Close();}));};}public static class UiWindow{public static System.Windows.Window GetWindow(){var window=new System.Windows.Window{Title="Profile Settings",SizeToContent=System.Windows.SizeToContent.WidthAndHeight,ResizeMode=System.Windows.ResizeMode.NoResize,DataContext=Settings.Instance};var grid=new System.Windows.Controls.Grid{Width=500,Height=550};window.Content=grid;var hbHeaderLogo=new System.Windows.Controls.MediaElement{LoadedBehavior=System.Windows.Controls.MediaState.Play,VerticalAlignment=System.Windows.VerticalAlignment.Top,HorizontalAlignment=System.Windows.HorizontalAlignment.Center};hbHeaderLogo.MediaEnded+=(sender,args)=>{hbHeaderLogo.Position=TimeSpan.FromMilliseconds(1);};grid.Children.Add(hbHeaderLogo);var discordButton=new System.Windows.Controls.Button{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(20,20,0,0),Style=new System.Windows.Style(),Background=System.Windows.Media.Brushes.Transparent,BorderThickness=new System.Windows.Thickness(0),Cursor=System.Windows.Input.Cursors.Hand};discordButton.Click+=(sender,args)=>{Process.Start("http://discord.gg/h74WjFY");};grid.Children.Add(discordButton);var discordImage=new System.Windows.Controls.Image{Height=36,Width=50,Style=new System.Windows.Style()};discordButton.Content=discordImage;var tabControl=new System.Windows.Controls.TabControl{Margin=new System.Windows.Thickness(0,150,0,0)};grid.Children.Add(tabControl);var changelogTab=new System.Windows.Controls.TabItem{Header="Changelog",Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255))};tabControl.Items.Add(changelogTab);changelogTab.GotFocus+=(sender,args)=>{changelogTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(73,96,210));};changelogTab.LostFocus+=(sender,args)=>{changelogTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255));};changelogTab.Focus();var changelogTextBox=new System.Windows.Controls.RichTextBox{Margin=new System.Windows.Thickness(10),VerticalScrollBarVisibility=System.Windows.Controls.ScrollBarVisibility.Auto,IsReadOnly=true,SelectionOpacity=0};changelogTab.Content=changelogTextBox;var generalTab=new System.Windows.Controls.TabItem{Header="General Settings",Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255))};tabControl.Items.Add(generalTab);generalTab.GotFocus+=(sender,args)=>{generalTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(73,96,210));};generalTab.LostFocus+=(sender,args)=>{generalTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255));};var generalGrid=new System.Windows.Controls.Grid();generalTab.Content=generalGrid;var useAPItemCheckBox=new System.Windows.Controls.CheckBox{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(50,50,0,0),Content="Use Artifact Power Items"};generalGrid.Children.Add(useAPItemCheckBox);useAPItemCheckBox.SetBinding(System.Windows.Controls.CheckBox.IsCheckedProperty,new System.Windows.Data.Binding(nameof(Settings.Instance.UseAPItems)){Source=Settings.Instance});var useCustomAntiStuckCheckBox=new System.Windows.Controls.CheckBox{HorizontalAlignment=System.Windows.HorizontalAlignment.Center,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(0,100,20,0),Content="Use Custom Anti-Stuck"};generalGrid.Children.Add(useCustomAntiStuckCheckBox);useCustomAntiStuckCheckBox.SetBinding(System.Windows.Controls.CheckBox.IsCheckedProperty,new System.Windows.Data.Binding(nameof(Settings.Instance.UseCustomAntiStuck)){Source=Settings.Instance});var generalTabLabel=new System.Windows.Controls.Label{HorizontalAlignment=System.Windows.HorizontalAlignment.Center,VerticalAlignment=System.Windows.VerticalAlignment.Bottom,Margin=new System.Windows.Thickness(0,0,0,50),Content="More settings coming soon!"};generalGrid.Children.Add(generalTabLabel);var farmTreasuresCheckBox=new System.Windows.Controls.CheckBox{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(270,50,0,0),Content="Passively Farm Treasures"};generalGrid.Children.Add(farmTreasuresCheckBox);farmTreasuresCheckBox.SetBinding(System.Windows.Controls.CheckBox.IsCheckedProperty,new System.Windows.Data.Binding(nameof(Settings.Instance.FarmTreasures)){Source=Settings.Instance});Task.WhenAll(LoadChangelogAsync(window,changelogTextBox),LoadDiscordImageAsync(window,discordImage),LoadHBLogoAsync(window,hbHeaderLogo));return window;}private static async Task LoadChangelogAsync(System.Windows.Window window,System.Windows.Controls.RichTextBox changelogTextBox){await window.Dispatcher.BeginInvoke(new Action(async()=>{using(var client=new System.Net.WebClient()){var str=await client.DownloadStringTaskAsync("http://ech-o.net/bForum/changelog");using(var stream=new MemoryStream(System.Text.Encoding.Default.GetBytes(str))){changelogTextBox.Selection.Load(stream,System.Windows.DataFormats.Rtf);}}}));}private static async Task LoadDiscordImageAsync(System.Windows.Window window,System.Windows.Controls.Image imageControl){await window.Dispatcher.BeginInvoke(new Action(async()=>{using(var client=new System.Net.WebClient()){var str=await client.DownloadDataTaskAsync("http://ech-o.net/bForum/discord.png");using(var stream=new MemoryStream(str)){var bitmap=new System.Windows.Media.Imaging.BitmapImage();bitmap.BeginInit();bitmap.StreamSource=stream;bitmap.CacheOption=System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;bitmap.EndInit();bitmap.Freeze();imageControl.Source=bitmap;}}}));}private static async Task LoadHBLogoAsync(System.Windows.Window window,System.Windows.Controls.MediaElement mediaElement){await window.Dispatcher.BeginInvoke(new Action(async()=>{var savedImagePath=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"Profile Settings","header.png");if(savedImagePath==null)return;if(File.Exists(savedImagePath)){mediaElement.Source=new Uri(savedImagePath);}else{mediaElement.Source=new Uri("http://ech-o.net/bForum/headerlowres.jpg");var directory=Path.GetDirectoryName(savedImagePath);if(directory==null)return;if(!Directory.Exists(directory)){Directory.CreateDirectory(directory);}using(var client=new System.Net.WebClient()){await client.DownloadFileTaskAsync("http://ech-o.net/bForum/header.png",savedImagePath);if(File.Exists(savedImagePath)){mediaElement.Source=new Uri(savedImagePath);}}}}));}}public class Settings : System.ComponentModel.INotifyPropertyChanged{private readonly string _filePath;private readonly string _jsonLocation;private bool _useAPItems=true;	private bool _useCustomAntiStuck=true;private bool _farmTreasures=false;private Settings(){var hbLocation=Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);_jsonLocation=Path.Combine(hbLocation,"Newtonsoft.Json.dll");_filePath=Path.Combine(Styx.Helpers.Settings.CharacterSettingsDirectory,"OfficialProfilePackSettings.json");}public bool UseAPItems{get{return _useAPItems;}set{if(value==_useAPItems)return;_useAPItems=value;OnPropertyChanged();}}public bool UseCustomAntiStuck{get{return _useCustomAntiStuck;}set{if(value==_useCustomAntiStuck)return;_useCustomAntiStuck=value;OnPropertyChanged();}}public static Settings Instance{get;private set;}=new Settings();public bool FarmTreasures{get{return _farmTreasures;}set{if(value==_farmTreasures)return;_farmTreasures=value;OnPropertyChanged();}}public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;public void Load(){try{if(File.Exists(_filePath)){var assembly=AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a=>a.FullName.Contains("Newtonsoft.Json"))?? System.Reflection.Assembly.LoadFrom(_jsonLocation);var jsonConvert=assembly.GetTypes().FirstOrDefault(a=>a.FullName=="Newtonsoft.Json.JsonConvert");var json=string.Empty;using(var streamReader=new StreamReader(_filePath)){json=streamReader.ReadToEnd();}var populateObject=jsonConvert.GetMethods().FirstOrDefault(m=>m.Name=="PopulateObject");populateObject.Invoke(null,new object[]{json,Instance});}}catch(Exception ex){Logging.Write(ex.Message);}}private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName=null){PropertyChanged?.Invoke(this,new System.ComponentModel.PropertyChangedEventArgs(propertyName));}public void Save(){try{var assembly=AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a=>a.FullName.Contains("Newtonsoft.Json"))?? System.Reflection.Assembly.LoadFrom(_jsonLocation);var jsonConvert=assembly.GetTypes().FirstOrDefault(a=>a.FullName=="Newtonsoft.Json.JsonConvert");var serializeObject=jsonConvert.GetMethods().FirstOrDefault(m=>m.Name=="SerializeObject");var content=(string)serializeObject.Invoke(null,new object[]{this});using(var streamWriter=new StreamWriter(_filePath)){streamWriter.WriteLine(content);}}catch(Exception ex){Logging.Write(ex.Message);}}}]]>
 			</CustomBehavior>
 			<CustomBehavior File="RunCode"><![CDATA[
 					Initialize();
@@ -530,6 +530,7 @@ END INITORDER COMMENT -->
 						TreeRoot.StatusText = "Kicking fish into water";
 
 						await CommonCoroutines.StopMoving();
+						await CommonCoroutines.LandAndDismount();
 						Me.SetFacing(GetBestRiverLocation());
 						await Coroutine.Sleep(200);
 						_currentFish.Interact();
@@ -547,11 +548,11 @@ END INITORDER COMMENT -->
 
 			<CustomBehavior File="RunCode"><![CDATA[ TreeHooks.Instance.InsertHook("Questbot_Profile", 0, _kickfishHook ?? (_kickfishHook = new  CommonBehaviors.Actions.ActionRunCoroutine(ctx => KickFish()))); ]]></CustomBehavior>
 			<While Condition="DoQuest(39614)" >
-				<MoveTo X="4038.536" Y="4775.965" Z="623.6185" />
-				<MoveTo X="3985.755" Y="4902.08" Z="624.2513" />
-				<MoveTo X="3936.748" Y="4779.066" Z="625.9948" />
-				<MoveTo X="3936.509" Y="4943.055" Z="622.6791" />
-				<MoveTo X="3904.754" Y="5002.131" Z="627.1608" />
+				<MoveTo QuestId="39614" X="4038.536" Y="4775.965" Z="623.6185" />
+				<MoveTo QuestId="39614" X="3985.755" Y="4902.08" Z="624.2513" />
+				<MoveTo QuestId="39614" X="3936.748" Y="4779.066" Z="625.9948" />
+				<MoveTo QuestId="39614" X="3936.509" Y="4943.055" Z="622.6791" />
+				<MoveTo QuestId="39614" X="3904.754" Y="5002.131" Z="627.1608" />
 			</While>
 			<CustomBehavior File="RunCode"><![CDATA[ TreeHooks.Instance.RemoveHook("Questbot_Profile", _kickfishHook); ]]></CustomBehavior>
 			<CustomBehavior File="RunCode" Code="
@@ -561,7 +562,7 @@ END INITORDER COMMENT -->
 		</While>
 
 		<While Condition="DoQuest(39277)" >
-			<CustomBehavior File="InteractWith" MobIds="95013, 96124" InteractByUsingItemId="127988" MobState="Alive" Range="5" IgnoreCombat="true" PreInteractMountStrategy="Dismount" QuestId="39277" QuestObjectiveIndex="1" TerminateWhen="Me.HealthPercent &lt;= 20" >
+			<CustomBehavior File="InteractWith" MobIds="95013, 96124" InteractByUsingItemId="127988" MobState="Alive" Range="5" IgnoreCombat="true" PreInteractMountStrategy="Dismount" MovementBy="NavigatorOnly" QuestId="39277" QuestObjectiveIndex="1" TerminateWhen="Me.HealthPercent &lt;= 20" >
 				<HuntingGrounds>
 					<Hotspot X="4038.536" Y="4775.965" Z="623.6185" />
 					<Hotspot X="3985.755" Y="4902.08" Z="624.2513" />
@@ -578,7 +579,7 @@ END INITORDER COMMENT -->
 		</If>
 
 		<If Condition="!IsQuestCompleted(39274) &amp;&amp; Me.Level &lt; 110" > <!-- Bonus Objective: Defend the Riverlands -->
-			<CustomBehavior File="InteractWith" MobState="AliveNotInCombat" InteractByLooting="true" NumOfTimes="150" TerminateWhen="IsQuestCompleted(39274)" >
+			<CustomBehavior File="InteractWith" MobState="AliveNotInCombat" InteractByLooting="true" NumOfTimes="150" PreInteractMountStrategy="Dismount" TerminateWhen="IsQuestCompleted(39274)" >
 				<HuntingGrounds>
 					<Hotspot X="3941.23" Y="4936.438" Z="622.6931" />
 					<Hotspot X="4009.044" Y="4883.389" Z="627.3096" />
@@ -708,9 +709,9 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="The Drogbar" QuestId="39026" GiverName="Spiritwalker Ebonhorn" GiverId="93805" X="3737.774" Y="4959.208" Z="670.8829" />
 
 		<While Condition="DoQuest(39025)" >
-			<CustomBehavior File="InteractWith" MobId="97648" QuestId="39025" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestObjectiveIndex="2" X="3736.111" Y="4887.467" Z="675.6513" />
-			<CustomBehavior File="InteractWith" MobId="97648" QuestId="39025" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestObjectiveIndex="1" X="3649.892" Y="4908.655" Z="685.0859" />
-			<CustomBehavior File="InteractWith" MobId="97648" QuestId="39025" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestObjectiveIndex="3" X="3575.872" Y="4839.522" Z="700.2889" />
+			<CustomBehavior File="InteractWith" MobId="97648" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="39025" QuestObjectiveIndex="2" X="3736.111" Y="4887.467" Z="675.6513" />
+			<CustomBehavior File="InteractWith" MobId="97648" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="39025" QuestObjectiveIndex="1" X="3649.892" Y="4908.655" Z="685.0859" />
+			<CustomBehavior File="InteractWith" MobId="97648" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="39025" QuestObjectiveIndex="3" X="3575.872" Y="4839.522" Z="700.2889" />
 		</While>
 
 		<While Condition="DoQuest(39026)" >
@@ -1142,7 +1143,7 @@ END INITORDER COMMENT -->
 
 		<PickUp QuestName="Rocs vs Eagles" QuestId="38910" GiverName="Lasan Skyhorn" GiverId="93841" X="4855.699" Y="3979.478" Z="832.1546" />
 		<While Condition="DoQuest(38910)" >
-			<CustomBehavior File="InteractWith" MobId="94991" Range="5" NonCompeteDistance="0" QuestId="38910" QuestObjectiveIndex="1" >
+			<CustomBehavior File="InteractWith" MobId="94991" Range="5" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="38910" QuestObjectiveIndex="1" >
 				<HuntingGrounds>
 					<Hotspot X="4952.185" Y="4152.331" Z="821.8495" />
 					<Hotspot X="4882.544" Y="4119.929" Z="836.452" />
@@ -1154,7 +1155,7 @@ END INITORDER COMMENT -->
 		<!-- NOTE: <BonusObjective> : <PickUp QuestName="Siege of Crawliac" QuestId="39317" GiverName="Hati" GiverId="100324" XXXX /> -->
 
 		<While Condition="!IsQuestCompleted(39317) &amp;&amp; Me.Level &lt; 110" > <!-- Bonus Objective: Siege of Crawliac -->
-			<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(39317)" >
+			<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" PreInteractMountStrategy="Dismount" TerminateWhen="IsQuestCompleted(39317)" >
 				<HuntingGrounds>
 					<Hotspot X="4875.676" Y="4128.829" Z="839.3718" />
 					<Hotspot X="4984" Y="4181.067" Z="824.3726" />
@@ -1232,11 +1233,11 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Witch of the Wood" QuestId="39372" GiverName="Oakin Ironbull" GiverId="95256" X="5221.074" Y="4902.253" Z="711.7547" />
 		<PickUp QuestName="Hags of a Feather" QuestId="39373" GiverName="Oakin Ironbull" GiverId="95256" X="5221.074" Y="4902.253" Z="711.7547" />
 
-		<PickUp QuestName="I Have a Bad Feeling About This" QuestId="39873" GiverName="Navarrogg" GiverId="97667" X="5202.087" Y="4935.929" Z="710.6815" />
+		<PickUp Nav="Run" QuestName="I Have a Bad Feeling About This" QuestId="39873" GiverName="Navarrogg" GiverId="97667" X="5202.087" Y="4935.929" Z="710.6815" />
 		<While Condition="DoQuest(39873)" >
 			<CustomBehavior File="InteractWith" MobId="244625" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="39873" QuestObjectiveIndex="1" X="5320.737" Y="4933.171" Z="693.3184" />
 		</While>
-		<TurnIn QuestName="I Have a Bad Feeling About This" QuestId="39873" TurnInName="Navarrogg's Cage" TurnInId="243402" X="5201.837" Y="4936.044" Z="710.4338" />
+		<TurnIn Nav="Run" QuestName="I Have a Bad Feeling About This" QuestId="39873" TurnInName="Navarrogg's Cage" TurnInId="243402" X="5201.837" Y="4936.044" Z="710.4338" />
 
 		<!-- NOTE: <AddAvoid> : Need to add an Avoid behavior here for the bot to stay away from a level 110 elite:
 								Name="Gornoth the Lost" Entry="103656" X="5591.57" Y="4684.78" Z="663.5714"
@@ -1261,7 +1262,7 @@ END INITORDER COMMENT -->
 		</While>
 
 		<While Condition="!IsQuestCompleted(39371) &amp;&amp; Me.Level &lt; 110" > <!-- Bonus Objective: Witches of the Sky -->
-			<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" TerminateWhen="IsQuestCompleted(39371)" >
+			<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" PreInteractMountStrategy="Dismount" TerminateWhen="IsQuestCompleted(39371)" >
 				<HuntingGrounds>
 					<Hotspot X="5425.975" Y="4756.039" Z="665.6051" />
 					<Hotspot X="5561.418" Y="4789.268" Z="664.9429" />
@@ -1362,7 +1363,7 @@ END INITORDER COMMENT -->
 
 		<PickUp QuestName="Step into the Dark" QuestId="40229" GiverName="Navarrogg" GiverId="95392" X="5821.911" Y="4201.273" Z="709.0323" />
 		<If Condition="QuestDone(40229)" >
-			<MoveTo X="5866.382" Y="4582.85" Z="629.8276" />
+			<MoveTo Nav="Run" X="5866.382" Y="4582.85" Z="629.8276" />
 		</If>
 		<TurnIn QuestName="Step into the Dark" QuestId="40229" TurnInName="Navarrogg" TurnInId="95392" X="5870.035" Y="4577.615" Z="629.2578" />
 
@@ -1915,7 +1916,7 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Critter Scatter Shot" QuestId="39670" GiverName="Razik Gazbolt" GiverId="96513" X="4294.724" Y="3614.605" Z="898.6747" />
 		<PickUp QuestName="A True Hunter" QuestId="40000" GiverName="Lorna Stoutfoot" GiverId="97974" X="4304.073" Y="3617.26" Z="898.8616" />
 
-		<CustomBehavior File="InteractWith" MobIds="96548" MobState="Alive" QuestId="39670" QuestObjectiveIndex="1" >
+		<CustomBehavior File="InteractWith" MobIds="96548" MobState="Alive" PreInteractMountStrategy="Dismount" QuestId="39670" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="4025.184" Y="3688.139" Z="875.8091" />
 				<Hotspot X="4008.913" Y="3730.467" Z="878.7299" />
@@ -1980,40 +1981,40 @@ END INITORDER COMMENT -->
 		I'm thinking a RunCode where Me.Class auto-fills the text with using ProfileManager.LoadNew to load the profilewould be more clean.
 		-->
 		<If Condition="Me.Class == WoWClass.Warrior" >
-			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Warrior" />
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Warrior [Echo]" />
 		</If>
 		<If Condition="Me.Class == WoWClass.Paladin" >
-			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Paladin" />
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Paladin [Echo]" />
 		</If>
 		<If Condition="Me.Class == WoWClass.Hunter" >
-			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Hunter" />
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Hunter [Echo]" />
 		</If>
 		<If Condition="Me.Class == WoWClass.Rogue" >
-			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Rogue" />
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Rogue [Echo]" />
 		</If>
 		<If Condition="Me.Class == WoWClass.Priest" >
-			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Priest" />
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Priest [Echo]" />
 		</If>
 		<If Condition="Me.Class == WoWClass.DeathKnight" >
-			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Death Knight" />
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Death Knight [Echo]" />
 		</If>
 		<If Condition="Me.Class == WoWClass.Shaman" >
-			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Shaman" />
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Shaman [Echo]" />
 		</If>
 		<If Condition="Me.Class == WoWClass.Mage" >
-			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Mage" />
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Mage [Echo]" />
 		</If>
 		<If Condition="Me.Class == WoWClass.Warlock" >
-			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Warlock" />
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Warlock [Echo]" />
 		</If>
 		<If Condition="Me.Class == WoWClass.Monk" >
-			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Monk" />
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Monk [Echo]" />
 		</If>
 		<If Condition="Me.Class == WoWClass.Druid" >
-			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Druid" />
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Druid [Echo]" />
 		</If>
 		<If Condition="Me.Class == WoWClass.DemonHunter" >
-			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/Demon Hunter" />
+			<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Demon Hunter [Echo]" />
 		</If>
 	<!-- END Load Class Hall stuff -->
 
