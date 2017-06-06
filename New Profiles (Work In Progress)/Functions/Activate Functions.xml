@@ -225,9 +225,11 @@
 			<!-- END Tell Honorbuddy that the functions are running. -->
 
 			<!-- Get AppData information -->
+				<Code File="RunCode" Code="AppDomain.CurrentDomain.SetData(&quot;Questing_AFKModeWhitelist&quot;, new List&lt;uint&gt;{0});" />
 				<Code File="RunCode" Type="Definition" >
 					<![CDATA[
 						static bool? antiStuckToggle => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_AntiStuckToggle");
+						static List<uint> afkModeWhitelist = (List<uint>)AppDomain.CurrentDomain.GetData("Questing_AFKModeWhitelist");
 					]]>
 				</Code>
 			<!-- END Get AppData information -->
@@ -359,7 +361,7 @@
 								}
 							}
 
-							if (inventoryManager.Any(item => item.ItemInfo.SellPrice == 00 && item.GetEffect(0) == null && (item.ItemInfo.Bond == WoWItemBondType.None || (item.ItemInfo.BeginQuestId != 0 && item.ItemInfo.RequiredLevel < (Me.Level - 5)))))
+							if (inventoryManager.Any(item => item.ItemInfo.SellPrice == 00 && item.GetEffect(0) == null && (item.ItemInfo.Bond == WoWItemBondType.None || (item.ItemInfo.BeginQuestId != 0 && item.ItemInfo.RequiredLevel < (Me.Level - 5))) && !afkModeWhitelist.Contains(item.Entry)))
 							{
 								var deleteList = inventoryManager.Where(item => item.ItemInfo.SellPrice == 00 && item.GetEffect(0) == null && (item.ItemInfo.Bond == WoWItemBondType.None || (item.ItemInfo.BeginQuestId != 0 && item.ItemInfo.RequiredLevel < (Me.Level - 5))));
 								foreach (WoWItem deleteMe in deleteList)
@@ -373,7 +375,7 @@
 
 							if (MerchantFrame.Instance.IsVisible)
 							{
-								var sellList = inventoryManager.Where(item => item.ItemInfo.SellPrice != 0);
+								var sellList = inventoryManager.Where(item => item.ItemInfo.SellPrice != 0 && !afkModeWhitelist.Contains(item.Entry));
 								foreach (WoWItem sellMe in sellList)
 								{
 									if (!MerchantFrame.Instance.IsVisible) break;
