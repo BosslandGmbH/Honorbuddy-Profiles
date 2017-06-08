@@ -255,8 +255,19 @@
 						if (StyxWoW.Me == null || !StyxWoW.Me.IsValid || Me.InVehicle || Me.OnTaxi) return false;
 
 						if (Settings.Instance.AfkMode && MerchantFrame.Instance.IsVisible) await AFKMode();
-						if (Settings.Instance.HuntRareMobs && _rarehunterFunctionRunning) await RareHunter();
-						if (Settings.Instance.FindTreasureChests && _treasureFunctionRunning) await TreasureHunter();
+						if (Me.IsAlive && !Me.IsActuallyInCombat)
+						{
+							if (Settings.Instance.HuntRareMobs && _rarehunterFunctionRunning)
+							{
+								await RareHunter();
+								return true;
+							}
+							if (Settings.Instance.FindTreasureChests && _treasureFunctionRunning)
+							{
+								await TreasureHunter();
+								return true;
+							}
+						}
 
 						if (Settings.Instance.CustomLooting) await CustomLootingBlacklister();
 
@@ -739,11 +750,17 @@
 
 							TreeRoot.StatusText = $"Interacting with treasure: {_treasurePoi.Name}";
 
-							if (BotPoi.Current.Type != PoiType.Harvest && _treasurePoi.CanUse())
+							if (BotPoi.Current.Type != PoiType.Interact && _treasurePoi.CanUse())
 							{
 								_treasureFunctionRunning = true;
-								BotPoi.Current = new BotPoi(_treasurePoi, PoiType.Harvest);
+								BotPoi.Current = new BotPoi(_treasurePoi, PoiType.Interact);
 								return true;
+							}
+
+							if (_treasureFunctionRunning && LootFrame.Instance.IsVisible)
+							{
+								LootFrame.Instance.LootAll();
+								await Coroutine.Wait(3500, () => !LootFrame.Instance.IsVisible);
 							}
 
 							return false;
