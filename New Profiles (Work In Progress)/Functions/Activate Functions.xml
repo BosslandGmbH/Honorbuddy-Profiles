@@ -391,10 +391,13 @@
 								foreach (WoWItem sellMe in sellList)
 								{
 									if (!MerchantFrame.Instance.IsVisible) break;
-									FancyLog(Colors.MediumPurple, "[AFK Mode]: ", Colors.Yellow, $"Force selling > {sellMe.Name}.");
-									sellMe.UseContainerItem();
-									await Coroutine.Sleep(500);
-									_sellAllItems ++;
+									if (sellMe != null && sellMe.IsValid)
+									{
+										FancyLog(Colors.MediumPurple, "[AFK Mode]: ", Colors.Yellow, $"Force selling > {sellMe.Name}.");
+										sellMe.UseContainerItem();
+										await Coroutine.Sleep(500);
+										_sellAllItems ++;
+									}
 								}
 							}
 
