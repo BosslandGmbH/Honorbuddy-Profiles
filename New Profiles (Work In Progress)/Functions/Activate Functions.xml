@@ -713,12 +713,6 @@
 						{
 							if (!Me.IsAlive || Me.IsActuallyInCombat) return false;
 
-							if (!_treasureLocation.Equals(new Vector3(0,0,0)) && _treasureLocation.DistanceSquared((WoWMovement.ActiveMover ?? StyxWoW.Me).Location) > 5 * 5)
-							{
-								TreeRoot.StatusText = $"Moving to interact with treasure: {_treasurePoi.Name}";
-								return (await CommonCoroutines.MoveTo(_treasureLocation)).IsSuccessful();
-							}
-
 							if (_treasurePoi == null || !_treasurePoi.IsValid)
 							{
 								_treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !_treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && _treasureList.Contains(obj.Entry) && obj.CanUse());
@@ -740,6 +734,12 @@
 								_treasureFunctionRunning = true;
 								_treasuresFound ++;
 								return true;
+							}
+
+							if (!_treasureLocation.Equals(new Vector3(0,0,0)) && _treasureLocation.DistanceSquared((WoWMovement.ActiveMover ?? StyxWoW.Me).Location) > 5 * 5)
+							{
+								TreeRoot.StatusText = $"Moving to interact with treasure: {_treasurePoi.Name}";
+								return (await CommonCoroutines.MoveTo(_treasureLocation)).IsSuccessful();
 							}
 
 							if (!_treasureIsLogged)
