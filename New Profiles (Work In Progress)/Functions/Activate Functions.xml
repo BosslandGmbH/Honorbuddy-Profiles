@@ -738,6 +738,7 @@
 
 							if (!_treasureLocation.Equals(new Vector3(0,0,0)) && _treasureLocation.DistanceSquared((WoWMovement.ActiveMover ?? StyxWoW.Me).Location) > 5 * 5)
 							{
+								_treasureFunctionRunning = true;
 								TreeRoot.StatusText = $"Moving to interact with treasure: {_treasurePoi.Name}";
 								return (await CommonCoroutines.MoveTo(_treasureLocation)).IsSuccessful();
 							}
@@ -750,17 +751,11 @@
 
 							TreeRoot.StatusText = $"Interacting with treasure: {_treasurePoi.Name}";
 
-							if (BotPoi.Current.Type != PoiType.Interact && _treasurePoi.CanUse())
+							if (_treasurePoi.CanUse())
 							{
 								_treasureFunctionRunning = true;
-								BotPoi.Current = new BotPoi(_treasurePoi, PoiType.Interact);
+								_treasurePoi.Interact();
 								return true;
-							}
-
-							if (_treasureFunctionRunning && LootFrame.Instance.IsVisible)
-							{
-								LootFrame.Instance.LootAll();
-								await Coroutine.Wait(3500, () => !LootFrame.Instance.IsVisible);
 							}
 
 							return false;
