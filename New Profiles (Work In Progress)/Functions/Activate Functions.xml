@@ -722,7 +722,13 @@
 							if (_treasurePoi == null || !_treasurePoi.IsValid)
 							{
 								_treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !_treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && _treasureList.Contains(obj.Entry) && obj.CanUse());
-								if (_treasurePoi == null) return false;
+								if (_treasurePoi == null)
+								{
+									_treasureFunctionRunning = false;
+									_treasureIsLogged = false;
+									_treasureLocation = new Vector3(0,0,0);
+									return false;
+								}
 								if (Navigator.LookupPathInfo(_treasurePoi).Navigability != PathNavigability.Navigable)
 								{
 									_treasureBlacklist.Add(_treasurePoi.Guid);
@@ -732,6 +738,7 @@
 								}
 								_treasureLocation = _treasurePoi.Location;
 								_treasureFunctionRunning = true;
+								_treasuresFound ++;
 								return true;
 							}
 
@@ -739,16 +746,6 @@
 							{
 								_treasureIsLogged = true;
 								FancyLog(Colors.MediumPurple, "[Treasure Hunter]: ", Colors.CornflowerBlue, $"Treasure detected near us!\n	Name     :: {_treasurePoi.Name}\n	Entry    :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
-							}
-
-							if (_treasurePoi == null || !_treasurePoi.IsValid)
-							{
-								_treasureFunctionRunning = false;
-								_treasureIsLogged = false;
-								_treasureLocation = new Vector3(0,0,0);
-								_treasureBlacklist.Add(_treasurePoi.Guid);
-								_treasuresFound ++;
-								return false;
 							}
 
 							TreeRoot.StatusText = $"Interacting with treasure: {_treasurePoi.Name}";
