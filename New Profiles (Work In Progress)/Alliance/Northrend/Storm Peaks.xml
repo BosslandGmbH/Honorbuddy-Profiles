@@ -135,6 +135,15 @@
 			</Code>
 		<!-- END RunCode Methods -->
 
+		<If Condition="!QuestDone(12870)" > <!-- Protect Relic of Ulduar from the AFK Mode sell logic -->
+			<Code File="RunCode">
+				<![CDATA[
+					var whitelist = (List<uint>)AppDomain.CurrentDomain.GetData("Questing_AFKModeWhitelist");
+					whitelist.Add(42780);
+					AppDomain.CurrentDomain.SetData("Questing_AFKModeWhitelist", whitelist);
+				]]>
+			</Code>
+		</If>
 
 		<If Condition="Me.ZoneId == 3711 &amp;&amp; !IsQuestCompleted(13007)"> <!-- Don't run if we're done in Storm Peaks already -->
 			<Code File="InteractWith" MobId="28574" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="5504.018" Y="4746.764" Z="-194.4334" />
@@ -693,6 +702,16 @@
 		<PickUp QuestName="Sniffing Out the Perpetrator" QuestId="12855" GiverName="Archaeologist Andorin" GiverId="29650" X="6685.508" Y="-268.4308" Z="957.2428" />
 		<If Condition="QuestDone(12870)" >
 			<TurnIn QuestName="Ancient Relics" QuestId="12870" TurnInName="Rork Sharpchin" TurnInId="29744" X="6684.773" Y="-211.0891" Z="949.1566" />
+			<Code File="RunCode">
+				<![CDATA[
+					var whitelist = (List<uint>)AppDomain.CurrentDomain.GetData("Questing_AFKModeWhitelist");
+					if (whitelist.Contains(42780))
+					{
+						whitelist.Remove(42780);
+						AppDomain.CurrentDomain.SetData("Questing_AFKModeWhitelist", whitelist);
+					}
+				]]>
+			</Code>
 		</If>
 		<TurnIn QuestName="Missing Scouts" QuestId="12864" TurnInName="Glorthal Stiffbeard" TurnInId="29727" X="6649.017" Y="-231.3638" Z="948.5309" />
 		<PickUp QuestName="Stemming the Aggressors" QuestId="12866" GiverName="Glorthal Stiffbeard" GiverId="29727" X="6649.017" Y="-231.3638" Z="948.5309" />

@@ -121,6 +121,15 @@
 			</Code>
 		<!-- END RunCode Methods -->
 
+		<If Condition="!QuestDone(12882)" > <!-- Protect Relic of Ulduar from the AFK Mode sell logic -->
+			<Code File="RunCode">
+				<![CDATA[
+					var whitelist = (List<uint>)AppDomain.CurrentDomain.GetData("Questing_AFKModeWhitelist");
+					whitelist.Add(42780);
+					AppDomain.CurrentDomain.SetData("Questing_AFKModeWhitelist", whitelist);
+				]]>
+			</Code>
+		</If>
 
 		<If Condition="Me.ZoneId == 3711 &amp;&amp; !IsQuestCompleted(13007)"> <!-- Don't run if we're done in Storm Peaks already -->
 			<Code File="InteractWith" MobId="28574" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="5504.018" Y="4746.764" Z="-194.4334" />
@@ -742,7 +751,21 @@
 		<PickUp QuestName="The Missing Tracker" QuestId="13054" GiverName="Blood Guard Lorga" GiverId="30247" X="7869.116" Y="-747.7384" Z="1176.774" />
 		<PickUp QuestName="Emergency Measures" QuestId="13000" GiverName="Blood Guard Lorga" GiverId="30247" X="7869.116" Y="-747.7384" Z="1176.774" />
 		<PickUp QuestName="Ancient Relics" QuestId="12882" GiverName="Olut Alegut" GiverId="30472" X="7847.222" Y="-787.6952" Z="1183.117" />
-		<TurnIn QuestName="Ancient Relics" QuestId="12882" TurnInName="Olut Alegut" TurnInId="30472" X="7847.222" Y="-787.6952" Z="1183.117" />
+
+		<If Condition="QuestDone(12882)" >
+			<TurnIn QuestName="Ancient Relics" QuestId="12882" TurnInName="Olut Alegut" TurnInId="30472" X="7847.222" Y="-787.6952" Z="1183.117" />
+			<Code File="RunCode">
+				<![CDATA[
+					var whitelist = (List<uint>)AppDomain.CurrentDomain.GetData("Questing_AFKModeWhitelist");
+					if (whitelist.Contains(42780))
+					{
+						whitelist.Remove(42780);
+						AppDomain.CurrentDomain.SetData("Questing_AFKModeWhitelist", whitelist);
+					}
+				]]>
+			</Code>
+		</If>
+
 		<PickUp QuestName="The Missing Bronzebeard" QuestId="12895" GiverName="Boktar Bloodfury" GiverId="29651" X="7843.097" Y="-808.0073" Z="1184.013" />
 
 		<If Condition="!IsQuestCompleted(12929)" >
