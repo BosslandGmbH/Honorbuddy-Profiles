@@ -252,9 +252,10 @@
 
 		<PickUp QuestName="In With a Bang" QuestId="27600" GiverName="Crazy Larry" GiverId="45948" X="-10205.42" Y="-4186.808" Z="22.28699" />
 		<While Condition="DoQuest(27600)" >
-			<DisableBehavior Name="Vendor" />
 			<Code File="InteractWith" MobId="46245" GossipOptions="1" NonCompeteDistance="0" QuestId="27600" X="-10170.99" Y="-4175.218" Z="23.15152" TerminateWhen="Me.Y &lt; -4535" />
+			<DisableBehavior Name="Combat, Vendor" /> <!-- Avoid slow fall buffs -->
 			<Code File="WaitTimer" WaitTime="10000" TerminateWhen="Me.Y &lt; -4535" />
+			<EnableBehavior Name="Combat" />
 			<If Condition="!IsObjectiveComplete(1, 27600)" >
 				<MoveTo X="-9969.873" Y="-4546.761" Z="11.81089" /> <!-- Avoid getting stuck on the little cannon -->
 				<Code File="InteractWith" MobId="205826" InteractByLooting="true" QuestId="27600" QuestObjectiveIndex="1" X="-9955.886" Y="-4539.916" Z="12.03468" />
@@ -264,8 +265,9 @@
 		</While>
 		<If Condition="QuestDone(27600) &amp;&amp; Me.Y &lt; -4535" >
 			<Code File="InteractWith" MobId="206679" GossipOptions="1" NonCompeteDistance="0" X="-9969.2" Y="-4539.75" Z="11.6994" TerminateWhen="Me.Y &gt; -4170" />
+			<DisableBehavior Name="Combat" />
 			<Code File="WaitTimer" WaitTime="10000" TerminateWhen="Me.Y &gt; -4170" />
-			<EnableBehavior Name="Vendor" />
+			<EnableBehavior Name="Combat, Vendor" />
 		</If>
 		<TurnIn QuestName="In With a Bang" QuestId="27600" TurnInName="Crazy Larry" TurnInId="45948" X="-10204.6" Y="-4185.086" Z="22.28791" />
 
