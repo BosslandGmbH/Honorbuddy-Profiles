@@ -122,6 +122,100 @@ END INITORDER COMMENT -->
 			</Code>
 		<!-- END RunCode Methods -->
 
+		<!-- ClassHall RunCode Methods -->
+			<Code File="RunCode" Type="Definition"><![CDATA[
+					int currentZone = 0;
+					bool doAzsuna = false;
+					bool doValsharah = false;
+					bool doHighmountain = false;
+					bool doStormheim = false;
+
+					async Task DalaranHearth()
+					{
+						if (!(Me.ZoneId == 7502 || Me.ZoneId == 8392) && HasItem(140192))
+						{
+							Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, "[Azyul Navigator]: ", System.Windows.Media.Colors.LightGreen, "Using Dalaran Hearthstone!");
+							await CommonCoroutines.LandAndDismount("Using Hearthstone to reach Dalaran (Broken Isles)");
+							await CommonCoroutines.StopMoving(); 
+							WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+							if (dalaranHearth.CooldownTimeLeft <= TimeSpan.FromMinutes(3))
+							{
+								if (dalaranHearth.CooldownTimeLeft != TimeSpan.Zero)
+								{
+									Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
+									await Coroutine.Wait(306000, () => dalaranHearth.CooldownTimeLeft == TimeSpan.Zero);
+								}
+								dalaranHearth.Interact();
+								var currentLoc = StyxWoW.Me.ZoneId;
+								await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
+								await Coroutine.Sleep(1500);
+							}
+						}
+					}
+					async Task DoMission(int missionID, params int[] followerList)
+					{
+
+						foreach (int follower in followerList)
+						{
+							string luaString = $@"
+								local missionID = {missionID};
+								local followerID = {follower};
+								local allFollowers = C_Garrison.GetFollowers();
+								for i=1,#allFollowers do
+									if (allFollowers[i].garrFollowerID == followerID)  then  
+										C_Garrison.AddFollowerToMission(missionID, allFollowers[i].followerID);
+										break;
+									end
+								end
+							";
+							Lua.DoString(luaString);
+							await Coroutine.Sleep(750);
+						}
+
+						await Coroutine.Sleep(1000);
+						Lua.DoString($"C_Garrison.StartMission({missionID});");
+
+						await Coroutine.Sleep(2500);
+						Lua.DoString("OrderHallMissionFrame.CloseButton:Click();");
+					}
+
+					bool MissionComplete(int missionID)
+					{
+						string luaString = $@"
+							local missionNum = {missionID};
+							local allMissions = C_Garrison.GetInProgressMissions(LE_FOLLOWER_TYPE_GARRISON_7_0);
+							for i=1,#allMissions do
+								if (allMissions[i].missionID == missionNum)  then  
+									return allMissions[i].timeLeftSeconds
+								end
+							end
+						";
+						
+						int timeLeft = Lua.GetReturnVal<int>(luaString, 0);
+
+						if (timeLeft == 0)
+							return true;
+						else
+							return false;
+					}
+
+					bool MissionInProgress(int missionID)
+					{
+						string luaString = $@"
+							local missionNum = {missionID};
+							local allMissions = C_Garrison.GetInProgressMissions(LE_FOLLOWER_TYPE_GARRISON_7_0);
+							for i=1,#allMissions do
+								if (allMissions[i].missionID == missionNum)  then  
+									return allMissions[i].inProgress
+								end
+							end
+						";
+						return Lua.GetReturnVal<bool>(luaString, 0);
+					}
+				]]>
+			</Code>
+		<!-- END ClassHall RunCode Methods -->
+
 		<!-- Introductory Class Hall Quests -->
 			<PickUp QuestName="Felstorm's Plea" QuestId="41035" GiverName="Meryl Felstorm" GiverId="102700" X="-843.1996" Y="4431.201" Z="742.5364" /> <!-- Auto pickup in Dalaran. -->
 			<TurnIn QuestName="Felstorm's Plea" QuestId="41035" TurnInName="Meryl Felstorm" TurnInId="102700" X="-843.1996" Y="4431.201" Z="742.5364" />
