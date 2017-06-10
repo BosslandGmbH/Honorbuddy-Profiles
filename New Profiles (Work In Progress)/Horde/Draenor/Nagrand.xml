@@ -225,10 +225,12 @@
 		</While>
 		<TurnIn QuestName="A Choice to Make" QuestId="34899" TurnInName="Thrall" TurnInId="80003" X="3221.197" Y="4605.405" Z="144.0762" />
 
-		<If Condition="SpellManager.HasSpell(164222) &amp;&amp; !CanFly()" >
+		<If Condition="SpellManager.HasSpell(164222) &amp;&amp; Me.Class != WoWClass.Druid &amp;&amp; !CanFly()" >
 			<UseMount Value="false" />
-			<Code File="Hooks\DoWhen" ActivityName="SummonCombatMount" AllowUseInCombat="true" UseWhen="!Me.Mounted &amp;&amp; !Me.IsActuallyInCombat &amp;&amp; !Me.IsIndoors &amp;&amp; SpellManager.HasSpell(164222) &amp;&amp; !Me.HasAura(164222)" >
-				<Code File="RunCode" Code="await CommonCoroutines.StopMoving(); SpellManager.Cast(164222); await Coroutine.Wait(3000, () =&gt; Me.HasAura(164222));" />
+			<Code File="Hooks\DoWhen" ActivityName="SummonCombatMount" LogExecution="false" AllowUseInCombat="true" UseAtInterval="5000" >
+				<If Condition="!Me.Mounted &amp;&amp; !Me.IsActuallyInCombat &amp;&amp; !Me.IsIndoors &amp;&amp; SpellManager.HasSpell(165803) &amp;&amp; !Me.HasAura(165803)" >
+					<Code File="RunCode" Code="await CommonCoroutines.StopMoving(); SpellManager.Cast(164222); await Coroutine.Wait(3000, () =&gt; Me.HasAura(164222));" />
+				</If>
 			</Code>
 		</If>
 
