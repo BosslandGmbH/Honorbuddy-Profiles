@@ -311,7 +311,7 @@
 		<TurnIn QuestName="Never Surrender, Sometimes Retreat" QuestId="14221" TurnInName="Lord Darius Crowley" TurnInId="35566" X="-1617.541" Y="1500.127" Z="32.73221" />
 
 		<PickUp QuestName="Last Stand" QuestId="14222" GiverName="Lord Darius Crowley" GiverId="35566" X="-1617.541" Y="1500.127" Z="32.73221" />
-		<Code File="KillUntilComplete" MobId="35627" QuestId="14222" X="-1590.792" Y="1526.83" Z="29.23369" />
+		<Code File="KillUntilComplete" MobId="35627" QuestId="14222" X="-1587.647" Y="1528.794" Z="29.23008" />
 		<If Condition="QuestDone(14222)" >
 			<TurnIn QuestName="Last Stand" QuestId="14222" TurnInName="Lord Darius Crowley" TurnInId="35566" X="-1617.247" Y="1500.163" Z="32.64284" />
 			<Code File="WaitTimer" WaitTime="1000" /> <!-- Yeild the bot for the loading screen. -->
@@ -436,6 +436,7 @@
 		<TurnIn QuestName="As the Land Shatters" QuestId="14396" TurnInName="Prince Liam Greymane" TurnInId="36451" X="-1894.786" Y="2524.302" Z="1.673815" />
 
 		<PickUp QuestName="Gasping for Breath" QuestId="14395" GiverName="Prince Liam Greymane" GiverId="36451" X="-1894.786" Y="2524.302" Z="1.673815" />
+		<Code File="RunCode" Code="AppDomain.CurrentDomain.SetData(&quot;QuestingProfiles_AntiStuckToggle&quot;, false);" />
 		<While Condition="DoQuest(14395)" >
 			<MoveTo X="-1928.118" Y="2504.391" Z="2.383482" />
 			<Code File="MyCTM" QuestId="14395" X="-1945.608" Y="2531.583" Z="-1.615632" /> <!-- Get into water -->
@@ -443,6 +444,7 @@
 			<Code File="MyCTM" QuestId="14395" X="-1937.774" Y="2517.827" Z="-1.524461" /> <!-- Get out of water clear of debris -->
 			<Code File="MyCTM" QuestId="14395" X="-1928.118" Y="2504.391" Z="2.383482" /> <!-- Get out of water -->
 		</While>
+		<Code File="RunCode" Code="AppDomain.CurrentDomain.SetData(&quot;QuestingProfiles_AntiStuckToggle&quot;, true);" />
 		<TurnIn QuestName="Gasping for Breath" QuestId="14395" TurnInName="Prince Liam Greymane" TurnInId="36451" X="-1899.975" Y="2521.622" Z="1.657364" />
 
 		<PickUp QuestName="Evacuation" QuestId="14397" GiverName="Prince Liam Greymane" GiverId="36451" X="-1899.975" Y="2521.622" Z="1.657364" />
@@ -817,10 +819,10 @@
 		</While>
 		<TurnIn QuestName="Endgame" QuestId="26706" TurnInName="Lorna Crowley" TurnInId="43727" X="-1303.799" Y="2127.413" Z="5.639084" />
 
-		<If Condition="!IsQuestCompleted(14434) &amp;&amp; Me.MapId == 654" > <!-- Checking MapId because the player can skip this quest -->
-			<Code File="InteractWith" MobId="36616" NonCompeteDistance="0" X="-1289.916" Y="2101.995" Z="5.348265" />
+		<While Condition="!IsQuestCompleted(14434) &amp;&amp; Me.MapId == 654" > <!-- Checking MapId because the player can skip this quest -->
+			<Code File="InteractWith" MobId="36616" NonCompeteDistance="0" X="-1289.916" Y="2101.995" Z="5.348265" TerminateWhen="Me.MapId != 654" />
 			<Code File="RunCode" Code="QuestFrame.Instance.SelectAvailableQuest(0); await Coroutine.Sleep(750); QuestFrame.Instance.CompleteQuest();" />
-		</If>
+		</While>
 
 		<Code File="LoadProfile" ProfileName="..\..\1-110 Autoloader.xml" RememberProfile="true" />
 
