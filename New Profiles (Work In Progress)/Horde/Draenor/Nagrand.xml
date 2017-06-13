@@ -228,7 +228,8 @@
 		<If Condition="SpellManager.HasSpell(164222) &amp;&amp; Me.Class != WoWClass.Druid &amp;&amp; !CanFly()" >
 			<UseMount Value="false" />
 			<Code File="Hooks\DoWhen" ActivityName="SummonCombatMount" LogExecution="false" AllowUseInCombat="true" UseAtInterval="5000" >
-				<If Condition="!Me.Mounted &amp;&amp; !Me.IsActuallyInCombat &amp;&amp; !Me.IsIndoors &amp;&amp; SpellManager.HasSpell(165803) &amp;&amp; !Me.HasAura(165803)" >
+				<If Condition="!Me.Mounted &amp;&amp; !Me.IsActuallyInCombat &amp;&amp; !Me.IsIndoors &amp;&amp; SpellManager.HasSpell(165803) &amp;&amp; !Me.HasAura(165803) &amp;&amp; !Me.HasAura(2645)" >
+					<!-- 2645 is Shaman Ghost wolf -->
 					<Code File="RunCode" Code="await CommonCoroutines.StopMoving(); SpellManager.Cast(164222); await Coroutine.Sleep(750); await Coroutine.Wait(3000, () =&gt; Me.HasAura(164222) || !Me.IsCasting);" />
 				</If>
 			</Code>
@@ -432,7 +433,7 @@
 
 		<PickUp QuestName="The Ritual of Binding" QuestId="35265" GiverName="Farseer Drek&apos;Thar" GiverId="80597" X="4184.618" Y="5240.175" Z="65.45127" />
 		<While Condition="DoQuest(35265)" >
-			<Code File="InteractWith" MobId="80595" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="35265" QuestObjectiveIndex="1" X="4177.53" Y="5183.91" Z="64.4026" />
+			<Code File="InteractWith" MobId="80595" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="4177.53" Y="5183.91" Z="64.4026" />
 			<Code File="RunCode" Code="await SkipCutscene();" />
 		</While>
 		<TurnIn QuestName="The Ritual of Binding" QuestId="35265" TurnInName="Farseer Drek&apos;Thar" TurnInId="80597" X="4181.931" Y="5237.35" Z="65.45036" />

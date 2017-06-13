@@ -209,7 +209,8 @@
 		<If Condition="SpellManager.HasSpell(165803) &amp;&amp; Me.Class != WoWClass.Druid &amp;&amp; !CanFly()" >
 			<UseMount Value="false" />
 			<Code File="Hooks\DoWhen" ActivityName="SummonCombatMount" LogExecution="false" AllowUseInCombat="true" UseAtInterval="5000" >
-				<If Condition="!Me.Mounted &amp;&amp; !Me.IsActuallyInCombat &amp;&amp; !Me.IsIndoors &amp;&amp; SpellManager.HasSpell(165803) &amp;&amp; !Me.HasAura(165803)" >
+				<If Condition="!Me.Mounted &amp;&amp; !Me.IsActuallyInCombat &amp;&amp; !Me.IsIndoors &amp;&amp; SpellManager.HasSpell(165803) &amp;&amp; !Me.HasAura(165803) &amp;&amp; !Me.HasAura(2645)" >
+					<!-- 2645 is Shaman Ghost wolf -->
 					<Code File="RunCode" Code="await CommonCoroutines.StopMoving(); SpellManager.Cast(165803); await Coroutine.Sleep(750); await Coroutine.Wait(3000, () =&gt; Me.HasAura(165803) || !Me.IsCasting);" />
 				</If>
 			</Code>
@@ -279,12 +280,6 @@
 		<TurnIn QuestName="Removing the Paper Trail" QuestId="34597" TurnInName="Rangari Mirana" TurnInId="81144" X="2017.092" Y="4541.022" Z="306.4936" />
 		<PickUp QuestName="Removing the Reinforcements" QuestId="34877" GiverName="Rangari Mirana" GiverId="81144" X="2018.287" Y="4541.983" Z="306.626" />
 
-
-
-
-
-
-
 		<Code File="InteractWith" MobId="80357" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34877" QuestObjectiveIndex="1" X="1871.995" Y="4619.03" Z="340.8954" />
 
 		<While Condition="DoQuest(34596)" >
@@ -349,9 +344,98 @@
 
 		<TurnIn QuestName="The Friend o&apos; My Enemy" QuestId="34952" TurnInName="Hansel Heavyhands" TurnInId="79954" X="2586.511" Y="5701.239" Z="100.7936" />
 
-		<!-- Check later 
 		<PickUp QuestName="Nobundo Sends Word" QuestId="35332" GiverName="Rangari D&apos;kaan" GiverId="79576" X="2585.817" Y="5702.153" Z="100.9107" />
-		<TurnIn QuestName="Nobundo Sends Word" QuestId="35332" TurnInName="Farseer Drek&apos;Thar" TurnInId="80597" X="4177.748" Y="5237.9" Z="65.45213" /> -->
+		<TurnIn QuestName="Nobundo Sends Word" QuestId="35332" TurnInName="Vindicator Nobundo" TurnInId="82138" X="4175.863" Y="5239.006" Z="65.4511" />
+
+		<PickUp QuestName="Called to the Throne" QuestId="35331" GiverName="Vindicator Nobundo" GiverId="82138" X="4175.863" Y="5239.006" Z="65.4511" />
+		<While Condition="DoQuest(35331)" >
+			<Code File="InteractWith" MobId="82138" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" WaitTime="90000" QuestId="35331" X="4176.724" Y="5236.811" Z="65.45213" />
+			<Code File="WaitTimer" WaitTime="60000" QuestId="35331" />
+		</While>	
+		<TurnIn QuestName="Called to the Throne" QuestId="35331" TurnInName="Vindicator Nobundo" TurnInId="82138" X="4175.863" Y="5239.006" Z="65.4511" />
+
+		<PickUp QuestName="Elemental Attunement" QuestId="35333" GiverName="Vindicator Nobundo" GiverId="82138" X="4175.863" Y="5239.006" Z="65.4511" />
+		<PickUp QuestName="An Old Friend" QuestId="34943" GiverName="Kalandrios" GiverId="80595" X="4175.275" Y="5181.187" Z="64.32226" />
+		<PickUp QuestName="Earth, Wind and Fire...and Water" QuestId="34881" GiverName="Incineratus" GiverId="80593" X="4240.317" Y="5257.867" Z="66.14414" />
+		<PickUp QuestName="Guardians of the Plateau" QuestId="34893" GiverName="Incineratus" GiverId="80593" X="4240.317" Y="5257.867" Z="66.14414" />
+		<TurnIn QuestName="An Old Friend" QuestId="34943" TurnInName="Gar&apos;rok" TurnInId="80434" X="4062.035" Y="5042.889" Z="160.886" />
+		<PickUp QuestName="A Rare Bloom" QuestId="34894" GiverName="Gar&apos;rok" GiverId="80434" X="4062.035" Y="5042.889" Z="160.886" />
+
+		<Code File="InteractWith" MobId="230961" Range="5" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="35333" QuestObjectiveIndex="1" X="4477.763" Y="4807.948" Z="180.2167" />
+
+		<Code File="KillUntilComplete" MobId="80374" QuestId="34893" QuestObjectiveIndex="1" X="4369.164" Y="4678.623" Z="214.418" />
+
+		<Code File="KillUntilComplete" TerminateWhen="IsObjectiveComplete(1, 34881) &amp;&amp; IsObjectiveComplete(2, 34881)" >
+			<HuntingGrounds>
+				<Hotspot X="4322.844" Y="4652.382" Z="207.1106" />
+				<Hotspot X="4267.114" Y="4717.686" Z="217.003" />
+				<Hotspot X="4289.172" Y="4815.893" Z="198.425" />
+				<Hotspot X="4339.857" Y="4872.551" Z="218.8488" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="80382" PursueWhen="!IsObjectiveComplete(1, 34881)" />
+				<PursueUnit Id="80381" PursueWhen="!IsObjectiveComplete(2, 34881)" />
+			</PursuitList>
+		</Code>
+
+		<Code File="KillUntilComplete" MobId="80377" QuestId="34893" QuestObjectiveIndex="4" X="4394.953" Y="5044.26" Z="265.8418" />
+
+		<Code File="InteractWith" MobId="230964" Range="5" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="35333" QuestObjectiveIndex="4" X="4523.186" Y="5115.629" Z="249.7445" />
+
+		<Code File="KillUntilComplete" TerminateWhen="IsObjectiveComplete(3, 34881) &amp;&amp; IsObjectiveComplete(4, 34881)" >
+			<HuntingGrounds>
+				<Hotspot X="4511.244" Y="5135.023" Z="250.2839" />
+				<Hotspot X="4558.622" Y="5149.93" Z="248.5664" />
+				<Hotspot X="4597.593" Y="5244.028" Z="249.1443" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="80380" PursueWhen="!IsObjectiveComplete(3, 34881)" />
+				<PursueUnit Id="80379" PursueWhen="!IsObjectiveComplete(4, 34881)" />
+			</PursuitList>
+		</Code>
+
+		<Code File="InteractWith" MobId="230963" Range="5" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="35333" QuestObjectiveIndex="3" X="4571.044" Y="5479.153" Z="133.619" />
+
+		<Code File="KillUntilComplete" MobId="80376" QuestId="34893" QuestObjectiveIndex="3" X="4596.896" Y="5530.195" Z="127.1269" />
+
+		<While Condition="!IsQuestCompleted(33928)" >
+			<Code File="InteractWith" MobId="80586" InteractByLooting="true" X="4551.63" Y="5333.869" Z="133.1359" TerminateWhen="IsQuestCompleted(33928)" />
+		</While>
+
+		<Code File="InteractWith" MobId="231091" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34894" QuestObjectiveIndex="1" X="4548.68" Y="5302.866" Z="134.7715" />
+
+ 		<Code File="InteractWith" MobId="230962" Range="5" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="35333" QuestObjectiveIndex="2" X="4003.856" Y="4860.244" Z="262.5155" />
+
+		<Code File="KillUntilComplete" MobId="80375" QuestId="34893" QuestObjectiveIndex="2" X="3964.361" Y="4790.975" Z="285.9186" />
+
+		<If Condition="QuestDone(34893) &amp;&amp; !CanFly() &amp;&amp; Unit(80375) != null" >
+			<MoveTo X="4017.015" Y="4882.822" Z="260.9291" />
+			<Code File="MyCTM" X="4043.085" Y="4924.775" Z="200.5472" />
+		</If>
+
+		<TurnIn QuestName="A Rare Bloom" QuestId="34894" TurnInName="Gar&apos;rok" TurnInId="80434" X="4062.048" Y="5044.841" Z="160.9322" />
+
+		<PickUp QuestName="Guise of the Deceiver" QuestId="34932" GiverName="Gar&apos;rok" GiverId="80434" X="4062.048" Y="5044.841" Z="160.9322" />
+		<Code File="InteractWith" MobId="80483" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34932" QuestObjectiveIndex="1" X="4040.621" Y="4885.84" Z="197.9841" />
+		<Code File="KillUntilComplete" MobId="80483" QuestId="34932" QuestObjectiveIndex="2" X="4040.621" Y="4885.84" Z="197.9841" />
+		<TurnIn QuestName="Guise of the Deceiver" QuestId="34932" TurnInName="Gar&apos;rok" TurnInId="80434" X="4062.065" Y="5044.604" Z="160.9232" />
+
+		<PickUp QuestName="The Debt We Share" QuestId="34941" GiverName="Gar&apos;rok" GiverId="80434" X="4062.065" Y="5044.604" Z="160.9232" />
+		<Code File="InteractWith" MobId="80434" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34941" QuestObjectiveIndex="1" X="4062.065" Y="5044.604" Z="160.9232" />
+		<TurnIn QuestName="The Debt We Share" QuestId="34941" TurnInName="Kalandrios" TurnInId="80595" X="4179.323" Y="5185.349" Z="64.46446" />
+
+		<TurnIn QuestName="Earth, Wind and Fire...and Water" QuestId="34881" TurnInName="Incineratus" TurnInId="80593" X="4243.297" Y="5254.51" Z="66.14433" />
+		<TurnIn QuestName="Guardians of the Plateau" QuestId="34893" TurnInName="Incineratus" TurnInId="80593" X="4243.297" Y="5254.51" Z="66.14433" />
+		<TurnIn QuestName="A Wrong of Earth and Fire" QuestId="33928" TurnInName="Incineratus" TurnInId="80593" X="4243.297" Y="5254.51" Z="66.14433" />
+		<TurnIn QuestName="Elemental Attunement" QuestId="35333" TurnInName="Vindicator Nobundo" TurnInId="82138" X="4185.105" Y="5238.113" Z="65.45216" />
+
+
+		<PickUp QuestName="The Ritual of Binding" QuestId="35330" GiverName="Vindicator Nobundo" GiverId="82138" X="4185.105" Y="5238.113" Z="65.45216" />
+		<While Condition="DoQuest(35330)" >
+			<Code File="InteractWith" MobId="80595" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="4177.53" Y="5183.91" Z="64.4026" />
+			<Code File="RunCode" Code="await SkipCutscene();" />
+		</While>
+		<TurnIn QuestName="The Ritual of Binding" QuestId="35330" TurnInName="Vindicator Nobundo" TurnInId="82138" X="4181.882" Y="5236.798" Z="65.44931" />
 
 		<Checkpoint Level="100" />
 
