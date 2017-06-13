@@ -65,21 +65,45 @@
 						Load();
 					}
 
+					/// <summary>
+					///     Sells everything in your bags when visiting a vendor, deletes items that can't be sold, and opens openable items.
+					///     Also keeps the quest log clean so it doesn't get full and reacts to players around you.
+					/// </summary>
 					public bool AfkMode { get; set; } = false;
 
 					/// <summary>
-					///     Only loot quest-related NPCs
+					///     Only loot quest-related NPCs.  Does NOT work in Outland and Northrend expansion zones.
 					/// </summary>
 					public bool CustomLooting { get; set; } = false;
 
+					/// <summary>
+					///     Actively kills rares as they are detected near the bot.
+					/// </summary>
 					public bool HuntRareMobs { get; set; } = true;
 
+					/// <summary>
+					///     Actively looks for treasure chests around the player and loots them.
+					///     Treasure chests typically give you a large amount of experience and a blue item.
+					/// </summary>
 					public bool FindTreasureChests { get; set; } = true;
 
+					/// <summary>
+					///     Looks for bugs and tries to fix them as the bot is running.
+					///     Some bugs include sticky quest frames, pick up / turn in quest failures, NPC phasing issues, etc.
+					/// </summary>
 					public bool SanityEngine { get; set; } = true;
 
+					/// <summary>
+					///     Utilizes a short-term and long-term custom antistuck method.
+					///     Short-term antistuck will make the bot back off of the stuck location and blackspot it from the navigation system so the bot will calculate a new path.
+					///     Long-term antistuck will make the bot use the Hearthstone(s) to get out of the location and will reload the profile.
+					/// </summary>
 					public bool UseAntiStuck { get; set; } = true;
 
+					/// <summary>
+					///     Looks for vendors close to the player and will use them if your bags are under a set percentage of remaining slots.
+					///     This will prevent the bot from leaving a town with a low bagslot count as often the bot will do this, and end up running back to town before quests are complete which wastes time.
+					/// </summary>
 					public bool UseActiveVendoring { get; set; } = true;
 
 					// TODO: Add RAF invite names?
@@ -134,13 +158,13 @@
 									<RowDefinition Height=""*""/>
 								</Grid.RowDefinitions>
 
-								<CheckBox Content=""Use Anti-Stuck"" Grid.Column=""0"" Grid.Row=""0"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.UseAntiStuck}""/>
-								<CheckBox Content=""Find Treasure Chests"" Grid.Column=""0"" Grid.Row=""1"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.FindTreasureChests}""/>
-								<CheckBox Content=""Custom Looting"" ToolTip=""Only loot quest-related NPCs"" Grid.Column=""0"" Grid.Row=""2"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.CustomLooting}""/>
-								<CheckBox Content=""Use Active Vendoring"" Grid.Column=""0"" Grid.Row=""3"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.UseActiveVendoring}""/>
-								<CheckBox Content=""Afk Mode"" Grid.Column=""1"" Grid.Row=""0"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.AfkMode}""/>
-								<CheckBox Content=""Sanity Engine"" Grid.Column=""1"" Grid.Row=""1"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.SanityEngine}""/>
-								<CheckBox Content=""Hunt Rare Mobs"" Grid.Column=""1"" Grid.Row=""2"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.HuntRareMobs}""/>
+								<CheckBox Content=""Use Anti-Stuck"" ToolTip=""Utilizes a short-term and long-term custom antistuck method. Short-term antistuck will make the bot back off of the stuck location and blackspot it from the navigation system so the bot will calculate a new path. Long-term antistuck will make the bot use the Hearthstone(s) to get out of the location and will reload the profile."" Grid.Column=""0"" Grid.Row=""0"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.UseAntiStuck}""/>
+								<CheckBox Content=""Find Treasure Chests"" ToolTip=""Actively looks for treasure chests around the player and loots them. Treasure chests typically give you a large amount of experience and a blue item."" Grid.Column=""0"" Grid.Row=""1"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.FindTreasureChests}""/>
+								<CheckBox Content=""Custom Looting"" ToolTip=""Only loot quest-related NPCs.  Does NOT work in Outland and Northrend expansion zones."" Grid.Column=""0"" Grid.Row=""2"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.CustomLooting}""/>
+								<CheckBox Content=""Use Active Vendoring"" ToolTip=""Looks for vendors close to the player and will use them if your bags are under a set percentage of remaining slots. This will prevent the bot from leaving a town with a low bagslot count as often the bot will do this, and end up running back to town before quests are complete which wastes time."" Grid.Column=""0"" Grid.Row=""3"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.UseActiveVendoring}""/>
+								<CheckBox Content=""Afk Mode"" ToolTip=""Sells everything in your bags when visiting a vendor, deletes items that can't be sold, and opens openable items. Also keeps the quest log clean so it doesn't get full and reacts to players around you."" Grid.Column=""1"" Grid.Row=""0"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.AfkMode}""/>
+								<CheckBox Content=""Sanity Engine"" ToolTip=""Looks for bugs and tries to fix them as the bot is running. Some bugs include sticky quest frames, pick up / turn in quest failures, NPC phasing issues, etc."" Grid.Column=""1"" Grid.Row=""1"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.SanityEngine}""/>
+								<CheckBox Content=""Hunt Rare Mobs"" ToolTip=""Actively kills rares as they are detected near the bot."" Grid.Column=""1"" Grid.Row=""2"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.HuntRareMobs}""/>
 							</Grid>
 
 							<my:MetroAnimatedTabControl Grid.Row=""2"" Margin=""0, 5, 0, 1"" Height=""314"">
@@ -428,15 +452,9 @@
 							if (_antiStuckTimerLongTerm.Elapsed > TimeSpan.FromMinutes(5))
 							{
 								_antiStuckTimerLongTerm.Restart();
-								if (IsStuck(false) && StyxWoW.Me.BagItems.Any(x => x.Entry == 6948))
+								if (IsStuck(false))
 								{
 									WoWItem hearthItem = null;
-									uint currentMapId = StyxWoW.Me.MapId;
-
-									_longTermStucks ++;
-									FancyLog(Colors.MediumPurple, "[Anti-Stuck]: ", Colors.Yellow, "Long-term stuck detection activated!");
-									await CommonCoroutines.StopMoving();
-									await CommonCoroutines.LandAndDismount();
 
 									if (StyxWoW.Me.CurrentMap.ExpansionId == 5 && StyxWoW.Me.BagItems.Any(x => x.Entry == 110560)) // WoD Hearth
 										hearthItem = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 110560);
@@ -444,6 +462,15 @@
 										hearthItem = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
 									else 
 										hearthItem = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 6948); // Normal Hearth
+
+									if (hearthItem == null) return false;
+
+									uint currentMapId = StyxWoW.Me.MapId;
+
+									_longTermStucks ++;
+									FancyLog(Colors.MediumPurple, "[Anti-Stuck]: ", Colors.Yellow, "Long-term stuck detection activated!");
+									await CommonCoroutines.StopMoving();
+									await CommonCoroutines.LandAndDismount();
 
 									if (hearthItem.CooldownTimeLeft != TimeSpan.Zero)
 									{
