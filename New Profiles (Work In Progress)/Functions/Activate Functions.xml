@@ -284,7 +284,10 @@
 							if (Settings.Instance.HuntRareMobs && _rarehunterFunctionRunning)
 							{
 								await RareHunter();
-								return true;
+								if (BotPoi.Current.Type != PoiType.Kill)
+									return true;
+								else
+									return false;
 							}
 							if (Settings.Instance.FindTreasureChests && _treasureFunctionRunning)
 							{
@@ -643,7 +646,7 @@
 
 							if (_rarePoi == null || !_rarePoi.IsValid || _rarePoi.IsDead)
 							{
-								_rarePoi = ObjectManager.GetObjectsOfType<WoWUnit>().OrderBy(unit => unit.DistanceSqr).FirstOrDefault(unit => !_rareBlacklist.Contains(unit.Guid) && !BlackspotManager.IsBlackspotted(unit.Location) && unit.CreatureRank == WoWUnitClassificationType.Rare && !unit.IsTagged && unit.Attackable);
+								_rarePoi = ObjectManager.GetObjectsOfType<WoWUnit>().OrderBy(unit => unit.DistanceSqr).FirstOrDefault(unit => !_rareBlacklist.Contains(unit.Guid) && !BlackspotManager.IsBlackspotted(unit.Location) && unit.Classification == WoWUnitClassificationType.Normal && unit.IsHostile && !unit.IsTagged && unit.Attackable);
 								if (_rarePoi == null)
 								{
 									_rarehunterFunctionRunning = false;
@@ -664,12 +667,6 @@
 								return true;
 							}
 
-							if (!_rareLocation.Equals(new Vector3(0,0,0)) && _rareLocation.DistanceSquared((WoWMovement.ActiveMover ?? StyxWoW.Me).Location) > 40 * 40)
-							{
-								TreeRoot.StatusText = $"Moving to kill rare: {_rarePoi.Name}";
-								return (await CommonCoroutines.MoveTo(_rareLocation)).IsSuccessful();
-							}
-
 							if (!_rareIsLogged)
 							{
 								_rareIsLogged = true;
@@ -682,6 +679,12 @@
 								_rarehunterFunctionRunning = true;
 								BotPoi.Current = new BotPoi(_rarePoi, PoiType.Kill);
 								return true;
+							}
+
+							if (!_rareLocation.Equals(new Vector3(0,0,0)) && _rareLocation.DistanceSquared((WoWMovement.ActiveMover ?? StyxWoW.Me).Location) > 40 * 40 || !_rarePoi.Aggro)
+							{
+								TreeRoot.StatusText = $"Moving to kill rare: {_rarePoi.Name}";
+								return (await CommonCoroutines.MoveTo(_rareLocation)).IsSuccessful();
 							}
 
 							return false;
