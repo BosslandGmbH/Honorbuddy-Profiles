@@ -615,6 +615,16 @@
 							harpoonPoi.Use();
 							await Coroutine.Wait(10000, () => !Me.IsFalling && !Me.InVehicle);
 						}
+						else
+						{
+							drakeriderDrakePoi = ObjectManager.GetObjectsOfType<WoWUnit>().OrderByDescending(x => x.DistanceSqr).FirstOrDefault(x => x.Entry == 29625 && x.DistanceSqr <= 99f*99f && x.Z > Me.Z);
+							if (drakeriderDrakePoi != null)
+							{
+								drakeriderDrakePoi.Target();
+								harpoonPoi.Use();
+								await Coroutine.Wait(10000, () => !Me.IsFalling);
+							}
+						}
 						await Coroutine.Yield();
 					}
 				]]>
