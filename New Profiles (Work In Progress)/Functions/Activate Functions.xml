@@ -644,7 +644,7 @@
 						{
 							if (!Me.IsAlive || Me.IsActuallyInCombat) return false;
 
-							if (_rarePoi == null || !_rarePoi.IsValid || _rarePoi.IsDead)
+							if (_rarePoi == null || !_rarePoi.IsValid || _rarePoi.IsDead || Blacklist.Contains(unit, BlacklistFlags.Combat) || Blacklist.Contains(unit, BlacklistFlags.Pull))
 							{
 								_rarePoi = ObjectManager.GetObjectsOfType<WoWUnit>().OrderBy(unit => unit.DistanceSqr).FirstOrDefault(unit => !_rareBlacklist.Contains(unit.Guid) && !Blacklist.Contains(unit, BlacklistFlags.Combat) && !Blacklist.Contains(unit, BlacklistFlags.Pull) && !BlackspotManager.IsBlackspotted(unit.Location) && unit.Classification == WoWUnitClassificationType.Rare && !unit.IsTagged && unit.Attackable);
 								if (_rarePoi == null)
