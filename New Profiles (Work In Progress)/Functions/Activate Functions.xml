@@ -270,7 +270,6 @@
 					private static Styx.TreeSharp.Composite _activateFunctionsComposite;
 					private static Stopwatch _mainPulseTimer = new Stopwatch();
 					private static bool _treasureFunctionRunning = false;
-					private static bool _rarehunterFunctionRunning = false;
 
 					private async Task<bool> FunctionPulser()
 					{
@@ -279,24 +278,11 @@
 						if (StyxWoW.Me == null || !StyxWoW.Me.IsValid || Me.InVehicle || Me.OnTaxi) return false;
 
 						if (Settings.Instance.AfkMode && MerchantFrame.Instance.IsVisible) await AFKMode();
-						if (Me.IsAlive && !Me.IsActuallyInCombat)
+						if (Settings.Instance.FindTreasureChests && _treasureFunctionRunning && BotPoi.Current.Type != PoiType.Kill && BotPoi.Current.Type != PoiType.Loot && Me.IsAlive && !Me.IsActuallyInCombat)
 						{
-							if (Settings.Instance.HuntRareMobs && _rarehunterFunctionRunning && Me.IsAlive)
-							{
-								await RareHunter();
-								if (BotPoi.Current.Type != PoiType.Kill && BotPoi.Current.Type != PoiType.Loot)
-									return true;
-								else
-									return false;
-							}
-							if (Settings.Instance.FindTreasureChests && _treasureFunctionRunning)
-							{
-								await TreasureHunter();
-								return true;
-							}
+							await TreasureHunter();
+							return true;
 						}
-
-						if (Settings.Instance.CustomLooting) await CustomLootingBlacklister();
 
 						if (_mainPulseTimer.Elapsed < TimeSpan.FromSeconds(5)) return false;
 						_mainPulseTimer.Restart();
@@ -305,17 +291,22 @@
 						if (Settings.Instance.SanityEngine) await SanityEngine();
 						if (Settings.Instance.UseAntiStuck) await CustomAntiStuck.StuckHandler();
 						if (Settings.Instance.UseActiveVendoring) ActiveVendorLogic();
-						if (Settings.Instance.HuntRareMobs) await RareHunter();
 						if (Settings.Instance.FindTreasureChests) await TreasureHunter();
 
-						return (_treasureFunctionRunning || _rarehunterFunctionRunning);
+						return false;
 					}
 				]]>
 				</Code>
 				<Code File="RunCode" Code="BotEvents.OnBotStopped += ShutDownFucntionsOnStop;" />
 			<!-- END Main Function Pulser -->
 
-
+			<!-- Rare, Looting and Treasure Filters -->
+				<Code File="RunCode" ><![CDATA[
+					Targeting.Instance.IncludeTargetsFilter += IncludeRareTargetingFilter;
+					LootTargeting.Instance.RemoveTargetsFilter += IncludeCustomLootingFilter;
+				]]>
+				</Code>
+			<!-- END Rare, Looting and Treasure Filters -->
 
 			<!-- Main Function Definitions -->
 				<Code File="RunCode" Type="Definition" ><![CDATA[
@@ -323,6 +314,8 @@
 					{
 						OutputFunctionStats();
 						TreeHooks.Instance.RemoveHook("Questbot_Main", _activateFunctionsComposite);
+						Targeting.Instance.IncludeTargetsFilter -= IncludeRareTargetingFilter;
+						LootTargeting.Instance.RemoveTargetsFilter -= IncludeCustomLootingFilter;
 						System.Windows.Application.Current.Dispatcher.Invoke(ProfileConfig.RemoveButton);
 						AppDomain.CurrentDomain.SetData("QuestingProfiles_FunctionsEnabled", false);
 						BotEvents.OnBotStopped -= ShutDownFucntionsOnStop;
@@ -362,8 +355,6 @@
 				]]>
 				</Code>
 			<!-- END Main Function Definitions -->
-
-
 
 			<!-- AFK Mode -->
 				<Code File="RunCode" Type="Definition" ><![CDATA[
@@ -418,13 +409,12 @@
 								foreach (WoWItem sellMe in sellList)
 								{
 									if (!MerchantFrame.Instance.IsVisible) break;
-									if (sellMe != null && sellMe.IsValid)
-									{
-										FancyLog(Colors.MediumPurple, "[AFK Mode]: ", Colors.Yellow, $"Force selling > {sellMe.Name}.");
-										sellMe.UseContainerItem();
-										await Coroutine.Sleep(500);
-										_sellAllItems ++;
-									}
+									if (!sellMe.IsValid) continue;
+
+									FancyLog(Colors.MediumPurple, "[AFK Mode]: ", Colors.Yellow, $"Force selling > {sellMe.Name}.");
+									sellMe.UseContainerItem();
+									await Coroutine.Sleep(500);
+									_sellAllItems ++;
 								}
 							}
 
@@ -541,13 +531,13 @@
 
 							if (shortTerm)
 							{
-								bool isStuckShort = StyxWoW.Me.Location.DistanceSqr(LastPointShort) <= 5f * 5f;
+								bool isStuckShort = StyxWoW.Me.Location.DistanceSquared(LastPointShort) <= 5f * 5f;
 								LastPointShort = currentPoint;
 								return isStuckShort;
 							}
 							else if (!shortTerm)
 							{
-								bool isStuckLong = StyxWoW.Me.Location.DistanceSqr(LastPointLong) < 10f * 10f;
+								bool isStuckLong = StyxWoW.Me.Location.DistanceSquared(LastPointLong) < 10f * 10f;
 								LastPointLong = currentPoint;
 								return isStuckLong;
 							}
@@ -559,9 +549,9 @@
 			<!-- END Anti-Stuck -->
 
 			<!-- Custom Looting -->
-				<Code File="RunCode" Type="Definition" >
-					<![CDATA[
+				<Code File="RunCode" Type="Definition" ><![CDATA[
 					static TimeSpan TimeSaved = TimeSpan.Zero;
+					static List<WoWGuid> TimerBlacklist = new List<WoWGuid>();
 
 					static bool IsNeededForQuestObjective(WoWUnit objectiveMob)
 					{
@@ -571,43 +561,40 @@
 							if (playerQuest.IsCompleted || playerQuest.IsFailed)
 								continue;
 
-							var allObjectiveIds = new List<uint>();
-
 							var mainObjectives = playerQuest.GetObjectives();
 							var normalObjectives = playerQuest.NormalObjectiveRequiredCounts;
 
-							foreach (var objective in mainObjectives)
-								allObjectiveIds.Add(objective.ID);
-							foreach (var objective in normalObjectives)
-								allObjectiveIds.Add(objective);
+							var allObjectiveIds = mainObjectives.Select(objective => objective.ID).ToList();
+							allObjectiveIds.AddRange(normalObjectives);
 
 							foreach (var objective in allObjectiveIds)
 							{
-								if (objectiveMob.GetCachedInfo(out WoWCache.CreatureCacheEntry cacheEntry))
-								{
-									if (cacheEntry.QuestItems.ToList().Contains(objective))
-										return true;
-								}
-							}
-								
+								if (!objectiveMob.GetCachedInfo(out WoWCache.CreatureCacheEntry cacheEntry)) continue;
+								if (cacheEntry.QuestItems.ToList().Contains(objective))
+									return true;
+							}	
 						}
 						return false;
 					}
 
-					private async Task<bool> CustomLootingBlacklister()
+					private static void IncludeCustomLootingFilter(List<WoWObject> lootUnits)
 					{
-						if (Me.IsActuallyInCombat) return false;
+						if (!Settings.Instance.CustomLooting)
+							return;
 
-						var blacklistList = ObjectManager.GetObjectsOfType<WoWUnit>().Where(x => !Blacklist.Contains(x, BlacklistFlags.Loot) && x.Lootable && !IsNeededForQuestObjective(x));
-						if (!blacklistList.Any()) return false;
+						if (lootUnits.Any(unit => !TimerBlacklist.Contains(unit.Guid) && unit is WoWUnit && unit.ToUnit().Lootable))
+						{
+							foreach (WoWObject blacklistUnit in lootUnits)
+							{
+								if (!TimerBlacklist.Contains(blacklistUnit.Guid) && blacklistUnit is WoWUnit && blacklistUnit.ToUnit().Lootable)
+									TimerBlacklist.Add(blacklistUnit.Guid);
+							}
+							TimeSaved = TimeSaved.Add(TimeSpan.FromMilliseconds(2623));
+						}
 
-						foreach (WoWUnit blacklistMe in blacklistList)
-							Blacklist.Add(blacklistMe, BlacklistFlags.Loot, TimeSpan.FromMinutes(3), "Unit looting is not needed for quest completion.");
-
-						TimeSaved = TimeSaved.Add(TimeSpan.FromMilliseconds(2623));
-						return false;
+						lootUnits.RemoveAll(lootUnit => lootUnit is WoWUnit && lootUnit.ToUnit().Classification != WoWUnitClassificationType.Rare && !IsNeededForQuestObjective(lootUnit.ToUnit()));						
 					}
-					]]>
+				]]>
 				</Code>
 			<!-- END Custom Looting -->
 
@@ -617,16 +604,16 @@
 
 					private static void ActiveVendorLogic()
 					{
-						double _bagslotTotal = StyxWoW.Me.FreeNormalBagSlots + StyxWoW.Me.BagItems.Count();
-						double _bagslotPercentageDeficit = Math.Round((StyxWoW.Me.FreeNormalBagSlots/_bagslotTotal)*100);
-						WoWUnit _nearbyVendor = ObjectManager.GetObjectsOfType<WoWUnit>().FirstOrDefault(x => x.IsAlive && x.IsFriendly && x.IsAnyVendor && x.DistanceSqr <= 60f*60f);
-						if (!Vendors.ForceSell && _bagslotPercentageDeficit < 35 && _nearbyVendor != null)
-						{
-							ProfileManager.CurrentProfile.VendorManager.ForcedVendors.Add(new Vendor((int)_nearbyVendor.Entry, _nearbyVendor.Name, Vendor.VendorType.Sell, _nearbyVendor.Location, NavType.Run));
-							FancyLog(Colors.MediumPurple, "> [Active Vendoring] ", Colors.Yellow, "Forcing the bot to vendor since we're near a vendor.");
-							Vendors.ForceSell = true;
-							_timesForceVendored ++;
-						}
+						double bagslotTotal = StyxWoW.Me.FreeNormalBagSlots + StyxWoW.Me.BagItems.Count();
+						double bagslotPercentageDeficit = Math.Round((StyxWoW.Me.FreeNormalBagSlots/bagslotTotal)*100);
+						WoWUnit nearbyVendor = ObjectManager.GetObjectsOfType<WoWUnit>().FirstOrDefault(x => x.IsAlive && x.IsFriendly && x.IsAnyVendor && x.DistanceSqr <= 60f*60f);
+
+						if (Vendors.ForceSell || !(bagslotPercentageDeficit < 35) || nearbyVendor == null) return;
+
+						ProfileManager.CurrentProfile.VendorManager.ForcedVendors.Add(new Vendor((int)nearbyVendor.Entry, nearbyVendor.Name, Vendor.VendorType.Sell, nearbyVendor.Location, NavType.Run));
+						FancyLog(Colors.MediumPurple, "> [Active Vendoring] ", Colors.Yellow, "Forcing the bot to vendor since we're near a vendor.");
+						Vendors.ForceSell = true;
+						_timesForceVendored ++;
 					}
 				]]>
 				</Code>
@@ -634,61 +621,28 @@
 
 			<!-- Rare Hunter -->
 				<Code File="RunCode" Type="Definition" ><![CDATA[
-						private List<WoWGuid> _rareBlacklist = new List<WoWGuid>();
-						private bool _rareIsLogged = false;
-						private WoWUnit _rarePoi;
-						private Vector3 _rareLocation;
-						private static int _raresKilled = 0;
+					private static List<WoWGuid> _rareBlacklist = new List<WoWGuid>();
+					private static int _raresKilled = 0;
 
-						public async Task<bool> RareHunter()
+					private static void IncludeRareTargetingFilter(List<WoWObject> incomingUnits, HashSet<WoWObject> outgoingUnits)
+					{
+						if (!Settings.Instance.HuntRareMobs)
+							return;
+
+						foreach (var rareUnit in incomingUnits)
 						{
-							if (!Me.IsAlive || Me.IsActuallyInCombat) return false;
-
-							if (_rarePoi == null || !_rarePoi.IsValid || _rarePoi.IsDead || Blacklist.Contains(_rarePoi, BlacklistFlags.Combat) || Blacklist.Contains(_rarePoi, BlacklistFlags.Pull))
+							if (!(rareUnit is WoWUnit) || BlackspotManager.IsBlackspotted(rareUnit.Location) ||
+								rareUnit.ToUnit().Classification != WoWUnitClassificationType.Rare || rareUnit.ToUnit().IsTagged ||
+								!rareUnit.ToUnit().Attackable) continue;
+							if (!_rareBlacklist.Contains(rareUnit.Guid))
 							{
-								_rarePoi = ObjectManager.GetObjectsOfType<WoWUnit>().OrderBy(unit => unit.DistanceSqr).FirstOrDefault(unit => !_rareBlacklist.Contains(unit.Guid) && !Blacklist.Contains(unit, BlacklistFlags.Combat) && !Blacklist.Contains(unit, BlacklistFlags.Pull) && !BlackspotManager.IsBlackspotted(unit.Location) && unit.Classification == WoWUnitClassificationType.Rare && !unit.IsTagged && unit.Attackable);
-								if (_rarePoi == null)
-								{
-									_rarehunterFunctionRunning = false;
-									_rareIsLogged = false;
-									_rareLocation = new Vector3(0,0,0);
-									return false;
-								}
-								if (Navigator.LookupPathInfo(_rarePoi).Navigability != PathNavigability.Navigable)
-								{
-									_rareBlacklist.Add(_rarePoi.Guid);
-									FancyLog(Colors.MediumPurple, "[Rare Killer]: ", Colors.CornflowerBlue, $"Rare NPC detected near us, but we can't navigate to it!\n	Name     :: {_rarePoi.Name}\n	Entry    :: {_rarePoi.Entry}\n	Location :: {_rarePoi.Location}");
-									_rarePoi = null;
-									return false;
-								}
-								_rareLocation = _rarePoi.Location;
-								_rarehunterFunctionRunning = true;
+								_rareBlacklist.Add(rareUnit.ToUnit().Guid);
 								_raresKilled ++;
-								return true;
+								FancyLog(Colors.MediumPurple, "[Rare Killer]: ", Colors.CornflowerBlue, $"Rare detected near us!\n	Name     :: {rareUnit.ToUnit().Name}\n	Entry     :: {rareUnit.ToUnit().Entry}\n	Location :: {rareUnit.ToUnit().Location}");
 							}
-
-							if (!_rareIsLogged)
-							{
-								_rareIsLogged = true;
-								FancyLog(Colors.MediumPurple, "[Rare Killer]: ", Colors.CornflowerBlue, $"Rare detected near us!\n	Name     :: {_rarePoi.Name}\n	Entry    :: {_rarePoi.Entry}\n	Location :: {_rarePoi.Location}");
-							}
-
-							if (BotPoi.Current.Type != PoiType.Kill && _rarePoi.IsAlive)
-							{
-								TreeRoot.StatusText = $"Killing rare: {_rarePoi.Name}";
-								_rarehunterFunctionRunning = true;
-								BotPoi.Current = new BotPoi(_rarePoi, PoiType.Kill);
-								return true;
-							}
-
-							if (!_rareLocation.Equals(new Vector3(0,0,0)) && _rareLocation.DistanceSquared((WoWMovement.ActiveMover ?? StyxWoW.Me).Location) > 40 * 40 || !_rarePoi.Aggro)
-							{
-								TreeRoot.StatusText = $"Moving to kill rare: {_rarePoi.Name}";
-								return (await CommonCoroutines.MoveTo(_rareLocation)).IsSuccessful();
-							}
-
-							return false;
+							outgoingUnits.Add(rareUnit);
 						}
+					}
 				]]>
 				</Code>
 			<!-- END Rare Hunter -->
@@ -752,7 +706,7 @@
 								if (Navigator.LookupPathInfo(_treasurePoi).Navigability != PathNavigability.Navigable)
 								{
 									_treasureBlacklist.Add(_treasurePoi.Guid);
-									FancyLog(Colors.MediumPurple, "[Treasure Hunter]: ", Colors.CornflowerBlue, $"Treasure detected near us, but we can't navigate to it!\n	Name     :: {_treasurePoi.Name}\n	Entry    :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
+									FancyLog(Colors.MediumPurple, "[Treasure Hunter]: ", Colors.CornflowerBlue, $"Treasure detected near us, but we can't navigate to it!\n	Name     :: {_treasurePoi.Name}\n	Entry     :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
 									_treasurePoi = null;
 									return false;
 								}
@@ -772,7 +726,7 @@
 							if (!_treasureIsLogged)
 							{
 								_treasureIsLogged = true;
-								FancyLog(Colors.MediumPurple, "[Treasure Hunter]: ", Colors.CornflowerBlue, $"Treasure detected near us!\n	Name     :: {_treasurePoi.Name}\n	Entry    :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
+								FancyLog(Colors.MediumPurple, "[Treasure Hunter]: ", Colors.CornflowerBlue, $"Treasure detected near us!\n	Name     :: {_treasurePoi.Name}\n	Entry     :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
 							}
 
 							TreeRoot.StatusText = $"Interacting with treasure: {_treasurePoi.Name}";
