@@ -162,7 +162,7 @@ END INITORDER COMMENT -->
 			<If Condition="!Me.HasAura(213170) &amp;&amp; NeedsQuest(41625)" > <!-- Not In Class Hall -->
 				<PickUp QuestName="The Light's Wrath" QuestId="41625" GiverName="Alonsus Faol" GiverId="101314" X="2602.816" Y="-534.5225" Z="89.00004" />
 			</If>
-			<While Condition="DoQuest(41625)" >
+			<While Condition="HasQuest(41625) &amp;&amp; Me.MapId == 0" >
 				<Code File="RunCode"><![CDATA[
 					if (!(Me.ZoneId == 7502 || Me.ZoneId == 8392) && HasItem(140192))
 					{
@@ -193,7 +193,7 @@ END INITORDER COMMENT -->
 						<Code File="MyCTM" X="-844.5972" Y="4467.76" Z="736.0415" TerminateWhen="Me.Z &lt;= 605" />
 					</If>
 					<MoveTo X="-889.3405" Y="4503.787" Z="580.0774" />
-					<Code File="InteractWith" MobId="246013" X="-892.7344" Y="4506.432" Z="580.4584" />
+					<Code File="InteractWith" MobId="246013" X="-892.7344" Y="4506.432" Z="580.4584" Terminate="Me.MapId == 571" />
 					<Code File="WaitTimer" WaitTime="10000" TermianteWhen="Me.MapId == 571" />
 				</If>
 				<MoveTo QuestId="41626" QuestObjectiveIndex="2" X="3132.267" Y="469.468" Z="21.36447" />
@@ -268,6 +268,7 @@ END INITORDER COMMENT -->
 							{
 								azuregosPoi.Target();
 								StyxWoW.Me.SetFacing(azuregosPoi.Location);
+								await CommonCoroutines.StopMoving();
 								SpellManager.Cast(186263);
 								await Coroutine.Wait(3000, () => !StyxWoW.Me.IsCasting);
 								await Coroutine.Yield();
@@ -279,9 +280,15 @@ END INITORDER COMMENT -->
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<DisableBehavior Name="Rest" />
+					<Code File="Hooks\DoWhen" ActivityName="LevitateSpam" UseWhen="!Me.HasAura(111759) &amp;&amp; SpellManager.CanCast(1706)" >
+						<Code File="RunCode" Code="SpellManager.Cast(1706);" />
+					</Code>
 					<MoveTo X="4067.426" Y="7453.801" Z="267.3105" />
 					<DisableBehavior Name="Combat" />
 					<Code File="WaitTimer" WaitTime="45000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+					<Code File="Hooks\DoWhen" ActivityName="LevitateSpam" Command="Remove" />
+					<EnableBehavior Name="Rest" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
