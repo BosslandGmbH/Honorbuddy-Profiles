@@ -264,14 +264,14 @@
 					{
 						if (QuestDone(26028)) return false;
 						if (!Me.InVehicle) return false;
-						if (_currentKillPoi == null || !_currentKillPoi.IsValid || !_currentKillPoi.IsAlive)
+						if (_currentKillPoi == null || !_currentKillPoi.IsValid || _currentKillPoi.IsDead || _currentKillPoi.HealthPercent < 1)
 						{
 							if (!IsObjectiveComplete(1, 26028) && !IsObjectiveComplete(2, 35203))
-								_currentKillPoi = ObjectManager.GetObjectsOfType<WoWUnit>().OrderBy(u => u.DistanceSqr).Where(u => u.IsAlive && u.Entry == 35203 || u.Entry == 35334).FirstOrDefault();
+								_currentKillPoi = ObjectManager.GetObjectsOfType<WoWUnit>().OrderBy(u => u.DistanceSqr).FirstOrDefault(u => u.IsAlive && u.HealthPercent >= 1 && u.Entry == 35203 || u.Entry == 35334);
 							else if (!IsObjectiveComplete(1, 26028))
-								_currentKillPoi = ObjectManager.GetObjectsOfType<WoWUnit>().OrderBy(u => u.DistanceSqr).Where(u => u.IsAlive && u.Entry == 35203).FirstOrDefault();
+								_currentKillPoi = ObjectManager.GetObjectsOfType<WoWUnit>().OrderBy(u => u.DistanceSqr).FirstOrDefault(u => u.IsAlive && u.HealthPercent >= 1 && u.Entry == 35203);
 							else if (!IsObjectiveComplete(2, 26028))
-								_currentKillPoi = ObjectManager.GetObjectsOfType<WoWUnit>().OrderBy(u => u.DistanceSqr).Where(u => u.IsAlive && u.Entry == 35334).FirstOrDefault();
+								_currentKillPoi = ObjectManager.GetObjectsOfType<WoWUnit>().OrderBy(u => u.DistanceSqr).FirstOrDefault(u => u.IsAlive && u.HealthPercent >= 1 && u.Entry == 35334);
 
 							if (_currentKillPoi == null) return false;
 						}
