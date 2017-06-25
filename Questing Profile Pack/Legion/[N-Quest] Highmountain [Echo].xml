@@ -1658,13 +1658,15 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Moose Shootin'" QuestId="39124" GiverName="Hemet Nesingwary" GiverId="94409" X="4500.406" Y="4858.703" Z="661.8903" />
 		<PickUp QuestName="Bear Huntin'" QuestId="39392" GiverName="Hemet Nesingwary" GiverId="94409" X="4500.406" Y="4858.703" Z="661.8903" />
 
+		<Code File="RunCode" Type="Definition" Code="bool addieDetected => Me.GetAllAuras().Any(a =&gt; a.SpellId == 194963 || a.SpellId == 188723 || a.SpellId == 194937 || a.SpellId == 194978);" />
+
 		<While Condition="DoQuest(40216, 39123, 39124, 39392)" >
 			<!-- NOTE: <AddFailsafe> : Can detect if Addie is nearby by checking the HasAura.  May need to use this interactwith if she disapears. 
 						194963
 			-->
-			<CustomBehavior File="InteractWith" MobId="94434" GossipOptions="1" QuestId="40216" QuestObjectiveIndex="1" X="4501.019" Y="4866.559" Z="662.0496" />
+			<CustomBehavior File="InteractWith" MobId="94434" GossipOptions="1" QuestId="40216" X="4501.019" Y="4866.559" Z="662.0496" TerminateWhen="!addieDetected" />
 
-			<CustomBehavior File="KillUntilComplete" MobId="94151" QuestId="39124" QuestObjectiveIndex="1" >
+			<CustomBehavior File="KillUntilComplete" MobId="94151" QuestId="39124" QuestObjectiveIndex="1" TerminateWhen="DoQuest(40216) &amp;&amp; !addieDetected" >
 				<HuntingGrounds>
 					<Hotspot X="4425.542" Y="4668.432" Z="651.3508" />
 					<Hotspot X="4572.676" Y="4664.5" Z="670.3569" />
@@ -1674,7 +1676,7 @@ END INITORDER COMMENT -->
 				</HuntingGrounds>
 			</CustomBehavior>
 
-			<CustomBehavior File="KillUntilComplete" MobId="94149" QuestId="39123" QuestObjectiveIndex="1" >
+			<CustomBehavior File="KillUntilComplete" MobId="94149" QuestId="39123" QuestObjectiveIndex="1" TerminateWhen="DoQuest(40216) &amp;&amp; !addieDetected" >
 				<HuntingGrounds>
 					<Hotspot X="4586.22" Y="4654.041" Z="671.7511" />
 					<Hotspot X="4657.758" Y="4702.048" Z="680.5712" />
@@ -1684,7 +1686,7 @@ END INITORDER COMMENT -->
 				</HuntingGrounds>
 			</CustomBehavior>
 
-			<CustomBehavior File="KillUntilComplete" MobIds="96146, 99571" QuestId="39392" QuestObjectiveIndex="1" >
+			<CustomBehavior File="KillUntilComplete" MobIds="96146, 99571" QuestId="39392" QuestObjectiveIndex="1" TerminateWhen="DoQuest(40216) &amp;&amp; !addieDetected" >
 				<HuntingGrounds>
 					<Hotspot X="4818.637" Y="5093.706" Z="773.2156" />
 					<Hotspot X="4933.624" Y="5091.12" Z="783.2698" />
@@ -1694,7 +1696,7 @@ END INITORDER COMMENT -->
 			</CustomBehavior>
 
 
-			<CustomBehavior File="KillUntilComplete" MobId="94149" QuestId="40216" >
+			<CustomBehavior File="KillUntilComplete" MobId="94149" QuestId="40216" TerminateWhen="DoQuest(40216) &amp;&amp; !addieDetected" >
 				<HuntingGrounds>
 					<Hotspot X="4586.22" Y="4654.041" Z="671.7511" />
 					<Hotspot X="4657.758" Y="4702.048" Z="680.5712" />
