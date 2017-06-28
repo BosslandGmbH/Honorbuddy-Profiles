@@ -297,7 +297,8 @@
 					}
 				]]>
 				</Code>
-				<Code File="RunCode" Code="BotEvents.OnBotStopped += ShutDownFucntionsOnStop;" />
+				<!-- <Code File="RunCode" Code="BotEvents.OnBotStopped += ShutDownFunctionsOnStop;" /> -->
+				<Code File="RunCode" Code="Logging.OnLogMessage += LogMonitorFunction;" />
 			<!-- END Main Function Pulser -->
 
 			<!-- Rare, Looting and Treasure Filters -->
@@ -310,15 +311,38 @@
 
 			<!-- Main Function Definitions -->
 				<Code File="RunCode" Type="Definition" ><![CDATA[
-					private static void ShutDownFucntionsOnStop(EventArgs args)
+					private async void LogMonitorFunction(System.Collections.ObjectModel.ReadOnlyCollection<Logging.LogMessage> messages)
 					{
-						OutputFunctionStats();
-						TreeHooks.Instance.RemoveHook("Questbot_Main", _activateFunctionsComposite);
-						Targeting.Instance.IncludeTargetsFilter -= IncludeRareTargetingFilter;
-						LootTargeting.Instance.RemoveTargetsFilter -= IncludeCustomLootingFilter;
-						System.Windows.Application.Current.Dispatcher.Invoke(ProfileConfig.RemoveButton);
-						AppDomain.CurrentDomain.SetData("QuestingProfiles_FunctionsEnabled", false);
-						BotEvents.OnBotStopped -= ShutDownFucntionsOnStop;
+						foreach (var message in messages)
+						{
+							if (message.Message.Contains("Bot stopping!"))
+							{
+								if (message.Message.Contains("User pressed the stop button") || message.Message.Contains("Nothing more to do"))
+								{
+									OutputFunctionStats();
+									TreeHooks.Instance.RemoveHook("Questbot_Main", _activateFunctionsComposite);
+									Targeting.Instance.IncludeTargetsFilter -= IncludeRareTargetingFilter;
+									LootTargeting.Instance.RemoveTargetsFilter -= IncludeCustomLootingFilter;
+									System.Windows.Application.Current.Dispatcher.Invoke(ProfileConfig.RemoveButton);
+									AppDomain.CurrentDomain.SetData("QuestingProfiles_FunctionsEnabled", false);
+
+									FancyLog(Colors.MediumPurple, "[Function Engine]", Colors.Yellow, " User stopped the bot or there's nothing else to do.  Shutting down.");
+									Logging.OnLogMessage -= LogMonitorFunction;
+								}
+
+								if (!Settings.Instance.SanityEngine)
+									return;
+
+								if (message.Message.Contains("after 20 seconds"))
+								{
+									FancyLog(Colors.MediumPurple, "[Sanity Engine]", Colors.Yellow, " The bot was shutdown by a quest PickUp/TurnIn failure!  Attempting to fix this..");
+									_insaneCounter ++;
+									Lua.DoString("ReloadUI();");
+									await Task.Delay(5000);
+									TreeRoot.Start();
+								}
+							}
+						}
 					}
 
 					private static void OutputFunctionStats()
@@ -343,9 +367,6 @@
 
 						if (Settings.Instance.SanityEngine)
 						FancyLog(Colors.MediumPurple, "> [Sanity Engine] ", Colors.CornflowerBlue, $"\n     Times Went Insane	:: {_insaneCounter}\n");
-
-
-						FancyLog(Colors.MediumPurple, "> [Function Engine] ", Colors.Yellow, "Main pulse shut down.  All functions have been deactivated.");
 					}
 
 					private static void FancyLog(System.Windows.Media.Color colorOne, string messageOne, System.Windows.Media.Color colorTwo, string messageTwo)
@@ -379,7 +400,6 @@
 									FancyLog(Colors.MediumPurple, "[AFK Mode]: ", Colors.Yellow, $"Abandoning quest: {quest.Name}");
 									QuestLog.Instance.AbandonQuestById(quest.Id);
 								}
-
 
 								_questlogCleanups ++;
 							}
