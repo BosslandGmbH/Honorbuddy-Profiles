@@ -433,14 +433,17 @@ END INITORDER COMMENT -->
 			</Code>
 		</While>
 
-		<Code File="KillUntilComplete" MobIds="108259, 108327, 108675" TerminateWhen="!NeedsQuest(42786) || HasItem(138441)" >
-			<HuntingGrounds>
-				<Hotspot X="1973.535" Y="6249.086" Z="67.18539" />
-				<Hotspot X="1956.034" Y="6299.026" Z="58.00662" />
-				<Hotspot X="1954.589" Y="6358.563" Z="57.86699" />
-				<Hotspot X="1994.519" Y="6365.55" Z="59.214" />
-			</HuntingGrounds>
-		</Code>
+		<While Condition="NeedsQuest(42786) &amp;&amp; !HasItem(138441)" >
+			<!-- Using IW because custom looting. -->
+			<Code File="InteractWith" MobIds="108259, 108327, 108675" MobState="Dead" InteractByLooting="true" CollectionDistance="200" TerminateWhen="!NeedsQuest(42786) || HasItem(138441)" >
+				<HuntingGrounds>
+					<Hotspot X="1973.535" Y="6249.086" Z="67.18539" />
+					<Hotspot X="1956.034" Y="6299.026" Z="58.00662" />
+					<Hotspot X="1954.589" Y="6358.563" Z="57.86699" />
+					<Hotspot X="1994.519" Y="6365.55" Z="59.214" />
+				</HuntingGrounds>
+			</Code>
+		</While>
 		<If Condition="!HasQuest(42786) &amp;&amp; HasItem(42786)" >
 			<PickUp QuestName="Blood and Gold" QuestId="42786" GiverName="Grotesque Remains" GiverId="42786" GiverType="Item" />
 		</If>
