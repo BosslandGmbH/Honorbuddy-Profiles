@@ -439,6 +439,9 @@
 
 						public static async Task<bool> StuckHandler()
 						{
+							if (antiStuckToggle == null || antiStuckToggle == false)
+								return false;
+
 							if (!_antiStuckTimerLongTerm.IsRunning)
 								_antiStuckTimerLongTerm.Start();
 
@@ -492,9 +495,7 @@
 							}
 
 							if (IsStuck(true)) 
-							{
-								if (antiStuckToggle == null || antiStuckToggle == false) return false;
-								
+							{								
 								if (!StyxWoW.Me.IsMoving)
 								{
 									LastPointShort = new Vector3(0f,0f,0f);
@@ -504,6 +505,7 @@
 								_shortTermStucks ++;
 								FancyLog(Colors.MediumPurple, "[Anti-Stuck]: ", Colors.Yellow, "Short-term stuck detection activated!");
 								await CommonCoroutines.StopMoving();
+								Navigator.Clear();
 								if (StyxWoW.Me.IsFlying)
 								{
 									WoWMovement.Move(WoWMovement.MovementDirection.Backwards, TimeSpan.FromMilliseconds(2000));
