@@ -369,7 +369,18 @@
 							if (QuestLog.Instance.GetAllQuests().Count() >= 20)
 							{
 								FancyLog(Colors.MediumPurple, "[AFK Mode]: ", Colors.Yellow, "Cleaning up questlog of low level quests since it is almost full.");
-								await Bots.DungeonBuddy.Helpers.ScriptHelpers.AbandonLowLevelQuests();
+								var levelDeficit = Me.Level - 3;
+
+								foreach (PlayerQuest quest in QuestLog.Instance.GetAllQuests())
+								{
+									if (quest.Level >= levelDeficit)
+										continue;
+
+									FancyLog(Colors.MediumPurple, "[AFK Mode]: ", Colors.Yellow, $"Abandoning quest: {quest.Name}");
+									QuestLog.Instance.AbandonQuestById(quest.Id);
+								}
+
+
 								_questlogCleanups ++;
 							}
 
