@@ -130,7 +130,19 @@
 				await Coroutine.Sleep(500);
 				await Coroutine.Wait(7000, () =&gt; !Me.IsCasting);
 			" />
-			<Code File="Misc\RunLua" WaitTime="1000" Lua="if not EncounterJournal then EncounterJournal_LoadUI() end ToggleFrame(EncounterJournal); EJSuggestFrame_OpenFrame(); C_AdventureJournal.ActivateEntry(1);" />
+			<Code File="Misc\RunLua" WaitTime="1000" Lua="
+				if not EncounterJournal then
+					EncounterJournal_LoadUI()
+				end
+				ToggleFrame(EncounterJournal);
+				EJSuggestFrame_OpenFrame();
+				local journalSuggestions = C_AdventureJournal.GetSuggestions();
+				for i=1,#journalSuggestions do
+					if (journalSuggestions[i].title == &quot;Nagrand&quot;)  then 
+						C_AdventureJournal.ActivateEntry(i);
+					end
+				end
+			" />
 			<Code File="RunCode" Code="QuestFrame.Instance.AcceptQuest();" />
 			<Code File="WaitTimer" WaitTime="1000" />
 		</While>
