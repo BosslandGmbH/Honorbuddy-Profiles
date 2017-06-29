@@ -1017,8 +1017,8 @@
 			<If Condition="Unit(41614) == null" >
 				<MoveTo X="4547.313" Y="-3651.858" Z="671.8683" />
 			</If>
-			<Code File="KillUntilComplete" MobId="41614" QuestId="25923" X="4435.405" Y="-3623.622" Z="640.0734" TerminateWhen="Unit(41581, u =&gt; u.CreatedByUnit == Me) == null" />
-			<Code File="InteractWith" MobId="41498" NonCompeteDistance="0" GossipOptions="1" QuestId="25923" X="4681.784" Y="-3655.605" Z="696.5446" TerminateWhen="Unit(41581, u =&gt; u.CreatedByUnit == Me) != null" />
+			<Code File="KillUntilComplete" MobId="41614" QuestId="25923" X="4435.405" Y="-3623.622" Z="640.0734" TerminateWhen="!Me.HasAura(77736)" /> <!-- Unit(41581, u =&gt; u.CreatedByUnit == Me) != null -->
+			<Code File="InteractWith" MobId="41498" NonCompeteDistance="0" GossipOptions="1" QuestId="25923" X="4681.784" Y="-3655.605" Z="696.5446" TerminateWhen="Me.HasAura(77736)" /> <!-- Unit(41581, u =&gt; u.CreatedByUnit == Me) != null -->
 			<Code File="Hooks\DoWhen" ActivityName="UseTurtleShield" Command="Remove" />
 		</While>
 		<TurnIn QuestName="Finish Nemesis" QuestId="25923" TurnInName="Garunda Mountainpeak" TurnInId="41498" X="4680.754" Y="-3653.725" Z="696.321" />
@@ -1451,7 +1451,12 @@
 			<Code File="WaitTimer" WaitTime="5000" QuestId="25550" />
 			<Code File="WaitTimer" WaitTime="60000" QuestId="25550" TerminateWhen="Unit(40999) == null || Unit(40998) == null || Unit(40998, u =&gt; u.HealthPercent &lt; 50) != null" /> <!-- Let Tortilla build aggro -->
 			<While Condition="DoQuest(25550) &amp;&amp; Unit(40998) != null" >
-				<Code File="RunCode" Code="BotPoi.Current = new BotPoi(Unit(40998), PoiType.Kill);" />
+				<Code File="RunCode" Type="Definition" Code="WoWUnit magmaMonarch = ObjectManager.GetObjectsOfType&lt;WoWUnit&gt;().FirstOrDefault(x =&gt; x.Entry == 40998 &amp;&amp; x.IsAlive);" />
+				<Code File="RunCode" Code="
+					if (Blacklist.Contains(magmaMonarch, BlacklistFlags.Pull))
+						Blacklist.Clear(u =&gt; u.Entry == 40998);
+				" />
+				<Code File="KillUntilComplete" MobId="40998" QuestId="25550" X="3839.964" Y="-2770.528" Z="998.7775" TerminateWhen="Blacklist.Contains(magmaMonarch, BlacklistFlags.Pull)" />
 			</While>
 		</While>
 
