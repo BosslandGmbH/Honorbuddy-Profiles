@@ -730,8 +730,9 @@ END INITORDER COMMENT -->
 				<Code File="KillUntilComplete" MobId="90747" QuestId="39590" QuestObjectiveIndex="1" X="3608.46" Y="2431.512" Z="279.9624" /> 
 			</While>
 
-			<If Condition="NeedsQuest(39595) &amp;&amp; !HasItem(128512)" >
-				<Code File="KillUntilComplete" MobIds="96236, 100433, 108289, 108309, 108306, 96135" TerminateWhen="HasQuest(39595) || HasItem(128512)" >
+			<While Condition="NeedsQuest(39595) &amp;&amp; !HasItem(128512)" >
+				<!-- IW to prevent issues with custom looting -->
+				<Code File="InteractWith" MobIds="96236, 100433, 108289, 108309, 108306, 96135" MobState="Dead" PreInteractMountStrategy="Dismount" InteractByLooting="true" TerminateWhen="HasQuest(39595) || HasItem(128512)" >
 					<HuntingGrounds>
 						<Hotspot X="3576.95" Y="2469.092" Z="272.9676" />
 						<Hotspot X="3586.193" Y="2538.074" Z="282.3003" />
@@ -740,7 +741,7 @@ END INITORDER COMMENT -->
 						<Hotspot X="3329.786" Y="2405.696" Z="242.0226" />
 					</HuntingGrounds>
 				</Code>
-			</If>
+			</While>
 
 			<If Condition="HasItem(128512)" >
 				<PickUp QuestName="Blood and Gold" QuestId="39595" GiverName="Challenger's Tribute" GiverId="128512" GiverType="Item" />
