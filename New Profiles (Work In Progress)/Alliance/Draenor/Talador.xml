@@ -124,28 +124,22 @@
 		<!-- END RunCode Methods -->
 
 
-		<If Condition="NeedsQuest(34558)" >
-			<If Condition="Me.ZoneId == 6721" >
-				<PickUp QuestName="News from Talador" QuestId="36495" GiverName="Vindicator Maraad" GiverId="75127" X="6333.875" Y="742.8488" Z="115.8386" />
-				<If Condition="QuestDone(36495) &amp;&amp; HasItem(110560)" >
-					<Code File="RunCode" Code="
-						await CommonCoroutines.LandAndDismount();
-						Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 110560).Use();
-						await Coroutine.Sleep(500);
-						await Coroutine.Wait(7000, () =&gt; !Me.IsCasting);
-					" />
-				</If>
+		<If Condition="NeedsQuest(34558) &amp;&amp; !IsQuestCompleted(37183)" >
+			<PickUp QuestName="News from Talador" QuestId="36495" GiverName="Vindicator Maraad" GiverId="75127" X="6333.875" Y="742.8488" Z="115.8386" />
+			<If Condition="QuestDone(36495) &amp;&amp; HasItem(110560)" >
+				<Code File="RunCode" Code="
+					await CommonCoroutines.LandAndDismount();
+					Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 110560).Use();
+					await Coroutine.Sleep(500);
+					await Coroutine.Wait(7000, () =&gt; !Me.IsCasting);
+				" />
 			</If>
-			<If Condition="HasQuest(36495)" >
-				<TurnIn QuestName="News from Talador" QuestId="36495" TurnInName="Bodrick Grey" TurnInId="81492" X="1923.487" Y="287.116" Z="88.96603" />
-			</If>
-			<If Condition="Me.ZoneId == 7078" >
-				<PickUp QuestName="The Critical Path" QuestId="37183" GiverName="Bodrick Grey" GiverId="81492" X="1923.487" Y="287.116" Z="88.96603" />
-				<While Condition="QuestDone(37183) &amp;&amp; Unit(81103) != null" >
-					<Code File="InteractWith" MobId="81103" GossipOptions="2" PreInteractMountStrategy="Dismount" X="1867.513" Y="221.9638" Z="76.69334" TerminateWhen="Unit(81103) == null" />
-				</While>
-				<TurnIn QuestName="The Critical Path" QuestId="37183" TurnInName="Foreman Eksos" TurnInId="79133" X="3602.868" Y="1670.951" Z="174.4259" />
-			</If>
+			<TurnIn QuestName="News from Talador" QuestId="36495" TurnInName="Bodrick Grey" TurnInId="81492" X="1923.487" Y="287.116" Z="88.96603" />
+			<PickUp QuestName="The Critical Path" QuestId="37183" GiverName="Bodrick Grey" GiverId="81492" X="1923.487" Y="287.116" Z="88.96603" />
+			<While Condition="QuestDone(37183) &amp;&amp; Unit(81103) != null" >
+				<Code File="InteractWith" MobId="81103" GossipOptions="2" PreInteractMountStrategy="Dismount" X="1867.513" Y="221.9638" Z="76.69334" TerminateWhen="Unit(81103) == null" />
+			</While>
+			<TurnIn QuestName="The Critical Path" QuestId="37183" TurnInName="Foreman Eksos" TurnInId="79133" X="3602.868" Y="1670.951" Z="174.4259" />
 		</If>
 
 		<PickUp QuestName="At Your Command" QuestId="34558" GiverName="Foreman Eksos" GiverId="79133" X="3602.868" Y="1670.951" Z="174.4259" />
