@@ -333,12 +333,20 @@
 								if (!Settings.Instance.SanityEngine)
 									return;
 
+								_insaneCounter ++;
+
 								if (message.Message.Contains("after 20 seconds"))
 								{
 									FancyLog(Colors.MediumPurple, "[Sanity Engine]", Colors.Yellow, " The bot was shutdown by a quest PickUp/TurnIn failure!  Attempting to fix this..");
-									_insaneCounter ++;
 									Lua.DoString("ReloadUI();");
 									await Task.Delay(5000);
+									TreeRoot.Start();
+								}
+
+								if (message.Message.Contains("Fatal error"))
+								{
+									FancyLog(Colors.MediumPurple, "[Sanity Engine]", Colors.Yellow, " Bot was stopped due to a fatal error! Attempting to start it again.");
+									await Task.Delay(2000);
 									TreeRoot.Start();
 								}
 							}
