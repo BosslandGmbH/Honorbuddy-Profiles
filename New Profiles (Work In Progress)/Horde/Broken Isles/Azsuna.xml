@@ -1385,7 +1385,13 @@ END INITORDER COMMENT -->
 			<If Condition="Me.InVehicle" >
 				<Code File="RunCode" Code="await VehicleMove(new WoWPoint(-3.882, 6276.46, 3.146761));" /> <!--  QuestId="37530" QuestObjectiveIndex="2" -->
 				<Code File="RunCode" Code="await VehicleMove(new WoWPoint(-26.50426, 6178.747, 4.55294));" /> <!--  QuestId="37530" QuestObjectiveIndex="3" -->
-				<Code File="RunCode" Code="await VehicleKill(89116);" /> <!--  QuestId="37530" QuestObjectiveIndex="4" -->
+				<While Condition="!IsObjectiveComplete(4, 37530)" >
+					<!-- This objective is broken as of 7.2.5, so we're doing all thsi nonsense to hopefully get around the bug -->
+					<Code File="RunCode" Code="await VehicleMove(new WoWPoint(3.041663, 6181.417, 1.276457));" />
+					<Code File="RunCode" Code="await VehicleKill(89116);" /> <!--  QuestId="37530" QuestObjectiveIndex="4" -->
+					<Code File="RunCode" Code="await VehicleKill(89117);" /> <!--  QuestId="37530" QuestObjectiveIndex="4" -->
+					<Code File="RunCode" Code="await VehicleMove(new WoWPoint(-56.23298, 6249.328, 3.185845));" />
+				</While>
 				<Code File="RunCode" Code="await VehicleMove(new WoWPoint(-11.47015, 5977.641, 0.7397661));" /> <!--  QuestId="37530" QuestObjectiveIndex="5" -->
 				<Code File="WaitTimer" WaitTime="95000" /> <!--  QuestId="37530" QuestObjectiveIndex="6" -->
 				<MoveTo X="-98.56056" Y="6020.948" Z="0.3888235" />
