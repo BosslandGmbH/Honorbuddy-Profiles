@@ -140,11 +140,28 @@
 				<TurnIn QuestName="News from Talador" QuestId="36494" TurnInName="Rokhan" TurnInId="78487" X="5610.383" Y="4565.458" Z="135.5229" />
 			</If>
 			<If Condition="Me.ZoneId == 7004" >
-				<PickUp QuestName="It&apos;s a Matter of Strategy" QuestId="34681" GiverName="Rokhan" GiverId="78487" X="5610.383" Y="4565.458" Z="135.5229" />
-				<While Condition="QuestDone(34681) &amp;&amp; Unit(79407) != null" >
+				<While Condition="NeedsQuest(36953) &amp;&amp; !HasQuest(34681)" >
+					<Code File="Misc\RunLua" WaitTime="1000" Lua="
+						if not EncounterJournal then
+							EncounterJournal_LoadUI()
+						end
+						ToggleFrame(EncounterJournal);
+						EJSuggestFrame_OpenFrame();
+						local journalSuggestions = C_AdventureJournal.GetSuggestions();
+						for i=1,#journalSuggestions do
+							if (journalSuggestions[i].title == &quot;Talador&quot;)  then 
+								C_AdventureJournal.ActivateEntry(i);
+							end
+						end
+					" />
+					<Code File="RunCode" Code="QuestFrame.Instance.AcceptQuest();" />
+					<Code File="WaitTimer" WaitTime="1000" />
+				</While>
+
+				<While Condition="QuestDone(34681, 36953) &amp;&amp; Unit(79407) != null" >
 					<Code File="InteractWith" MobId="79407" GossipOptions="2" PreInteractMountStrategy="Dismount" X="5581.378" Y="4565.564" Z="136.2603" TerminateWhen="Unit(79407) == null" />
 				</While>
-				<TurnIn QuestName="It&apos;s a Matter of Strategy" QuestId="34681" TurnInName="Foreman Grobash" TurnInId="79176" X="3248.932" Y="1593.355" Z="162.2488" />
+				<TurnIn QuestName="It&apos;s a Matter of Strategy" VariantQuestIds="34681, 36953" TurnInName="Foreman Grobash" TurnInId="79176" X="3248.932" Y="1593.355" Z="162.2488" />
 			</If>
 		</If>
 
