@@ -907,7 +907,13 @@ END INITORDER COMMENT -->
 
 			<MoveTo X="201.533" Y="6470.866" Z="-52.8875" />
 
-			<Code File="Misc\RunLua" Lua="ToggleRun();" />
+			<Code File="RunCode" Code="
+					WoWMovement.Move(WoWMovement.MovementDirection.Forward, TimeSpan.FromMilliseconds(650));
+					await Coroutine.Sleep(100);
+					if (Me.MovementInfo.MovementFlags == MoveFlags.Forward)
+						Lua.DoString(&quot;ToggleRun();&quot;);
+			" />
+
 			<Code File="RunCode" Code="
 				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Disabling custom anti-stuck measures until this quest is complete.&quot;);
 				AppDomain.CurrentDomain.SetData(&quot;QuestingProfiles_AntiStuckToggle&quot;, false);
@@ -1272,7 +1278,12 @@ END INITORDER COMMENT -->
 				<Code File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
 			</While>
 
-			<Code File="Misc\RunLua" Lua="ToggleRun();" />
+			<Code File="RunCode" Code="
+					WoWMovement.Move(WoWMovement.MovementDirection.Forward, TimeSpan.FromMilliseconds(650));
+					await Coroutine.Sleep(100);
+					if (Me.MovementInfo.MovementFlags == MoveFlags.Walk)
+						Lua.DoString(&quot;ToggleRun();&quot;);
+			" />
 			<Code File="RunCode" Code="
 				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Re-enabling custom anti-stuck measures.&quot;);
 				AppDomain.CurrentDomain.SetData(&quot;QuestingProfiles_AntiStuckToggle&quot;, true);
