@@ -402,6 +402,8 @@
 
 								foreach (PlayerQuest quest in QuestLog.Instance.GetAllQuests())
 								{
+									if (quest.Level == -1 && Me.Level == 110)
+										continue;
 									if (quest.Level >= levelDeficit)
 										continue;
 
@@ -572,7 +574,7 @@
 
 							if (shortTerm)
 							{
-								bool isStuckShort = StyxWoW.Me.Location.DistanceSquared(LastPointShort) <= 5f * 5f;
+								bool isStuckShort = StyxWoW.Me.Location.DistanceSquared(LastPointShort) <= 2.5f * 2.5f;
 								LastPointShort = currentPoint;
 								return isStuckShort;
 							}
@@ -645,6 +647,7 @@
 
 					private static void ActiveVendorLogic()
 					{
+						if (StyxWoW.Me.CurrentMap.ExpansionId == 6) return;
 						double bagslotTotal = StyxWoW.Me.FreeNormalBagSlots + StyxWoW.Me.BagItems.Count();
 						double bagslotPercentageDeficit = Math.Round((StyxWoW.Me.FreeNormalBagSlots/bagslotTotal)*100);
 						WoWUnit nearbyVendor = ObjectManager.GetObjectsOfType<WoWUnit>().FirstOrDefault(x => x.IsAlive && x.IsFriendly && x.IsAnyVendor && x.DistanceSqr <= 60f*60f);
