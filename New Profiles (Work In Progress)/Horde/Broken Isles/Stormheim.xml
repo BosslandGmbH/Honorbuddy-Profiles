@@ -36,6 +36,7 @@
 		<Blackspot X="4226.039" Y="2173.704" Z="166.3942" Radius="4.699438" /> <!-- Horde-Alliance barricade that's near the roads in northern Stormheim -->
 		<Blackspot X="3668.105" Y="1802.17" Z="0.266252" Radius="2" /> <!-- Shipwrecked Debris near mob that's being avoided. -->
 		<Blackspot X="3248.776" Y="3142.261" Z="526.1411" Radius="5" /> <!-- Engine thing in Weeping Bluffs -->
+		<Blackspot X="2639.95" Y="2391.688" Z="235.1373" Radius="5" /> <!-- Stormdrake in bad location -->
 	</Blackspots>
 
 	<Blacklist>
@@ -413,16 +414,16 @@ END INITORDER COMMENT -->
 						<Code File="Misc\RunLua" Lua="QuestFrameAcceptButton:Click();" />
 					</While>
 					<While Condition="DoQuest(39698)" >
-						<If Condition="!IsObjectiveComplete(1, 39698)" >
+						<While Condition="!IsObjectiveComplete(1, 39698)" >
 							<MoveTo X="1462.551" Y="-5205.338" Z="11.5078" />
-							<Code File="WaitTimer" WaitTime="21000" />
+							<Code File="WaitTimer" WaitTime="21000" TerminateWhen="Object(247491, u =&gt; u.ToGameObject().CanUse()) != null" />
 							<Code File="InteractWith" MobId="247491" MovementBy="ClickToMoveOnly" Range="6" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="39698" QuestObjectiveIndex="1" X="1462.551" Y="-5205.338" Z="11.5078" />
-						</If>
-						<If Condition="!IsObjectiveComplete(2, 39698)" >
+						</While>
+						<While Condition="!IsObjectiveComplete(2, 39698)" >
 							<MoveTo X="1483.268" Y="-5204.423" Z="5.25391" />
-							<Code File="WaitTimer" WaitTime="22000" TerminateWhen="Lua.GetReturnVal&lt;bool&gt;(&quot;return ExtraActionButton1:IsVisible()&quot;, 0)" />
+							<Code File="WaitTimer" WaitTime="25000" TerminateWhen="Lua.GetReturnVal&lt;bool&gt;(&quot;return ExtraActionButton1:IsVisible()&quot;, 0)" />
 							<Code File="Misc\RunLua" QuestId="39698" QuestObjectiveIndex="2" Lua="ExtraActionButton1:Click();" />
-						</If>
+						</While>
 						<MoveTo X="1499.345" Y="-5213.526" Z="11.40895" />
 						<Code File="WaitTimer" QuestId="39698" QuestObjectiveIndex="3" WaitTime="40000" />
 					</While>
@@ -1053,7 +1054,7 @@ END INITORDER COMMENT -->
 
 			<While Condition="!IsQuestCompleted(38616)" >
 				<!-- Using IW to prevent issues with custom looting -->
-				<Code File="InteractWith" MobId="91202" MobState="Dead" InteractByLooting="true" PreInteractMountStrategy="Dismount" CollectionDistance="200" MovementBy="NavigatorOnly" TerminateWhen="IsQuestCompleted(38616)" >
+				<Code File="InteractWith" MobId="91202" InteractByLooting="true" PreInteractMountStrategy="Dismount" CollectionDistance="200" MovementBy="NavigatorOnly" TerminateWhen="IsQuestCompleted(38616)" >
 					<HuntingGrounds>
 						<Hotspot X="2437.832" Y="2373.323" Z="256.6084" />
 						<Hotspot X="2428.545" Y="2434.163" Z="257.4063" />
