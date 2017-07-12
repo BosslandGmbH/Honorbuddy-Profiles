@@ -1072,6 +1072,15 @@
 
 
 		<PickUp QuestName="Rare Earth" QuestId="12930" GiverName="Bouldercrag the Rockshaper" GiverId="29801" X="8395.884" Y="-389.2248" Z="902.9908" />
+		<If Condition="!QuestDone(12930)" > <!-- Protect Frostweave Cloth from the AFK Mode sell logic -->
+			<Code File="RunCode">
+				<![CDATA[
+					var whitelist = (List<uint>)AppDomain.CurrentDomain.GetData("Questing_AFKModeWhitelist");
+					whitelist.Add(33470);
+					AppDomain.CurrentDomain.SetData("Questing_AFKModeWhitelist", whitelist);
+				]]>
+			</Code>
+		</If>
 		<While Condition="DoQuest(12930)" >
 			<Code File="InteractWith" MobIds="191844, 191845" InteractByLooting="true" PreInteractMountStrategy="Dismount" Range="2" CollectionDistance="200" QuestId="12930" QuestObjectiveIndex="1" >
 				<HuntingGrounds>

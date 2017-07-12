@@ -896,6 +896,16 @@
 		<TurnIn QuestName="The Exiles of Ulduar" QuestId="12885" TurnInName="Bouldercrag the Rockshaper" TurnInId="29801" X="8394.906" Y="-389.6594" Z="902.9836" />
 		<PickUp QuestName="Rare Earth" QuestId="12930" GiverName="Bouldercrag the Rockshaper" GiverId="29801" X="8395.884" Y="-389.2248" Z="902.9908" />
 
+		<If Condition="!QuestDone(12930)" > <!-- Protect Frostweave Cloth from the AFK Mode sell logic -->
+			<Code File="RunCode">
+				<![CDATA[
+					var whitelist = (List<uint>)AppDomain.CurrentDomain.GetData("Questing_AFKModeWhitelist");
+					whitelist.Add(33470);
+					AppDomain.CurrentDomain.SetData("Questing_AFKModeWhitelist", whitelist);
+				]]>
+			</Code>
+		</If>
+
 		<If Condition="QuestDone(12871, 12866, 12867) &amp;&amp; Me.HearthstoneAreaId == 4428 &amp;&amp; Unit(29801) != null" >
 			<Code File="UseHearthstone" WaitForCD="false" />
 		</If>
