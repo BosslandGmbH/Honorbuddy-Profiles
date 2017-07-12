@@ -287,7 +287,14 @@
 
 		<Code File="InteractWith" MobIds="55155, 55167, 55168" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="29555" QuestObjectiveIndex="1" X="-554.4058" Y="-2040.571" Z="1.958779" /> <!-- 55174 -->
 
-		<Code File="KillUntilComplete" MobId="66148" QuestId="29555" QuestObjectiveIndex="2" X="-575.7263" Y="-2053.732" Z="-7.209136" />
+		<While Condition="DoQuest(29555)" >
+			<Code File="RunCode" Type="Definition" Code="WoWUnit monkeyPoi => Unit(66148);" />
+			<Code File="Hooks\DoWhen" ActivityName="RemoveBlacklist" AllowUseDuringCombat="true" UseWhen="monkeyPoi != null &amp;&amp; Blacklist.Contains(monkeyPoi, BlacklistFlags.Pull)" >
+				<Code File="RunCode" Code="Blacklist.Clear(x => x.Entry == 66148);" />
+			</Code>
+			<Code File="KillUntilComplete" MobId="66148" QuestId="29555" QuestObjectiveIndex="2" X="-575.7263" Y="-2053.732" Z="-7.209136" />
+			<Code File="Hooks\DoWhen" ActivityName="RemoveBlacklist" Command="Remove" />
+		</While>
 
 		<Code File="KillUntilComplete" MobIds="57119, 66153" QuestId="29556" >
 			<HuntingGrounds>
