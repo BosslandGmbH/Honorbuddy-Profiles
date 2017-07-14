@@ -296,7 +296,14 @@
 		</Code>
 
 		<While Condition="DoQuest(27336)" >
-			<Code File="InteractWith" MobIds="4344, 4345" MobState="Alive" AttemptCountMax="1" KeepTargetSelected="true" IgnoreCombat="true" WaitTime="5000" CollectionDistance="200" PreInteractMountStrategy="Dismount" InteractByUsingItemId="33101" QuestId="27336" QuestObjectiveIndex="1" TerminateWhen="Me.CurrentTarget != null &amp;&amp; ((Me.CurrentTarget.Entry != 4344 &amp;&amp; Me.CurrentTarget.Entry != 4345) || Me.CurrentTarget.HasAura(42454))" >
+			<!-- NOTE: This quest is VERY POORLY designed.
+				Player will not get credit if: 
+					1) The totem doesn't have the debuff active on the mob,  the debuff pulses at 5second intervals on the mob instead of being channeled as it should be.  Causing the player to not get credit if the debuff happens to go off in the 5 seconds.
+					2) Anything BUT the player kills the mob (pets, other players, etc), making it 100% impossible for any class that uses a pet unless the pet is called off and not controlled.
+					3) The player ISN'T in The Quagmire zone.  Which over 90% of the crocolisks are not inside of this area, and there's no real reason for this limitation to begin with.
+				This is a perfect example of absolutely terrible quest design by Blizzard and should be used as an example for their staff to learn from of how "Not" to design a quest.
+			-->
+			<Code File="InteractWith" MobIds="4344, 4345" MobState="Alive" AttemptCountMax="1" KeepTargetSelected="true" IgnoreCombat="true" WaitTime="5000" CollectionDistance="200" PreInteractMountStrategy="Dismount" InteractByUsingItemId="33101" QuestId="27336" TerminateWhen="Me.HealthPercent &lt;= 70 || Me.CurrentTarget != null &amp;&amp; ((Me.CurrentTarget.Entry != 4344 &amp;&amp; Me.CurrentTarget.Entry != 4345) || Me.CurrentTarget.HasAura(42454))" >
 				<HuntingGrounds>
 					<Hotspot X="-3926.587" Y="-2990.125" Z="28.80974" />
 					<Hotspot X="-3816.404" Y="-3060.831" Z="28.71205" />
@@ -306,6 +313,7 @@
 				</HuntingGrounds>
 			</Code>
 			<Code File="WaitTimer" WaitTime="2500" TerminateWhen="!Me.Combat" />
+			<Code File="RunCode" Code="Me.ClearTarget();" />
 		</While>
 
 		<Code File="KillUntilComplete" MobIds="23594, 23595" QuestId="27340" >
