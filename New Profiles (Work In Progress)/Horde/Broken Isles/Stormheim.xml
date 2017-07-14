@@ -834,112 +834,6 @@ END INITORDER COMMENT -->
 	<!-- END Story: The Trial of Might -->
 
 	<!-- Story: The Trial of Will -->
-			<If Condition="Me.IsAlliance" >
-				<PickUp QuestName="Will of the Thorignir" QuestId="38473" GiverName="Havi" GiverId="96254" X="3275.418" Y="2528.082" Z="301.0428" />
-				<TurnIn QuestName="Will of the Thorignir" QuestId="38473" TurnInName="Commander Lorna Crowley" TurnInId="91222" X="2706.913" Y="2864.66" Z="309.4812" />
-
-				<PickUp QuestName="A Grapple a Day" QuestId="38312" GiverName="Commander Lorna Crowley" GiverId="91222" X="2706.913" Y="2864.66" Z="309.4812" />
-				<TurnIn QuestName="A Grapple a Day" QuestId="38312" TurnInName="Commander Lorna Crowley" TurnInId="91481" X="2682.455" Y="2595.35" Z="230.9535" />
-
-				<PickUp QuestName="No Wings Required" QuestId="38318" GiverName="Commander Lorna Crowley" GiverId="91481" X="2682.455" Y="2595.35" Z="230.9537" />
-				<PickUp QuestName="To Weather the Storm" QuestId="38405" GiverName="Commander Lorna Crowley" GiverId="91481" X="2682.455" Y="2595.35" Z="230.9537" />
-
-				<While Condition="DoQuest(38318)" >
-					<MoveTo Precision="1" X="2682.441" Y="2593.392" Z="230.9288" />
-					<Code File="RunCode" Code="
-						WoWUnit grapplePoi = Unit(91983, u =&gt; (int)u.Y == 2545);
-						if (grapplePoi != null)
-						{
-							grapplePoi.Interact();
-							await Coroutine.Sleep(10000);
-						}
-					"/>
-					<Code File="InteractWith" MobId="91983" Range="49" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" IgnoreLoSToTarget="true" WaitTime="10000" QuestId="38318" QuestObjectiveIndex="1" X="2682.441" Y="2593.392" Z="230.9288" />
-				</While>
-
-				<While Condition="DoQuest(38405)" >
-					<Code File="InteractWith" MobId="240677" NonCompeteDistance="0" InteractByLooting="true" QuestId="38405" QuestObjectiveIndex="2" X="2529.326" Y="2605.128" Z="239.0104" />
-					<Code File="KillUntilComplete" MobId="91517" QuestId="38405" QuestObjectiveIndex="1" X="2587.474" Y="2482.269" Z="223.5762" />
-					<Code File="InteractWith" MobId="240681" NonCompeteDistance="0" InteractByLooting="true" QuestId="38405" QuestObjectiveIndex="3" X="2599.272" Y="2382.064" Z="235.4944" />
-				</While>
-
-				<TurnIn QuestName="No Wings Required" QuestId="38318" TurnInName="Commander Lorna Crowley" TurnInId="91519" X="2538.317" Y="2492.153" Z="246.3436" />
-				<TurnIn QuestName="To Weather the Storm" QuestId="38405" TurnInName="Commander Lorna Crowley" TurnInId="91519" X="2538.317" Y="2492.153" Z="246.3436" />
-
-				<PickUp QuestName="Impalement Insurance" QuestId="38410" GiverName="Commander Lorna Crowley" GiverId="91519" X="2534.964" Y="2496.773" Z="245.635" />
-
-				<While Condition="DoQuest(38410)" >
-					<!-- NOTE: <CheckThis> : This is a very fragile section of code. Need to imrpove or add failsafes. -->
-					<!-- NOTE: <CheckThis> : Changed which objects this section interacts with. Oddly it will end up interacting with objects not below when nav fails. -->
-
-					<If Condition="!SpellManager.HasSpell(233368)" >
-						<Code File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38410" X="2544.906" Y="2487.497" Z="254.7319" >
-							<PursuitList>
-								<PursueUnit Id="91975" PursueWhen="(int)UNIT.X == 2544" />
-							</PursuitList>
-						</Code>
-						<Code File="InteractWith" WaitForNpcs="false" NumOfTimes="2" NonCompeteDistance="0" QuestId="38410" X="2547.972" Y="2488.184" Z="254.7321" >
-							<PursuitList>
-								<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2543 || (int)GAMEOBJECT.X == 2549" />
-							</PursuitList>
-						</Code>
-
-						<Code File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38410" X="2529.949" Y="2530.865" Z="262.96" >
-							<PursuitList>
-								<PursueUnit Id="91983" PursueWhen="(int)UNIT.X == 2529" />
-							</PursuitList>
-						</Code>
-						<Code File="InteractWith" WaitForNpcs="false" NonCompeteDistance="0" QuestId="38410" X="2530.71" Y="2534.549" Z="263.0449" >
-							<PursuitList>
-								<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2530" />
-							</PursuitList>
-						</Code>
-						<Code File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38410" X="2544.906" Y="2487.497" Z="254.7319" >
-							<PursuitList>
-								<PursueUnit Id="91975" PursueWhen="(int)UNIT.X == 2544" />
-							</PursuitList>
-						</Code>
-
-						<Code File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38410" X="2544.906" Y="2487.497" Z="254.7319" >
-							<PursuitList>
-								<PursueUnit Id="92072" PursueWhen="(int)UNIT.X == 2545" />
-							</PursuitList>
-						</Code>
-						<Code File="InteractWith" WaitForNpcs="false" NumOfTimes="2" NonCompeteDistance="0" QuestId="38410" X="2535.244" Y="2404.843" Z="262.9575" >
-							<PursuitList>
-								<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2543 || (int)GAMEOBJECT.X == 2524" />
-							</PursuitList>
-						</Code>
-
-						<Code File="InteractWith" IgnoreLoSToTarget="true" Range="49" WaitTime="6000" QuestId="38410" X="2449.207" Y="2357.403" Z="271.7252" >
-							<PursuitList>
-								<PursueUnit Id="92072" PursueWhen="(int)UNIT.X == 2491" />
-							</PursuitList>
-						</Code>
-						<Code File="InteractWith" NumOfTimes="3" WaitForNpcs="false" NonCompeteDistance="0" QuestId="38410" X="2448.293" Y="2357.442" Z="271.7252" >
-							<PursuitList>
-								<PursueGameObject Id="251257" PursueWhen="(int)GAMEOBJECT.X == 2490 || (int)GAMEOBJECT.X == 2428" />
-							</PursuitList>
-						</Code>
-
-						<Code File="MyCTM" X="2418.247" Y="2367.154" Z="256.2015" TerminateWhen="Me.IsFalling" />
-					</If>
-
-					<If Condition="SpellManager.HasSpell(233368)" >
-						<Code File="InteractWith" MobId="251257" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="38410" QuestObjectiveIndex="1" >
-							<HuntingGrounds>
-								<Hotspot X="2529.949" Y="2530.865" Z="262.96" />
-								<Hotspot X="2544.906" Y="2487.497" Z="254.7319" />
-								<Hotspot X="2535.244" Y="2404.843" Z="262.9575" />
-								<Hotspot X="2448.293" Y="2357.442" Z="271.7252" />
-							</HuntingGrounds>
-						</Code>
-					</If>
-
-				</While>
-
-			</If>
-
 			<If Condition="Me.IsHorde" >
 				<PickUp QuestName="Will of the Thorignir" QuestId="38611" GiverName="Havi" GiverId="96254" X="3510.713" Y="2605.906" Z="318.8996" />
 				<TurnIn QuestName="Will of the Thorignir" QuestId="38611" TurnInName="Dread-Rider Cullen" TurnInId="92561" X="2881.424" Y="2432.47" Z="241.9806" />
@@ -964,9 +858,9 @@ END INITORDER COMMENT -->
 				</While>
 
 				<While Condition="DoQuest(38614)" >
-					<Code File="InteractWith" MobId="241462" InteractByLooting="true" QuestId="38614" QuestObjectiveIndex="3" X="2599.272" Y="2382.064" Z="235.4944" />
+					<Code File="InteractWith" MobId="241462" InteractByLooting="true" InteractBlacklistTimeInSeconds="1" QuestId="38614" QuestObjectiveIndex="3" X="2599.272" Y="2382.064" Z="235.4944" />
 					<Code File="KillUntilComplete" MobId="91517" QuestId="38614" QuestObjectiveIndex="1" X="2587.474" Y="2482.269" Z="223.5762" />
-					<Code File="InteractWith" MobId="241460" InteractByLooting="true" QuestId="38614" QuestObjectiveIndex="2" X="2529.326" Y="2605.128" Z="239.0104" />
+					<Code File="InteractWith" MobId="241460" InteractByLooting="true" InteractBlacklistTimeInSeconds="1" QuestId="38614" QuestObjectiveIndex="2" X="2529.326" Y="2605.128" Z="239.0104" />
 				</While>
 
 				<TurnIn Nav="Run" QuestName="No Wings Required" QuestId="38613" TurnInName="Dread-Rider Cullen" TurnInId="92567" X="2551.336" Y="2497.698" Z="247.3913" />
@@ -1066,33 +960,6 @@ END INITORDER COMMENT -->
 					</HuntingGrounds>
 				</Code>
 			</While>
-
-			<If Condition="Me.IsAlliance" >
-				<TurnIn QuestName="Impalement Insurance" QuestId="38410" TurnInName="Commander Lorna Crowley" TurnInId="91553" X="2454.358" Y="2350.451" Z="256.1143" />
-				<TurnIn QuestName="Built to Scale" QuestId="38337" TurnInName="Commander Lorna Crowley" TurnInId="91553" X="2454.358" Y="2350.451" Z="256.1143" />
-
-				<PickUp QuestName="Another Way" QuestId="38342" GiverName="Commander Lorna Crowley" GiverId="91553" X="2454.358" Y="2350.451" Z="256.1143" />
-				<While Condition="DoQuest(38342)" >
-					<Code File="KillUntilComplete" MobId="91240" QuestId="38342" QuestObjectiveIndex="1" X="2377.939" Y="2348.658" Z="267.7591" />
-					<MoveTo X="2352.402" Y="2389.049" Z="316.4349" />
-					<Code File="WaitTimer" WaitTime="5000" />
-				</While>
-				<TurnIn QuestName="Another Way" QuestId="38342" TurnInName="Commander Lorna Crowley" TurnInId="91558" X="2349.302" Y="2387.768" Z="316.435" />
-
-				<PickUp QuestName="Above the Winter Moonlight" QuestId="38412" GiverName="Commander Lorna Crowley" GiverId="91558" X="2349.302" Y="2387.768" Z="316.435" />
-				<While Condition="DoQuest(38412)" >
-					<MoveTo Nav="Run" QuestId="38412" QuestObjectiveIndex="1" X="2345.374" Y="2367.749" Z="316.4349" />
-					<Code File="InteractWith" MobId="91975" NonCompeteDistance="0" Range="52" WaitTime="6000" MovementBy="NavigatorOnly" QuestId="38412" QuestObjectiveIndex="1" X="2299.911" Y="2343.661" Z="311.9629" />
-					<MoveTo X="2251.925" Y="2363.873" Z="373.657" /> <!-- NOTE: <CheckThis>: Player can easily walk up this mountain, but the mesh has to comply. -->
-					<MoveTo X="2249.971" Y="2348.081" Z="379.8681" /> <!-- NOTE: <CheckThis>: Player can easily walk up this mountain, but the mesh has to comply. -->
-
-					<MoveTo X="2222.029" Y="2480.637" Z="429.5709" />
-					<Code File="InteractWith" MobId="92072" Range="52" WaitTime="6000" QuestId="38412" QuestObjectiveIndex="1" X="2222.42" Y="2460.505" Z="445.0158" />
-					<Code File="InteractWith" MobId="91983" Range="52" WaitTime="6000" QuestId="38412" QuestObjectiveIndex="1" X="2208.927" Y="2497.736" Z="476.3826" />
-					<MoveTo QuestId="38412" QuestObjectiveIndex="1" X="2179.578" Y="2436.323" Z="484.8459" />
-				</While>
-				<TurnIn QuestName="Above the Winter Moonlight" QuestId="38412" TurnInName="Vethir" TurnInId="91249" X="2182.776" Y="2433.033" Z="485.2918" />
-			</If>
 
 			<If Condition="Me.IsHorde" >
 				<TurnIn QuestName="Impalement Insurance" QuestId="38615" TurnInName="Dread-Rider Cullen" TurnInId="92573" X="2402.099" Y="2306.368" Z="258.1398" />
