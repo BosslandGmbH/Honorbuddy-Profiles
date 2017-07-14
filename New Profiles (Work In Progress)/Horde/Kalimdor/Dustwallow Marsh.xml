@@ -295,15 +295,18 @@
 			</HuntingGrounds>
 		</Code>
 
-		<Code File="InteractWith" MobIds="4344, 4345" MobState="Alive" CollectionDistance="200" PreInteractMountStrategy="Dismount" InteractByUsingItemId="33101" QuestId="27336" QuestObjectiveIndex="1" >
-			<HuntingGrounds>
-				<Hotspot X="-3926.587" Y="-2990.125" Z="28.80974" />
-				<Hotspot X="-3816.404" Y="-3060.831" Z="28.71205" />
-				<Hotspot X="-4035.315" Y="-2934.582" Z="33.82016" />
-				<Hotspot X="-4126.876" Y="-3030.973" Z="29.18325" />
-				<Hotspot X="-4101.764" Y="-3242.855" Z="35.40924" />
-			</HuntingGrounds>
-		</Code>
+		<While Condition="DoQuest(27336)" >
+			<Code File="InteractWith" MobIds="4344, 4345" MobState="Alive" AttemptCountMax="1" KeepTargetSelected="true" IgnoreCombat="true" WaitTime="5000" CollectionDistance="200" PreInteractMountStrategy="Dismount" InteractByUsingItemId="33101" QuestId="27336" QuestObjectiveIndex="1" TerminateWhen="Me.CurrentTarget != null &amp;&amp; ((Me.CurrentTarget.Entry != 4344 &amp;&amp; Me.CurrentTarget.Entry != 4345) || Me.CurrentTarget.HasAura(42454))" >
+				<HuntingGrounds>
+					<Hotspot X="-3926.587" Y="-2990.125" Z="28.80974" />
+					<Hotspot X="-3816.404" Y="-3060.831" Z="28.71205" />
+					<Hotspot X="-4035.315" Y="-2934.582" Z="33.82016" />
+					<Hotspot X="-4126.876" Y="-3030.973" Z="29.18325" />
+					<Hotspot X="-4101.764" Y="-3242.855" Z="35.40924" />
+				</HuntingGrounds>
+			</Code>
+			<Code File="WaitTimer" WaitTime="2500" TerminateWhen="!Me.Combat" />
+		</While>
 
 		<Code File="KillUntilComplete" MobIds="23594, 23595" QuestId="27340" >
 			<HuntingGrounds>
