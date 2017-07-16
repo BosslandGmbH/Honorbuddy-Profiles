@@ -541,6 +541,15 @@
 		<PickUp QuestName="Corki's Gone Missing Again!" QuestId="9924" GiverName="Arechron" GiverId="18183" X="-2491.651" Y="7228.508" Z="16.23879" />
 		<TurnIn QuestName="Wanted: Giselda the Crone" QuestId="9936" TurnInName="Warden Moi'bff Jill" TurnInId="18408" X="-2567.699" Y="7268.29" Z="15.35339" />
 		<TurnIn QuestName="Wanted: Zorbo the Advisor" QuestId="9940" TurnInName="Warden Moi'bff Jill" TurnInId="18408" X="-2567.699" Y="7268.29" Z="15.35339" />
+		<If Condition="!QuestDone(10476)" >
+			<Code File="RunCode"> <!-- Protect Obsidian Warbeads -->
+				<![CDATA[
+					var whitelist = (List<uint>)AppDomain.CurrentDomain.GetData("Questing_AFKModeWhitelist");
+					whitelist.Add(25433);
+					AppDomain.CurrentDomain.SetData("Questing_AFKModeWhitelist", whitelist);
+				]]>
+			</Code>
+		</If>
 		<PickUp QuestName="Fierce Enemies" QuestId="10476" GiverName="Warden Moi'bff Jill" GiverId="18408" X="-2566.671" Y="7271.014" Z="15.47967" />
 
 		<Code File="KillUntilComplete" TerminateWhen="!DoQuest(9921, 10476)" >
@@ -558,7 +567,20 @@
 
 		<TurnIn QuestName="The Ruins of Burning Blade" QuestId="9921" TurnInName="Mo'mor the Breaker" TurnInId="18223" X="-2618.517" Y="7276.231" Z="20.72979" />
 		<PickUp QuestName="The Twin Clefts of Nagrand" QuestId="9922" GiverName="Mo'mor the Breaker" GiverId="18223" X="-2618.517" Y="7276.231" Z="20.72979" />
-		<TurnIn QuestName="Fierce Enemies" QuestId="10476" TurnInName="Warden Moi'bff Jill" TurnInId="18408" X="-2567.699" Y="7268.29" Z="15.35339" />
+		<If Condition="QuestDone(10476)" >
+			<TurnIn QuestName="Fierce Enemies" QuestId="10476" TurnInName="Warden Moi'bff Jill" TurnInId="18408" X="-2567.699" Y="7268.29" Z="15.35339" />
+			<Code File="RunCode">
+				<![CDATA[
+					var whitelist = (List<uint>)AppDomain.CurrentDomain.GetData("Questing_AFKModeWhitelist");
+					if (whitelist.Contains(25433))
+					{
+						whitelist.Remove(25433);
+						AppDomain.CurrentDomain.SetData("Questing_AFKModeWhitelist", whitelist);
+					}
+				]]>
+			</Code>
+		</If>
+
 
 
 		<Code File="KillUntilComplete" TerminateWhen="!DoQuest(9922) &amp;&amp; (DoQuest(9924)? HasItem(25509) : true)" >
