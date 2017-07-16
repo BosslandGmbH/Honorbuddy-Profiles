@@ -486,13 +486,16 @@
 			</HuntingGrounds>
 		</Code>
 
-		<Code File="KillUntilComplete" MobId="80714" TerminateWhen="!DoQuest(35017) &amp;&amp; IsQuestCompleted(35021)" > <!-- Obtain and complete Mysterious Pod -->
-			<HuntingGrounds>
-				<Hotspot X="6022.111" Y="603.8957" Z="24.19525" />
-				<Hotspot X="6112.663" Y="519.1295" Z="11.39996" />
-				<Hotspot X="6136.369" Y="410.3114" Z="0.01513039" />
-			</HuntingGrounds>
-		</Code>
+		<While Condition="DoQuest(35017) &amp;&amp; !IsQuestCompleted(35021)" >
+			<!-- To avoid issues with custom looting -->
+			<Code File="InteractWith" MobId="80714" InteractByLooting="true" PreInteractMountStrategy="Dismount" CollectionDistance="200" TerminateWhen="!DoQuest(35017) &amp;&amp; IsQuestCompleted(35021)" > <!-- Obtain and complete Mysterious Pod -->
+				<HuntingGrounds>
+					<Hotspot X="6022.111" Y="603.8957" Z="24.19525" />
+					<Hotspot X="6112.663" Y="519.1295" Z="11.39996" />
+					<Hotspot X="6136.369" Y="410.3114" Z="0.01513039" />
+				</HuntingGrounds>
+			</Code>
+		</While>
 
 		<TurnIn QuestName="Basic Skulltaking" QuestId="35016" TurnInName="Grulkor" TurnInId="80757" X="6214.418" Y="391.8256" Z="4.130759" />
 		<TurnIn QuestName="Mysterious Pod" QuestId="35021" TurnInName="Grulkor" TurnInId="80757" X="6214.418" Y="391.8256" Z="4.130759" />
@@ -564,7 +567,7 @@
 			<TurnIn QuestName="Trophy of Glory: Erosian" QuestId="35807" TurnInName="Durotan" TurnInId="74594" X="5763.857" Y="1297.016" Z="106.9526" />
 		</If>
 
-		<Checkpoint Level="94.5" />
+		<Checkpoint Level="95" />
 
 		<Code File="LoadProfile" ProfileName="Talador.xml" RememberProfile="true" />
 

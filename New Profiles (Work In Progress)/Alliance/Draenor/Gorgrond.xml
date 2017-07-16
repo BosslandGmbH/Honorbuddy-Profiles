@@ -473,12 +473,16 @@
 			</HuntingGrounds>
 		</Code>
 
-		<Code File="KillUntilComplete" MobId="80714" TerminateWhen="!DoQuest(35640) &amp;&amp; IsQuestCompleted(35642)" > <!-- Obtain and complete Mysterious Pod -->
-			<HuntingGrounds>
-				<Hotspot X="6357.409" Y="261.8988" Z="-0.6832728" />
-				<Hotspot X="6375.381" Y="165.3192" Z="-0.68542" />
-			</HuntingGrounds>
-		</Code>
+		<While Condition="NeedsQuest(35640) &amp;&amp; !IsQuestCompleted(35642)" >
+			<!-- To avoid issues with custom looting -->
+			<Code File="InteractWith" MobId="80714" InteractByLooting="true" PreInteractMountStrategy="Dismount" CollectionDistance="200" TerminateWhen="!DoQuest(35640) &amp;&amp; IsQuestCompleted(35642)" > <!-- Obtain and complete Mysterious Pod -->
+				<HuntingGrounds>
+					<Hotspot X="6022.111" Y="603.8957" Z="24.19525" />
+					<Hotspot X="6112.663" Y="519.1295" Z="11.39996" />
+					<Hotspot X="6136.369" Y="410.3114" Z="0.01513039" />
+				</HuntingGrounds>
+			</Code>
+		</While>
 
 		<TurnIn QuestName="Scout Forensics" QuestId="35633" TurnInName="Khaano" TurnInId="82476" X="6326.431" Y="301.3986" Z="13.2915" />
 		<TurnIn QuestName="Vengeance for the Fallen" QuestId="35640" TurnInName="Khaano" TurnInId="82476" X="6326.431" Y="301.3986" Z="13.2915" />
@@ -566,7 +570,7 @@
 			<TurnIn QuestName="Trophy of Glory: Crater Lord Igneous" QuestId="35812" TurnInName="Vindicator Maraad" TurnInId="75127" X="6337.186" Y="745.6736" Z="116.6775" />
 		</If>
 
-		<Checkpoint Level="94.5" />
+		<Checkpoint Level="95" />
 
 		<Code File="LoadProfile" ProfileName="Talador.xml" RememberProfile="true" />
 
