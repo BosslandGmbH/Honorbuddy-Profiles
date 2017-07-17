@@ -908,10 +908,9 @@ END INITORDER COMMENT -->
 			<MoveTo X="201.533" Y="6470.866" Z="-52.8875" />
 
 			<Code File="RunCode" Code="
-					WoWMovement.Move(WoWMovement.MovementDirection.Forward, TimeSpan.FromMilliseconds(1500));
-					await Coroutine.Sleep(500);
-					if (Me.MovementInfo.MovementFlags == MoveFlags.Forward)
-						Lua.DoString(&quot;ToggleRun();&quot;);
+				await CommonCoroutines.StopMoving();
+				if (Me.MovementInfo.MovementFlags == MoveFlags.None)
+					Lua.DoString(&quot;ToggleRun();&quot;);
 			" />
 
 			<Code File="RunCode" Code="
@@ -1277,20 +1276,20 @@ END INITORDER COMMENT -->
 				<Code File="MyCTM" QuestId="37729" QuestObjectiveIndex="3" X="194.884" Y="6447.604" Z="-53.77625"  />
 				<Code File="WaitTimer" QuestId="37729" QuestObjectiveIndex="3" WaitTime="100" />
 			</While>
-
-			<Code File="RunCode" Code="
-					WoWMovement.Move(WoWMovement.MovementDirection.Forward, TimeSpan.FromMilliseconds(1500));
-					await Coroutine.Sleep(500);
-					if (Me.MovementInfo.MovementFlags == MoveFlags.Walk)
-						Lua.DoString(&quot;ToggleRun();&quot;);
-			" />
 			<Code File="RunCode" Code="
 				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Re-enabling custom anti-stuck measures.&quot;);
 				AppDomain.CurrentDomain.SetData(&quot;QuestingProfiles_AntiStuckToggle&quot;, true);
 			" />
 
 		</While>
-		<TurnIn QuestName="Pop Quiz: Advanced Rune Drawing" QuestId="37729" TurnInName="Instructor Nidriel" TurnInId="89661" X="201.533" Y="6470.866" Z="-52.8875" />
+		<If Condition="QuestDone(37729)" >
+			<Code File="RunCode" Code="
+				await CommonCoroutines.StopMoving();
+				if (Me.MovementInfo.MovementFlags == MoveFlags.Walk)
+					Lua.DoString(&quot;ToggleRun();&quot;);
+			" />
+			<TurnIn QuestName="Pop Quiz: Advanced Rune Drawing" QuestId="37729" TurnInName="Instructor Nidriel" TurnInId="89661" X="201.533" Y="6470.866" Z="-52.8875" />
+		</If>
 
 		<PickUp QuestName="The Headmistress' Keys" QuestId="37730" GiverName="Instructor Nidriel" GiverId="89661" X="201.533" Y="6470.866" Z="-52.8875" />
 		<While Condition="DoQuest(37730)" >
