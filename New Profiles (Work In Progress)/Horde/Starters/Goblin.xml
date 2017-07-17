@@ -26,7 +26,7 @@
 	</Mailboxes>
 
 	<Vendors>
-	</Vendors>d
+	</Vendors>
 
 	<Blackspots>
 		<Blackspot X="590.4363" Y="2938.699" Z="-7.561563" Radius="1" /> <!-- Monkey in bad location -->
@@ -43,7 +43,7 @@
 		<Mob Name="Alliance Paratrooper" Id="39042" Flags="Pull" />
 	</Blacklist>
 
-	<QuestOrder IgnoreCheckpoints="false" ContinuallySkipToCheckpoints="true" >
+	<QuestOrder IgnoreCheckpoints="false" >
 		<!-- Check function status -->
 			<Code File="RunCode" Type="Definition" >
 				<![CDATA[
@@ -173,7 +173,7 @@
 		<While Condition="DoQuest(14071)" >
 			<UseMount Value="false" />
 			<If Condition="!Me.HasAura(66392) &amp;&amp; !Me.IsSwimming" >
-				<Code File="UseItem" ItemId="46856" QuestId="14071" TerminateWhen="Me.HasAura(66392)" />
+				<Code File="UseItem" ItemId="46856" QuestId="14071" TerminateWhen="Me.HasAura(66392) || Me.IsSwimming" />
 			</If>
 			<Code File="InteractWith" MobId="34890" NonCompeteDistance="0" QuestId="14071" QuestObjectiveIndex="2" X="-8503.145" Y="1340.723" Z="102.3403" TerminateWhen="!Me.HasAura(66392) &amp;&amp; !Me.IsSwimming" />
 			<Code File="InteractWith" MobId="34954" NonCompeteDistance="0" QuestId="14071" QuestObjectiveIndex="4" X="-8177.021" Y="1318.377" Z="28.18247" TerminateWhen="!Me.HasAura(66392) &amp;&amp; !Me.IsSwimming" />
@@ -335,6 +335,13 @@
 		<PickUp QuestName="Waltz Right In" QuestId="14123" GiverName="Slinky Sharpshiv" GiverId="34693" X="-8408.41" Y="1333.703" Z="102.1621" />
 		<PickUp QuestName="Robbing Hoods" QuestId="14121" GiverName="Megs Dreadshredder" GiverId="34874" X="-8434.185" Y="1318.328" Z="102.0996" />
 
+		<If Condition="!IsQuestCompleted(14121)" >
+			<Code File="RunCode" Code="
+				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Disabling custom anti-stuck measures until this quest is complete.&quot;);
+				AppDomain.CurrentDomain.SetData(&quot;QuestingProfiles_AntiStuckToggle&quot;, false);
+			" />
+		</If>
+
 		<PickUp QuestName="Liberate the Kaja&apos;mite" QuestId="14124" GiverName="Foreman Dampwick" GiverId="34872" X="-8431.148" Y="1281.054" Z="103.2475" />
 		<While Condition="DoQuest(14124)" >
 			<Code File="UseItemTargetLocation" MobId="195488" ObjectType="GameObject" WaitTime="2000" UseType="ToObject" ItemId="48768" Range="4" MinRange="2" CollectionDistance="200" X="-8464.21" Y="1204.967" Z="42.80505" TerminateWhen="Object(195492, u =&gt; u.DistanceSqr &lt; 50f*50f) != null" />
@@ -347,7 +354,7 @@
 			<UseMount Value="false" />
 			<DisableBehavior Name="Combat" />
 			<If Condition="!Me.HasAura(66392)" >
-				<Code File="UseItem" ItemId="46856" QuestId="14071" TerminateWhen="Me.HasAura(66392)" />
+				<Code File="UseItem" ItemId="46856" QuestId="14121" TerminateWhen="Me.HasAura(66392)" />
 			</If>
 
 			<MoveTo X="-8316.933" Y="1521.215" Z="47.31076" />
@@ -384,7 +391,13 @@
 
 		<TurnIn QuestName="Waltz Right In" QuestId="14123" TurnInName="Slinky Sharpshiv" TurnInId="34693" X="-8400.672" Y="1337.777" Z="102.6352" />
 		<TurnIn QuestName="The Great Bank Heist" QuestId="14122" TurnInName="Sassy Hardwrench" TurnInId="34668" X="-8421.592" Y="1321.365" Z="102.8101" />
-		<TurnIn QuestName="Robbing Hoods" QuestId="14121" TurnInName="Megs Dreadshredder" TurnInId="34874" X="-8431.357" Y="1316.215" Z="102.8345" />
+		<If Condition="QuestDone(14121)" >
+			<TurnIn QuestName="Robbing Hoods" QuestId="14121" TurnInName="Megs Dreadshredder" TurnInId="34874" X="-8431.357" Y="1316.215" Z="102.8345" />
+			<Code File="RunCode" Code="
+				Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[ProfileBase]: Re-enabling custom anti-stuck measures.&quot;);
+				AppDomain.CurrentDomain.SetData(&quot;QuestingProfiles_AntiStuckToggle&quot;, true);
+			" />
+		</If>
 
 		<EnableBehavior Name="Pull" />
 
@@ -418,8 +431,8 @@
 			<Code File="RunCode" Code="QuestFrame.Instance.CompleteQuest();" />
 		</While>
 
-		<PickUp QuestName="Goblin Escape Pods" QuestId="14474" GiverName="Geargrinder Gizmo" GiverId="36600" X="534.835" Y="3272.92" Z="0.171872" />
-		<Code File="InteractWith" MobIds="195188" CollectionDistance="200" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="14474" QuestObjectiveIndex="1" >
+		<PickUp QuestName="Goblin Escape Pods" VariantQuestIds="14001, 14474" GiverName="Geargrinder Gizmo" GiverId="36600" X="534.835" Y="3272.92" Z="0.171872" />
+		<Code File="InteractWith" MobIds="195188" CollectionDistance="200" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" VariantQuestIds="14001, 14474" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="548.6962" Y="3327.155" Z="0" />
 				<Hotspot X="550.8958" Y="3248.118" Z="0" />
@@ -427,7 +440,7 @@
 				<Hotspot X="418.4323" Y="3142.503" Z="0" />
 			</HuntingGrounds>
 		</Code>
-		<TurnIn QuestName="Goblin Escape Pods" QuestId="14474" TurnInName="Sassy Hardwrench" TurnInId="35650" X="605.7563" Y="3127.536" Z="1.974595" />
+		<TurnIn QuestName="Goblin Escape Pods" VariantQuestIds="14001, 14474" TurnInName="Sassy Hardwrench" TurnInId="35650" X="605.7563" Y="3127.536" Z="1.974595" />
 
 		<PickUp QuestName="Get Our Stuff Back!" QuestId="14014" GiverName="Sassy Hardwrench" GiverId="35650" X="605.7563" Y="3127.536" Z="1.974595" />
 		<PickUp QuestName="Monkey Business" QuestId="14019" GiverName="Bamm Megabomb" GiverId="35758" X="640.8893" Y="3125.128" Z="2.579411" />
