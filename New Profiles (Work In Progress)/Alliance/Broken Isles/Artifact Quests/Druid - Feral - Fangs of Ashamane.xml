@@ -26,6 +26,7 @@
 		<Blackspot X="1937.373" Y="5390.136" Z="52.97282" Radius="30" />
 		<Blackspot X="1968.112" Y="5408.313" Z="46.54448" Radius="30" />
 		<Blackspot X="1907.289" Y="5381.913" Z="41.22046" Radius="30" />
+		<Blackspot X="2067.187" Y="5403.985" Z="47.4065" Radius="23" /> <!-- Stay away from center with tons of NPCs -->
 	</Blackspots>
 
 	<Blacklist>
@@ -250,23 +251,28 @@ END INITORDER COMMENT -->
 
 		<PickUp QuestName="The Fangs of Ashamane" QuestId="42430" GiverName="Delandros Shimmermoon" GiverId="107392" X="3553.168" Y="5537.865" Z="324.7963" />
 		<While Condition="DoQuest(42430)" >
+			<Code File="RunCode" Code="RoutineManager.SetCapabilityState(CapabilityFlags.MultiMobPull, CapabilityState.Disallowed);" />
+
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0 &amp;&amp; !HasItem(128860)" >
 				<Code File="InteractWith" MobId="107729" WaitTime="5000" X="3553.777" Y="5541.796" Z="324.7946" />
 			</If>
+
+			<DisableBehavior Name="Pull" />
+			<UseMount Value="false" />
 
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
 				<MoveTo X="2013.606" Y="5425.4" Z="47.39029" />
 			</If>
 
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
-				<UseMount Value="false" />
-				<Code File="InteractWith" MobId="250641" PreInteractMountStrategy="Dismount" ProactiveCombatStrategy="ClearAll" NumOfTimes="2" InteractBlacklistTimeInSeconds="1" X="2047.347" Y="5372.541" Z="47.30041" />
+				<MoveTo X="2065.429" Y="5449.482" Z="47.30079" />
 				<Code File="InteractWith" MobId="250638" PreInteractMountStrategy="Dismount" ProactiveCombatStrategy="ClearAll" NumOfTimes="2" InteractBlacklistTimeInSeconds="1" X="2068.309" Y="5444.192" Z="47.3004" />
+				<MoveTo X="2036.443" Y="5406.984" Z="47.30103" />
+				<Code File="InteractWith" MobId="250641" PreInteractMountStrategy="Dismount" ProactiveCombatStrategy="ClearAll" NumOfTimes="2" InteractBlacklistTimeInSeconds="1" X="2043.004" Y="5367.898" Z="47.30103" />
+				<MoveTo X="2072.812" Y="5362.895" Z="47.30103" />
 				<MoveTo X="2119.902" Y="5389.882" Z="52.41041" />
 				<Code File="WaitTimer" WaitTime="15000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
 			</If>
-
-			<UseMount Value="true" />
 
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
 				<MoveTo X="2245.052" Y="5355.108" Z="37.02452" />
@@ -275,9 +281,8 @@ END INITORDER COMMENT -->
 					<Code File="RunCode" Code="SpellManager.Cast(768);" />
 					<Code File="WaitTimer" WaitTime="1000" />
 				</While>
-				<Code File="InteractWith" WaitTime="6000" NumOfTimes="10" MobId="250824" InteractBlacklistTimeInSeconds="1" X="2252.76" Y="5352.203" Z="36.24648" TerminateWhen="Me.InVehicle" />
-				<MoveTo X="2309.035" Y="5417.842" Z="14.83675" />
-				<Code File="WaitTimer" WaitTime="6000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+				<Code File="InteractWith" WaitTime="6000" NumOfTimes="10" MobId="250824" InteractBlacklistTimeInSeconds="1" X="2252.76" Y="5352.203" Z="36.24648" TerminateWhen="Me.InVehicle || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+				<!-- Silly solution, but the interact with above is to get on the platform.  We are also using it to walk into the Verstok room. -->
 			</If>
 
 			<Code File="Hooks\DoWhen" ActivityName="EnterLocation" LogExecution="false" AllowUseWhileMounted="true" UseWhen="Me.Z &gt;= 40" >
@@ -291,14 +296,20 @@ END INITORDER COMMENT -->
 				<MoveTo X="2309.035" Y="5417.842" Z="14.83675" />
 			</Code>
 
+			<EnableBehavior Name="Pull" />
+
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
 				<Code File="KillUntilComplete" MobId="108003" X="2335.352" Y="5427.347" Z="13.95717" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
 			</If>
+
+			<DisableBehavior Name="Pull" />
 
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
 				<MoveTo X="2111.239" Y="5488.263" Z="-19.57687" />
 				<Code File="RunCode" Code="await SkipCutscene();" />
 			</If>
+
+			<EnableBehavior Name="Pull" />
 
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
 				<Code File="KillUntilComplete" MobId="108027" X="2079.747" Y="5425.51" Z="-36.70618" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
@@ -319,6 +330,9 @@ END INITORDER COMMENT -->
 			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8" >
 				<Code File="InteractWith" MobId="108115" WaitTime="3000" X="2068.373" Y="5405.366" Z="-35.94217" />
 			</If>
+
+			<Code File="RunCode" Code="RoutineManager.SetCapabilityState(CapabilityFlags.MultiMobPull, CapabilityState.DontCare);" />
+			<UseMount Value="true" />
 		</While>
 		<TurnIn QuestName="The Fangs of Ashamane" QuestId="42430" TurnInName="Rensar Greathoof" TurnInId="101195" X="3974.796" Y="7395.398" Z="23.94462" />
 		<!-- END Story: Artifact Weapon - Fangs of Ashamane -->
