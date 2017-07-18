@@ -262,13 +262,29 @@
 			</HuntingGrounds>
 		</Code>
 
-		<Code File="KillUntilComplete" MobIds="6073, 6115, 11697" TerminateWhen="!DoQuest(26448) &amp;&amp; !NeedsQuest(26447)" >
+		<Code File="KillUntilComplete" MobIds="6073, 6115, 11697" TerminateWhen="!DoQuest(26448)" >
 			<HuntingGrounds>
 				<Hotspot X="2141.797" Y="-3004.59" Z="115.7825" />
 				<Hotspot X="2013.502" Y="-3152.918" Z="101.9139" />
 				<Hotspot X="1960.736" Y="-3008.249" Z="103.6359" />
 			</HuntingGrounds>
 		</Code>
+
+		<While Condition="NeedsQuest(26447)" >
+			<Code File="InteractWith" CollectionDistance="200" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" TerminateWhen="!NeedsQuest(26447)" >
+				<HuntingGrounds>
+					<Hotspot X="2141.797" Y="-3004.59" Z="115.7825" />
+					<Hotspot X="2013.502" Y="-3152.918" Z="101.9139" />
+					<Hotspot X="1960.736" Y="-3008.249" Z="103.6359" />
+				</HuntingGrounds>
+				<PursuitList>
+					<!-- ConvertWhen doesn't work.  So adding IsAlive to PursueWhen -->
+					<PursueUnit Id="6073" PursueWhen="UNIT.Lootable || UNIT.IsAlive" ConvertWhen="UNIT.IsAlive" />
+					<PursueUnit Id="6115" PursueWhen="UNIT.Lootable || UNIT.IsAlive" ConvertWhen="UNIT.IsAlive" />
+					<PursueUnit Id="11697" PursueWhen="UNIT.Lootable || UNIT.IsAlive" ConvertWhen="UNIT.IsAlive" />
+				</PursuitList>
+			</Code>
+		</While>
 
 		<Code File="KillUntilComplete" MobId="12856" QuestId="6503" >
 			<HuntingGrounds>
