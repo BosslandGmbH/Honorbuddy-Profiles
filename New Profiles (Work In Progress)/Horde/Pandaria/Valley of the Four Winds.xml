@@ -241,7 +241,14 @@
 		<RecheckCheckpoints />
 
 		<PickUp QuestName="A Lesson in Bravery" QuestId="29918" GiverName="Shang Thunderfoot" GiverId="56312" X="240.7151" Y="-388.5917" Z="248.3038" />
-		<Code File="InteractWith" MobId="56171" CollectionDistance="200" NonCompeteDistance="0" InteractByUsingItemId="75208" PreInteractMountStrategy="Dismount" QuestId="29918" QuestObjectiveIndex="1" X="247.4701" Y="-389.973" Z="249.12" />
+		<While Condition="DoQuest(29918)" >
+			<Code File="Hooks\DoWhen" ActivityName="HitButton" AllowUseDuringCombat="true" AllowUseInVehicle="true" UseWhen="Lua.GetReturnVal&lt;bool&gt;(&quot;ExtraActionButton1:IsVisible()&quot;, 0)" >
+				<Code File="Misc\RunLua" WaitTime="2500" Lua="ExtraActionButton1:Click();" />
+			</Code>
+			<Code File="InteractWith" MobId="56171" CollectionDistance="200" NonCompeteDistance="0" InteractByUsingItemId="75208" PreInteractMountStrategy="Dismount" QuestId="29918" X="247.4701" Y="-389.973" Z="249.12" TerminateWhen="Me.InVehicle" />
+			<Code File="KillUntilComplete" MobId="56171" TerminateWhen="!Me.InVehicle" />
+			<Code File="Hooks\DoWhen" ActivityName="HitButton" Command="Remove" />
+		</While>
 		<TurnIn QuestName="A Lesson in Bravery" QuestId="29918" TurnInName="Shang Thunderfoot" TurnInId="56312" X="186.7183" Y="-249.0288" Z="236.0162" />
 
 		<PickUp QuestName="Great Minds Drink Alike" QuestId="29919" GiverName="Chen Stormstout" GiverId="56133" X="162.952" Y="-276.0398" Z="235.6676" />
