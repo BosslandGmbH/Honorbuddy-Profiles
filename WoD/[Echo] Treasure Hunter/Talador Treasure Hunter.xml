@@ -1,0 +1,374 @@
+<!-- Echo's notes, delete me when no longer relevent.
+	Notes:
+
+	Test 1:
+		- 15 treasures gained, some didn't register and some were missed due to error.  Estiamted Actual: 18
+	Test 2:
+		- 17 treasures gained.
+		- Lazers (at end of profile) may be better handled if we just don't use the Avoid hook. 
+	Test 3:
+		- ?? Treasures gained.
+		- No issues, skipped some treasures because of 'Can't do that while moving' issues.
+
+-->
+<HBProfile>
+	<Name>Hawker's 'Talador Treasure Hunter' Profile</Name>
+	
+	
+	<MinDurability>0.2</MinDurability>
+	<MinFreeBagSlots>2</MinFreeBagSlots>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>false</MailWhite>
+	<MailGreen>false</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<UseMount>True</UseMount>
+	<TargetElites>True</TargetElites>
+
+	<Blacklist>
+		<Mob Name="Marsh Anaconda" Id="87039" />
+	</Blacklist>
+
+	<Vendors>
+		<!--Shadowmoon Valley:-->
+		<!--Exile's Rise-->
+		<Vendor Name="Mokarg" Entry="76198" Type="Repair" X="1475.611" Y="-790.243" Z="38.12963" />
+		<Vendor Name="Rovan Astalan" Entry="81614" Type="Repair" X="-780.2448" Y="-677.118" Z="108.6697" />
+		<!--__________________________________________________________________________________________________________________________________________-->
+		<!--Spires of Arak:-->
+		<!--Veil Terokk-->
+		<Vendor Name="Kuro'ak" Entry="86386" Type="Food" X="-394.9809" Y="1852.606" Z="53.45683" />
+		<Vendor Name="Ruuan the Seer" Entry="87775" Type="Repair" X="-432.757" Y="1850.8" Z="41.6203" />
+		<!--Pinchwhistle Gearworks-->
+		<Vendor Name="Twizix Copperbomb" Entry="82183" Type="Repair" X="-1483.905" Y="981.5174" Z="8.025256" />
+
+		<!--__________________________________________________________________________________________________________________________________________-->
+		<!--Talador:-->
+		<!--Anchorite's Sojourn-->
+		<Vendor Name="Caregiver Uluura" Entry="75430" Type="Food" X="2144.236" Y="1232.42" Z="117.2146" />
+		<!--Shattrath City-->
+		<Vendor Name="Reema" Entry="86317" Type="Repair" X="2663.982" Y="2796.673" Z="246.1862" />
+		<Vendor Name="Bordos" Entry="82635" Type="Repair" X="2617.845" Y="2823.831" Z="242.3916" />
+		<Vendor Name="Fiaana" Entry="82636" Type="Food" X="2620.902" Y="2783.97" Z="242.3923" />
+		<!--Zangarra-->
+		<Vendor Name="James Lamone" Entry="80930" Type="Repair" X="3214.887" Y="835.0538" Z="80.63318" />
+		<!--__________________________________________________________________________________________________________________________________________-->
+		<!--Nagrand:-->
+		<!--The Ring of Trials-->
+		<Vendor Name="Grogglefitz" Entry="79199" Type="Food" X="3013.191" Y="4762.819" Z="128.275" />
+		<Vendor Name="Pyxni Pennypocket" Entry="79310" Type="Repair" X="3085.323" Y="4849.036" Z="128.3325" />
+		<!--__________________________________________________________________________________________________________________________________________-->
+		<!--Gorgrond:-->
+		<!--Breaker's Crown-->
+		<Vendor Name="Budgy" Entry="84234" Type="Repair" X="6610.504" Y="1286.526" Z="64.83815" />
+		<!--__________________________________________________________________________________________________________________________________________-->
+		<!--Frostfire Ridge: Bloodmaul Slag Mines-->
+		<Vendor Name="Urkag" Entry="85545" Type="Repair" X="7400.561" Y="4335.775" Z="126.4071" />
+		<Vendor Name="Barduun" Entry="85547" Type="Food" X="7370.463" Y="4342.348" Z="127.2008" />
+		<!--__________________________________________________________________________________________________________________________________________-->
+		<!--Garrison Vendors-->
+		<Vendor Name="Provisioner Hanfa" Entry="81346" Type="Repair" X="1854.957" Y="269.2205" Z="76.63961" UsableWhen="Me.IsAlliance" />
+		<Vendor Name="Supplymaster Eri" Entry="76872" Type="Repair" X="5626.828" Y="4629.681" Z="139.3038" UsableWhen="Me.IsHorde" />
+	</Vendors>
+	<!--MAILBOXES-->
+	<Mailboxes>
+		<!--Shattrath City-->
+		<Mailbox X="2614.091" Y="2799.328" Z="242.3915" />
+		<!--Fort Wrynn-->
+		<!--Zangarra-->
+		<Mailbox X="3183.211" Y="773.5329" Z="78.33458" />
+		<!--Pinchwhistle Gearworks-->
+		<Mailbox X="-1567.494" Y="942.592" Z="10.57905" />
+		<!--Axefall-->
+		<!--Garrison-->
+		<Mailbox X="1923.274" Y="299.2899" Z="88.96642" UsableWhen="Me.IsAlliance" />
+		<Mailbox X="5580.682" Y="4570.392" Z="136.558" UsableWhen="Me.IsHorde" />
+	</Mailboxes>
+
+
+	<QuestOrder>		
+
+		<CustomBehavior File="RunCode" Code="RoutineManager.SetCapabilityState(CapabilityFlags.MultiMobPull, CapabilityState.Disallowed);"/>
+		<DisableBehavior Name="Pull" />
+		<CustomBehavior File="UserSettings" HarvestHerbs="false" HarvestMinerals="false" /> <!-- Harvesting will bug out CTMs. --> 
+
+		<If Condition="Me.ZoneId == 7078 || Me.ZoneId == 7004" >
+			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.BlueViolet, &quot;[Profile Notification]: Going to vendor and mail before we start farming.&quot;);" />
+			<CustomBehavior File="ForceSetVendor" DoSell="true" DoRepair="true" />
+		</If>
+
+		<If Condition="Me.ZoneId != 6662" >
+			<MoveTo DestName="Terokkar Refuge" X="2161.174" Y="1639.054" Z="132.0609" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(34101)" > <!-- Doesn't count as a treasure, but easy 100 gold. -->
+			<MoveTo DestName="Lightbearer" X="2195.229" Y="1733.57" Z="119.2742" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Lightbearer" MobIds="227527" X="2194.05" Y="1732.597" Z="120.7772" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(34251)" >
+			<MoveTo DestName="Iron Box" X="1670.953" Y="1726.313" Z="292.2888" />
+			<If Condition="Me.IsAlliance" >
+				<CustomBehavior File="InteractWith" WaitTime="4000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Serena's Portal" MobId="231105" X="1668.672" Y="1709.965" Z="297.9299" />
+			</If>
+			<If Condition="Me.IsHorde" >
+				<CustomBehavior File="InteractWith" WaitTime="4000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Krelas' Portal" MobId="235824" X="1657.755" Y="1742.325" Z="300.7884" />
+			</If>
+			<MoveTo DestName="Iron Box" X="1281.583" Y="1981.631" Z="339.8231" />
+			<CustomBehavior File="InteractWith" WaitTime="4000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Iron Box" MobId="228015" X="1280.913" Y="1982.535" Z="340.0328" />
+			<If Condition="Me.IsAlliance" >
+				<MoveTo DestName="Serena's Portal" X="1663.924" Y="1676.913" Z="303.9177" />
+				<CustomBehavior File="InteractWith" WaitTime="4000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Serena's Portal" MobId="231106" X="1666.24" Y="1679.845" Z="304.6963" />
+			</If>
+			<If Condition="Me.IsHorde" >
+				<MoveTo DestName="Krelas' Portal" X="1638.42" Y="1755.151" Z="310.7021" />
+				<CustomBehavior File="InteractWith" WaitTime="4000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Krelas' Portal" MobId="231000" X="1640.523" Y="1752.873" Z="311.3612" />
+			</If>
+		</If>
+
+		<If Condition="!IsQuestCompleted(34252)" >
+			<MoveTo DestName="Barrel of Fish" X="2522.234" Y="2112.002" Z="108.3595" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Barrel of Fish" MobIds="228016" X="2522.234" Y="2112.002" Z="108.3595" />
+		</If>
+
+
+		<!-- Requires Jump
+				<If Condition="!IsQuestCompleted(36243)" >
+			<MoveTo DestName="Outcast's Belongings" X="690.1285" Y="2450.045" Z="226.4026" />
+			<CustomBehavior File="ForcedDismount" />
+		<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Outcast's Belongings" MobIds="234147" X="690.1285" Y="2450.045" Z="226.4026" />
+			</If>
+			-->
+
+		<If Condition="!IsQuestCompleted(34255)" >
+			<MoveTo DestName="Webbed Sac" MobIds="228019" X="907.5" Y="1931.443" Z="148.5037" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Webbed Sac" MobIds="228019" Range="9" IgnoreLoSToTarget="true" X="907.5" Y="1931.443" Z="148.5037" />
+			<If Condition="HasItem(116129)" ><CustomBehavior File="UseItem" ItemId="116129" /></If>
+		</If>
+
+		<If Condition="!IsQuestCompleted(34239)" >
+			<MoveTo DestName="Curious Deathweb Egg"  X="971.0068" Y="1867.657" Z="117.6515" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Curious Deathweb Egg" MobIds="227996" Range="9" IgnoreLoSToTarget="true" X="973.2448" Y="1868.349" Z="117.4271" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(34256)" >
+			<MoveTo DestName="Relic of Telmor" X="782.4965" Y="3033.621" Z="141.7712" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Relic of Telmor" MobIds="228020" X="782.4965" Y="3033.621" Z="141.7712" />
+		</If>
+
+		<!-- Doesn't count towards achievement
+		<If Condition="!IsQuestCompleted(34140)" >
+			<MoveTo DestName="Yuuri's Gift" X="869.5544" Y="3406.171" Z="100.5787" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Yuuri's Gift" MobId="227587" X="873.3229" Y="3411.639" Z="102.0757" />
+		</If>
+	-->
+
+		<!-- Doesn't count towards achievement
+		<If Condition="!IsQuestCompleted(34182)" >
+			<MoveTo DestName="Aarko's Family Treasure" X="606.1569" Y="3658.671" Z="7.498703" />
+			<CustomBehavior File="InteractWith" WaitTime="2000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Aarko" MobId="77664" X="610.9757" Y="3656.625" Z="7.499354" />
+			<CustomBehavior File="Misc\RunLua" Lua="GossipTitleButton1:Click(); " />
+			<CustomBehavior File="WaitTimer" WaitTime="60000" TerminateWhen="Unit(77677, u=&gt; u.IsValid) != null" />
+			<CustomBehavior File="InteractWith" WaitTime="2000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Aarko's Family Treasure" MobId="227793" X="614.0208" Y="3655.676" Z="7.498769" />			
+		</If>
+	-->
+
+		<If Condition="!IsQuestCompleted(34257)" >
+			<MoveTo DestName="Treasure of Ango'rosh" X="1070.229" Y="3548.034" Z="137.1788" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Treasure of Ango'rosh" MobIds="228021" X="1070.229" Y="3548.034" Z="137.1788" />
+		</If>
+
+		<!-- Doesn't count towards achievement
+		<If Condition="!IsQuestCompleted(34148)" >
+			<MoveTo DestName="Bonechewer Spear" X="1443.349" Y="3621.728" Z="157.8467" />
+			<CustomBehavior File="InteractWith" MobState="Alive" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Viperlash" MobId="77564" X="1458.653" Y="3585.98" Z="157.4055" />
+			<CustomBehavior File="WaitTimer" WaitTime="2000" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Bonechewer Spear" MobId="227654" X="1471.032" Y="3591.999" Z="160.5555" />
+		</If>
+	-->
+
+		<If Condition="!IsQuestCompleted(34249)" >
+			<MoveTo DestName="Farmer's Bounty" X="590.9983" Y="3722.271" Z="1.12046" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Farmer's Bounty" MobIds="228013" X="590.9983" Y="3722.271" Z="1.12046" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(34259)" >
+			<MoveTo DestName="Bonechewer Remnants" X="1376.488" Y="3848.273" Z="179.5497" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Bonechewer Remnants" MobIds="228023" X="1376.488" Y="3848.273" Z="179.5497" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(34254)" >
+			<MoveTo DestName="Soulbinder's Reliquary" X="2239.031" Y="3479.884" Z="65.27032" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Soulbinder's Reliquary" MobIds="228018" X="2239.031" Y="3479.884" Z="65.27032" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(34253)" >
+			<MoveTo DestName="Draenei Weapons" X="1777.247" Y="2539.335" Z="133.6743" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Draenei Weapons" MobIds="228017" X="1777.247" Y="2539.335" Z="133.6743" />
+			<If Condition="HasItem(116118)" ><CustomBehavior File="UseItem" ItemId="116118" /></If>
+		</If>
+
+		<!-- Doesn't count toward Achievement
+		<If Condition="!IsQuestCompleted(34134)" >
+			<MoveTo DestName="Isaari's Cache" X="1432.931" Y="2424.844" Z="131.7063" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Isaari's Cache" MobId="239198" X="1435.734" Y="2422.392" Z="131.7063" />
+		</If>
+	-->
+
+        <If Condition="!IsQuestCompleted(34236)" >
+            <MoveTo DestName="Water above Amethyl Crystal" X="3141.301" Y="2132.194" Z="103.7608" />
+            <CustomBehavior File="ForcedDismount" />
+            <CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Amethyl Crystal" NumOfTimes="100" MobIds="227955"
+                TerminateWhen="Object(227955) == null || IsQuestCompleted(34236)" X="3141.912" Y="2131.863" Z="97.71159" />
+            <CustomBehavior File="AscendInWater" />
+            <MoveTo DestName="Waterside near Amethyl Crystal" X="3222.747" Y="2125.555" Z="109.054" />
+            <If Condition="HasItem(116131)" ><CustomBehavior File="UseItem" ItemId="116131" /></If>
+        </If>
+
+
+
+		<!-- Requires Jump
+				<If Condition="!IsQuestCompleted(34238)" >
+					<MoveTo DestName="Foreman's Lunchbox" X="3290.069" Y="2413.174" Z="124.6887" />
+					<CustomBehavior File="ForcedDismount" />
+					<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Foreman's Lunchbox" MobIds="227956" X="3290.069" Y="2413.174" Z="124.6887" />
+				</If>
+				-->
+
+		<If Condition="!IsQuestCompleted(33933)" >
+			<MoveTo DestName="Deceptia's Smoldering Boots" X="3949.88" Y="2322.749" Z="15.04284" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="1000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Deceptia's Smoldering Boots" MobId="226976" X="3949.6" Y="2324.932" Z="14.89531" />
+			<If Condition="HasItem(108743)" ><CustomBehavior File="UseItem" ItemId="108743" /></If>
+			<If Condition="HasItem(108743)" ><CustomBehavior File="DeleteItems" Ids="108743" /></If>
+		</If>
+
+
+		<If Condition="!IsQuestCompleted(34233)" >
+			<MoveTo DestName="Jug of Aged Ironwine" X="3977.395" Y="1929.977" Z="-1.718774" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Jug of Aged Ironwine" MobIds="227953" X="3977.395" Y="1929.977" Z="-1.718774" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(34232)" >
+			<MoveTo DestName="Rook's Tacklebox" X="3900.229" Y="1963.028" Z="155.1029" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Rook's Tacklebox" MobIds="227951" X="3900.229" Y="1963.028" Z="155.1029" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36937)" >
+			<!-- Very hard -->
+			<EnableBehavior Name="Pull" /> <!-- To avoid suicide mount running in. -->
+			<MoveTo DestName="Burning Blade Cache" X="4146.726" Y="1652.073" Z="150.2417" />
+			<CustomBehavior File="WaitTimer" WaitTime="15000" GoalText="Waiting for mobs: {TimeRemaining}" TerminateWhen="!Me.Combat" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearAll" Name="Burning Blade Cache" MobIds="236935" X="4146.726" Y="1652.073" Z="150.2417" />
+			<DisableBehavior Name="Pull" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(34263)" >
+			<MoveTo DestName="Pure Crystal Dust" X="3844.26" Y="1169.962" Z="109.1499" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Pure Crystal Dust" MobIds="228026" X="3844.26" Y="1169.962" Z="109.1499" />
+		</If>
+
+		<!-- Doesn't count towards the achievement.
+		<If Condition="!IsQuestCompleted(33649)" >
+			<MoveTo DestName="Iron Scout" X="2996.498" Y="1360.179" Z="178.3034" />
+			<CustomBehavior File="InteractWith" WaitTime="1000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Iron Scout" MobId="75644" X="2994.501" Y="1357.167" Z="178.2714" />
+			<CustomBehavior File="Misc\RunLua" Lua="GossipTitleButton1:Click();" />
+		</If>
+	-->
+
+		<If Condition="!IsQuestCompleted(34260)" >
+			<MoveTo DestName="Aruuna Mining Cart" X="3037.524" Y="966.6176" Z="142.0815" />
+			<CustomBehavior DestName="Aruuna Mining Cart" File="MyCTM" X="3041.417" Y="948.6275" Z="105.4907" />
+			<CustomBehavior File="InteractWith" WaitTime="1000" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Aruuna Mining Cart" MobId="228024" X="3040.252" Y="953.3854" Z="105.5046" />
+			<While Condition="Me.Z &lt;= 130" >
+				<MoveTo X="2999.105" Y="972.9998" Z="116.2855" />
+				<CustomBehavior File="MyCTM" X="2999.404" Y="974.1542" Z="116.8182" />
+				<CustomBehavior File="WaitTimer" WaitTime="500" />
+				<CustomBehavior File="RunCode" Code="Me.SetFacing(14);" />
+				<CustomBehavior File="Misc\RunLua" Lua="JumpOrAscendStart();" WaitTime="15" />
+				<CustomBehavior File="Misc\RunLua" Lua="MoveForwardStart();" WaitTime="100" />
+				<CustomBehavior File="Misc\RunLua" Lua="MoveForwardStop(); AscendStop();" WaitTime="300" />
+				<CustomBehavior File="MyCTM" X="3003.779" Y="996.8654" Z="140.798" TerminateWhen="Me.IsFalling" />
+				<CustomBehavior File="MyCTM" X="3011.067" Y="999.6377" Z="144.2679" TerminateWhen="Me.IsFalling || Me.Z &lt;= 135" />
+				<If Condition="Me.Z &lt;= 130" >
+					<CustomBehavior File="MyCTM" X="2993.617" Y="984.3459" Z="119.8909" />
+				</If>
+			</While>
+		</If>
+
+
+		<If Condition="!IsQuestCompleted(34261)" >
+			<MoveTo DestName="Keluu's Belongings" X="2783.681" Y="1320.766" Z="167.3955" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Keluu's Belongings" MobIds="228025" X="2783.681" Y="1320.766" Z="167.3955" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(34250)" >
+			<MoveTo DestName="Relic of Aruuna" X="2651.515" Y="1315.174" Z="198.903" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" PreInteractMountStrategy="Dismount" ProactiveCombatStrategy="ClearMobsTargetingUs" 
+				Name="Relic of Aruuna" MobIds="228014" X="2651.515" Y="1315.174" Z="198.903" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(34248)" >
+			<MoveTo DestName="Charred Sword" X="2443.32" Y="1239.833" Z="137.9931" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" PreInteractMountStrategy="Dismount" ProactiveCombatStrategy="ClearMobsTargetingUs"
+				Name="Charred Sword" MobIds="228012" X="2443.32" Y="1239.833" Z="137.9931" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(34471)" >
+			<MoveTo DestName="Bright Coin" X="2387.293" Y="1449.896" Z="103.8206" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" PreInteractMountStrategy="Dismount" ProactiveCombatStrategy="ClearMobsTargetingUs"
+				Name="Bright Coin" MobIds="229354" X="2387.293" Y="1449.896" Z="103.8206" />
+		</If>
+
+		<!-- from kickazz - very badly done and needs fixing -->
+        <If Condition="!IsQuestCompleted(34290)"> <!-- Treasure: Ketya's Stash -->
+            <!-- add avoid to not die from "LAZERS" -->
+            <MoveTo Name="Ketya's Stash" X="3389.091" Y="2656.158" Z="5.563067" />
+            <CustomBehavior File="Hooks\Avoid" AvoidName="Scanner Beam Id: 6486" Command="Add" ObjectType="AreaTrigger" ObjectId="6486" Radius="3" />
+            <CustomBehavior File="InteractWith" MobId="228570" Range="4" X="3328.651" Y="2615.092" Z="7.038307" /> 
+            <!-- remove avoid & add a useitem to use the pet -->
+        </If>
+		
+		<If Condition="!IsQuestCompleted(34235)"> <!-- Treasure: Luminous Shell -->
+			<CustomBehavior File="InteractWith" MobId="227954" Range="4" X="3254.937" Y="2699.602" Z="0.390289" />
+		</If>
+
+		<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.BlueViolet, &quot;[Profile Notification]: Treasure farming complete!  Going to the Garrison to mail and vendor.&quot;);" />
+		<CustomBehavior File="ForceSetVendor" DoSell="True" DoRepair="True" />
+
+		<CustomBehavior File="UserSettings" Preset="UserOriginal" />
+		<CustomBehavior File="LoadProfile" ProfileName="Spires of Arak Treasure Hunter.xml" RememberProfile="false" />
+
+		
+	</QuestOrder>
+</HBProfile>

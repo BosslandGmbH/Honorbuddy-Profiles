@@ -1,0 +1,428 @@
+<!-- Echo's notes, delete me when no longer relevent.
+	Notes:
+
+-->
+<HBProfile>
+	<Name>Tanaan Jungle Treasure Hunter</Name>
+	
+	
+	<MinDurability>0.2</MinDurability>
+	<MinFreeBagSlots>2</MinFreeBagSlots>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>false</MailWhite>
+	<MailGreen>false</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<UseMount>True</UseMount>
+	<TargetElites>True</TargetElites>
+
+	<Blacklist>
+		<Mob Name="Marsh Anaconda" Id="87039" />
+	</Blacklist>
+
+	<Vendors>
+		<!--Shadowmoon Valley:-->
+		<!--Exile's Rise-->
+		<Vendor Name="Mokarg" Entry="76198" Type="Repair" X="1475.611" Y="-790.243" Z="38.12963" />
+		<Vendor Name="Rovan Astalan" Entry="81614" Type="Repair" X="-780.2448" Y="-677.118" Z="108.6697" />
+		<!--__________________________________________________________________________________________________________________________________________-->
+		<!--Spires of Arak:-->
+		<!--Veil Terokk-->
+		<Vendor Name="Kuro'ak" Entry="86386" Type="Food" X="-394.9809" Y="1852.606" Z="53.45683" />
+		<Vendor Name="Ruuan the Seer" Entry="87775" Type="Repair" X="-432.757" Y="1850.8" Z="41.6203" />
+		<!--Pinchwhistle Gearworks-->
+		<Vendor Name="Twizix Copperbomb" Entry="82183" Type="Repair" X="-1483.905" Y="981.5174" Z="8.025256" />
+
+		<!--__________________________________________________________________________________________________________________________________________-->
+		<!--Talador:-->
+		<!--Anchorite's Sojourn-->
+		<Vendor Name="Caregiver Uluura" Entry="75430" Type="Food" X="2144.236" Y="1232.42" Z="117.2146" />
+		<!--Shattrath City-->
+		<Vendor Name="Reema" Entry="86317" Type="Repair" X="2663.982" Y="2796.673" Z="246.1862" />
+		<Vendor Name="Bordos" Entry="82635" Type="Repair" X="2617.845" Y="2823.831" Z="242.3916" />
+		<Vendor Name="Fiaana" Entry="82636" Type="Food" X="2620.902" Y="2783.97" Z="242.3923" />
+		<!--Zangarra-->
+		<Vendor Name="James Lamone" Entry="80930" Type="Repair" X="3214.887" Y="835.0538" Z="80.63318" />
+		<!--__________________________________________________________________________________________________________________________________________-->
+		<!--Nagrand:-->
+		<!--The Ring of Trials-->
+		<Vendor Name="Grogglefitz" Entry="79199" Type="Food" X="3013.191" Y="4762.819" Z="128.275" />
+		<Vendor Name="Pyxni Pennypocket" Entry="79310" Type="Repair" X="3085.323" Y="4849.036" Z="128.3325" />
+		<!--__________________________________________________________________________________________________________________________________________-->
+		<!--Gorgrond:-->
+		<!--Breaker's Crown-->
+		<Vendor Name="Budgy" Entry="84234" Type="Repair" X="6610.504" Y="1286.526" Z="64.83815" />
+		<!--__________________________________________________________________________________________________________________________________________-->
+		<!--Frostfire Ridge: Bloodmaul Slag Mines-->
+		<Vendor Name="Urkag" Entry="85545" Type="Repair" X="7400.561" Y="4335.775" Z="126.4071" />
+		<Vendor Name="Barduun" Entry="85547" Type="Food" X="7370.463" Y="4342.348" Z="127.2008" />
+		<!--__________________________________________________________________________________________________________________________________________-->
+		<!--Garrison Vendors-->
+		<Vendor Name="Provisioner Hanfa" Entry="81346" Type="Repair" X="1854.957" Y="269.2205" Z="76.63961" UsableWhen="Me.IsAlliance" />
+		<Vendor Name="Supplymaster Eri" Entry="76872" Type="Repair" X="5626.828" Y="4629.681" Z="139.3038" UsableWhen="Me.IsHorde" />
+	</Vendors>
+	<!--MAILBOXES-->
+	<Mailboxes>
+		<!--Shattrath City-->
+		<Mailbox X="2614.091" Y="2799.328" Z="242.3915" />
+		<!--Fort Wrynn-->
+		<!--Zangarra-->
+		<Mailbox X="3183.211" Y="773.5329" Z="78.33458" />
+		<!--Pinchwhistle Gearworks-->
+		<Mailbox X="-1567.494" Y="942.592" Z="10.57905" />
+		<!--Garrison-->
+		<Mailbox X="1923.274" Y="299.2899" Z="88.96642" UsableWhen="Me.IsAlliance" />
+		<Mailbox X="5580.682" Y="4570.392" Z="136.558" UsableWhen="Me.IsHorde" />
+	</Mailboxes>
+
+	<ProtectedItems>
+		<Item Id="128218" Name="Fel-Proof Goggles" />
+	</ProtectedItems>
+
+	<QuestOrder>		
+
+		<CustomBehavior File="RunCode" Code="RoutineManager.SetCapabilityState(CapabilityFlags.MultiMobPull, CapabilityState.Disallowed);"/>
+		<DisableBehavior Name="Pull" />
+		<CustomBehavior File="UserSettings" HarvestHerbs="false" HarvestMinerals="false" /> <!-- Harvesting will bug out CTMs. --> 
+
+		<If Condition="(!IsQuestCompleted(38435) &amp;&amp; Me.IsAlliance) || (!IsQuestCompleted(37889) &amp;&amp; Me.IsHorde)" >
+			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Red, &quot;[Profile Notification]: Warning! You've not completed the Tanaan intro quests yet.  Please complete them before attempting to use this profile.&quot;);" />
+			<CustomBehavior File="Halt" />
+		</If>
+		<If Condition="Me.ZoneId == 7078 || Me.ZoneId == 7004" >
+			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.BlueViolet, &quot;[Profile Notification]: Going to vendor and mail before we start farming.&quot;);" />
+			<CustomBehavior File="ForceSetVendor" DoSell="true" DoRepair="true" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38704)" >
+			<MoveTo DestName="Forgotten Iron Horde Supplies" X="3978.134" Y="-1965.607" Z="28.91339" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Forgotten Iron Horde Supplies" MobIds="241602" X="3973.533" Y="-1953.269" Z="30.05102" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38779)" >
+			<MoveTo DestName="Stashed Bleeding Hollow Loot" X="4417.385" Y="-2156.049" Z="12.65989" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Stashed Bleeding Hollow Loot" MobIds="241764" X="4420.985" Y="-2157.908" Z="13.29581" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38701)" >
+			<If Condition="Me.IsAlliance" >
+				<MoveTo DestName="Loose Soil" X="4302.828" Y="-1231.551" Z="31.13523" /> <!-- Avoid travelling through Horde camp. -->
+			</If>
+			<MoveTo DestName="Loose Soil" X="4431.059" Y="-1689.005" Z="23.57066" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Loose Soil" MobIds="241606" X="4434.155" Y="-1688.953" Z="23.62349" />
+			<CustomBehavior File="WaitTimer" WaitTime="5000" />
+			<CustomBehavior File="MyCTM" X="4461.773" Y="-1674.335" Z="75.75751" />
+			<CustomBehavior File="MyCTM" X="4459.242" Y="-1680.153" Z="76.71535" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Loose Soil" MobIds="241599" X="4459.429" Y="-1683.458" Z="77.64837" />
+			<CustomBehavior File="MyCTM" X="4460.301" Y="-1695.582" Z="27.60563" />
+		</If>
+
+		<!-- Forgotten Shard of the Cipher :: Requires Tanaan campaign #6 to complete.
+		Complete me! -->
+
+		<!-- <If Condition="!IsQuestCompleted(38679)" > May be too hard
+			<MoveTo DestName="Jewel of the Fallen Star" X="5046.242" Y="-1362.2" Z="295.1825" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Jewel of the Fallen Star" MobIds="241561" X="5050.86" Y="-1364.665" Z="295.8452" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38682)" > May be too hard, continues from last one. 
+			<MoveTo DestName="Censer of Torment" X="5214.644" Y="-1578.026" Z="321.836" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Censer of Torment" MobIds="241563" X="5214.644" Y="-1578.026" Z="321.836" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38686)" >
+			<MoveTo DestName="Rune Etched Femur" X="5084.443" Y="-1011.554" Z="311.8036" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Rune Etched Femur" MobIds="241566" X="5082.651" Y="-1007.715" Z="313.1445" />
+		</If>
+		
+		Fel-Tained Apexis Formation,  in a bad spot.  Address later.-->
+
+		<If Condition="!IsQuestCompleted(38771)" >
+			<MoveTo DestName="Book of Zyzzix" X="4650.059" Y="-754.8623" Z="85.68771" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Book of Zyzzix" MobIds="241742" X="4650.619" Y="-752.4011" Z="87.75385" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38776)" >
+			<MoveTo DestName="Sacrificial Blade" X="4455.135" Y="-751.1678" Z="36.68826" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Sacrificial Blade" MobIds="241760" X="4457.226" Y="-751.75" Z="38.45296" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38773)" >
+			<MoveTo DestName="Fel-Drenched Satchel" X="4370.207" Y="-768.9237" Z="33.67726" />
+			<CustomBehavior File="ForcedDismount" />
+			<MoveTo DestName="Fel-Drenched Satchel" X="4371.166" Y="-766.7893" Z="33.62132" />
+			<CustomBehavior File="MyCTM" X="4373.092" Y="-761.9865" Z="33.41489" />
+			<CustomBehavior File="MyCTM" X="4380.292" Y="-757.4058" Z="28.81277" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Fel-Drenched Satchel" MobIds="241745" X="4380.742" Y="-755.9983" Z="28.10319" />
+			<CustomBehavior File="MyCTM" X="4370.409" Y="-749.2385" Z="26.72018" />
+			<CustomBehavior File="MyCTM" X="4362.445" Y="-762.9147" Z="30.05634" />
+
+		</If>
+
+		<If Condition="!IsQuestCompleted(38821)" >
+			<MoveTo DestName="The Commanders Shield" X="4610.065" Y="-520.6122" Z="27.05834" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="The Commanders Shield" MobIds="241847" X="4591.291" Y="-559.3958" Z="31.18097" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38822)" >
+			<MoveTo DestName="Dazzling Rod" X="4672.711" Y="-544.3739" Z="38.58505" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Dazzling Rod" MobIds="241848" X="4694.978" Y="-541.3993" Z="84.08958" />
+			<If Condition="HasItem(127859)" ><CustomBehavior File="UseItem" ItemId="127859" /></If>
+			<If Condition="HasItem(127859)" ><CustomBehavior File="DeleteItems" Ids="127859" /></If>
+		</If>
+
+		<If Condition="!IsQuestCompleted(37956)" >
+			<MoveTo DestName="Strange Sapphire" X="4413.503" Y="-202.9761" Z="52.51344" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Strange Sapphire" MobIds="240003" X="4411.662" Y="-198.3559" Z="55.31273" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38640)" >
+			<MoveTo DestName="Pale Removal Equipment" X="4334.776" Y="-247.5032" Z="40.03181" />
+			<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="!Me.Combat" />
+			<MoveTo DestName="Pale Removal Equipment" X="4326.998" Y="-243.6875" Z="40.10451" />
+			<CustomBehavior File="MyCTM" X="4325.124" Y="-242.689" Z="40.10866" />
+			<CustomBehavior File="MyCTM" X="4315.964" Y="-238.1758" Z="40.10722" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Pale Removal Equipment" MobIds="241524" X="4313.882" Y="-236.7899" Z="40.10616" />
+			<CustomBehavior File="MyCTM" X="4320.256" Y="-240.3861" Z="40.10733" />
+			<CustomBehavior File="MyCTM" X="4329.085" Y="-244.0452" Z="40.1022" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38591)" >
+			<MoveTo DestName="Forgotten Sack" X="3651.896" Y="-1278.084" Z="39.5458" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Forgotten Sack" MobIds="241433" X="3656.682" Y="-1282.207" Z="39.22503" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38731)" >
+			<MoveTo DestName="Overgrown Relic" X="3666.239" Y="-965.0757" Z="3.144744" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Overgrown Relic" MobIds="241656" X="3659.84" Y="-959.6424" Z="3.264682" />
+		</If>
+
+		<!-- 	Blackfang Isle Cache
+				Crystalized Fel Spike
+				Discarded Helm
+				Scouts Belongings
+				Bleeding Hollow Mushroom Stash
+				Looted Mystical Staff
+		  mobs too strong - skipping these. -->
+
+		<!-- Mysterious Corrupted Obelisk,  requires Tanaan Campaign #5 completed -->
+
+		<If Condition="!IsQuestCompleted(39470)" >
+			<MoveTo DestName="Deadman's Chest" X="2755.681" Y="-1176.066" Z="5.920038" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Deadman's Chest" MobIds="243693" X="2759.64" Y="-1175.747" Z="5.304453" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(39469)" >
+			<MoveTo DestName="Bejeweled Egg" X="2959.913" Y="-1762.401" Z="45.10381" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+			<CustomBehavior File="MyCTM" X="2958.317" Y="-1752.91" Z="33.0766" />
+			<CustomBehavior File="Misc\RunLua" Lua="ToggleRun();" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Bejeweled Egg" MobIds="243690" X="2957.8" Y="-1751.554" Z="30.54432" />
+			<CustomBehavior File="MyCTM" X="2967.958" Y="-1742.112" Z="24.48366" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38638)" >
+			<MoveTo DestName="Snake Charmer Flute" X="3142.584" Y="-422.1056" Z="19.41875" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Snake Charmer Flute" MobIds="241521" X="3140.44" Y="-423.2153" Z="20.35846" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38657)" >
+			<MoveTo DestName="Forgotten Champion's Blade" X="3361.309" Y="-473.9088" Z="15.88426" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Forgotten Champion's Blade" MobIds="241533" X="3367.066" Y="-473.7917" Z="17.92639" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38639)" >
+			<MoveTo DestName="The Perfect Blossom" X="3293.589" Y="-470.6713" Z="18.38616" />
+			<CustomBehavior File="InteractWith" NumOfTimes="50" MobId="241517" X="3261.914" Y="-464.7083" Z="21.19174" TerminateWhen="Me.HasAura(183756)" />
+			<MoveTo DestName="The Perfect Blossom" X="3293.348" Y="-434.9237" Z="15.64779" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="The Perfect Blossom" MobIds="241522" X="3289.344" Y="-432.7621" Z="13.39297" />
+			<If Condition="HasItem(127766)" ><CustomBehavior File="UseItem" ItemId="127766" /></If>
+			<If Condition="HasItem(127766)" ><CustomBehavior File="DeleteItems" Ids="127766" /></If>
+		</If>
+
+		<If Condition="!IsQuestCompleted(38788)" >
+			<MoveTo DestName="Brazier of Awakening" X="3105.324" Y="-282.0908" Z="3.381413" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Brazier of Awakening" MobIds="241775" X="3106.711" Y="-272.1337" Z="3.387574" />
+		</If>
+
+		<!-- All the Ironbeards treasure and Stashed Iron Sea Booty, skip for now.  Requires lots of jumping -->
+
+
+		<!-- Overpowered mobs guard the areas.
+		<If Condition="!IsQuestCompleted(38629)" >
+			<MoveTo DestName="Polished Crystal" X="3412.508" Y="109.0997" Z="161.9089" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Polished Crystal" MobIds="241504" X="3414.467" Y="112.8142" Z="163.175" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38426)" >  
+			<MoveTo DestName="Tome of Secrets" X="3105.324" Y="-282.0908" Z="3.381413" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Tome of Secrets" MobIds="241775" X="3106.711" Y="-272.1337" Z="3.387574" />
+		</If> -->
+
+		<If Condition="!IsQuestCompleted(38741)" >
+			<MoveTo DestName="Looted Bleeding Hollow Treasure" X="3765.003" Y="326.4019" Z="93.63171" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" MobId="241659" X="3764.086" Y="323.0417" Z="94.39001" />
+			<CustomBehavior File="WaitTimer" WaitTime="5000" />
+			<CustomBehavior File="MyCTM" X="3740.252" Y="319.1085" Z="134.9657" TerminateWhen="Me.Combat" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Looted Bleeding Hollow Treasure" MobIds="241673" X="3729.583" Y="315.099" Z="134.9651" />
+			<MoveTo X="3746.099" Y="320.3873" Z="135.0706" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" MobId="93020" X="3752.882" Y="321.4236" Z="134.3493" />
+			<CustomBehavior File="WaitTimer" WaitTime="2500" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38757)" >
+			<MoveTo DestName="The Eye of Grannok" X="3886.745" Y="845.2019" Z="152.6845" />
+			<MoveTo DestName="The Eye of Grannok" X="3856.383" Y="865.7585" Z="172.782" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="The Eye of Grannok" MobIds="241713" X="3854.408" Y="868.8768" Z="173.8196" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38755)" >
+			<MoveTo DestName="Spoils of War" X="3928.754" Y="798.2134" Z="147.0503" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Spoils of War" MobIds="241699" X="3941.606" Y="797.0695" Z="147.0741" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38754)" >
+			<MoveTo DestName="Axe of the Weeping Wolf" X="4030.175" Y="921.2375" Z="161.5561" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Axe of the Weeping Wolf" MobIds="241692" X="4028.851" Y="922.7344" Z="164.9814" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38283)" >
+			<MoveTo DestName="Stolen Captain's Chest" X="4079.311" Y="818.1826" Z="145.8059" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Stolen Captain's Chest" MobIds="240543" X="4080.802" Y="815.1684" Z="147.4279" />
+		</If>
+		
+		<!-- <If Condition="!IsQuestCompleted(38208)" >   Bot won't interact with this object?
+			<MoveTo DestName="Weathered Axe" X="4194.002" Y="870.0254" Z="141.727" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Weathered Axe" Range="4" IgnoreLoSToTarget="true" MobIds="240289" X="4191.485" Y="872.3229" Z="143.4018" />
+		</If> -->
+
+		<If Condition="!IsQuestCompleted(38678)" >
+			<MoveTo DestName="Bleeding Hollow Warchest" X="4243.86" Y="550.8317" Z="173.4012" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Bleeding Hollow Warchest" MobIds="241560" X="4261.537" Y="553.309" Z="173.7837" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(38735)" >
+			<MoveTo DestName="Borrowed Enchanted Spyglass" X="4186.761" Y="414.4892" Z="171.821" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" MobIds="241659" X="4189.898" Y="412.6094" Z="171.7943" />
+			<CustomBehavior File="WaitTimer" WaitTime="2500" />
+			<MoveTo X="4175.321" Y="381.2955" Z="209.5123" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Borrowed Enchanted Spyglass" MobIds="241664" X="4174.221" Y="378.908" Z="209.6159" />
+			<MoveTo X="4179.019" Y="405.6558" Z="209.7711" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" MobIds="93020" X="4181.385" Y="407.8681" Z="209.0187" />
+			<CustomBehavior File="WaitTimer" WaitTime="2500" />
+		</If>
+
+		<!-- Looted Bleeding Hollow Treasure,  requires Tanaan campaign #3 completed -->
+
+		<If Condition="!IsQuestCompleted(38320)" >
+			<MoveTo DestName="The Blade of Kra'nak" X="4513.435" Y="679.2141" Z="175.2393" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="MyCTM" X="4501.209" Y="694.9409" Z="161.2112" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="The Blade of Kra'nak" MobIds="240577" X="4500.199" Y="695.4045" Z="160.9818" />
+			<CustomBehavior File="MyCTM" X="4513.847" Y="676.9728" Z="175.5717" />
+		</If>
+
+		<!-- Skipping Partially Mined Apexis Crystal
+			Jeweled Arakkoa Effigy
+			Skull of the Mad Chief
+		since mobs are too strong in this area. -->
+
+		<If Condition="!IsQuestCompleted(38742)" >
+			<MoveTo DestName="Skull of the Mad Chief" X="4623.122" Y="3.141623" Z="94.13667" />
+			<CustomBehavior File="MyCTM" X="4632.609" Y="0.3023264" Z="92.39169" />
+			<CustomBehavior File="MyCTM" X="4634.421" Y="-8.190893" Z="87.64998" />
+			<CustomBehavior File="MyCTM" X="4642.125" Y="-14.82541" Z="82.10239" />
+			<CustomBehavior File="MyCTM" X="4647.372" Y="-14.23184" Z="80.45877" />
+			<CustomBehavior File="MyCTM" X="4654.519" Y="-9.565922" Z="76.29959" />
+			<CustomBehavior File="MyCTM" X="4654.101" Y="1.58946" Z="73.16595" />
+			<CustomBehavior File="MyCTM" X="4647.564" Y="7.707734" Z="69.83065" />
+			<CustomBehavior File="MyCTM" X="4639.991" Y="11.3082" Z="67.57214" TerminateWhen="Me.Combat" />
+			<CustomBehavior File="ForcedDismount" />
+			<MoveTo DestName="Skull of the Mad Chief" X="4718.133" Y="-109.6429" Z="-30.02634" />
+			<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Skull of the Mad Chief" MobIds="241674" X="4721.906" Y="-112.9878" Z="-27.31875" />
+			<MoveTo X="4638.618" Y="12.70863" Z="67.3888" />
+			<CustomBehavior File="MyCTM" X="4650.631" Y="4.716122" Z="71.44382" />
+			<CustomBehavior File="MyCTM" X="4653.856" Y="-4.208441" Z="74.38287" />
+			<CustomBehavior File="MyCTM" X="4652.205" Y="-12.21554" Z="78.04547" />
+			<CustomBehavior File="MyCTM" X="4639.899" Y="-14.20088" Z="83.66041" />
+			<CustomBehavior File="MyCTM" X="4618.877" Y="8.6374" Z="93.99243" />
+		</If>
+
+		<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.BlueViolet, &quot;[Profile Notification]: Treasure farming complete!  Going to mail and vendor.&quot;);" />
+		<CustomBehavior File="ForceSetVendor" DoSell="True" DoRepair="True" />
+
+		<CustomBehavior File="UserSettings" Preset="UserOriginal" />
+
+	</QuestOrder>
+</HBProfile>

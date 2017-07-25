@@ -1,0 +1,1392 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../Schemas/EchoSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>[N-Quest] Val'sharah [Echo] ($Rev$)</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+	<DefaultNavType>Fly</DefaultNavType>
+
+	<AvoidMobs>
+		<Mob Name="Gravax the Desecrator" Entry="92802" />
+		<Mob Name="Magoria" Entry="110423" />
+	</AvoidMobs>
+
+	<Mailboxes>
+		<!-- Mailboxes in this zone don't seem to be avtive at the moment. -->
+	</Mailboxes>
+
+	<Blacklist>
+		<Mob Name="Gravax the Desecrator" Id="92802" Flags="Combat" />
+		<Mob Name="Festering Inquisitor" Id="103643" Flags="Combat" />
+	</Blacklist>
+
+	<Blackspots>
+		<Blackspot X="2565.552" Y="7487.28" Z="21.6668" Radius="4" />
+		<!-- Blackspot for Treasure inside of cellar. -->
+
+		<Blackspot X="2953.907" Y="6346.191" Z="241.6791" Radius="4.776577" />
+		<!-- Root under ground for quest 38655 -->
+		<Blackspot X="1933.022" Y="6261.604" Z="68.99588" Radius="11.50931" />
+		<!-- Roots around Lostlight Grotto that testers consistently get stuck in. -->
+	</Blackspots>
+
+	<Vendors>
+		<Vendor Name="Callista Swiftglaive" Type="Repair" Entry="93464" X="2319.413" Y="6611.955" Z="140.3525" />
+		<!-- Loriathil -->
+		<Vendor Name="Javan Clawthorn" Type="Repair" Entry="92000" X="1951.083" Y="6912.71" Z="52.50054" />
+		<!-- NOTE: <ConditionalCheck> : UseWhen="!DoQuest(38142)" may be preferred here. -->
+		<Vendor Name="Anelas Moonstone" Type="Food" Entry="110531" X="2832.1" Y="6480.855" Z="206.4948" />
+		<Vendor Name="Vassallorand Nightmist" Type="Repair" Entry="112629" X="2876.16" Y="6754.713" Z="219.5564" />
+		<Vendor Name="Faeolas Nightwhisper" Type="Food" Entry="95118" X="3149.257" Y="5772.391" Z="308.2804" />
+		<Vendor Name="Vassallorand Nightmist" Type="Repair" Entry="112629" X="2876.16" Y="6754.713" Z="219.5563" />
+		<Vendor Name="Rhys Carrington" Type="Repair" Entry="93945" X="2817.958" Y="7264.667" Z="22.13581" />
+		<!-- Bradensbrook -->
+	</Vendors>
+
+	<!-- INITORDER COMMENT 
+	<InitOrder>
+		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
+		<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+		<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+		<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> Use LevelBot default
+	</InitOrder>
+END INITORDER COMMENT -->
+
+	<QuestOrder>
+		<!-- Init Settings -->
+			<CustomBehavior File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+			<CustomBehavior File="EnablePlugin" Names="Anti Drown" />
+			<CustomBehavior File="EnablePlugin" Names="Refreshment Detection" />
+
+			<CustomBehavior File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+			<LootMobs Value="true" />
+			<TargetingDistance Value="45" />
+		<!-- END Init Settings -->
+
+		<!-- Profile Settings -->
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[private static System.Windows.Window _uiWindow{get;set;}public static void Initialize(){Settings.Instance.Load();System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{var grid=(System.Windows.Controls.Grid)((Honorbuddy.MainWindow)System.Windows.Application.Current.MainWindow).Content;var profileConfigButton=grid.Children.OfType<System.Windows.Controls.Button>().FirstOrDefault(btn=>btn.Name=="btnProfileSettings");if(profileConfigButton!=null)return;profileConfigButton=new System.Windows.Controls.Button{Name="btnProfileSettings",HorizontalAlignment=System.Windows.HorizontalAlignment.Right,VerticalAlignment=System.Windows.VerticalAlignment.Bottom,Margin=new System.Windows.Thickness(0,0,8,86),Content="Profile Config",Height=20,Width=120};grid.Children.Add(profileConfigButton);profileConfigButton.Click+=(sender,args)=>{System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{if(_uiWindow!=null){_uiWindow.Close();_uiWindow=null;}Settings.Instance.Load();_uiWindow=UiWindow.GetWindow();_uiWindow.Show();_uiWindow.Closing+=(o,eventArgs)=>{Settings.Instance.Save();};}));};}));Styx.CommonBot.BotEvents.OnBotStopped+=args=>{System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{var grid=(System.Windows.Controls.Grid)((Honorbuddy.MainWindow)System.Windows.Application.Current.MainWindow).Content;var profileConfigButton=grid.Children.OfType<System.Windows.Controls.Button>().FirstOrDefault(btn=>btn.Name=="btnProfileSettings");grid.Children.Remove(profileConfigButton);_uiWindow.Close();}));};Styx.CommonBot.TreeRoot.OnShutdownRequested+=(sender,args)=>{System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(()=>{_uiWindow.Close();}));};}public static class UiWindow{public static System.Windows.Window GetWindow(){var window=new System.Windows.Window{Title="Profile Settings",SizeToContent=System.Windows.SizeToContent.WidthAndHeight,ResizeMode=System.Windows.ResizeMode.NoResize,DataContext=Settings.Instance};var grid=new System.Windows.Controls.Grid{Width=500,Height=550};window.Content=grid;var hbHeaderLogo=new System.Windows.Controls.MediaElement{LoadedBehavior=System.Windows.Controls.MediaState.Play,VerticalAlignment=System.Windows.VerticalAlignment.Top,HorizontalAlignment=System.Windows.HorizontalAlignment.Center};hbHeaderLogo.MediaEnded+=(sender,args)=>{hbHeaderLogo.Position=TimeSpan.FromMilliseconds(1);};grid.Children.Add(hbHeaderLogo);var discordButton=new System.Windows.Controls.Button{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(20,20,0,0),Style=new System.Windows.Style(),Background=System.Windows.Media.Brushes.Transparent,BorderThickness=new System.Windows.Thickness(0),Cursor=System.Windows.Input.Cursors.Hand};discordButton.Click+=(sender,args)=>{Process.Start("http://discord.gg/h74WjFY");};grid.Children.Add(discordButton);var discordImage=new System.Windows.Controls.Image{Height=36,Width=50,Style=new System.Windows.Style()};discordButton.Content=discordImage;var tabControl=new System.Windows.Controls.TabControl{Margin=new System.Windows.Thickness(0,150,0,0)};grid.Children.Add(tabControl);var changelogTab=new System.Windows.Controls.TabItem{Header="Changelog",Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255))};tabControl.Items.Add(changelogTab);changelogTab.GotFocus+=(sender,args)=>{changelogTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(73,96,210));};changelogTab.LostFocus+=(sender,args)=>{changelogTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255));};changelogTab.Focus();var changelogTextBox=new System.Windows.Controls.RichTextBox{Margin=new System.Windows.Thickness(10),VerticalScrollBarVisibility=System.Windows.Controls.ScrollBarVisibility.Auto,IsReadOnly=true,SelectionOpacity=0};changelogTab.Content=changelogTextBox;var generalTab=new System.Windows.Controls.TabItem{Header="General Settings",Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255))};tabControl.Items.Add(generalTab);generalTab.GotFocus+=(sender,args)=>{generalTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(73,96,210));};generalTab.LostFocus+=(sender,args)=>{generalTab.Foreground=new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(66,189,255));};var generalGrid=new System.Windows.Controls.Grid();generalTab.Content=generalGrid;var useAPItemCheckBox=new System.Windows.Controls.CheckBox{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(50,50,0,0),Content="Use Artifact Power Items"};generalGrid.Children.Add(useAPItemCheckBox);useAPItemCheckBox.SetBinding(System.Windows.Controls.CheckBox.IsCheckedProperty,new System.Windows.Data.Binding(nameof(Settings.Instance.UseAPItems)){Source=Settings.Instance});var useCustomAntiStuckCheckBox=new System.Windows.Controls.CheckBox{HorizontalAlignment=System.Windows.HorizontalAlignment.Center,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(0,100,20,0),Content="Use Custom Anti-Stuck"};generalGrid.Children.Add(useCustomAntiStuckCheckBox);useCustomAntiStuckCheckBox.SetBinding(System.Windows.Controls.CheckBox.IsCheckedProperty,new System.Windows.Data.Binding(nameof(Settings.Instance.UseCustomAntiStuck)){Source=Settings.Instance});var generalTabLabel=new System.Windows.Controls.Label{HorizontalAlignment=System.Windows.HorizontalAlignment.Center,VerticalAlignment=System.Windows.VerticalAlignment.Bottom,Margin=new System.Windows.Thickness(0,0,0,50),Content="More settings coming soon!"};generalGrid.Children.Add(generalTabLabel);var farmTreasuresCheckBox=new System.Windows.Controls.CheckBox{HorizontalAlignment=System.Windows.HorizontalAlignment.Left,VerticalAlignment=System.Windows.VerticalAlignment.Top,Margin=new System.Windows.Thickness(270,50,0,0),Content="Passively Farm Treasures"};generalGrid.Children.Add(farmTreasuresCheckBox);farmTreasuresCheckBox.SetBinding(System.Windows.Controls.CheckBox.IsCheckedProperty,new System.Windows.Data.Binding(nameof(Settings.Instance.FarmTreasures)){Source=Settings.Instance});Task.WhenAll(LoadChangelogAsync(window,changelogTextBox),LoadDiscordImageAsync(window,discordImage),LoadHBLogoAsync(window,hbHeaderLogo));return window;}private static async Task LoadChangelogAsync(System.Windows.Window window,System.Windows.Controls.RichTextBox changelogTextBox){await window.Dispatcher.BeginInvoke(new Action(async()=>{using(var client=new System.Net.WebClient()){var str=await client.DownloadStringTaskAsync("http://ech-o.net/bForum/changelog");using(var stream=new MemoryStream(System.Text.Encoding.Default.GetBytes(str))){changelogTextBox.Selection.Load(stream,System.Windows.DataFormats.Rtf);}}}));}private static async Task LoadDiscordImageAsync(System.Windows.Window window,System.Windows.Controls.Image imageControl){await window.Dispatcher.BeginInvoke(new Action(async()=>{using(var client=new System.Net.WebClient()){var str=await client.DownloadDataTaskAsync("http://ech-o.net/bForum/discord.png");using(var stream=new MemoryStream(str)){var bitmap=new System.Windows.Media.Imaging.BitmapImage();bitmap.BeginInit();bitmap.StreamSource=stream;bitmap.CacheOption=System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;bitmap.EndInit();bitmap.Freeze();imageControl.Source=bitmap;}}}));}private static async Task LoadHBLogoAsync(System.Windows.Window window,System.Windows.Controls.MediaElement mediaElement){await window.Dispatcher.BeginInvoke(new Action(async()=>{var savedImagePath=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"Profile Settings","header.png");if(savedImagePath==null)return;if(File.Exists(savedImagePath)){mediaElement.Source=new Uri(savedImagePath);}else{mediaElement.Source=new Uri("http://ech-o.net/bForum/headerlowres.jpg");var directory=Path.GetDirectoryName(savedImagePath);if(directory==null)return;if(!Directory.Exists(directory)){Directory.CreateDirectory(directory);}using(var client=new System.Net.WebClient()){await client.DownloadFileTaskAsync("http://ech-o.net/bForum/header.png",savedImagePath);if(File.Exists(savedImagePath)){mediaElement.Source=new Uri(savedImagePath);}}}}));}}public class Settings : System.ComponentModel.INotifyPropertyChanged{private readonly string _filePath;private readonly string _jsonLocation;private bool _useAPItems=true;	private bool _useCustomAntiStuck=true;private bool _farmTreasures=false;private Settings(){var hbLocation=Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);_jsonLocation=Path.Combine(hbLocation,"Newtonsoft.Json.dll");_filePath=Path.Combine(Styx.Helpers.Settings.CharacterSettingsDirectory,"OfficialProfilePackSettings.json");}public bool UseAPItems{get{return _useAPItems;}set{if(value==_useAPItems)return;_useAPItems=value;OnPropertyChanged();}}public bool UseCustomAntiStuck{get{return _useCustomAntiStuck;}set{if(value==_useCustomAntiStuck)return;_useCustomAntiStuck=value;OnPropertyChanged();}}public static Settings Instance{get;private set;}=new Settings();public bool FarmTreasures{get{return _farmTreasures;}set{if(value==_farmTreasures)return;_farmTreasures=value;OnPropertyChanged();}}public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;public void Load(){try{if(File.Exists(_filePath)){var assembly=AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a=>a.FullName.Contains("Newtonsoft.Json"))?? System.Reflection.Assembly.LoadFrom(_jsonLocation);var jsonConvert=assembly.GetTypes().FirstOrDefault(a=>a.FullName=="Newtonsoft.Json.JsonConvert");var json=string.Empty;using(var streamReader=new StreamReader(_filePath)){json=streamReader.ReadToEnd();}var populateObject=jsonConvert.GetMethods().FirstOrDefault(m=>m.Name=="PopulateObject");populateObject.Invoke(null,new object[]{json,Instance});}}catch(Exception ex){Logging.Write(ex.Message);}}private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName=null){PropertyChanged?.Invoke(this,new System.ComponentModel.PropertyChangedEventArgs(propertyName));}public void Save(){try{var assembly=AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a=>a.FullName.Contains("Newtonsoft.Json"))?? System.Reflection.Assembly.LoadFrom(_jsonLocation);var jsonConvert=assembly.GetTypes().FirstOrDefault(a=>a.FullName=="Newtonsoft.Json.JsonConvert");var serializeObject=jsonConvert.GetMethods().FirstOrDefault(m=>m.Name=="SerializeObject");var content=(string)serializeObject.Invoke(null,new object[]{this});using(var streamWriter=new StreamWriter(_filePath)){streamWriter.WriteLine(content);}}catch(Exception ex){Logging.Write(ex.Message);}}}]]>
+			</CustomBehavior>
+			<CustomBehavior File="RunCode"><![CDATA[
+					Initialize();
+					string settingsLog = $"[ProfileBase]: Settings Activated\n	Use Artifact Power Items :: {Settings.Instance.UseAPItems}\n	Use Custom Anti-Stuck    :: {Settings.Instance.UseCustomAntiStuck}\n 	Passively Farm Treasures :: {Settings.Instance.FarmTreasures}\n\nUse the 'Profile Config' button above the bot's Stop/Start button to change these settings.\n";
+					Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, settingsLog);
+				]]>
+			</CustomBehavior>
+		<!-- END Profile Settings -->
+
+		<!-- RunCode Methods -->
+			<CustomBehavior File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</CustomBehavior>
+		<!-- END RunCode Methods -->
+
+		<!-- Anti-stuck hook -->
+			<CustomBehavior File="RunCode" Type="Definition"><![CDATA[
+				static bool UseAntiStuck = true;
+
+				public static class StuckDetection
+				{
+					public static Vector3 LastPoint = new Vector3(0f,0f,0f);
+
+					public static bool IsStuck()
+					{
+						if (!Settings.Instance.UseCustomAntiStuck) return false;
+						if (!StyxWoW.Me.IsValid) return false;
+						if (StyxWoW.Me.IsDead) return false;
+						if (StyxWoW.Me.IsActuallyInCombat) return false;
+						if (StyxWoW.Me.HasAura("Resurrection Sickness")) return false;
+
+						var currentPoint = StyxWoW.Me.Location;
+						var isStuck = currentPoint.DistanceSqr(LastPoint) < 10f * 10f;
+						LastPoint = currentPoint;
+						return isStuck;
+					}
+				}
+			]]>
+			</CustomBehavior>
+			<CustomBehavior File="RunCode" Code="StuckDetection.LastPoint = new Vector3(0f,0f,0f);" /> <!-- Clean out stale data in case the user stop/starts the bot. -->
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="DoWhen_StuckDetector" AllowUseWhileMounted="true" LogExecution="false" UseAtInterval="210000" >
+				<If Condition="StuckDetection.IsStuck() &amp;&amp; HasItem(140192)" >
+					<CustomBehavior File="RunCode"><![CDATA[
+						Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Stuck detection activated!");
+						await CommonCoroutines.StopMoving();
+						await CommonCoroutines.LandAndDismount();
+						WoWItem dalaranHearthstone = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+						if (dalaranHearthstone.CooldownTimeLeft != TimeSpan.Zero) {
+							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Awaiting Dalaran Hearthstone cooldown before attempting hearth!");
+							await Coroutine.Wait(901000, () => dalaranHearthstone.CooldownTimeLeft == TimeSpan.Zero);
+						}
+						dalaranHearthstone.Interact();
+						await Coroutine.Sleep(11500);
+						Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, "[ProfileBase]: Reloading profile.");
+						ProfileManager.LoadNew(ProfileManager.XmlLocation);
+					]]>
+					</CustomBehavior>
+				</If>
+			</CustomBehavior>
+		<!-- END Anti-stuck hook -->
+		
+		<!-- Activate Artifact Boost Items Usage -->
+			<CustomBehavior File="RunCode" Type="Definition" ><![CDATA[
+					bool ReadyToEmpowerArtifact()
+					{
+						if (!Settings.Instance.UseAPItems) return false;
+						if (!Lua.GetReturnVal<bool>("return HasArtifactEquipped()", 0)) return false;
+						bool HaveItem = Me.BagItems.Any(x => x.ItemInfo.ConsumableClass == WoWItemConsumableClass.Other && x.GetEffect(0)?.Spell?.Name == "Empowering");
+						return HaveItem;
+					}
+				]]>
+			</CustomBehavior>
+			<CustomBehavior File="Hooks\DoWhen" LogExecution="false" AllowExecutionWhileNotAlive="false" ActivityName="UseArtifactBoostItems" UseWhen="ReadyToEmpowerArtifact()" >
+				<CustomBehavior File="RunCode"><![CDATA[
+						Logging.Write(System.Windows.Media.Colors.Yellow, "[ProfileBase]: Using artifact power booster items.");
+						var artifactPowerItems = Me.BagItems.Where(x => x.ItemInfo.ConsumableClass == WoWItemConsumableClass.Other && x.GetEffect(0)?.Spell?.Name == "Empowering");
+						foreach (WoWItem useMe in artifactPowerItems)
+						{
+							if (!Me.IsValid || !Me.IsAlive || Me.IsActuallyInCombat)
+								break;
+							await CommonCoroutines.StopMoving();
+							useMe.Use();
+							await Coroutine.Sleep(500);
+							await Coroutine.Wait(1600, () => !SpellManager.GlobalCooldown);
+							await Coroutine.Wait(2500, () => !Me.IsCasting);
+						}
+					]]>
+				</CustomBehavior>
+			</CustomBehavior>
+		<!-- END Activate Artifact Boost Items Usage -->
+
+		<!-- Profession Items -->
+			<!-- <WoWItem Name="Skinning Technique: Unbroken Tooth" Entry="139893" /> -->
+			<If Condition="HasItem(139893)" >
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="139893" WaitTime="1337" />
+			</If>
+
+			<!-- <WoWItem Name="Skinning Technique: Unbroken Claw" Entry="139894" /> -->
+			<If Condition="HasItem(139894)" >
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="UseItem" ItemId="139894" WaitTime="1337" />
+			</If>
+		<!-- END Profession Items -->
+
+		<!-- Treasure Farm Hook -->
+			<CustomBehavior File="RunCode">
+			<![CDATA[
+				TreeHooks.Instance.InsertHook("Questbot_Profile", 0,
+					_treasureHuntComposite ?? (_treasureHuntComposite = new  CommonBehaviors.Actions.ActionRunCoroutine(ctx => TreasureHunt())));	
+			]]>
+			</CustomBehavior>
+
+			<CustomBehavior File="RunCode" Type="Definition" ><![CDATA[
+					private List<WoWGuid> _treasureBlacklist = new List<WoWGuid>();
+					private bool _treasureIsLogged = false;
+					private Styx.TreeSharp.Composite _treasureHuntComposite;
+					private WoWGameObject _treasurePoi;
+					private Vector3 _treasureLocation; 
+
+					public async Task<bool> TreasureHunt()
+					{
+						if (!Settings.Instance.FarmTreasures) return false;
+
+						if (!_treasureLocation.Equals(new Vector3(0,0,0)) && _treasureLocation.DistanceSquared((WoWMovement.ActiveMover ?? StyxWoW.Me).Location) > 5 * 5)
+						{
+							TreeRoot.StatusText = $"Moving to interact with treasure: {_treasurePoi.Name}";
+							return (await CommonCoroutines.MoveTo(_treasureLocation)).IsSuccessful();
+						}
+
+						if (_treasurePoi == null || !_treasurePoi.IsValid)
+						{
+							_treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !_treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && obj.SubType == WoWGameObjectType.Chest && obj.LockType == WoWLockType.Open && obj.CanUse() && obj.DistanceSqr <= 40f*40f);
+							if (_treasurePoi == null) return false;
+							if (Navigator.LookupPathInfo(_treasurePoi).Navigability != PathNavigability.Navigable)
+							{
+								_treasureBlacklist.Add(_treasurePoi.Guid);
+								Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, $"[ProfileBase]: Treasure detected near us, but we can't navigate to it!\n	Name     :: {_treasurePoi.Name}\n	Entry    :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
+								_treasurePoi = null;
+								return false;
+							}
+							_treasureLocation = _treasurePoi.Location;
+							return true;
+						}
+
+						if (!_treasureIsLogged)
+						{
+							_treasureIsLogged = true;
+							Logging.Write(System.Windows.Media.Colors.DeepSkyBlue, $"[ProfileBase]: Treasure detected near us!\n	Name     :: {_treasurePoi.Name}\n	Entry    :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
+						}
+
+						TreeRoot.StatusText = $"Interacting with treasure: {_treasurePoi.Name}";
+						await CommonCoroutines.LandAndDismount();
+						await CommonCoroutines.StopMoving();
+						_treasurePoi.Interact();
+						await Coroutine.Wait(2000, () => LootFrame.Instance.IsVisible);
+						LootFrame.Instance.LootAll();
+						await Coroutine.Wait(2000, () => _treasurePoi == null || !_treasurePoi.IsValid);
+
+						_treasureIsLogged = false;
+						_treasureLocation = new Vector3(0,0,0);
+						_treasureBlacklist.Add(_treasurePoi.Guid);
+
+						return true;
+					}
+			]]>
+			</CustomBehavior>
+		<!-- END Treasure Farm Hook -->
+
+
+	<!-- Zone Introductory Quests -->
+		<If Condition="QuestDone(39731)" >
+			<TurnIn QuestName="The Tranquil Forest" QuestId="39731" TurnInName="Archmage Khadgar" TurnInId="91172" X="-825.1493" Y="4292.815" Z="746.2756" />
+			<!-- Breadcrumb from Class Hall -->
+		</If>
+
+		<If Condition="NeedsQuest(40122)" >
+			<!-- Prevent this intro quests from running if we've already started questing in this zone. -->
+			<PickUp QuestName="Tying Up Loose Ends" QuestId="39861" GiverName="Archmage Khadgar" GiverId="91172" X="-825.1493" Y="4292.815" Z="746.2756" />
+			<While Condition="DoQuest(39861)" >
+				<CustomBehavior File="InteractWith" MobId="96813" NonCompeteDistance="0" X="-833.8698" Y="4276.531" Z="746.255" />
+				<CustomBehavior File="Misc\RunLua" WaitTime="500" Lua="GossipTitleButton2:Click();" />
+				<CustomBehavior File="Misc\RunLua" Lua="StaticPopup1Button1:Click();" />
+				<CustomBehavior File="WaitTimer" WaitTime="105000" TerminateWhen="!Me.InVehicle" />
+			</While>
+			<TurnIn QuestName="Tying Up Loose Ends" QuestId="39861" TurnInName="Vaesdenarus" TurnInId="91462" X="2289.278" Y="6592.807" Z="138.6552" />
+		</If>
+
+		<PickUp QuestName="Cenarius, Keeper of the Grove" QuestId="40122" GiverName="Malfurion Stormrage" GiverId="91462" X="2289.278" Y="6592.807" Z="138.6561" />
+		<While Condition="DoQuest(40122)" >
+			<CustomBehavior File="InteractWith" MobId="91462" GossipOptions="1" QuestId="40122" QuestObjectiveIndex="1" X="2289.278" Y="6592.807" Z="138.6561" />
+			<CustomBehavior File="WaitTimer" WaitTime="60000" />
+			<!-- NOTE: <Optimization> : Can terminate this via detection when player gets off Malfurion -->
+		</While>
+		<TurnIn QuestName="Cenarius, Keeper of the Grove" QuestId="40122" TurnInName="Malfurion Stormrage" TurnInId="91109" X="2610.598" Y="6745.277" Z="106.4467" />
+
+
+		<PickUp QuestName="Nature's Call" QuestId="38384" GiverName="Malfurion Stormrage" GiverId="91109" X="2610.598" Y="6745.277" Z="106.4467" />
+		<TurnIn QuestName="Nature's Call" QuestId="38384" TurnInName="Aranelle" TurnInId="94179" X="2262.594" Y="6609.824" Z="137.9406" />
+
+		<PickUp QuestName="Archdruid of the Vale" QuestId="38382" GiverName="Aranelle" GiverId="94179" X="2262.594" Y="6609.824" Z="137.9406" />
+		<!-- Archdruid of the Vale breadcrumb -->
+		<PickUp QuestName="Archdruid of the Claw" QuestId="38142" GiverName="Aranelle" GiverId="94179" X="2262.594" Y="6609.824" Z="137.9406" />
+		<!-- Archdruid of the Claw breadcrumb -->
+
+		<If Condition="Me.Class == WoWClass.Druid" >
+			<PickUp QuestName="Archdruid of Lore" QuestId="44106" GiverName="Aranelle" GiverId="94179" X="2262.594" Y="6609.824" Z="137.9406" />
+			<!-- Archdruid of the Lore breadcrumb -->
+		</If>
+		<If Condition="Me.Class != WoWClass.Druid" >
+			<PickUp QuestName="Archdruid of Lore" QuestId="38381" GiverName="Aranelle" GiverId="94179" X="2262.594" Y="6609.824" Z="137.9406" />
+			<!-- Archdruid of the Lore breadcrumb -->
+		</If>
+	<!-- END Zone Introductory Quests -->
+
+	<!-- Syndrelle Side Quests 
+		<PickUp Nav="Fly" QuestName="Wisp in the Willows" QuestId="39354" GiverName="Syndrelle" GiverId="95202" X="2456.009" Y="6615.904" Z="136.4858" />
+		<While Condition="DoQuest(39354)" >
+			<CustomBehavior File="InteractWith" MobId="110572" X="2458.759" Y="6613.716" Z="136.4768" TerminateWhen="Me.InVehicle" />
+			<CustomBehavior File="WaitTimer" WaitTime="15000" TerminateWhen="!Me.HasAura(219856)" />
+
+			<CustomBehavior File="MyCTM" X="2525.931" Y="6862.389" Z="146.5747" TerminateWhen="!Me.InVehicle" />
+			<CustomBehavior File="MyCTM" X="2535.92" Y="6876.058" Z="144.8307" TerminateWhen="!Me.InVehicle" />
+			<CustomBehavior File="MyCTM" X="2538.477" Y="6883.93" Z="143.8796" TerminateWhen="!Me.InVehicle" />
+			<CustomBehavior File="MyCTM" X="2539.761" Y="6895.693" Z="147.986" TerminateWhen="!Me.InVehicle" />
+			<CustomBehavior File="MyCTM" X="2562.888" Y="6909.263" Z="145.3348" TerminateWhen="!Me.InVehicle" />
+			<CustomBehavior File="Misc\RunLua" WaitTime="2500" Lua="OverrideActionBarButton1:Click();" TerminateWhen="!Me.InVehicle" />
+
+			<CustomBehavior File="MyCTM" X="2561.399" Y="6925.402" Z="145.7707" TerminateWhen="!Me.InVehicle" />
+			<CustomBehavior File="WaitTimer" WaitTime="750" TerminateWhen="!Me.InVehicle" />
+			Wait for cooldown
+			<CustomBehavior File="Misc\RunLua" WaitTime="2500" Lua="OverrideActionBarButton1:Click();" TerminateWhen="!Me.InVehicle" />
+
+			<CustomBehavior File="MyCTM" X="2566.215" Y="6948.789" Z="143.5108" TerminateWhen="!Me.InVehicle" />
+			<CustomBehavior File="MyCTM" X="2584.615" Y="6970.657" Z="145.7537" TerminateWhen="!Me.InVehicle" />
+			<CustomBehavior File="Misc\RunLua" WaitTime="2500" Lua="OverrideActionBarButton1:Click();" TerminateWhen="!Me.InVehicle" />
+
+			<CustomBehavior File="MyCTM" X="2613.515" Y="6955.2" Z="143.5112" TerminateWhen="!Me.InVehicle" />
+			<CustomBehavior File="MyCTM" X="2658.945" Y="6956.282" Z="145.3318" TerminateWhen="!Me.InVehicle" />
+			<CustomBehavior File="Misc\RunLua" WaitTime="2500" Lua="OverrideActionBarButton1:Click();" TerminateWhen="!Me.InVehicle" />
+
+			<CustomBehavior File="MyCTM" X="2664.364" Y="6945.68" Z="146.158" TerminateWhen="!Me.InVehicle" />
+			<CustomBehavior File="WaitTimer" WaitTime="850" TerminateWhen="!Me.InVehicle" />
+			Wait for cooldown
+			<CustomBehavior File="Misc\RunLua" WaitTime="2500" Lua="OverrideActionBarButton1:Click();" TerminateWhen="!Me.InVehicle" />
+
+			<CustomBehavior File="MyCTM" X="2670.401" Y="6932.219" Z="144.8052" TerminateWhen="!Me.InVehicle" />
+			<CustomBehavior File="WaitTimer" WaitTime="850" TerminateWhen="!Me.InVehicle" />
+			Wait for cooldown
+			<CustomBehavior File="Misc\RunLua" WaitTime="2500" Lua="OverrideActionBarButton1:Click();" TerminateWhen="!Me.InVehicle" />
+
+			<CustomBehavior File="MyCTM" X="2640.93" Y="6894.24" Z="149.0623" TerminateWhen="!Me.InVehicle" />
+			<CustomBehavior File="MyCTM" X="2626.704" Y="6893.039" Z="145.9999" TerminateWhen="!Me.InVehicle" />
+			<CustomBehavior File="WaitTimer" WaitTime="750" TerminateWhen="!Me.InVehicle" />
+			Wait for cooldown
+			<CustomBehavior File="Misc\RunLua" WaitTime="2500" Lua="OverrideActionBarButton1:Click();" TerminateWhen="!Me.InVehicle" />
+
+			<CustomBehavior File="MyCTM" X="2616.015" Y="6886.651" Z="146.147" TerminateWhen="!Me.InVehicle" />
+			<CustomBehavior File="WaitTimer" WaitTime="750" TerminateWhen="!Me.InVehicle" />
+			Wait for cooldown
+			<CustomBehavior File="Misc\RunLua" WaitTime="2500" Lua="OverrideActionBarButton1:Click();" TerminateWhen="!Me.InVehicle" />
+
+			<CustomBehavior File="EjectVeh" />
+		</While>
+		<TurnIn Nav="Fly" QuestName="Wisp in the Willows" QuestId="39354" TurnInName="Syndrelle" TurnInId="95202" X="2456.009" Y="6615.904" Z="136.4858" />
+	END Syndrelle Side Quests -->
+
+	<!-- Story: Archdruid of the Claw -->
+		<TurnIn QuestName="Archdruid of the Claw" QuestId="38142" TurnInName="Rylissa Bearsong" TurnInId="73426" X="1940.021" Y="6901.733" Z="51.87961" />
+		<!-- Archdruid of the Claw breadcrumb -->
+
+		<PickUp QuestName="Frenzied Furbolgs" QuestId="38455" GiverName="Rylissa Bearsong" GiverId="73426" X="1940.021" Y="6901.733" Z="51.87961" />
+		<PickUp QuestName="Littlefur" QuestId="38922" GiverName="Elder Sookh" GiverId="93890" X="1855.432" Y="6939.188" Z="42.00073" />
+		<TurnIn QuestName="Littlefur" QuestId="38922" TurnInName="Littlefur" TurnInId="93581" X="1859.194" Y="7057.379" Z="39.70639" />
+		<PickUp QuestName="Totemic Call" QuestId="38246" GiverName="EMPTY" GiverId="93581" X="1859.194" Y="7057.379" Z="39.70639" />
+
+		<While Condition="DoQuest(38246, 38455)" >
+			<CustomBehavior File="InteractWith" MobId="242275" QuestId="38246" QuestObjectiveIndex="1" X="1710.122" Y="6912.98" Z="27.09621" />
+			<CustomBehavior File="KillUntilComplete" MobIds="91288, 93577, 93578" QuestId="38455" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="1811.649" Y="7044.008" Z="40.66652" />
+					<Hotspot X="1861.17" Y="7009.837" Z="42.51127" />
+					<Hotspot X="1811.936" Y="6978.752" Z="44.43999" />
+					<Hotspot X="1900.844" Y="7046.604" Z="68.35616" />
+					<Hotspot X="1732.691" Y="6968.743" Z="30.87997" />
+					<Hotspot X="1781.627" Y="6928.369" Z="33.3512" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<TurnIn QuestName="Totemic Call" QuestId="38246" TurnInName="Elder Sookh" TurnInId="93890" X="1855.432" Y="6939.188" Z="42.0009" />
+		<If Condition="QuestDone(38146)" >
+			<TurnIn QuestName="The Chieftain's Beads" QuestId="38146" TurnInName="Elder Sookh" TurnInId="93890" X="1855.432" Y="6939.188" Z="42.0009" />
+		</If>
+		<TurnIn QuestName="Frenzied Furbolgs" QuestId="38455" TurnInName="Rylissa Bearsong" TurnInId="73426" X="1940.021" Y="6901.733" Z="51.87946" />
+
+		<PickUp QuestName="Awakening the Archdruid" QuestId="38143" GiverName="Rylissa Bearsong" GiverId="73426" X="1940.021" Y="6901.733" Z="51.87946" />
+		<TurnIn QuestName="Awakening the Archdruid" QuestId="38143" TurnInName="Koda Steelclaw" TurnInId="91223" X="1813.238" Y="6869.726" Z="-14.32845" />
+
+		<PickUp QuestName="Out of the Dream" QuestId="38145" GiverName="Koda Steelclaw" GiverId="91223" X="1813.222" Y="6869.721" Z="-14.32845" />
+		<PickUp QuestName="The Demons Below" QuestId="38144" GiverName="Koda Steelclaw" GiverId="91223" X="1813.222" Y="6869.721" Z="-14.32845" />
+		<While Condition="DoQuest(38145, 38144)" >
+			<CustomBehavior File="InteractWith" MobIds="91043" CollectionDistance="200" PreInteractMountStrategy="Dismount" QuestId="38145" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="1684.212" Y="6891.877" Z="-9.799621" />
+					<Hotspot X="1738.96" Y="6998.24" Z="3.766619" />
+					<Hotspot X="1751.922" Y="6905.974" Z="8.994231" />
+				</HuntingGrounds>
+			</CustomBehavior>
+			<CustomBehavior File="KillUntilComplete" MobIds="91645, 91044" QuestId="38144" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="1684.212" Y="6891.877" Z="-9.799621" />
+					<Hotspot X="1738.96" Y="6998.24" Z="3.766619" />
+					<Hotspot X="1751.922" Y="6905.974" Z="8.994231" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+		<If Condition="QuestDone(38144, 38145)" >
+			<MoveTo X="1728.068" Y="6860.759" Z="-0.01" />
+			<!-- For some reason the bot is trying to navigate to the wrong coordinates while moving to turn in these quests.  So the MoveTo is here to fix that. -->
+			<TurnIn QuestName="The Demons Below" QuestId="38144" TurnInName="Koda Steelclaw" TurnInId="91223" X="1728.068" Y="6860.759" Z="-0.01" />
+			<TurnIn QuestName="Out of the Dream" QuestId="38145" TurnInName="Koda Steelclaw" TurnInId="91223" X="1728.068" Y="6860.759" Z="-0.01" />
+		</If>
+
+		<PickUp QuestName="Entangled Dreams" QuestId="38147" GiverName="Koda Steelclaw" GiverId="91223" X="1728.068" Y="6860.759" Z="-0.009" />
+		<While Condition="DoQuest(38147)" >
+			<CustomBehavior File="KillUntilComplete" MobId="91045" QuestId="38147" QuestObjectiveIndex="1" X="1637.722" Y="6866.023" Z="-20.74207" />
+		</While>
+		<If Condition="QuestDone(38147)" >
+			<MoveTo X="1969.271" Y="6914.577" Z="56.03535" />
+			<TurnIn QuestName="Entangled Dreams" QuestId="38147" TurnInName="Koda Steelclaw" TurnInId="91223" X="1969.271" Y="6914.577" Z="56.03535" />
+		</If>
+	<!-- END Story: Archdruid of the Claw -->
+
+	<!-- Lunarwing Shallows Side Quests -->
+		<PickUp QuestName="Thorny Dancing" QuestId="40220" GiverName="Saylanna Riverbreeze" GiverId="93600" X="2032.776" Y="6644.257" Z="84.91025" />
+		<PickUp QuestName="Spread Your Lunarwings and Fly" QuestId="40221" GiverName="Saylanna Riverbreeze" GiverId="93600" X="2032.776" Y="6644.257" Z="84.91025" />
+
+		<While Condition="DoQuest(40221)" >
+			<CustomBehavior File="InteractWith" MobId="93489" CollectionDistance="200" PreInteractMountStrategy="Dismount" QuestId="40221" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="1990.604" Y="6707.348" Z="74.22243" />
+					<Hotspot X="1930.482" Y="6704.452" Z="75.16626" />
+					<Hotspot X="1888.888" Y="6569.999" Z="74.17926" />
+					<Hotspot X="1800.472" Y="6560.104" Z="75.57483" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<While Condition="DoQuest(40220)" >
+			<CustomBehavior File="KillUntilComplete" MobId="93444" QuestId="40220" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="1888.74" Y="6524.705" Z="74.65449" />
+					<Hotspot X="1971.427" Y="6571.291" Z="77.63254" />
+					<Hotspot X="1910.443" Y="6721.511" Z="80.28133" />
+					<Hotspot X="2009.188" Y="6742.221" Z="77.49535" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<While Condition="DoQuest(38862) || NeedsQuest(38862)" >
+			<!-- Dropped Quest Item: Auto Accept, - Thieving Thistleleaf -->
+			<CustomBehavior File="KillUntilComplete" MobIds="91472, 91474, 93444" TerminateWhen="IsQuestCompleted(38862)" >
+				<HuntingGrounds>
+					<Hotspot X="1888.74" Y="6524.705" Z="74.65449" />
+					<Hotspot X="1971.427" Y="6571.291" Z="77.63254" />
+					<Hotspot X="1910.443" Y="6721.511" Z="80.28133" />
+					<Hotspot X="2009.188" Y="6742.221" Z="77.49535" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<While Condition="!IsQuestCompleted(38842) &amp;&amp; Me.Level &lt; 110" >
+			<!-- Bonus Objective: Faerie Fracas -->
+			<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" PreInteractMountStrategy="Dismount" TerminateWhen="IsQuestCompleted(38842)" >
+				<HuntingGrounds>
+					<Hotspot X="1888.74" Y="6524.705" Z="74.65449" />
+					<Hotspot X="1971.427" Y="6571.291" Z="77.63254" />
+					<Hotspot X="1910.443" Y="6721.511" Z="80.28133" />
+					<Hotspot X="2009.188" Y="6742.221" Z="77.49535" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueUnit Id="93489" />
+					<PursueUnit Id="91472" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="91474" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="93444" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+				</PursuitList>
+			</CustomBehavior>
+		</While>
+
+		<TurnIn QuestName="Thorny Dancing" QuestId="40220" TurnInName="Saylanna Riverbreeze" TurnInId="93600" X="2032.776" Y="6644.257" Z="84.90976" />
+		<TurnIn QuestName="Spread Your Lunarwings and Fly" QuestId="40221" TurnInName="Saylanna Riverbreeze" TurnInId="93600" X="2032.776" Y="6644.257" Z="84.90976" />
+		<TurnIn QuestName="Thieving Thistleleaf" QuestId="38862" TurnInName="Saylanna Riverbreeze" TurnInId="93600" X="2032.776" Y="6644.257" Z="84.90976" />
+
+		<If Condition="!IsQuestCompleted(38889)" >
+			<MoveTo X="1734.208" Y="6677.509" Z="83.05986" />
+			<CustomBehavior File="InteractWith" MobId="93677" GossipOptions="1" MovementBy="NavigatorOnly" X="1755.291" Y="6695.789" Z="82.82614" />
+			<CustomBehavior File="KillUntilComplete" MobId="93686" X="1750.909" Y="6691.721" Z="83.31921" TerminateWhen="Unit(93686, u =&gt; u.IsDead) != null" />
+			<CustomBehavior File="InteractWith" MobIds="93677, 93684" X="1755.291" Y="6695.789" Z="82.82614" />
+			<CustomBehavior File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+		</If>
+	<!-- END Lunarwing Shallows Side Quests -->
+
+	<!-- Lightsong Side Quests -->
+		<PickUp QuestName="Emerald Sisters" QuestId="42748" GiverName="Guviena Bladesong" GiverId="108304" X="1872.752" Y="6330.245" Z="64.12913" />
+
+		<!-- <WoWItem Name="Ashmaw Cub" Entry="128690" />-->
+		<If Condition="HasItem(128690)" >
+			<CustomBehavior File="UseItem" ItemId="128690" />
+		</If>
+		<If Condition="HasItem(128690)" >
+			<CustomBehavior File="DeleteItems" Ids="128690" />
+		</If>
+
+		<PickUp QuestName="Where the Wildkin Are" QuestId="42747" GiverName="Guviena Bladesong" GiverId="108304" X="1872.752" Y="6330.245" Z="64.12913" />
+		<PickUp QuestName="Dreamcatcher" QuestId="42750" GiverName="Leirana" GiverId="108358" X="1949.134" Y="6328.848" Z="57.90811" />
+
+		<While Condition="DoQuest(42748)" >
+			<CustomBehavior File="InteractWith" MobId="108600" MovementBy="NavigatorOnly" QuestId="42748" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="1944.328" Y="6325.935" Z="57.90821" />
+					<Hotspot X="1980.547" Y="6291.214" Z="60.16148" />
+					<Hotspot X="1985.575" Y="6354.831" Z="58.34233" />
+					<Hotspot X="1952.655" Y="6362.848" Z="57.86107" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<While Condition="DoQuest(42750)" >
+			<CustomBehavior File="InteractWith" MobId="251271" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="42750" QuestObjectiveIndex="1" X="1957.365" Y="6341.55" Z="57.90762" />
+			<CustomBehavior File="InteractWith" MobId="251272" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="42750" QuestObjectiveIndex="2" X="1984.649" Y="6506.135" Z="62.91261" />
+			<CustomBehavior File="InteractWith" MobId="251273" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="42750" QuestObjectiveIndex="3" X="2000.073" Y="6241.669" Z="30.89069" />
+		</While>
+
+		<While Condition="DoQuest(42747)" >
+			<CustomBehavior File="KillUntilComplete" MobIds="108259, 108327, 108675" QuestId="42747" >
+				<HuntingGrounds>
+					<Hotspot X="1973.535" Y="6249.086" Z="67.18539" />
+					<Hotspot X="1956.034" Y="6299.026" Z="58.00662" />
+					<Hotspot X="1954.589" Y="6358.563" Z="57.86699" />
+					<Hotspot X="1994.519" Y="6365.55" Z="59.214" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<While Condition="NeedsQuest(42786) &amp;&amp; !HasItem(42786)" >
+			<CustomBehavior File="KillUntilComplete" MobIds="108259, 108327, 108675" TerminateWhen="HasQuest(42786) || HasItem(42786)" >
+				<HuntingGrounds>
+					<Hotspot X="1973.535" Y="6249.086" Z="67.18539" />
+					<Hotspot X="1956.034" Y="6299.026" Z="58.00662" />
+					<Hotspot X="1954.589" Y="6358.563" Z="57.86699" />
+					<Hotspot X="1994.519" Y="6365.55" Z="59.214" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+		<If Condition="!HasQuest(42786) &amp;&amp; HasItem(42786)" >
+			<PickUp QuestName="Blood and Gold" QuestId="42786" GiverName="Grotesque Remains" GiverId="42786" GiverType="Item" />
+		</If>
+
+		<TurnIn QuestName="Emerald Sisters" QuestId="42748" TurnInName="Guviena Bladesong" TurnInId="108304" X="1872.752" Y="6330.245" Z="64.12913" />
+		<TurnIn QuestName="Where the Wildkin Are" QuestId="42747" TurnInName="Guviena Bladesong" TurnInId="108304" X="1872.752" Y="6330.245" Z="64.12913" />
+		<TurnIn QuestName="Grotesque Remains" QuestId="42786" TurnInName="Guviena Bladesong" TurnInId="108304" X="1872.752" Y="6330.245" Z="64.12913" />
+		<TurnIn QuestName="Dreamcatcher" QuestId="42750" TurnInName="Guviena Bladesong" TurnInId="108304" X="1872.752" Y="6330.245" Z="64.12913" />
+
+
+		<PickUp QuestName="Moon Reaver" QuestId="42751" GiverName="Guviena Bladesong" GiverId="108304" X="1872.752" Y="6330.245" Z="64.12913" />
+		<While Condition="DoQuest(42751)" >
+			<DefaultNavType Value="Run" />
+			<CustomBehavior File="KillUntilComplete" MobId="108641" QuestId="42751" QuestObjectiveIndex="1" X="1929.929" Y="6287.729" Z="-30.59707" />
+			<DefaultNavType Value="Fly" />
+			<CustomBehavior File="InteractWith" MobId="108642" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" GossipOptions="1" QuestId="42751" QuestObjectiveIndex="2" X="1929.769" Y="6277.652" Z="-29.89526" />
+		</While>
+		<TurnIn QuestName="Moon Reaver" QuestId="42751" TurnInName="Keeper Remulos" TurnInId="108887" X="1879.526" Y="6336.813" Z="65.81393" />
+	<!-- END Lightsong Side Quests -->
+
+	<!-- Story: Archdruid of the Vale -->
+		<TurnIn QuestName="Archdruid of the Vale" QuestId="38382" TurnInName="Thaon Moonclaw" TurnInId="95395" X="2274.671" Y="6242.448" Z="122.8316" /> <!-- Archdruid of the Vale breadcrumb -->
+
+		<PickUp QuestName="Dishonored" QuestId="39383" GiverName="Thaon Moonclaw" GiverId="95395" X="2274.671" Y="6242.448" Z="122.8316" />
+		<While Condition="DoQuest(39383)" >
+			<CustomBehavior File="KillUntilComplete" MobId="95319" QuestId="39383" QuestObjectiveIndex="1" X="2361.745" Y="6137.636" Z="128.1176" />
+		</While>
+		<TurnIn QuestName="Dishonored" QuestId="39383" TurnInName="Thaon Moonclaw" TurnInId="95396" X="2330.851" Y="6146.351" Z="126.2492" />
+
+		<PickUp QuestName="The Corruptor" QuestId="39384" GiverName="Thaon Moonclaw" GiverId="95396" X="2330.851" Y="6146.351" Z="126.2492" />
+		<While Condition="DoQuest(39384)" >
+			<!-- Obj 1 is 'go to location.' -->
+			<CustomBehavior File="KillUntilComplete" MobId="95320" QuestId="39384" QuestObjectiveIndex="2" X="2499.676" Y="6027.744" Z="127.9041" />
+		</While>
+		<TurnIn QuestName="The Corruptor" QuestId="39384" TurnInName="Evelle Nightwhisper" TurnInId="91650" X="2502.21" Y="6013.201" Z="127.5239" />
+
+		<PickUp QuestName="The Nightmare Lord" QuestId="40573" GiverName="Evelle Nightwhisper" GiverId="91650" X="2502.21" Y="6013.201" Z="127.5239" />
+		<While Condition="DoQuest(40573)" >
+			<CustomBehavior File="InteractWith" MobId="245676" QuestId="40573" QuestObjectiveIndex="1" X="2503.026" Y="6016.773" Z="127.5624" />
+			<CustomBehavior File="KillUntilComplete" MobId="95399" QuestId="40573" QuestObjectiveIndex="4" X="2119.677" Y="6059.124" Z="99.43316" />
+		</While>
+		<TurnIn QuestName="The Nightmare Lord" QuestId="40573" TurnInName="Evelle Nightwhisper" TurnInId="100573" X="2165.318" Y="6171.343" Z="133.3732" />
+
+		<While Condition="!IsQuestCompleted(39393) &amp;&amp; Me.Level &lt; 110" >
+			<!-- NOTE: <BonusObjective> : Moonclaw Vale, 39393 -->
+			<CustomBehavior File="InteractWith" MobState="AliveNotInCombat" NonCompeteDistance="0" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" NumOfTimes="150" TerminateWhen="IsQuestCompleted(39393)" >
+				<HuntingGrounds>
+					<Hotspot X="2195.354" Y="6151.02" Z="129.0688" />
+					<Hotspot X="2283.345" Y="6180.969" Z="122.8088" />
+					<Hotspot X="2346.038" Y="6162.265" Z="126.8929" />
+					<Hotspot X="2288.945" Y="6124.205" Z="125.4149" />
+					<Hotspot X="2290.139" Y="6044.465" Z="132.9554" />
+					<Hotspot X="2421.135" Y="6127.569" Z="155.8723" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueUnit Id="98700" PursueWhen="!IsQuestCompleted(39393)" />
+					<PursueUnit Id="95617" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="95727" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="95599" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+				</PursuitList>
+			</CustomBehavior>
+		</While>
+	<!-- END Story: Archdruid of the Vale -->
+
+	<!-- Moonclaw Vale Side Quests -->
+		<PickUp QuestName="Moist Around the Hedges" QuestId="42857" GiverName="Moist Grizzlecomb" GiverId="251425" X="2185.432" Y="5924.223" Z="156.6203" />
+		<PickUp QuestName="All Grell Broke Loose" QuestId="42883" GiverName="Old Grizzleback" GiverId="109631" X="2126.276" Y="5931.999" Z="147.7577" />
+		<PickUp QuestName="Grassroots Effort" QuestId="42884" GiverName="Old Grizzleback" GiverId="109631" X="2126.276" Y="5931.999" Z="147.7577" />
+		<PickUp QuestName="Grell to Pay" QuestId="42865" GiverName="Old Grizzleback" GiverId="109631" X="2126.276" Y="5931.999" Z="147.7577" />
+
+		<While Condition="DoQuest(42857)" >
+			<CustomBehavior File="InteractWith" MobId="251419" QuestId="42857" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="2213.764" Y="5879.429" Z="162.9658" />
+					<Hotspot X="2252.809" Y="5915.171" Z="160.8861" />
+					<Hotspot X="2292.651" Y="5853.153" Z="159.6631" />
+					<Hotspot X="2322.278" Y="5867.87" Z="162.7859" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<While Condition="DoQuest(42865)" >
+			<CustomBehavior File="KillUntilComplete" MobId="109073" QuestId="42865" QuestObjectiveIndex="1" X="2335.1" Y="5854.351" Z="162.1205" />
+		</While>
+
+		<While Condition="DoQuest(42884)" >
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" MobId="251434" MovementBy="NavigatorOnly" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="42884" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="2293.727" Y="5830.487" Z="166.4521" />
+					<Hotspot X="2255.833" Y="5824.078" Z="158.0858" />
+					<Hotspot X="2235.139" Y="5846.782" Z="159.9562" />
+					<Hotspot X="2301.252" Y="5884.301" Z="163.6075" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<While Condition="DoQuest(42883)" >
+			<CustomBehavior File="KillUntilComplete" MobId="109045" QuestId="42883" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="2292.929" Y="5918.289" Z="165.7036" />
+					<Hotspot X="2301.652" Y="5880.191" Z="163.2569" />
+					<Hotspot X="2276.609" Y="5859.243" Z="154.8295" />
+					<Hotspot X="2248.76" Y="5837.159" Z="160.0673" />
+					<Hotspot X="2219.138" Y="5885.993" Z="161.1025" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<TurnIn QuestName="Moist Around the Hedges" QuestId="42857" TurnInName="Old Grizzleback" TurnInId="109631" X="2165.025" Y="5914.399" Z="152.1888" />
+		<TurnIn QuestName="All Grell Broke Loose" QuestId="42883" TurnInName="Old Grizzleback" TurnInId="109631" X="2165.025" Y="5914.399" Z="152.1888" />
+		<TurnIn QuestName="Grassroots Effort" QuestId="42884" TurnInName="Old Grizzleback" TurnInId="109631" X="2165.025" Y="5914.399" Z="152.1888" />
+		<TurnIn QuestName="Grell to Pay" QuestId="42865" TurnInName="Old Grizzleback" TurnInId="109631" X="2165.025" Y="5914.399" Z="152.1888" />
+	<!-- END Moonclaw Vale Side Quests -->
+
+	<!-- Story: Archdruid of Lore -->
+		<If Condition="Me.Class == WoWClass.Druid" >
+			<TurnIn QuestName="Archdruid of Lore" QuestId="44106" TurnInName="Elothir" TurnInId="91066" X="2386.075" Y="6914.492" Z="110.4472" />
+			<!-- Archdruid of the Lore breadcrumb -->
+		</If>
+		<If Condition="Me.Class != WoWClass.Druid" >
+			<TurnIn QuestName="Archdruid of Lore" QuestId="38381" TurnInName="Elothir" TurnInId="91066" X="2386.075" Y="6914.492" Z="110.4472" />
+			<!-- Archdruid of the Lore breadcrumb -->
+		</If>
+
+		<PickUp QuestName="Solid as a Rock" QuestId="38235" GiverName="Elothir" GiverId="91066" X="2386.075" Y="6914.492" Z="110.4472" />
+		<PickUp QuestName="Death to the Witchmother" QuestId="38225" GiverName="Elothir" GiverId="91066" X="2386.075" Y="6914.492" Z="110.4472" />
+
+		<While Condition="DoQuest(38235, 38225)" >
+			<CustomBehavior File="InteractWith" MobId="93640" QuestId="38235" QuestObjectiveIndex="2" InteractBlacklistTimeInSeconds="1" X="2157.769" Y="7033.619" Z="71.09741" />
+			<CustomBehavior File="KillUntilComplete" MobId="91130" QuestId="38225" QuestObjectiveIndex="1" X="2105.945" Y="7083.521" Z="63.80593" />
+			<CustomBehavior File="InteractWith" MobId="93644" QuestId="38235" QuestObjectiveIndex="3" InteractBlacklistTimeInSeconds="1" X="2198.757" Y="7193.32" Z="57.76998" />
+			<CustomBehavior File="InteractWith" MobId="93602" QuestId="38235" QuestObjectiveIndex="1" InteractBlacklistTimeInSeconds="1" X="2385.297" Y="7193.228" Z="71.26111" />
+		</While>
+
+		<If Condition="!IsQuestCompleted(38372) &amp;&amp; !QuestFlaggedCompleted(38372) &amp;&amp; Me.Level &lt; 110" >
+			<!-- Bonus Objective: Wretched Sisters, bonus quest. -->
+			<!-- Using Lua return as there's a weird issue where IsQuestCompleted and HasQuest won't properly detect the status of this one. -->
+			<CustomBehavior File="KillUntilComplete" MobIds="94207, 94208, 91598" MovementBy="NavigatorOnly" TerminateWhen="IsQuestCompleted(38372) || QuestFlaggedCompleted(38372)" >
+				<HuntingGrounds>
+					<Hotspot X="2234.981" Y="7059.033" Z="67.33078" />
+					<Hotspot X="2174.476" Y="7062.504" Z="64.25062" />
+					<Hotspot X="2197.568" Y="7130.01" Z="61.03362" />
+					<Hotspot X="2136.51" Y="7135.333" Z="60.4412" />
+					<Hotspot X="2183.095" Y="7184.831" Z="60.31894" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</If>
+
+		<TurnIn QuestName="Solid as a Rock" QuestId="38235" TurnInName="Elothir" TurnInId="91066" X="2386.075" Y="6914.492" Z="110.4475" />
+		<TurnIn QuestName="Death to the Witchmother" QuestId="38225" TurnInName="Elothir" TurnInId="91066" X="2386.075" Y="6914.492" Z="110.4475" />
+	<!-- END: Archdruid of Lore -->
+
+	<!-- Story: Into the Nightmare -->
+		<!-- This is a breadcrumb I believe.  It caused an issue for a user already so I may end up removing it or adding BreadcrumbQuest checks -->
+		<PickUp QuestName="Return to the Grove" QuestId="38323" GiverName="Evelle Nightwhisper" GiverId="100573" X="2165.318" Y="6171.343" Z="133.3732" />
+		<TurnIn QuestName="Return to the Grove" QuestId="38323" TurnInName="Malfurion Stormrage" TurnInId="91109" X="2610.598" Y="6745.277" Z="106.4467" />
+
+		<PickUp QuestName="The Emerald Queen" QuestId="38377" GiverName="Malfurion Stormrage" GiverId="91109" X="2610.598" Y="6745.277" Z="106.4467" />
+		<While Condition="DoQuest(38377)" >
+			<CustomBehavior File="InteractWith" MobId="91109" GossipOptions="1" QuestId="38377" QuestObjectiveIndex="1" X="2610.598" Y="6745.277" Z="106.4467" />
+			<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+		</While>
+		<TurnIn QuestName="The Emerald Queen" QuestId="38377" TurnInName="Malfurion Stormrage" TurnInId="100387" X="2608.81" Y="6712.01" Z="104.873" />
+
+		<PickUp QuestName="The Temple of Elune" QuestId="38641" GiverName="Ysera" GiverId="98584" X="2636.72" Y="6714.741" Z="105.8864" />
+		<TurnIn QuestName="The Temple of Elune" QuestId="38641" TurnInName="Lyanis Moonfall" TurnInId="92680" X="2871.16" Y="6771.768" Z="220.1778" />
+
+		<PickUp QuestName="Tears for Fears" QuestId="38662" GiverName="Lyanis Moonfall" GiverId="92680" X="2871.16" Y="6771.768" Z="220.1778" />
+		<PickUp QuestName="Root Cause" QuestId="38655" GiverName="Isoraen Nightstar" GiverId="92697" X="2876.512" Y="6769.636" Z="220.1773" />
+
+		<While Condition="DoQuest(38662)" >
+			<MoveTo X="2987.861" Y="6338.324" Z="251.1868" />
+		</While>
+
+		<While Condition="DoQuest(38655)" >
+			<CustomBehavior File="InteractWith" MobIds="243952, 243953, 243954" InteractByLooting="true" CollectionDistance="200" PreInteractMountStrategy="Dismount" QuestId="38655" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="2965.469" Y="6393.951" Z="228.2658" />
+					<Hotspot X="2870.841" Y="6430.634" Z="214.0949" />
+					<Hotspot X="2827.512" Y="6346.498" Z="216.2048" />
+					<Hotspot X="2938.899" Y="6473.809" Z="206.4743" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+
+		<TurnIn QuestName="Tears for Fears" QuestId="38662" TurnInName="Lyanis Moonfall" TurnInId="92680" X="2871.16" Y="6771.768" Z="220.1775" />
+		<TurnIn QuestName="Root Cause" QuestId="38655" TurnInName="Isoraen Nightstar" TurnInId="92697" X="2876.512" Y="6769.636" Z="220.1775" />
+
+		<PickUp QuestName="The Die is Cast" QuestId="38663" GiverName="Lyanis Moonfall" GiverId="92680" X="2871.16" Y="6771.768" Z="220.1775" />
+		<If Condition="QuestDone(38663)" >
+			<TurnIn QuestName="The Die is Cast" QuestId="38663" TurnInName="Ysera" TurnInId="98584" X="2636.72" Y="6714.741" Z="105.886" />
+			<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+		</If>
+
+		<PickUp QuestName="Malfurion's Fury" QuestId="38595" GiverName="Ysera" GiverId="92742" X="2636.72" Y="6714.741" Z="105.8862" />
+		<While Condition="DoQuest(38595)" >
+			<CustomBehavior File="InteractWith" MobId="92742" GossipOptions="1" QuestId="38595" QuestObjectiveIndex="1" X="2636.72" Y="6714.741" Z="105.8862" />
+			<CustomBehavior File="WaitTimer" WaitTime="35000" QuestId="38595" QuestObjectiveIndex="2" />
+		</While>
+		<TurnIn QuestName="Malfurion's Fury" QuestId="38595" TurnInName="Ysera" TurnInId="92420" X="2708.047" Y="6271.056" Z="223.4982" />
+
+		<PickUp QuestName="To Old Friends" QuestId="38582" GiverName="Ysera" GiverId="92420" X="2708.047" Y="6271.056" Z="223.4982" />
+		<While Condition="DoQuest(38582)" >
+			<!-- NOTE: <AddHook> : Player recvies a zone buff which can be used for massive AoE damage.  Need to detect aggro count - and use spell accordingly as it has a 5second cooldown.
+									Ideally, the player should be pulling masses of mobs and using this spell to kill them as the kill count required to complete the quest is 50 kills.
+				-->
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="YseraWrath" AllowUseDuringCombat="true" LogExecution="false" UseAtInterval="5000" >
+				<CustomBehavior File="RunCode">
+					<![CDATA[
+							if (Me.CurrentTarget != null && Me.CurrentTarget.IsAlive && Me.CurrentTarget.Entry != 92335)
+							{
+								SpellManager.StopCasting();
+								await Coroutine.Sleep(250);
+								Lua.DoString("ExtraActionButton1:Click();");
+								await Coroutine.Sleep(50);
+								SpellManager.ClickRemoteLocation(Me.CurrentTarget.Location);
+							}
+
+						]]>
+				</CustomBehavior>
+			</CustomBehavior>
+
+			<CustomBehavior File="KillUntilComplete" MobIds="114216, 114215, 114219, 92332" QuestId="38582" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="2695.849" Y="6112.126" Z="247.5138" />
+					<Hotspot X="2814.905" Y="6093.722" Z="242.6541" />
+					<Hotspot X="2935.454" Y="6139.794" Z="260.0298" />
+					<Hotspot X="2970.862" Y="6066.421" Z="262.0724" />
+					<Hotspot X="2876.041" Y="6029.743" Z="261.1362" />
+				</HuntingGrounds>
+			</CustomBehavior>
+
+			<CustomBehavior File="KillUntilComplete" MobId="92335" QuestId="38582" QuestObjectiveIndex="3" X="2828.71" Y="5898.744" Z="234.482" />
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="YseraWrath" Command="Remove" />
+		</While>
+		<TurnIn QuestName="To Old Friends" QuestId="38582" TurnInName="Ysera" TurnInId="92710" X="2717.447" Y="6027.452" Z="267.481" />
+
+		<PickUp QuestName="The Demon's Trail" QuestId="38753" GiverName="Ysera" GiverId="92710" X="2717.447" Y="6027.452" Z="267.481" />
+		<While Condition="DoQuest(38753)" >
+			<MoveTo X="2868.811" Y="5893.644" Z="299.0002" />
+			<!-- NOTE: <TerminationNeeded> : This MoveTo needs to terminate once the cutscene is detected so the cutscenes can be skipped.
+																		NOTE: <LocationCheck> : Make sure this MoveTo is close enough to trigger the cutscenes. -->
+			<CustomBehavior File="RunCode" Code="await SkipCutscene(3000, 5000);" />
+			<!-- NOTE: <TimerCheck> : Make sure the first cutscene skip waits long enough on the postWait. -->
+			<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+		</While>
+		<TurnIn QuestName="The Demon's Trail" QuestId="38753" TurnInName="Tyrande Whisperwind" TurnInId="102938" X="2903.66" Y="5889.236" Z="297.1159" />
+	<!-- END Story: Into the Nightmare -->
+
+	<!-- Story: All Nightmare Long -->
+		<If Condition="Me.IsAlliance" >
+			<PickUp QuestName="Love Lost" QuestId="41056" GiverName="Tyrande Whisperwind" GiverId="102938" X="2903.66" Y="5889.236" Z="297.1159" />
+			<TurnIn QuestName="Love Lost" QuestId="41056" TurnInName="Tyrande Whisperwind" TurnInId="103022" X="3145.665" Y="5774.15" Z="308.1792" />
+		</If>
+		<If Condition="Me.IsHorde" >
+			<PickUp QuestName="Love Lost" QuestId="41054" GiverName="Tyrande Whisperwind" GiverId="102938" X="2903.66" Y="5889.236" Z="297.1159" />
+			<TurnIn QuestName="Love Lost" QuestId="41054" TurnInName="Tyrande Whisperwind" TurnInId="103022" X="3145.665" Y="5774.15" Z="308.1792" />
+		</If>
+
+		<If Condition="Me.IsAlliance" >
+			<PickUp QuestName="Dark Side of the Moon" QuestId="41708" GiverName="Tyrande Whisperwind" GiverId="103022" X="3145.665" Y="5774.15" Z="308.1792" />
+		</If>
+		<If Condition="Me.IsHorde" >
+			<PickUp QuestName="Dark Side of the Moon" QuestId="41890" GiverName="Tyrande Whisperwind" GiverId="103022" X="3145.665" Y="5774.15" Z="308.1792" />
+		</If>
+
+		<PickUp QuestName="Lost in Retreat" QuestId="38671" GiverName="Mender Onelle" GiverId="94863" X="3151.359" Y="5779.863" Z="308.1489" />
+		<PickUp QuestName="Wormtalon Wreckage" QuestId="41707" GiverName="Aldos Duskwing" GiverId="95117" X="3152.448" Y="5777.948" Z="308.1564" />
+
+		<While Condition="DoQuest(38671)" >
+			<CustomBehavior File="InteractWith" MobId="248416" InteractByLooting="true" CollectionDistance="200" PreInteractMountStrategy="Dismount" QuestId="38671" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="3076.11" Y="5888.318" Z="279.2135" />
+					<Hotspot X="2999.976" Y="5881.062" Z="275.5592" />
+					<Hotspot X="3012.064" Y="5915.741" Z="275.668" />
+					<Hotspot X="3000.154" Y="5978.801" Z="279.0247" />
+					<Hotspot X="3080.02" Y="6016.291" Z="275.4824" />
+					<Hotspot X="3114.85" Y="5939.49" Z="285.5481" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+		<While Condition="DoQuest(41707)" >
+			<CustomBehavior File="KillUntilComplete" MobIds="95152, 95138" QuestId="41707" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="3076.11" Y="5888.318" Z="279.2135" />
+					<Hotspot X="2999.976" Y="5881.062" Z="275.5592" />
+					<Hotspot X="3012.064" Y="5915.741" Z="275.668" />
+					<Hotspot X="3000.154" Y="5978.801" Z="279.0247" />
+					<Hotspot X="3080.02" Y="6016.291" Z="275.4824" />
+					<Hotspot X="3114.85" Y="5939.49" Z="285.5481" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+		<While Condition="DoQuest(41708, 41890)" >
+			<If Condition="(HasQuest(41708) &amp;&amp; !IsObjectiveComplete(1, 41708)) || (HasQuest(41890) &amp;&amp; !IsObjectiveComplete(1, 41890))" >
+				<MoveTo X="3126.056" Y="5915.359" Z="287.155" />
+			</If>
+			<CustomBehavior File="InteractWith" MobId="104739" NonCompeteDistance="0" GossipOptions="1" X="3123.438" Y="5918.229" Z="286.0553" />
+			<CustomBehavior File="WaitTimer" WaitTime="300000" TerminateWhen="(IsQuestCompleted(41708) || IsQuestCompleted(41890)) || Unit(104739) == null" />
+		</While>
+
+		<If Condition="Me.IsAlliance" >
+			<TurnIn QuestName="Dark Side of the Moon" QuestId="41708" TurnInName="Tyrande Whisperwind" TurnInId="104885" X="3123.241" Y="5918.394" Z="286.052" />
+		</If>
+		<If Condition="Me.IsHorde" >
+			<TurnIn QuestName="Dark Side of the Moon" QuestId="41890" TurnInName="Tyrande Whisperwind" TurnInId="104885" X="3123.241" Y="5918.394" Z="286.052" />
+		</If>
+
+		<PickUp QuestName="Regroup at the Refuge" QuestId="43576" GiverName="Tyrande Whisperwind" GiverId="104885" X="3145.665" Y="5774.15" Z="308.18" />
+		<TurnIn QuestName="Regroup at the Refuge" QuestId="43576" TurnInName="Tyrande Whisperwind" TurnInId="103022" X="3145.665" Y="5774.15" Z="308.18" />
+
+		<TurnIn QuestName="Lost in Retreat" QuestId="38671" TurnInName="Mender Onelle" TurnInId="94863" X="3151.359" Y="5779.863" Z="308.1495" />
+		<TurnIn QuestName="Wormtalon Wreckage" QuestId="41707" TurnInName="Aldos Duskwing" TurnInId="95117" X="3152.448" Y="5777.948" Z="308.1561" />
+
+		<If Condition="Me.IsAlliance" >
+			<PickUp QuestName="Heart of the Nightmare" QuestId="41724" GiverName="Tyrande Whisperwind" GiverId="103022" X="3145.665" Y="5774.15" Z="308.18" />
+		</If>
+		<If Condition="Me.IsHorde" >
+			<PickUp QuestName="Heart of the Nightmare" QuestId="38675" GiverName="Tyrande Whisperwind" GiverId="103022" X="3145.665" Y="5774.15" Z="308.18" />
+		</If>
+
+		<If Condition="HasQuest(41724) || HasQuest(38675)" >
+			<MoveTo X="3178.381" Y="5847.602" Z="284.6536" />
+			<CustomBehavior File="WaitTimer" WaitTime="18000" />
+		</If>
+
+		<If Condition="Me.IsAlliance" >
+			<TurnIn QuestName="Heart of the Nightmare" QuestId="41724" TurnInName="Tyrande Whisperwind" TurnInId="104728" X="3320.364" Y="5958.033" Z="249.0644" />
+		</If>
+		<If Condition="Me.IsHorde" >
+			<TurnIn QuestName="Heart of the Nightmare" QuestId="38675" TurnInName="Tyrande Whisperwind" TurnInId="104728" X="3320.364" Y="5958.033" Z="249.0644" />
+		</If>
+
+		<PickUp QuestName="Reading the Leaves" QuestId="38684" GiverName="Elothir" GiverId="92783" X="3330.326" Y="5959.685" Z="253.6653" />
+
+		<If Condition="Me.IsAlliance" >
+			<PickUp QuestName="Given to Corruption" QuestId="41893" GiverName="Elothir" GiverId="92783" X="3330.326" Y="5959.685" Z="253.6653" />
+		</If>
+		<If Condition="Me.IsHorde" >
+			<PickUp QuestName="Given to Corruption" QuestId="41749" GiverName="Elothir" GiverId="92783" X="3330.326" Y="5959.685" Z="253.6653" />
+		</If>
+
+		<While Condition="DoQuest(41893, 41749)" >
+			<CustomBehavior File="KillUntilComplete" MobId="92989" X="3666.594" Y="5815.972" Z="227.9332" TerminateWhen="IsQuestCompleted(41893) || IsQuestCompleted(41749)" />
+		</While>
+		<While Condition="DoQuest(38684)" >
+			<CustomBehavior File="KillUntilComplete" MobIds="97338, 93155, 97337" QuestId="38684" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="3642.128" Y="5843.139" Z="228.5611" />
+					<Hotspot X="3574.607" Y="5978.045" Z="262.6809" />
+					<Hotspot X="3504.048" Y="5866.792" Z="269.4984" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<If Condition="!IsQuestCompleted(43241) &amp;&amp; Me.Level &lt; 110" >
+			<!-- Bonus Objective: Flow of the Nightmare -->
+			<CustomBehavior File="InteractWith" MobState="Dead" NumOfTimes="100" PreInteractMountStrategy="Dismount" TerminateWhen="IsQuestCompleted(43241)" >
+				<HuntingGrounds>
+					<Hotspot X="3239.613" Y="5935.024" Z="263.8969" />
+					<Hotspot X="3248.459" Y="6066.122" Z="242.1524" />
+					<Hotspot X="3084.166" Y="6120.797" Z="242.1078" />
+					<Hotspot X="3142.568" Y="6082.146" Z="244.2564" />
+					<Hotspot X="3320.537" Y="6082.48" Z="248.5293" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueGameObject Id="251766" />
+					<PursueUnit Id="95951" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="92383" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+				</PursuitList>
+			</CustomBehavior>
+		</If>
+
+		<TurnIn QuestName="Reading the Leaves" QuestId="38684" TurnInName="Elothir" TurnInId="92783" X="3330.326" Y="5959.685" Z="253.6653" />
+
+		<If Condition="Me.IsAlliance" >
+			<TurnIn QuestName="Given to Corruption" QuestId="41893" TurnInName="Elothir" TurnInId="92783" X="3330.326" Y="5959.685" Z="253.6653" />
+		</If>
+		<If Condition="Me.IsHorde" >
+			<TurnIn QuestName="Given to Corruption" QuestId="41749" TurnInName="Elothir" TurnInId="92783" X="3330.326" Y="5959.685" Z="253.6653" />
+		</If>
+
+		<PickUp QuestName="Softening the Target" QuestId="43702" GiverName="Tyrande Whisperwind" GiverId="104728" X="3320.365" Y="5958.033" Z="249.0663" />
+		<While Condition="DoQuest(43702)" >
+			<!-- NOTE: <ConditionalCheck> : Make sure InVehicle returns true for this mob. -->
+			<If Condition="!Me.InVehicle" >
+				<CustomBehavior File="InteractWith" MobId="111359" QuestId="43702" X="3317.487" Y="5949.828" Z="251.8741" />
+			</If>
+			<CustomBehavior File="RunCode">
+				<![CDATA[
+						while (DoQuest(43702) && Me.InVehicle)
+						{
+							WoWUnit attackUnit = ObjectManager.GetObjectsOfType<WoWUnit>().FirstOrDefault(x => new[]{109929,109932,109928,109959,109960,109927,109926}.Contains((int)x.Entry) && x.IsAlive && x.Distance < 100);
+							if (attackUnit != null)
+							{
+								Lua.DoString("CastPetAction(1);");
+								SpellManager.ClickRemoteLocation(attackUnit.Location);
+								await Coroutine.Sleep(1550);
+							}
+							await Coroutine.Yield();
+						}
+						if (QuestDone(43702))
+						{
+							Lua.DoString("CastPetAction(6);");
+							await Coroutine.Wait(45000, () => !Me.InVehicle);
+						}
+					]]>
+			</CustomBehavior>
+		</While>
+		<TurnIn QuestName="Softening the Target" QuestId="43702" TurnInName="Tyrande Whisperwind" TurnInId="104728" X="3413.7" Y="6124.011" Z="211.797" />
+
+		<If Condition="Me.IsAlliance" >
+			<PickUp QuestName="Close Enough to Touch" QuestId="38687" GiverName="Tyrande Whisperwind" GiverId="104728" X="3413.7" Y="6124.011" Z="211.797" />
+		</If>
+		<If Condition="Me.IsHorde" >
+			<PickUp QuestName="Close Enough to Touch" QuestId="41763" GiverName="Tyrande Whisperwind" GiverId="104728" X="3413.7" Y="6124.011" Z="211.797" />
+		</If>
+		<While Condition="DoQuest(38687, 41763)" >
+			<CustomBehavior File="InteractWith" MobId="111258" QuestId="38687" QuestObjectiveIndex="2" InteractBlacklistTimeInSeconds="1" X="3609.905" Y="6132.729" Z="178.1244" />
+			<CustomBehavior File="InteractWith" MobId="111260" QuestId="38687" QuestObjectiveIndex="3" InteractBlacklistTimeInSeconds="1" X="3746.8" Y="6165.945" Z="183.9481" />
+			<CustomBehavior File="InteractWith" MobId="111259" QuestId="38687" QuestObjectiveIndex="4" InteractBlacklistTimeInSeconds="1" X="3769.656" Y="6349.799" Z="183.9394" />
+			<!-- Beta XYZ X="3751.627" Y="6315.099" Z="186.5862" /> -->
+			<!-- Cheap way of handling the Horde variant.. :P -->
+			<CustomBehavior File="InteractWith" MobId="111203" QuestId="41763" QuestObjectiveIndex="2" InteractBlacklistTimeInSeconds="1" X="3609.905" Y="6132.729" Z="178.1244" />
+			<CustomBehavior File="InteractWith" MobId="111198" QuestId="41763" QuestObjectiveIndex="3" InteractBlacklistTimeInSeconds="1" X="3746.8" Y="6165.945" Z="183.9481" />
+			<CustomBehavior File="InteractWith" MobId="111204" QuestId="41763" QuestObjectiveIndex="4" InteractBlacklistTimeInSeconds="1" X="3769.656" Y="6349.799" Z="183.9394" />
+			<If Condition="!IsObjectiveComplete(5, 38687) || !IsObjectiveComplete(5, 41763)" >
+				<MoveTo X="3576.754" Y="6388.25" Z="167.5658" />
+				<!-- NOTE: <TerminationNeeded> : This MoveTo needs to terminate once the cutscene is detected so the cutscenes can be skipped. -->
+				<CustomBehavior File="RunCode" Code="await SkipCutscene();" />
+			</If>
+		</While>
+
+		<If Condition="IsQuestCompleted(38748) &amp;&amp; Me.Level &lt; 110" >
+			<!-- Bonus Objective Ruins of Shala'nir  -->
+			<CustomBehavior File="KillUntilComplete" MobIds="113646, 112052" TerminateWhen="IsQuestCompleted(38748)" >
+				<HuntingGrounds>
+					<Hotspot X="3658.741" Y="6156.199" Z="193.4041" />
+					<Hotspot X="3645.402" Y="6232.694" Z="183.9179" />
+					<Hotspot X="3651.868" Y="6310.275" Z="176.6736" />
+					<Hotspot X="3569.541" Y="6309.009" Z="163.7301" />
+					<Hotspot X="3520.354" Y="6333.377" Z="165.8486" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</If>
+
+		<If Condition="Me.IsAlliance" >
+			<TurnIn QuestName="Close Enough to Touch" QuestId="38687" TurnInName="Tyrande Whisperwind" TurnInId="104799" X="3547.351" Y="6420.47" Z="168.303" />
+		</If>
+		<If Condition="Me.IsHorde" >
+			<TurnIn QuestName="Close Enough to Touch" QuestId="41763" TurnInName="Tyrande Whisperwind" TurnInId="104799" X="3547.351" Y="6420.47" Z="168.303" />
+		</If>
+
+		<PickUp QuestName="The Fate of Val'sharah" QuestId="38743" GiverName="Tyrande Whisperwind" GiverId="104799" X="3545.144" Y="6420.871" Z="168.2894" />
+		<While Condition="DoQuest(38743)" >
+			<CustomBehavior File="InteractWith" MobId="104799" GossipOptions="1" QuestId="38743" QuestObjectiveIndex="1" X="3547.351" Y="6420.47" Z="168.303" />
+			<CustomBehavior File="WaitTimer" WaitTime="60000" QuestId="38743" QuestObjectiveIndex="2" />
+			<!-- NOTE: <Termination> : Can terminate this timer once player is off Tyrande's mount. -->
+			<CustomBehavior File="KillUntilComplete" MobId="93065" QuestId="38743" QuestObjectiveIndex="2" X="2912.206" Y="6647.792" Z="215.0921" />
+			<CustomBehavior File="RunCode" Code="await SkipCutscene(10000);" />
+		</While>
+		<TurnIn QuestName="The Fate of Val'sharah" QuestId="38743" TurnInName="Tyrande Whisperwind" TurnInId="104921" X="2911.557" Y="6648.017" Z="215.0923" />
+
+		<While Condition="DoQuest(39029) &amp;&amp; Me.Level &lt; 110" >
+			<!-- Bonus Objective : Defend The Temple, 39029 -->
+			<CustomBehavior File="KillUntilComplete" MobIds="92788, 93157" TerminateWhen="!DoQuest(39029)" >
+				<HuntingGrounds>
+					<Hotspot X="2936.435" Y="6460.703" Z="206.474" />
+					<Hotspot X="2958.896" Y="6376.55" Z="234.4622" />
+					<Hotspot X="2887.158" Y="6351.008" Z="215.256" />
+					<Hotspot X="2908.561" Y="6310.465" Z="209.3228" />
+					<Hotspot X="2906.548" Y="6275.415" Z="223.86" />
+					<Hotspot X="2816.624" Y="6317.343" Z="217.5627" />
+					<Hotspot X="2827.194" Y="6388.918" Z="216.153" />
+					<Hotspot X="2843.289" Y="6461.095" Z="211.0563" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+	<!-- END Story: All Nightmare Long -->
+
+	<!-- Zone Transition Quests -->
+		<!-- NOTE: <ComeBackToMe> :
+				<PickUp QuestName="Enter the Nightmare" QuestId="40567" GiverName="Tyrande Whisperwind" GiverId="104921" X="2911.557" Y="6648.017" Z="215.0923" />
+				This quest currently is broken on the beta.   I believe it's a 'go into dungeon and kill dungeon boss' quest so it may be removable.
+			-->
+		<PickUp Nav="Run" QuestName="The Tears of Elune" QuestId="40890" GiverType="Object" GiverName="Tears of Elune" GiverId="248534" X="2909.45" Y="6660.596" Z="219.3251" />
+		<!-- End of Val'sharah transition quest. -->
+	<!-- END Zone Transition Quests -->
+
+	<!-- Story: Bradensbrook -->
+		<PickUp QuestName="A Village in Peril" QuestId="38643" GiverName="Darcy Heathrow" GiverId="92688" X="3025.932" Y="6587.611" Z="203.5966" />
+		<TurnIn QuestName="A Village in Peril" QuestId="38643" TurnInName="Mayor Heathrow" TurnInId="92619" X="2797.552" Y="7272.849" Z="21.7222" />
+
+		<CustomBehavior File="Hooks\Avoid" AvoidName="FesteringInquisitor" Command="Add" ObjectId="103643" Radius="20" />
+
+		<PickUp QuestName="Children of the Night" QuestId="38645" GiverName="Commander Jarod Shadowsong" GiverId="92620" X="2798.512" Y="7266.741" Z="21.59023" />
+		<PickUp QuestName="The Farmsteads" QuestId="38644" GiverName="Emmeline" GiverId="92683" X="2796.118" Y="7284.813" Z="23.44862" />
+
+		<PickUp QuestName="A Sight For Sore Eyes" QuestId="38646" GiverName="Granny Marl" GiverId="92618" X="2707.609" Y="7462.568" Z="5.31386" />
+		<PickUp QuestName="For the Corn!" QuestId="38647" GiverName="Granny Marl" GiverId="92618" X="2707.609" Y="7462.568" Z="5.31386" />
+
+		<While Condition="DoQuest(38647)" >
+			<CustomBehavior File="InteractWith" MobIds="242449" InteractByLooting="true" CollectionDistance="200" PreInteractMountStrategy="Dismount" QuestId="38647" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="2682.452" Y="7437.169" Z="5.314364" />
+					<Hotspot X="2660.502" Y="7478.074" Z="5.363027" />
+					<Hotspot X="2741.396" Y="7497.339" Z="5.323746" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<While Condition="DoQuest(38646)" >
+			<CustomBehavior File="InteractWith" MobIds="93064" InteractByUsingItemId="127030" Range="59" CollectionDistance="200" PreInteractMountStrategy="Dismount" QuestId="38646" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="2656.303" Y="7514.062" Z="6.298237" />
+					<Hotspot X="2756.457" Y="7498.103" Z="5.326266" />
+					<Hotspot X="2713.501" Y="7405.124" Z="6.421977" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<While Condition="DoQuest(38645)" >
+			<CustomBehavior File="KillUntilComplete" MobId="94046" MovementBy="NavigatorOnly" QuestId="38645" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="2634.21" Y="7481.828" Z="6.105456" />
+					<Hotspot X="2695.519" Y="7536.521" Z="5.938887" />
+					<Hotspot X="2748.415" Y="7496.963" Z="5.323853" />
+				</HuntingGrounds>
+			</CustomBehavior>
+		</While>
+
+		<!-- NOTE: <AddQuest?> : Quest-The Warden's Signet (38711), optional quest that is started from killing a NPC.  The NPC drops an item.  Turnin is below. -->
+
+		<TurnIn QuestName="A Sight For Sore Eyes" QuestId="38646" TurnInName="Granny Marl" TurnInId="92618" X="2707.609" Y="7462.568" Z="5.314145" />
+		<TurnIn QuestName="For the Corn!" QuestId="38647" TurnInName="Granny Marl" TurnInId="92618" X="2707.609" Y="7462.568" Z="5.314145" />
+
+		<CustomBehavior File="Hooks\Avoid" AvoidName="FesteringInquisitor" Command="Remove" />
+
+		<If Condition="DoQuest(38644)" >
+			<!-- Using if here because we need to pick up a quest during this. -->
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="OpenCellar" UseWhen="ObjectManager.GetObjectsOfType&lt;WoWGameObject&gt;().FirstOrDefault(x =&gt; x.SubType == WoWGameObjectType.Door &amp;&amp; x.Distance &lt; 5 &amp;&amp; x.State == WoWGameObjectState.Ready) != null" >
+				<CustomBehavior File="RunCode" Code="
+					var gatePoi = ObjectManager.GetObjectsOfType&lt;WoWGameObject&gt;().FirstOrDefault(x =&gt; x.SubType == WoWGameObjectType.Door &amp;&amp; x.Distance &lt; 5 &amp;&amp; x.State == WoWGameObjectState.Ready);
+
+					while (gatePoi.State == WoWGameObjectState.Ready) 
+					{
+						await CommonCoroutines.StopMoving();
+						gatePoi.Interact();
+						await Coroutine.Sleep(1500);
+					}
+				" />
+			</CustomBehavior>
+			<If Condition="!IsObjectiveComplete(1, 38644)" >
+				<MoveTo X="2567.961" Y="7486.834" Z="28.04498" />
+				<CustomBehavior File="InteractWith" MobId="92734" GossipOptions="1" MovementBy="NavigatorOnly" QuestId="38644" QuestObjectiveIndex="1" X="2568.674" Y="7503.814" Z="20.02671" />
+			</If>
+			<CustomBehavior File="InteractWith" MobId="92618" NonCompeteDistance="0" MovementBy="NavigatorOnly" QuestId="38644" QuestObjectiveIndex="2" X="2707.609" Y="7462.568" Z="5.313876" />
+			<If Condition="!IsObjectiveComplete(3, 38644)" >
+				<MoveTo X="2817.782" Y="7561.732" Z="4.199298" />
+			</If>
+			<CustomBehavior File="Hooks\DoWhen" ActivityName="OpenCellar" Command="Remove" />
+		</If>
+
+		<PickUp QuestName="Shriek No More" QuestId="39117" GiverName="Cecily Radcliffe" GiverId="94117" X="2816.49" Y="7564.252" Z="4.321269" />
+		<While Condition="DoQuest(39117)" >
+			<!-- NOTE AddAvoid, get out of purple stuff. -->
+			<CustomBehavior File="KillUntilComplete" MobId="94383" MovementBy="NavigatorOnly" QuestId="39117" QuestObjectiveIndex="1" X="2870.828" Y="7617.902" Z="2.028812" />
+		</While>
+		<TurnIn QuestName="Shriek No More" QuestId="39117" TurnInName="Cecily Radcliffe" TurnInId="94117" X="2816.49" Y="7564.252" Z="4.321269" />
+
+		<TurnIn QuestName="Children of the Night" QuestId="38645" TurnInName="Commander Jarod Shadowsong" TurnInId="92620" X="2798.514" Y="7266.745" Z="21.59058" />
+		<!-- NOTE: <AddQuest?> : <TurnIn QuestName="The Warden's Signet" QuestId="38711" TurnInName="Commander Jarod Shadowsong" TurnInId="92620" X="2798.514" Y="7266.745" Z="21.59058" /> -->
+		<TurnIn QuestName="The Farmsteads" QuestId="38644" TurnInName="Mayor Heathrow" TurnInId="92619" X="2797.55" Y="7272.851" Z="21.722" />
+
+		<PickUp QuestName="Jarod's Mission" QuestId="38691" GiverName="Commander Jarod Shadowsong" GiverId="92620" X="2798.514" Y="7266.745" Z="21.59058" />
+		<While Condition="DoQuest(38691)" >
+			<CustomBehavior File="InteractWith" MobId="92620" GossipOptions="1" QuestId="38691" QuestObjectiveIndex="1" X="2798.514" Y="7266.745" Z="21.59058" />
+			<CustomBehavior File="WaitTimer" WaitTime="47000" />
+		</While>
+		<TurnIn QuestName="Jarod's Mission" QuestId="38691" TurnInName="Commander Jarod Shadowsong" TurnInId="92842" X="3017.697" Y="7354.924" Z="37.16674" />
+	<!-- END Story: Bradensbrook -->
+
+	<!-- Story: Black Rook Hold -->
+		<PickUp QuestName="Kur'talos Ravencrest" QuestId="38718" GiverName="Commander Jarod Shadowsong" GiverId="92842" X="3017.697" Y="7354.924" Z="37.16674" />
+		<While Condition="DoQuest(38718)" >
+			<MoveTo Precision="1" X="3017.344" Y="7356.492" Z="36.55029" />
+			<CustomBehavior File="InteractWith" MobId="243089" MovementBy="ClickToMoveOnly" IgnoreLoSToTarget="true" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" Range="5" QuestId="38718" QuestObjectiveIndex="1" X="3017.62" Y="7353.377" Z="37.76612" />
+		</While>
+		<TurnIn QuestName="Kur'talos Ravencrest" QuestId="38718" TurnInName="Commander Jarod Shadowsong" TurnInId="94977" X="3017.602" Y="7361.725" Z="35.23597" />
+
+		<PickUp QuestName="Maiev's Trail" QuestId="38714" GiverName="Lord Kur'talos Ravencrest" GiverId="92850" X="3017.67" Y="7366.88" Z="35.04933" />
+		<PickUp QuestName="The Rook's Guard" QuestId="38715" GiverName="Lord Kur'talos Ravencrest" GiverId="92850" X="3017.67" Y="7366.88" Z="35.04933" />
+
+		<While Condition="DoQuest(38714)" >
+			<CustomBehavior File="InteractWith" MobId="91859" NonCompeteDistance="0" QuestId="38714" QuestObjectiveIndex="1" X="3072.316" Y="7376.542" Z="64.76587" />
+			<CustomBehavior File="InteractWith" MobId="241638" NonCompeteDistance="0" QuestId="38714" QuestObjectiveIndex="2" X="2894.303" Y="7355.077" Z="78.12429" />
+			<CustomBehavior File="InteractWith" MobId="241639" NonCompeteDistance="0" QuestId="38714" QuestObjectiveIndex="3" X="3074.422" Y="7290.325" Z="52.31831" />
+		</While>
+
+		<While Condition="DoQuest(38715)" >
+			<CustomBehavior File="KillUntilComplete" MobId="92963" QuestId="38715" QuestObjectiveIndex="1" X="3052.738" Y="7406.46" Z="65.20383" />
+			<CustomBehavior File="KillUntilComplete" MobId="92971" QuestId="38715" QuestObjectiveIndex="2" X="2900.293" Y="7347.424" Z="78.12424" />
+			<CustomBehavior File="KillUntilComplete" MobId="92966" QuestId="38715" QuestObjectiveIndex="3" X="3096.058" Y="7245.313" Z="52.7952" />
+		</While>
+
+		<TurnIn QuestName="Maiev's Trail" QuestId="38714" TurnInName="Commander Jarod Shadowsong" TurnInId="92842" X="3117.556" Y="7191.446" Z="53.55869" />
+		<TurnIn QuestName="The Rook's Guard" QuestId="38715" TurnInName="Commander Jarod Shadowsong" TurnInId="92842" X="3117.556" Y="7191.446" Z="53.55869" />
+
+		<PickUp QuestName="Black Rook Prison" QuestId="38717" GiverName="Commander Jarod Shadowsong" GiverId="92842" X="3117.556" Y="7191.446" Z="53.55869" />
+		<While Condition="DoQuest(38717)" >
+			<CustomBehavior File="KillUntilComplete" MobId="92419" QuestId="38717" QuestObjectiveIndex="1" X="3256.917" Y="7281.299" Z="90.76955" />
+			<!-- NOTE: <Functionality> : Could probably use InteractByLooting with InteractWith as a kill method instead since this quest requires looting an item. -->
+		</While>
+		<TurnIn Nav="Run" QuestName="Black Rook Prison" QuestId="38717" TurnInName="Commander Jarod Shadowsong" TurnInId="92850" X="3338.097" Y="7370.288" Z="16.6435" />
+
+		<If Condition="Me.Class == WoWClass.DemonHunter" >
+			<PickUp QuestName="Brotherly Love" QuestId="44457" GiverName="Commander Jarod Shadowsong" GiverId="92850" X="3338.097" Y="7370.288" Z="16.6435" />
+			<PickUp QuestName="Illidari Freedom" QuestId="44278" GiverName="Arduen Soulblade" GiverId="93029" X="3335.917" Y="7370.404" Z="16.64133" />
+		</If>
+		<If Condition="Me.Class != WoWClass.DemonHunter" >
+			<PickUp QuestName="Brotherly Love" QuestId="38724" GiverName="Commander Jarod Shadowsong" GiverId="92850" X="3338.097" Y="7370.288" Z="16.6435" />
+			<PickUp QuestName="Illidari Freedom" QuestId="38719" GiverName="Arduen Soulblade" GiverId="93029" X="3335.917" Y="7370.404" Z="16.64133" />
+		</If>
+
+		<CustomBehavior File="Hooks\DoWhen" ActivityName="OpenDoors" UseWhen="ObjectManager.GetObjectsOfType&lt;WoWGameObject&gt;().FirstOrDefault(x =&gt; x.SubType == WoWGameObjectType.Door &amp;&amp; x.Distance &lt; 5 &amp;&amp; x.State == WoWGameObjectState.Ready) != null" >
+			<CustomBehavior File="RunCode" Code="
+						var gatePoi = ObjectManager.GetObjectsOfType&lt;WoWGameObject&gt;().FirstOrDefault(x =&gt; x.SubType == WoWGameObjectType.Door &amp;&amp; x.Distance &lt; 5 &amp;&amp; x.State == WoWGameObjectState.Ready);
+
+						while (gatePoi.State == WoWGameObjectState.Ready) 
+						{
+							gatePoi.Interact();
+							await Coroutine.Yield();
+						}
+					" />
+		</CustomBehavior>
+
+		<While Condition="DoQuest(38719, 44278)" >
+			<!-- NOTE: <Doors> : This area has several doors in which the bot will need to open while going between these interacts.
+					Name="Prison Gate" Entry="243316" X="3381.648" Y="7397.429" Z="15.67497"
+				-->
+			<CustomBehavior File="InteractWith" MobId="94974" GossipOptions="1" NonCompeteDistance="0" QuestId="38719" QuestObjectiveIndex="1" X="3367.568" Y="7408.228" Z="16.82367" />
+			<CustomBehavior File="InteractWith" MobId="94975" GossipOptions="1" NonCompeteDistance="0" QuestId="38719" QuestObjectiveIndex="3" X="3386.103" Y="7419.931" Z="16.76385" />
+			<CustomBehavior File="InteractWith" MobId="94976" GossipOptions="1" NonCompeteDistance="0" QuestId="38719" QuestObjectiveIndex="2" X="3399.964" Y="7315.924" Z="25.51813" />
+
+			<CustomBehavior File="InteractWith" MobId="94974" GossipOptions="1" NonCompeteDistance="0" QuestId="44278" QuestObjectiveIndex="1" X="3367.568" Y="7408.228" Z="16.82367" />
+			<CustomBehavior File="InteractWith" MobId="94975" GossipOptions="1" NonCompeteDistance="0" QuestId="44278" QuestObjectiveIndex="3" X="3386.103" Y="7419.931" Z="16.76385" />
+			<CustomBehavior File="InteractWith" MobId="94976" GossipOptions="1" NonCompeteDistance="0" QuestId="44278" QuestObjectiveIndex="2" X="3399.964" Y="7315.924" Z="25.51813" />
+
+			<MoveTo X="3415.569" Y="7332.56" Z="24.01816" />
+		</While>
+
+		<CustomBehavior File="RunCode"><![CDATA[
+			if (!IsQuestCompleted(38721))
+			{
+				Logging.Write(System.Windows.Media.Colors.Yellow, "[ProfileBase]: Disabling custom anti-stuck measures until this quest is complete.");
+				UseAntiStuck = false;
+			}
+			]]>
+		</CustomBehavior>
+
+		<If Condition="Me.Class == WoWClass.DemonHunter" >
+			<TurnIn QuestName="Brotherly Love" QuestId="44457" TurnInName="Maiev Shadowsong" TurnInId="92987" X="3418.531" Y="7430.646" Z="16.76402" />
+		</If>
+		<If Condition="Me.Class != WoWClass.DemonHunter" >
+			<TurnIn QuestName="Brotherly Love" QuestId="38724" TurnInName="Maiev Shadowsong" TurnInId="92987" X="3418.531" Y="7430.646" Z="16.76402" />
+		</If>
+
+		<PickUp QuestName="Lieutenant of the Tower" QuestId="38721" GiverName="Maiev Shadowsong" GiverId="93027" X="3418.53" Y="7430.705" Z="16.7646" />
+		<While Condition="DoQuest(38721)" >
+			<CustomBehavior File="KillUntilComplete" MobId="93031" QuestId="38721" QuestObjectiveIndex="1" X="3449.07" Y="7305.792" Z="24.05046" />
+			<CustomBehavior File="InteractWith" MobId="243227" GossipOptions="1" X="3469.553" Y="7292.207" Z="23.94489" />
+			<!-- NOTE: <Conditional> : Port out of area.  May need this outside the loop with a TerminateWhen to shut it off if the player is already out. -->
+		</While>
+
+		<CustomBehavior File="Hooks\DoWhen" ActivityName="OpenDoors" Command="Remove" />
+
+		<If Condition="Me.Class == WoWClass.DemonHunter" >
+			<TurnIn QuestName="Illidari Freedom" QuestId="44278" TurnInName="Asha Ravensong" TurnInId="95028" X="3089.549" Y="7450.205" Z="52.49718" />
+		</If>
+		<If Condition="Me.Class != WoWClass.DemonHunter" >
+			<TurnIn QuestName="Illidari Freedom" QuestId="38719" TurnInName="Asha Ravensong" TurnInId="95028" X="3089.549" Y="7450.205" Z="52.49718" />
+		</If>
+
+		<CustomBehavior File="RunCode"><![CDATA[
+			if (QuestDone(38721))
+			{
+				Logging.Write(System.Windows.Media.Colors.Yellow, "[ProfileBase]: Re-enabling custom anti-stuck measures.");
+				UseAntiStuck = true;
+			}
+			]]>
+		</CustomBehavior>
+
+		<TurnIn QuestName="Lieutenant of the Tower" QuestId="38721" TurnInName="Maiev Shadowsong" TurnInId="93149" X="3094.365" Y="7464.921" Z="52.85364" />
+
+		<While Condition="!IsQuestCompleted(38716) &amp;&amp; Me.Level &lt; 110" >
+			<!-- bonus <PickUp QuestName="Black Rook Hold" QuestId="38716" GiverName="Kaldorei Windgryph" GiverId="91839" XXXX /> -->
+			<CustomBehavior File="InteractWith" MobState="Dead" MovementBy="NavigatorOnly" NumOfTimes="100" TerminateWhen="IsQuestCompleted(38716)" >
+				<HuntingGrounds>
+					<Hotspot X="3046.359" Y="7337.608" Z="64.76704" />
+					<Hotspot X="3020.972" Y="7250.142" Z="52.79372" />
+					<Hotspot X="3042.34" Y="7307.839" Z="51.55747" />
+					<Hotspot X="3061.086" Y="7199.141" Z="51.48189" />
+					<Hotspot X="2957.162" Y="7293.915" Z="64.76637" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueGameObject Id="244994" />
+					<PursueGameObject Id="241741" />
+					<PursueUnit Id="91860" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="95430" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="92954" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+					<PursueUnit Id="93061" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
+				</PursuitList>
+			</CustomBehavior>
+		</While>
+	<!-- END Story: Black Rook Hold -->
+
+		<PickUp QuestName="The Tears of Elune" QuestId="40890" GiverType="Object" GiverName="Tears of Elune" GiverId="248534" X="2909.45" Y="6660.596" Z="219.3251" />
+		<!-- End of Val'sharah transition quest. -->
+
+		<If Condition="DoQuest(40890)" >
+			<CustomBehavior File="RunCode">
+				<![CDATA[
+				if (!(Me.ZoneId == 7502 || Me.ZoneId == 8392) && HasItem(140192))
+				{
+					Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, "[Azyul Navigator]: ", System.Windows.Media.Colors.LightGreen, "Using Dalaran Hearthstone!");
+					await CommonCoroutines.LandAndDismount("Using Hearthstone to reach Dalaran (Broken Isles)");
+					await CommonCoroutines.StopMoving(); 
+					WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+					if (dalaranHearth.CooldownTimeLeft <= TimeSpan.FromMinutes(3))
+					{
+						if (dalaranHearth.CooldownTimeLeft != TimeSpan.Zero)
+						{
+							Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
+							await Coroutine.Wait(306000, () => dalaranHearth.CooldownTimeLeft == TimeSpan.Zero);
+						}
+						dalaranHearth.Interact();
+						var currentLoc = StyxWoW.Me.ZoneId;
+						await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
+						await Coroutine.Sleep(1500);
+					}
+				}
+				]]>
+			</CustomBehavior>
+			<MoveTo QuestId="40890" QuestObjectiveIndex="1" X="-844.5972" Y="4467.76" Z="736.0415" />
+			<TurnIn Nav="Run" QuestName="The Tears of Elune" QuestId="40890" TurnInType="Object" TurnInName="Tears of Elune" TurnInId="246466" X="-859.6979" Y="4466.074" Z="591.6784" />
+			<MoveTo X="-779.9896" Y="4415.237" Z="602.6288" />
+		</If>
+
+		<!-- Load Class Hall stuff -->
+			<!--
+				NOTE <ImproveLater> : This is currently the easy solution.
+				I'm thinking a RunCode where Me.Class auto-fills the text with using ProfileManager.LoadNew to load the profilewould be more clean.
+				-->
+			<If Condition="Me.Class == WoWClass.Warrior" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Warrior [Echo]" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Paladin" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Paladin [Echo]" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Hunter" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Hunter [Echo]" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Rogue" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Rogue [Echo]" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Priest" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Priest [Echo]" />
+			</If>
+			<If Condition="Me.Class == WoWClass.DeathKnight" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Death Knight [Echo]" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Shaman" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Shaman [Echo]" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Mage" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Mage [Echo]" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Warlock" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Warlock [Echo]" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Monk" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Monk [Echo]" />
+			</If>
+			<If Condition="Me.Class == WoWClass.Druid" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Druid [Echo]" />
+			</If>
+			<If Condition="Me.Class == WoWClass.DemonHunter" >
+				<CustomBehavior File="LoadProfile" ProfileName="Class Hall Loaders/[N-Quest] Demon Hunter [Echo]" />
+			</If>
+		<!-- END Load Class Hall stuff -->
+
+
+	</QuestOrder>
+</HBProfile>

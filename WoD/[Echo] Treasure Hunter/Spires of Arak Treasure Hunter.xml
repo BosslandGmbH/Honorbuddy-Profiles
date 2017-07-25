@@ -1,0 +1,569 @@
+<!-- Echo's notes, delete me when no longer relevent. 142
+	Notes:
+		- As Alliance, ran through Axefall (Horde base) while going from Rooby's Roo to Outcast's Belongings. Need alternative path for Alliance.
+
+	Test 1 (Had Archaeology):
+		- 42 Treasures Gained
+	Test 2:
+		- 36 Treasures Gained.  Some missed due to interaction failtures.
+		- Died several times going to first Sethekk Idol (line 53) because of ground effects.
+		- After collecting "Mysterious Mushrooms", the bot gets in a weird loop between line 80 and 91.  It seems to fix itself after a few loops.
+
+	Test 4:
+		- Start Time: 3:23.  End Time: 5:00
+		- Start Treasures: 107.  End Treasures: 145
+		- Diff: 38
+-->
+<HBProfile>
+	<Name>Hawker's 'Spires of Arak Treasure Hunter' Profile</Name>
+	
+	
+	<MinDurability>0.2</MinDurability>
+	<MinFreeBagSlots>2</MinFreeBagSlots>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>false</MailWhite>
+	<MailGreen>false</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<UseMount>True</UseMount>
+	<TargetElites>True</TargetElites>
+
+	<Blacklist>
+		<Mob Name="Marsh Anaconda" Id="87039" />
+	</Blacklist>
+
+	<Mailboxes>
+		<!--Garrison-->
+		<Mailbox X="1923.274" Y="299.2899" Z="88.96642" UsableWhen="Me.IsAlliance" />
+		<Mailbox X="5580.682" Y="4570.392" Z="136.558" UsableWhen="Me.IsHorde" />
+	</Mailboxes>
+	<Vendors>
+		<Vendor Name="Percy" Entry="79748" Type="Sell" X="863.1875" Y="2035.922" Z="181.2414"/>
+		<!--  Terrokar Pass  -->
+		<Vendor Name="Percy" Entry="79748" Type="Sell" X="643.0799" Y="1931.465" Z="143.9573"/>
+		<!--  Skettis  -->
+		<Vendor Name="Percy" Entry="79748" Type="Sell" X="-412.0764" Y="1735.769" Z="47.75461"/>
+		<!--  Terokkar Wayshrine  -->
+		<Vendor Name="Kuro'ak" Entry="86386" Type="Food" X="-394.9809" Y="1852.606" Z="53.45686"/>
+		<!--  Veil Terokk  -->
+		<Vendor Name="Ruuan the Seer" Entry="87775" Type="Repair" X="-432.757" Y="1850.8" Z="41.62031"/>
+		<!--  Southport  -->
+		<Vendor Name="Tickle Bubblefizz" Entry="82156" Type="Sell" X="-671.5364" Y="2419.594" Z="34.98823"/>
+		<!--  Admiral Taylor G  -->
+		<Vendor Name="Nozwik Charbroil" Entry="82568" Type="Food" X="-1575.559" Y="958.059" Z="10.61832"/>
+		<!--  Pinchwhistle GW  -->
+		<Vendor Name="Twizix Copperbomb" Entry="82183" Type="Repair" X="-1483.905" Y="981.5174" Z="8.025555"/>
+		<!--  Pinchwhistle GW  -->
+		<Vendor Name="Q2-MLT Fabricator" Entry="82182" Type="Repair" X="-2332.87" Y="1117.309" Z="28.32723"/>
+		<!--  Pinchwhistle Point  -->
+		<Vendor Name="Akana" Entry="80777" Type="Sell" X="-337.4931" Y="909.0139" Z="75.39072"/>
+		<!--  Talon Watch  -->
+		<Vendor Name="Zektar" Entry="88045" Type="Repair" X="-656.007" Y="1524.108" Z="36.65781"/>
+		<!--  Veil Terokk  -->
+		<Vendor Name="Alex Johnson" Entry="84132" Type="Repair" X="-1097.946" Y="2239.363" Z="9.030098" UsableWhen="Me.IsAlliance" />
+		<!--  Durotan's Grasp  -->
+		<Vendor Name="Lo'gron the Shoulder" Entry="81093" Type="Repair" X="2793.32" Y="2519.001" Z="121.1413" UsableWhen="Me.IsHorde" />
+		<!--Garrison Vendors-->
+		<Vendor Name="Provisioner Hanfa" Entry="81346" Type="Repair" X="1854.957" Y="269.2205" Z="76.63961" UsableWhen="Me.IsAlliance" />
+		<Vendor Name="Supplymaster Eri" Entry="76872" Type="Repair" X="5626.828" Y="4629.681" Z="139.3038" UsableWhen="Me.IsHorde" />
+	</Vendors>
+
+	<!-- ClickToMoveOnly, FlightorPreferred, NavigatorOnly, NavigatorPreferred, None -->
+
+	<QuestOrder>		
+
+		<CustomBehavior File="RunCode" Code="RoutineManager.SetCapabilityState(CapabilityFlags.MultiMobPull, CapabilityState.Disallowed);"/>
+		<DisableBehavior Name="Pull" />
+		<CustomBehavior File="UserSettings" HarvestHerbs="false" HarvestMinerals="false" /> <!-- Harvesting will bug out CTMs. --> 
+
+		<If Condition="Me.ZoneId == 7078 || Me.ZoneId == 7004" >
+			<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.BlueViolet, &quot;[Profile Notification]: Going to vendor and mail before we start farming.&quot;);" />
+			<CustomBehavior File="ForceSetVendor" DoSell="true" DoRepair="true" />
+		</If>
+
+
+		<!--
+		<If Condition="Me.ZoneId != 6722">
+			<MoveTo DestName="Talon Watch to start hunting for treasures." X="-337.4931" Y="909.0139" Z="75.39069" />
+		</If>
+		-->
+
+
+		<If Condition="Me.GetSkill(SkillLine.Archaeology).CurrentValue &gt;= 600 &amp;&amp; !IsQuestCompleted(36356)" >
+			<MoveTo DestName="Relics of the Outcasts" X="-216.795" Y="625.0416" Z="80.01241" />
+			<CustomBehavior File="ForcedDismount" />
+			<While Condition="!IsQuestCompleted(36356)" >
+				<CustomBehavior File="InteractWith" WaitTime="2000" WaitForNpcs="false" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" Range="10" 
+				TerminateWhen="Object(234451) == null || IsQuestCompleted(36356)" Name="Relics of the Outcasts" MobIds="234451" X="-225.7014" Y="598.1493" Z="92.94971" />
+			</While>
+		</If>
+
+		<If Condition="!IsQuestCompleted(36375)" >
+			<MoveTo DestName="Sethekk Idol" X="-173.1364" Y="559.6678" Z="90.6746" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" 
+				Name="Sethekk Idol" MobIds="85190" X="-189.1129" Y="540.4132" Z="94.51303" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36398)" >
+			<MoveTo DestName="Elixir of Shadow Sight" X="-364.9818" Y="487.3099" Z="73.4254" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Elixir of Shadow Sight" MobIds="234705" X="-367.4115" Y="490.5" Z="74.23006" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36450)" >
+			<MoveTo DestName="Sethekk Ritual Brew"  X="-578.877" Y="340.6542" Z="39.68305" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Sethekk Ritual Brew" MobIds="235282" X="-579.5886" Y="339.8472" Z="40.23417" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36071) &amp;&amp; !IsQuestCompleted(36455)" >
+			<MoveTo DestName="Waterlogged Satchel" X="-901.7485" Y="653.4774" Z="-2.119365" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				MovementBy="ClickToMoveOnly" Name="Waterlogged Satchel" MobIds="235307" X="-900.2205" Y="652.6493" Z="-25.78485" />
+			<CustomBehavior File="AscendInWater" />			
+		</If>
+
+		<While Condition="!IsQuestCompleted(36454)" >
+			<CustomBehavior File="AscendInWater" />		
+			<MoveTo DestName="Mysterious Mushrooms" MobIds="235300" X="-1303.025" Y="847.9671" Z="32.78948" />
+			<If Condition="Object(235300) != null" >
+				<CustomBehavior File="MyCTM" DestName="1" X="-1306.675" Y="840.9909" Z="38.20127" />
+				<CustomBehavior File="MyCTM" DestName="2" X="-1313.852" Y="830.8387" Z="44.22717" />
+				<CustomBehavior File="MyCTM" DestName="3" X="-1333.346" Y="822.2131" Z="52.71133" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Mysterious Mushrooms" MobIds="235300" X="-1338.191" Y="828.3143" Z="56.41349" TerminateWhen="Object(235300) == null || IsQuestCompleted(36454)" />
+			</If>
+			<MoveTo DestName="Step down" X="-1309.57" Y="833.3439" Z="42.74096" />
+			<CustomBehavior File="MyCTM" DestName="Step down" X="-1297.644" Y="855.0349" Z="29.00314" />
+			<CustomBehavior File="WaitTimer" WaitTime="10000" /> <!-- While will loop several times, this will give the game-client time to update. -->
+		</While>
+
+		<If Condition="!IsQuestCompleted(36410)" >
+			<MoveTo DestName="Offering to the Raven Mother" X="-1194.192" Y="983.1988" Z="26.59728" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Offering to the Raven Mother" MobIds="235090" X="-1196.818" Y="986.0139" Z="28.33068" />
+			<If Condition="HasItem(118267)" ><CustomBehavior File="UseItem" ItemId="118267" /></If>
+			<If Condition="HasItem(118267)" ><CustomBehavior File="DeleteItems" Ids="118267" /></If>
+		</If>
+
+
+
+		<If Condition="!IsQuestCompleted(36365)" >
+			<MoveTo DestName="Spray-O-Matic 5000 XT" X="-1903.223" Y="1071.843" Z="21.48755" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Spray-O-Matic 5000 XT" MobIds="234471" X="-1902.62" Y="1067.543" Z="23.4322" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36456)" >
+			<MoveTo DestName="Shredder Parts"  X="-2032.685" Y="992.0745" Z="1.315662" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Shredder Parts" MobIds="235310" X="-2034.417" Y="992.7986" Z="3.357545" />
+		</If>
+
+
+        <While Condition="!IsQuestCompleted(36453)" >
+            <MoveTo DestName="Coinbender's Payment" X="-2209.511" Y="532.7989" Z="-2.07876" />
+            <CustomBehavior File="InteractWith" Name="A Sodden Note" MobIds="235298" X="-2209.014" Y="534.6754" Z="-0.1232755" MovementBy="ClickToMoveOnly" />
+            <CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="MyCTM" DestName="Coinbender's Payment" X="-2211.233" Y="534.4705" Z="-113" />
+            <CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" MovementBy="ClickToMoveOnly"
+                TerminateWhen="Object(235299) == null || IsQuestCompleted(36453)" NumOfTimes="10" MobIds="235299" X="-2211.233" Y="534.4705" Z="-118.3118" />
+            <CustomBehavior File="AscendInWater" />
+            <MoveTo DestName="Back to the coast." X="-2032.685" Y="992.0745" Z="1.315662" />
+        </While>
+
+		<If Condition="!IsQuestCompleted(36366)" >
+			<MoveTo DestName="Sailor Zazzuk's 180-Proof Rum" X="-2279.577" Y="1093.345" Z="4.916379" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Sailor Zazzuk's 180-Proof Rum" MobIds="234472" X="-2278.181" Y="1095.26" Z="6.665255" TerminateWhen="Object(234472) == null" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36366)" >
+			<MoveTo DestName="Elixir of Shadow Sight"  X="-2000.454" Y="1436.453" Z="0.09316722" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				TerminateWhen="Object(234736) == null" Name="Elixir of Shadow Sight" MobIds="234736" X="-2029.918" Y="1460.201" Z="-10.05485" />
+			<CustomBehavior File="AscendInWater" />
+			<MoveTo DestName="Elixir of Shadow Sight"  X="-2000.454" Y="1436.453" Z="0.09316722" />
+		</If>
+
+		<!-- Jump needed + quest id is wrong	
+		<If Condition="!IsQuestCompleted(36366)" >
+			<MoveTo DestName="Campaign Contributions" X="-2284.592" Y="1297.981" Z="20.81539" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Campaign Contributions" MobIds="234473" X="-2286.859" Y="1315.913" Z="41.09984" />
+		</If>
+		-->
+
+		<If Condition="!IsQuestCompleted(36407)" >
+			<MoveTo DestName="Offering to the Raven Mother" X="-1226.645" Y="1537.854" Z="118.6332" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Offering to the Raven Mother" MobIds="235073" X="-1228.339" Y="1537.01" Z="119.7841" />
+			<If Condition="HasItem(118267)" ><CustomBehavior File="UseItem" ItemId="118267" /></If>
+			<If Condition="HasItem(118267)" ><CustomBehavior File="DeleteItems" Ids="118267" /></If>
+		</If>
+
+		<If Condition="!IsQuestCompleted(36399)" >
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Elixir of Shadow Sight" MobIds="234734" X="-1143.807" Y="1713.441" Z="47.6988" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36458)" >
+			<MoveTo DestName="Abandoned Mining Pick" X="-840.7378" Y="2220.355" Z="61.35631" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Abandoned Mining Pick" MobIds="235313" X="-837.243" Y="2221.233" Z="63.01636" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36451)" >
+			<MoveTo DestName="Garrison Workman's Hammer" X="-643.7945" Y="2151.345" Z="7.157649" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Garrison Workman's Hammer" MobIds="235289" X="-653.5573" Y="2144.672" Z="8.298951" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36418)" >
+			<MoveTo DestName="Ephial's Dark Grimoire" MobIds="235097" X="-951.2621" Y="2472.95" Z="38.86254" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Ephial's Dark Grimoire" MobIds="235097" X="-951.2621" Y="2472.95" Z="38.86254" />
+		</If>
+
+
+		<While Condition="!IsQuestCompleted(36462)" >
+			<If Condition="!HasItem(116020)" >
+				<MoveTo DestName="An Old Key"  X="-894.2051" Y="2400.189" Z="40.2002" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="InteractWith" WaitTime="9000" WaitForNpcs="false" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				TerminateWhen="Object(235366) == null" Name="An Old Key" MobIds="235366" X="-891.8073" Y="2395.405" Z="41.34197" />
+			</If>
+			<MoveTo DestName="Admiral Taylor's Coffer" X="-781.2242" Y="2475.179" Z="41.48333" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				TerminateWhen="Object(235365) == null || IsQuestCompleted(36462)" Name="Admiral Taylor's Coffer" MobIds="235365" X="-816.6945" Y="2488.134" Z="41.48471" />
+			<If Condition="HasItem(119348)" ><CustomBehavior File="DeleteItems" Ids="119348" /></If>
+		</While>
+
+		<If Condition="!IsQuestCompleted(36420)" >
+			<MoveTo DestName="Garrison Supplies" MobIds="235103" X="-535.4827" Y="2429.778" Z="20.15696" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Garrison Supplies" MobIds="235103" X="-535.4827" Y="2429.778" Z="20.15696" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36402)" >
+			<MoveTo DestName="Orcish Signaling Horn"  X="-206.0537" Y="2487.918" Z="38.22308" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Orcish Signaling Horn" MobIds="234740" X="-205.776" Y="2482.236" Z="38.41095" />
+		</If>
+
+	
+		<While Condition="!IsQuestCompleted(36657)" >
+			<MoveTo DestName="Miril Dumonde" X="-671.1432" Y="2411.788" Z="34.27206" /> 
+			<If Condition="GetItemCount(114835) &lt; 3" >
+				<CustomBehavior File="InteractWith" WaitTime="1000" ProactiveCombatStrategy="ClearMobsTargetingUs" InteractByBuyingItemId="114835" BuyItemCount="3"
+				Name="Miril Dumonde" MobIds="82432" X="-673.8299" Y="2403.931" Z="28.06711" />
+			</If>
+			<If Condition="(Object(84332, u =&gt; u.Location.Distance(new WoWPoint(-671.6749, 2409.512, 33.89467)) &lt; 5) != null) || (Object(84342, o =&gt; o.Location.Distance(new WoWPoint(-671.6749, 2409.512, 33.89467)) &lt; 5) != null)" >
+				<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Rooby Roo" InteractBlacklistTimeInSeconds="2"
+					InteractByUsingItemId="114835"  MobIds="84332, 84342" WaitTime="15000" X="-670.1044" Y="2410.983" Z="34.27207" TerminateWhen="IsQuestCompleted(36657)" />
+			</If>
+			<If Condition="(Object(84332, u =&gt; u.Location.Distance(new WoWPoint(-694.5434, 2390.818, 33.14036)) &lt; 5) != null) || (Object(84342, o =&gt; o.Location.Distance(new WoWPoint(-694.5434, 2390.818, 33.14036)) &lt; 5) != null)" >
+				<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Rooby Roo" InteractBlacklistTimeInSeconds="2"
+					InteractByUsingItemId="114835"  MobIds="84332, 84342" WaitTime="10000" X="-694.0775" Y="2391.343" Z="33.17265" TerminateWhen="IsQuestCompleted(36657)" />
+			</If>
+			<If Condition="(Object(84332, u =&gt; u.Location.Distance(new WoWPoint(-676.6944, 2429.01, 34.69685)) &lt; 5) != null) || (Object(84342, o =&gt; o.Location.Distance(new WoWPoint(-676.6944, 2429.01, 34.69685)) &lt; 5) != null)" >
+				<CustomBehavior File="InteractWith" ProactiveCombatStrategy="ClearMobsTargetingUs" Name="Rooby Roo" InteractBlacklistTimeInSeconds="2"
+					InteractByUsingItemId="114835"  MobIds="84332, 84342" WaitTime="15000" X="-678.027" Y="2428.893" Z="34.83242" TerminateWhen="IsQuestCompleted(36657)" />
+			</If>
+			<If Condition="(Object(84332, u =&gt; u.Location.Distance(new WoWPoint(-663.868, 2422.234, 33.40748)) &lt; 5) != null) || (Object(84342, a =&gt; a.Location.Distance(new WoWPoint(-663.868, 2422.234, 33.40748)) &lt; 5) != null) || (Object(233975, o =&gt; o.ToGameObject().State == WoWGameObjectState.Ready) != null)" >
+				<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+					Name="Rooby's Roo" MobId="233975" X="-663.7968" Y="2423.112" Z="33.40765" TerminateWhen="IsQuestCompleted(36657)" />
+			</If>
+			<CustomBehavior File="WaitTimer" WaitTime="70000" TerminateWhen="IsQuestCompleted(36657)" />
+		</While>
+
+			<!--
+		 Needs jumping
+		<If Condition="!IsQuestCompleted(36421)" >
+			<MoveTo DestName="Sun-Touched Cache 1" X="271.8576" Y="2612.075" Z="50.10758" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Sun-Touched Cache" MobIds="235104" X="271.8576" Y="2612.075" Z="50.10758" />
+		</If>
+
+
+		<If Condition="!IsQuestCompleted(36422)" >
+			<MoveTo DestName="Sun-Touched Cache 2" X="281.7031" Y="2663.765" Z="79.72031" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Sun-Touched Cache" MobIds="235105" X="281.7031" Y="2663.765" Z="79.72031" />
+		</If>
+		-->
+
+		<If Condition="!IsQuestCompleted(36447)" >
+			<MoveTo DestName="Outcast's Belongings" X="506.0151" Y="2127.635" Z="40.68084" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Outcast's Belongings" MobIds="235172" X="507.533" Y="2125.688" Z="41.58481" />
+		</If>
+
+		<While Condition="Me.GetSkill(SkillLine.Archaeology).CurrentValue &gt;= 600 &amp;&amp; !IsQuestCompleted(36244)" >
+			<MoveTo DestName="Misplaced Scrolls" MobIds="234154" X="643.3854" Y="2093.873" Z="131.6667" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Misplaced Scrolls" MobIds="234154" X="643.3854" Y="2093.873" Z="131.6667" TerminateWhen="IsQuestCompleted(36244)" />
+		</While>
+
+		<!-- need jump
+		<If Condition="!IsQuestCompleted(36245)" >
+			<MoveTo DestName="Relics of the Outcasts" MobIds="234155" X="722.132" Y="2077.46" Z="174.1507" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Relics of the Outcasts" MobIds="234155" X="722.132" Y="2077.46" Z="174.1507" />
+		</If>
+		-->
+
+		<If Condition="!IsQuestCompleted(36395)" >
+			<MoveTo DestName="Elixir of Shadow Sight" MobIds="234703"  X="773.1118" Y="2022.749" Z="175.1585" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Elixir of Shadow Sight" MobIds="234703" X="775.5469" Y="2020.028" Z="176.5349" />
+			<If Condition="!IsQuestCompleted(36377)" > <!-- ID Correct, but quest didn't complete, bug on Blizzard's end? -->
+				<MoveTo DestName="Rukhmar's Image"  X="893.642" Y="1992.949" Z="192.66" />
+				<CustomBehavior File="ForcedDismount" />
+				<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+					Name="Rukhmar's Image" MobIds="85206" X="897.0382" Y="1994.392" Z="193.7118" />
+			</If>
+		</If>
+
+		<If Condition="!IsQuestCompleted(34255)" >
+			<MoveTo DestName="Webbed Sac" MobIds="228019" X="907.5" Y="1931.443" Z="148.5037" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Webbed Sac" MobIds="228019" Range="9" IgnoreLoSToTarget="true" X="907.5" Y="1931.443" Z="148.5037" />
+			<If Condition="HasItem(116129)" ><CustomBehavior File="UseItem" ItemId="116129" /></If>
+		</If>
+
+		<If Condition="!IsQuestCompleted(34239)" >
+			<MoveTo DestName="Curious Deathweb Egg"  X="971.0068" Y="1867.657" Z="117.6515" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Curious Deathweb Egg" MobIds="227996" Range="9" IgnoreLoSToTarget="true" X="973.2448" Y="1868.349" Z="117.4271" />
+			<If Condition="HasItem(117569)" ><CustomBehavior File="UseItem" ItemId="117569" /></If>
+			<If Condition="HasItem(117569)" ><CustomBehavior File="DeleteItems" Ids="117569" /></If>
+		</If>
+
+		<If Condition="!IsQuestCompleted(36397)" >
+			<MoveTo DestName="Elixir of Shadow Sight" X="375.7173" Y="2026.038" Z="1.738319" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Elixir of Shadow Sight" MobIds="234704" X="388.908" Y="2024.769" Z="5.897881" />
+		</If>
+
+
+
+		<!-- Need jump
+
+		<If Condition="!IsQuestCompleted(36355)" >
+			<MoveTo DestName="Relics of the Outcasts" MobIds="234449" X="282.2222" Y="2065.719" Z="26.3419" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Relics of the Outcasts" MobIds="234449" X="282.2222" Y="2065.719" Z="26.3419" />
+		</If>
+		
+		-->
+		<!-- Need jump
+		<GameObject Name="Relics of the Outcasts" MobIds="234446" X="-401.3524" Y="1897.738" Z="69.32549" />
+		-->
+
+		<!-- Name="Elixir of Shadow Sight" MobIds="115463" 
+		<GameObject Name="Shrine to Terokk" MobIds="236770" X="-252.6059" Y="1843.733" Z="37.69139" />
+		<WoWUnit Name="Gift of Anzu" MobIds="86956" X="-249.4983" Y="1839.194" Z="37.50866" />
+		-->
+
+		<If Condition="HasItem(115463) &amp;&amp; !IsQuestCompleted(36389)" >
+			<MoveTo DestName="Shrine to Terokk"  X="-248.3596" Y="1836.468" Z="37.59875" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="WaitTimer" WaitTime="5000" TerminateWhen="!Me.IsMoving" />
+			<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:115463&quot;)" WaitTime="6000" /> 
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Gift of Anzu" MobIds="86956" X="-249.4983" Y="1839.194" Z="37.50866" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36445)" >
+			<MoveTo DestName="Assassin's Spear" X="-122.6805" Y="1696.35" Z="15.31086" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Assassin's Spear" MobIds="235143" X="-119.6059" Y="1699.254" Z="18.08003" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36411)" >
+			<MoveTo DestName="Lost Ring" X="-77.61071" Y="1784.747" Z="19.48958" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Lost Ring" MobIds="235091" X="-75.62327" Y="1786.2" Z="19.68722" />
+		</If>
+
+		<While Condition="!IsQuestCompleted(36446)" >
+			<MoveTo DestName="Outcast's Pouch 0" X="18.09834" Y="1815.158" Z="21.83992" />
+			<CustomBehavior File="WaitTimer" WaitTime="5000" /> <!-- Aggro and loot.  -->
+			<MoveTo DestName="Outcast's Pouch 0" X="18.05227" Y="1814.077" Z="21.86608" />
+			<CustomBehavior File="MyCTM" DestName="Outcast's Pouch 1" X="18.05227" Y="1814.077" Z="21.86608" />
+			<CustomBehavior File="MyCTM" DestName="Outcast's Pouch 2" X="15.79552" Y="1820.047" Z="22.52237" />
+			<CustomBehavior File="MyCTM" DestName="Outcast's Pouch 3" X="9.110243" Y="1836.177" Z="26.08632" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Outcast's Pouch" MobIds="235168" IgnoreLoSToTarget="true" TerminateWhen="Object(235168) == null || Me.Z &lt;= 23 || IsQuestCompleted(36446)" X="7.605903" Y="1838.613" Z="29.20751" />
+			<CustomBehavior File="MyCTM" DestName="Outcast's Pouch 0" X="18.05227" Y="1814.077" Z="21.86608" />
+		</While>
+
+		<If Condition="!IsQuestCompleted(36361)" >
+			<MoveTo DestName="Shattered Hand Lockbox"  X="137.8881" Y="1783.867" Z="23.27971" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Shattered Hand Lockbox" MobIds="234456" X="145.033" Y="1776.891" Z="25.57416" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36247)" >
+			<MoveTo DestName="Lost Herb Satchel" MobIds="234159" X="222.2882" Y="1603.944" Z="8.365767" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Lost Herb Satchel" MobIds="234159" X="222.2882" Y="1603.944" Z="8.365767" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36444)" >
+			<MoveTo DestName="Iron Horde Explosives" MobIds="235141" X="341.5885" Y="1631.247" Z="61.29826" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Iron Horde Explosives" MobIds="235141" X="341.5885" Y="1631.247" Z="61.29826" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36246)" >
+			<MoveTo DestName="Fractured Sunstone" X="490.5642" Y="1620.51" Z="70.81394" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Fractured Sunstone" MobIds="234157" X="490.5642" Y="1620.51" Z="70.81394" />
+		</If>
+
+
+		<If Condition="HasItem(115463) &amp;&amp; !IsQuestCompleted(36392)" >
+			<MoveTo DestName="Shrine to Terokk" X="586.8459" Y="1528.265" Z="141.7344" />
+			<CustomBehavior File="Misc\RunLua" Lua="UseItemByName(&quot;item:115463&quot;)" WaitTime="6000" /> 
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Gift of Anzu" MobIds="86962" X="589.2118" Y="1528.16" Z="141.7357" />
+		</If>
+
+
+		<If Condition="!IsQuestCompleted(36400)" >
+			<MoveTo DestName="Elixir of Shadow Sight" X="491.0837" Y="1309.019" Z="82.13474" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Elixir of Shadow Sight" MobIds="234735" X="490.8021" Y="1308.524" Z="82.36383" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36362)" >
+			<MoveTo DestName="Shattered Hand Cache" X="225.2918" Y="1283.206" Z="1.410523" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Shattered Hand Cache" MobIds="234458" X="219.6337" Y="1273.351" Z="1.492106" />
+		</If>
+
+		<If Condition="!IsQuestCompleted(36364)" >
+			<MoveTo DestName="Toxicfang Venom" MobIds="234461" X="68.58681" Y="1387.109" Z="6.866734" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Toxicfang Venom" MobIds="234461" X="68.58681" Y="1387.109" Z="6.866734" />
+			<If Condition="HasItem(118695)" ><CustomBehavior File="UseItem" ItemId="118695" /></If>
+		</If>
+
+		<!-- Need jump for both of these
+		<If Condition="!IsQuestCompleted(36416)" >
+			<MoveTo DestName="Misplaced Scroll" MobIds="235095" X="-345.5295" Y="1501.51" Z="193.8009" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Misplaced Scroll" MobIds="235095" X="-345.5295" Y="1501.51" Z="193.8009" />
+		</If>
+		
+		<GameObject Name="Relics of the Outcasts" MobIds="234455" X="-592.9549" Y="1536.625" Z="52.99185" />
+		-->
+
+		<!-- The three offerings below do not count towards the achievement. -->
+		<If Condition="!IsQuestCompleted(36405)" >
+			<MoveTo DestName="Offering to the Raven Mother 1" X="-744.333" Y="1749.075" Z="74.08562" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Offering to the Raven Mother" MobIds="234746" X="-741.8629" Y="1750.896" Z="74.59108" />
+			<If Condition="HasItem(118267)" ><CustomBehavior File="UseItem" ItemId="118267" /></If>
+			<If Condition="HasItem(118267)" ><CustomBehavior File="DeleteItems" Ids="118267" /></If>
+		</If>
+
+		<If Condition="!IsQuestCompleted(36406)" >
+			<MoveTo DestName="Offering to the Raven Mother" X="-827.553" Y="1719.727" Z="99.0349" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Offering to the Raven Mother" MobIds="234748" X="-826.4167" Y="1717.491" Z="99.61991" />
+			<If Condition="HasItem(118267)" ><CustomBehavior File="UseItem" ItemId="118267" /></If>
+			<If Condition="HasItem(118267)" ><CustomBehavior File="DeleteItems" Ids="118267" /></If>
+		</If>
+
+		<If Condition="!IsQuestCompleted(36403)" >
+			<MoveTo DestName="Offering to the Raven Mother" X="-862.3461" Y="1449.746" Z="89.56699" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Offering to the Raven Mother" MobIds="234744" X="-859.2899" Y="1450.427" Z="87.25455" />
+			<If Condition="HasItem(118267)" ><CustomBehavior File="UseItem" ItemId="118267" /></If>
+			<If Condition="HasItem(118267)" ><CustomBehavior File="DeleteItems" Ids="118267" /></If>
+		</If>
+
+
+		<If Condition="!IsQuestCompleted(36340)" >
+			<MoveTo DestName="Ogron Plunder" X="-1056.298" Y="1120.663" Z="58.3277" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Ogron Plunder" MobIds="234432" X="-1049.988" Y="1123.845" Z="58.32692" />
+		</If>
+
+		<!-- Need jump
+		<GameObject Name="Relics of the Outcasts" MobIds="234454" X="-794.2743" Y="1032.257" Z="24.13778" />
+
+
+		<If Condition="Me.GetSkill(SkillLine.Archaeology).CurrentValue &gt;= 600 &amp;&amp; !IsQuestCompleted(36433)" >
+			<MoveTo DestName="Smuggled Apexis Artifacts" MobIds="235135" X="-446.8733" Y="1269.623" Z="19.7134" />
+			<CustomBehavior File="ForcedDismount" />
+			<CustomBehavior File="InteractWith" WaitTime="9000" ProactiveCombatStrategy="ClearMobsTargetingUs" PreInteractMountStrategy="Dismount" 
+				Name="Smuggled Apexis Artifacts" MobIds="235135" X="-446.8733" Y="1269.623" Z="19.7134" />
+		</If>
+		
+				-->
+
+		<CustomBehavior File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.BlueViolet, &quot;[Profile Notification]: Treasure farming complete!  Going to the Garrison to mail and vendor.&quot;);" />
+		<CustomBehavior File="ForceSetVendor" DoSell="True" DoRepair="True" />
+
+		<CustomBehavior File="UserSettings" Preset="UserOriginal" />
+		<CustomBehavior File="LoadProfile" ProfileName="Shadowmoon Valley Treasure Hunter.xml" RememberProfile="false" />
+
+
+	</QuestOrder>
+</HBProfile>
