@@ -836,9 +836,14 @@
 		<PickUp QuestName="Mann&apos;s Man" QuestId="29927" GiverName="Foreman Mann" GiverId="56346" X="2389.83" Y="-2105.925" Z="230.6057" />
 		<While Condition="NeedsQuest(29745)" >
 			<!-- <PickUp QuestName="The Sprites&apos; Plight" QuestId="29745" GiverName="Outcast Sprite" GiverId="55438" X="2491.098" Y="-1950.959" Z="217.5755" /> -->
-			<Code File="InteractWith" MobId="55438" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" X="2491.098" Y="-1950.959" Z="217.5755" TerminateWhen="!NeedsQuest(29745)" />
+			<Code File="InteractWith" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" X="2491.098" Y="-1950.959" Z="217.5755" TerminateWhen="!NeedsQuest(29745)" >
+				<PursuitList>
+					<PursueUnit Id="55438" PursueWhen="UNIT.QuestGiverStatus == QuestGiverStatus.Available" />
+				</PursuitList>
+			</Code>
 			<Code File="RunCode" Code="QuestFrame.Instance.AcceptQuest();" />
 		</While>
+
 
 		<While Condition="DoQuest(29745)" >
 			<If Condition="!IsObjectiveComplete(2, 29745)" >
