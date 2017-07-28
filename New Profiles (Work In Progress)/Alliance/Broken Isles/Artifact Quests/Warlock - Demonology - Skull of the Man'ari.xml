@@ -1,0 +1,263 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Warlock - Demonology - Skull of the Man'ari ($Rev: 5872 $)</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Blackspots>
+		<Blackspot X="1249.073" Y="5233.63" Z="92.8306" Radius="10.94136" /> <!-- Huge spike right in the way of the path.. -->
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+<!-- INITORDER COMMENT 
+	<InitOrder>
+		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
+		<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<Code File="EnablePlugin" Names="Anti Drown" />
+		<Code File="EnablePlugin" Names="Refreshment Detection" />
+
+		<Code File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> Use LevelBot default
+	</InitOrder>
+END INITORDER COMMENT -->
+
+	<QuestOrder>
+		<!-- Check function status -->
+			<Code File="RunCode" Type="Definition" >
+				<![CDATA[
+					bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+				]]>
+			</Code>
+			<If Condition="profileFunctionsEnabled == null || profileFunctionsEnabled == false" >
+				<Code File="RunCode">
+					<![CDATA[ Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!"); ]]>
+				</Code>
+				<Code File="LoadProfile" ProfileName="..\..\..\Functions\Activate Functions.xml" />
+			</If>
+		<!-- END Check function status -->
+
+		<If Condition="Me.IsHorde" >
+			<Code File="LoadProfile" ProfileName="..\..\..\1-110 Autoloader.xml" />
+		</If>
+		<!-- RunCode Methods -->
+			<Code File="RunCode">
+			<![CDATA[
+				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
+				Lua.DoString("SetCVar('AutoLootDefault', 1);");
+				Lua.DoString("SetCVar('autoDismountFlying', 1);");
+				CharacterSettings.Instance.LootMobs = true;
+				CharacterSettings.Instance.Save();
+				Lua.DoString("for i=1,GetNumAddOns() do local relo=false if IsAddOnLoaded(i) then relo=true DisableAddOn(i) end if relo then relo=nil ReloadUI() end end");
+				await Coroutine.Sleep(1500);
+				Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
+			]]>
+			</Code>
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</Code>
+		<!-- END RunCode Methods -->
+
+		<!-- Get Continuation Quest -->
+			<If Condition="IsQuestCompleted(40731) &amp;&amp; NeedsQuest(42128) &amp;&amp; NeedsQuest(43984, 1111111)" > <!-- Using The Heart of the Dreadscar (40731) to determine if we've already got the first artifact.  -->
+				<Code File="InteractWith" MobId="101097" WaitTime="1250" X="3121.295" Y="1106.274" Z="286.4945" />
+				<Code File="Misc\RunLua" WaitTime="1500" Lua="if GossipTitleButton2:IsVisible() then GossipTitleButton2:Click() else GossipTitleButton1:Click() end" />
+				<Code File="Misc\RunLua" WaitTime="2000" Lua="QuestFrameAcceptButton:Click();" />
+				<Code File="Misc\RunLua" WaitTime="1500" Lua="if QuestChoiceFrameOption2.OptionButton:IsVisible() then QuestChoiceFrameOption2.OptionButton:Click() else QuestChoiceFrameOption1.OptionButton:Click() end" />
+				<Code File="Misc\RunLua" WaitTime="1000" Lua="StaticPopup1Button1:Click();" /> <!-- Accept picking artifact. -->
+			</If>
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second+Third Artifact -->
+			<If Condition="QuestDone(43984, 1111111)" >
+				<Code File="InteractWith" MobId="101097" WaitTime="1250" X="3121.295" Y="1106.274" Z="286.4945" />
+				<Code File="Misc\RunLua" WaitTime="1500" Lua="if GossipTitleButton3:IsVisible() then GossipTitleButton3:Click() else GossipTitleButton2:Click() end" />
+				<Code File="Misc\RunLua" Lua="QuestFrameCompleteQuestButton:Click();" />
+			</If>
+		<!-- END Second+Third Artifact -->
+
+		<!-- Story: Artifact Weapon - Skull of the Man'ari -->
+			<If Condition="Me.HasAura(213170) &amp;&amp; NeedsQuest(42128)" >
+				<PickUp QuestName="Ritual Reagents" QuestId="42128" GiverName="Calydus" GiverId="101097" X="3121.295" Y="1106.274" Z="286.4945" />
+				<MoveTo X="3088.475" Y="838.9525" Z="243.8864" />
+				<Code File="MyCTM" X="3084.979" Y="819.9088" Z="243.6615" TerminateWhen="Me.ZoneId == 8392" />
+			</If>
+			<If Condition="!Me.HasAura(213170) &amp;&amp; NeedsQuest(42128)" >
+				<PickUp QuestName="Ritual Reagents" QuestId="42128" GiverName="Calydus" GiverId="101097" X="-858.3073" Y="4456.332" Z="695.9578" />
+			</If>
+			<While Condition="DoQuest(42128)" >
+				<Code File="InteractWith" MobId="106581" GossipOptions="1" QuestId="42128" QuestObjectiveIndex="4" X="-795.0504" Y="4378.95" Z="740.1576" />
+				<Code File="InteractWith" MobId="249748" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" InteractByLooting="true" QuestId="42128" QuestObjectiveIndex="3" X="-791.8264" Y="4474.007" Z="736.1099" />
+				<Code File="InteractWith" MobId="249744" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" InteractByLooting="true" QuestId="42128" QuestObjectiveIndex="2" X="-717.3055" Y="4554.67" Z="730.3762" />
+				<Code File="InteractWith" MobId="249742" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" InteractByLooting="true" QuestId="42128" QuestObjectiveIndex="1" X="-799.9531" Y="4598.588" Z="727.8135" />
+			</While>
+			<TurnIn QuestName="Ritual Reagents" QuestId="42128" TurnInName="Calydus" TurnInId="106610" X="-839.5903" Y="4425.784" Z="741.6765" />
+
+			<PickUp QuestName="Looking into the Darkness" QuestId="42168" GiverName="Calydus" GiverId="106610" X="-839.5903" Y="4425.784" Z="741.6765" />
+			<While Condition="DoQuest(42168)" >
+				<If Condition="!IsObjectiveComplete(1, 42168)" >
+					<MoveTo X="-842.623" Y="4431.243" Z="742.5373" />
+					<Code File="MyCTM" X="-842.623" Y="4431.243" Z="742.5373" />
+					<Code File="Misc\RunLua" Lua="ExtraActionButton1:Click();" />
+					<Code File="WaitTimer" WaitTime="5000" />
+				</If>
+				<Code File="InteractWith" MobId="106749" GossipOptions="1,1,1" QuestId="42168" QuestObjectiveIndex="2" X="-843.4288" Y="4433.368" Z="745.313" />
+			</While>
+			<TurnIn QuestName="Looking into the Darkness" QuestId="42168" TurnInName="Calydus" TurnInId="106610" X="-839.5903" Y="4425.784" Z="741.6765" />
+
+			<PickUp QuestName="Dark Whispers" QuestId="42125" GiverName="Calydus" GiverId="106610" X="-839.5903" Y="4425.784" Z="741.6765" />
+			<While Condition="DoQuest(42125)" >
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0 &amp;&amp; !HasItem(128943)" >
+					<Code File="InteractWith" MobId="249813" X="-842.875" Y="4431.096" Z="742.5369" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<MoveTo X="1249.173" Y="5252.332" Z="92.60342" />
+					<Code File="KillUntilComplete" MobId="106698" X="1069.512" Y="5127.466" Z="57.30164" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<Code File="KillUntilComplete" MobId="106644" X="1062.331" Y="5131.072" Z="57.09336" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+				</If>
+ 
+ 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+ 					<MoveTo X="1155.388" Y="5060.562" Z="57.71455" />
+					<Code File="RunCode"><![CDATA[
+							await CommonCoroutines.LandAndDismount();
+							await CommonCoroutines.StopMoving();
+							await Coroutine.Sleep(750);
+							SpellManager.Cast(111771);
+							SpellManager.ClickRemoteLocation(new Vector3(1172.283f, 5040.883f, 55.79492f));
+							await Coroutine.Sleep(3500);
+						]]> 
+					</Code>
+					<Code File="WaitTimer" WaitTime="3000" />
+					<Code File="InteractWith" MobId="59271" X="1153.517" Y="5062.131" Z="57.71968" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+ 					<MoveTo X="1180.539" Y="5023.105" Z="55.99846" />
+ 				</If>
+
+ 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+ 					<MoveTo X="1212.571" Y="4977.054" Z="60.06469" />
+ 					<Code File="WaitTimer" WaitTime="75000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+ 				</If>
+
+ 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+ 					<Code File="KillUntilComplete" MobId="106652" X="998.9809" Y="4920.242" Z="36.2779" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+ 				</If>
+
+ 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+ 					<Code File="InteractWith" MobId="249821" InteractByLooting="true" WaitTime="1500" X="1004.361" Y="4931.698" Z="36.27974" />
+					<Code File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<Code File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+ 				</If>
+
+ 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+ 					<Code File="InteractWith" MobId="106846" X="1006.182" Y="4917.022" Z="36.27739" />
+ 				</If>
+			</While>
+		<!-- END Story: Artifact Weapon - Skull of the Man'ari -->
+
+		<If Condition="IsQuestCompleted(40731)" >
+			<While Condition="!Me.HasAura(213170)" >
+				<MoveTo X="-798.684" Y="4577.701" Z="700.5798" />
+				<Code File="InteractWith" MobId="251302" Range="5" NonCompeteDistance="0" X="-795.9913" Y="4582.382" Z="700.575" />
+			</While>
+			<TurnIn QuestName="Dark Whispers" QuestId="42125" TurnInName="Calydus" TurnInId="101097" X="3121.295" Y="1106.274" Z="286.4946" />
+		</If>
+
+
+		<If Condition="!IsQuestCompleted(40731)" >
+			<TurnIn QuestName="Dark Whispers" QuestId="42125" TurnInName="Calydus" TurnInId="101097" X="-858.3073" Y="4456.332" Z="695.9576" />
+			<Code File="LoadProfile" ProfileName="../Class Hall Loaders/Warlock.xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	The Heart of the Dreadscar (40731) is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	The Heart of the Dreadscar (40731) is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

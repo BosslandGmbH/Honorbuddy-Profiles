@@ -1,0 +1,740 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/EchoQuestingSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Frostfire Ridge ($Rev: 6041 $)</Name>
+
+	<DefaultNavType>Fly</DefaultNavType>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+		<Vendor Name="Kraank" Entry="76928" Type="Food" X="5632.268" Y="4627.147" Z="139.2156" />
+		<Vendor Name="Provisioner Rashma" Entry="80151" Type="Food" X="5577.308" Y="4596.927" Z="141.1696" />
+		<Vendor Name="Supplymaster Eri" Entry="76872" Type="Repair" X="5626.828" Y="4629.681" Z="139.3038" />
+		<Vendor Name="Der'shway" Entry="76746" Type="Food" X="6790.803" Y="5850.958" Z="258.7218" />
+		<Vendor Name="Dean'na" Entry="74471" Type="Repair" X="6779.814" Y="5877.275" Z="258.6883" />
+		<Vendor Name="Vasushen" Entry="77470" Type="Repair" X="6738.805" Y="5796.527" Z="258.7143" />
+		<Vendor Name="Kelok Frostblade" Entry="79448" Type="Repair" X="5866.797" Y="6237.577" Z="49.16753" />
+		<Vendor Name="Sejo the Mender" Entry="77462" Type="Repair" X="5840.792" Y="6360.636" Z="69.8737" />
+		<Vendor Name="Dorg" Entry="72382" Type="Food" X="6167.285" Y="5018.628" Z="139.1736" />
+		<Vendor Name="Axe-Shaper Kugra" Entry="78989" Type="Repair" X="6118.715" Y="4986.791" Z="133.5156" />
+		<Vendor Name="Provisioner Lambala" Entry="78672" Type="Food" X="6653.94" Y="4312.604" Z="90.19288" />
+	</Vendors>
+
+	<Blackspots>
+		<Blackspot X="6792.237" Y="5745.167" Z="325.2156" Radius="1" /> <!-- Frostwolf Slave in bugged location -->
+		<!-- <Blackspot X="6502.513" Y="6216.406" Z="223.3424" Radius="10" /> Ogre that warriors will Heroic Leap through the ground to kill.
+
+		Commented because Thrall can't kill this ogre apparently.
+		Using a MoveTo with disabled combat to make the bot engage from short range to prevent Leaps/etc. -->
+		<Blackspot X="6443.299" Y="6309.628" Z="228.2374" Radius="7.424943" /> <!-- Large bonfire in Gormaul Tower -->
+	</Blackspots>
+
+	<Blacklist>
+		<Mob Name="Frostfire Gronn" Id="70920" Flags="Pull" />
+	</Blacklist>
+
+	<QuestOrder IgnoreCheckpoints="false" >
+		<!-- Check function status -->
+			<Code File="RunCode" Type="Definition" >
+				<![CDATA[
+					bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+				]]>
+			</Code>
+			<If Condition="profileFunctionsEnabled == null || profileFunctionsEnabled == false" >
+				<Code File="RunCode">
+					<![CDATA[ Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!"); ]]>
+				</Code>
+				<Code File="LoadProfile" ProfileName="..\..\Functions\Activate Functions.xml" />
+			</If>
+		<!-- END Check function status -->
+
+		<If Condition="Me.IsAlliance" >
+			<Code File="LoadProfile" ProfileName="..\..\1-110 Autoloader.xml" />
+		</If>
+		<!-- RunCode Methods -->
+			<!-- <Code File="RunCode">
+			<![CDATA[
+				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
+				Lua.DoString("SetCVar('AutoLootDefault', 1);");
+				CharacterSettings.Instance.LootMobs = true;
+				CharacterSettings.Instance.Save();
+				Lua.DoString("for i=1,GetNumAddOns() do local relo=false if IsAddOnLoaded(i) then relo=true DisableAddOn(i) end if relo then relo=nil ReloadUI() end end");
+				await Coroutine.Sleep(1500);
+				Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
+			]]>
+			</Code> -->
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</Code>
+		<!-- END RunCode Methods -->
+
+
+		<If Condition="HasQuest(33868)" >
+			<TurnIn QuestName="The Home of the Frostwolves" QuestId="33868" TurnInName="Farseer Drek&apos;Thar" TurnInId="76411" X="5538.753" Y="5014.584" Z="12.70083" />
+		</If>
+
+		<PickUp QuestName="A Song of Frost and Fire" QuestId="33815" GiverName="Farseer Drek&apos;Thar" GiverId="76411" X="5538.753" Y="5014.584" Z="12.70083" />
+		<While Condition="DoQuest(33815)" >
+			<MoveTo QuestId="33815" X="5436.736" Y="4952.756" Z="64.57199" />
+			<Code File="WaitTimer" WaitTime="60000" QuestId="33815" />
+		</While>
+		<TurnIn QuestName="A Song of Frost and Fire" QuestId="33815" TurnInName="Durotan" TurnInId="78272" X="5436.736" Y="4952.756" Z="64.57199" />
+
+		<PickUp QuestName="Of Wolves and Warriors" QuestId="34402" GiverName="Durotan" GiverId="78272" X="5436.736" Y="4952.756" Z="64.57199" />
+		<TurnIn QuestName="Of Wolves and Warriors" QuestId="34402" TurnInName="Thrall" TurnInId="70859" X="5613.917" Y="4528.342" Z="119.9844" />
+
+		<PickUp QuestName="For the Horde!" QuestId="34364" GiverName="Thrall" GiverId="70859" X="5613.917" Y="4528.342" Z="119.9844" />
+		<Code File="InteractWith" MobId="229057" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34364" QuestObjectiveIndex="1" X="5625.663" Y="4530.441" Z="119.3687" />
+		<TurnIn QuestName="For the Horde!" QuestId="34364" TurnInName="Gazlowe" TurnInId="78466" X="5625.032" Y="4529.757" Z="119.5313" />
+
+		<PickUp QuestName="Back to Work" QuestId="34375" GiverName="Gazlowe" GiverId="78466" X="5625.032" Y="4529.757" Z="119.5313" />
+		<PickUp QuestName="A Gronnling Problem" QuestId="34592" GiverName="Gazlowe" GiverId="78466" X="5625.032" Y="4529.757" Z="119.5313" />
+
+		<Code File="InteractWith" MobId="230527" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34375" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="5565.298" Y="4571.766" Z="138.2261" />
+				<Hotspot X="5517.683" Y="4464.908" Z="143.9467" />
+				<Hotspot X="5614.236" Y="4455.56" Z="138.3586" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" MobId="79529" QuestId="34592" >
+			<HuntingGrounds>
+				<Hotspot X="5614.236" Y="4455.56" Z="138.3586" />
+				<Hotspot X="5706.182" Y="4585.587" Z="143.1093" />
+				<Hotspot X="5504.516" Y="4466.538" Z="143.1833" />
+				<Hotspot X="5728.302" Y="4500.787" Z="131.7374" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="Back to Work" QuestId="34375" TurnInName="Gazlowe" TurnInId="78466" X="5624.128" Y="4528.54" Z="119.7379" />
+		<TurnIn QuestName="A Gronnling Problem" QuestId="34592" TurnInName="Gazlowe" TurnInId="78466" X="5624.128" Y="4528.54" Z="119.7379" />
+
+		<PickUp QuestName="The Den of Skog" QuestId="34765" GiverName="Gazlowe" GiverId="78466" X="5624.128" Y="4528.54" Z="119.7379" />
+		<Code File="KillUntilComplete" MobId="79903" QuestId="34765" X="5424.869" Y="4543.041" Z="139.1242" />
+		<TurnIn QuestName="The Den of Skog" QuestId="34765" TurnInName="Gazlowe" TurnInId="78466" X="5624.248" Y="4526.239" Z="119.7289" />
+
+		<PickUp QuestName="Establish Your Garrison" QuestId="34378" GiverName="Gazlowe" GiverId="78466" X="5624.248" Y="4526.239" Z="119.7289" />
+		<While Condition="DoQuest(34378)" >
+			<Code File="InteractWith" MobId="233664" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34378" QuestObjectiveIndex="1" X="5568.962" Y="4638.885" Z="146.6062" />
+			<Code File="RunCode" Code="await SkipCutscene();" />
+		</While>
+		<TurnIn QuestName="Establish Your Garrison" QuestId="34378" TurnInName="Gazlowe" TurnInId="78466" X="5567.533" Y="4518.701" Z="131.5768" />
+
+		<PickUp QuestName="What We Got" QuestId="34824" GiverName="Gazlowe" GiverId="78466" X="5567.533" Y="4518.701" Z="131.5768" />
+		<PickUp QuestName="What We Need" QuestId="34822" GiverName="Gazlowe" GiverId="78466" X="5567.533" Y="4518.701" Z="131.5768" />
+		<PickUp QuestName="The Ogron Live?" QuestId="34823" GiverName="Rokhan" GiverId="78487" X="5571.224" Y="4523.404" Z="130.6349" />
+
+		<Code File="InteractWith" MobId="237191" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="34824" QuestObjectiveIndex="2" X="5565.679" Y="4499.009" Z="132.0261" />
+		<Code File="InteractWith" MobId="80225" GossipOptions="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" WaitTime="5000" QuestId="34824" QuestObjectiveIndex="1" X="5576.162" Y="4597.182" Z="136.5887" />
+		<Code File="InteractWith" MobId="86775" GossipOptions="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="34824" QuestObjectiveIndex="3" X="5737.327" Y="4538.995" Z="137.9499" />
+
+		<TurnIn QuestName="What We Got" QuestId="34824" TurnInName="Gazlowe" TurnInId="78466" X="5569.17" Y="4517.8" Z="131.4763" />
+
+		<Code File="InteractWith" MobIds="230879, 230880, 230881" CollectionDistance="200" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="34822" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="5730.924" Y="4887.746" Z="29.31822" />
+				<Hotspot X="5711.073" Y="5019.595" Z="38.67435" />
+			</HuntingGrounds>
+		</Code>
+
+		<While Condition="DoQuest(34823)" >
+			<If Condition="!Me.IsIndoors || Unit(80167) == null" >
+				<MoveTo X="5833.578" Y="5050.551" Z="58.27322" />
+			</If>
+			<Code File="KillUntilComplete" MobId="80167" QuestId="34823" X="5870.323" Y="4955.965" Z="26.2709" />
+		</While>
+
+		<If Condition="QuestDone(34822, 34823) &amp;&amp; HasItem(110560) &amp;&amp; Unit(80167) != null" >
+			<Code File="RunCode" Code="
+				await CommonCoroutines.LandAndDismount();
+				Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 110560).Use();
+				await Coroutine.Sleep(500);
+				await Coroutine.Wait(7000, () =&gt; !Me.IsCasting);
+			" />
+		</If>
+
+		<TurnIn QuestName="The Ogron Live?" QuestId="34823" TurnInName="Rokhan" TurnInId="78487" X="5573.201" Y="4521.813" Z="130.5337" />
+		<TurnIn QuestName="What We Need" QuestId="34822" TurnInName="Gazlowe" TurnInId="78466" X="5568.807" Y="4518.471" Z="131.5308" />
+		<RecheckCheckpoints />
+
+		<PickUp QuestName="Build Your Barracks" QuestId="34461" GiverName="Gazlowe" GiverId="78466" X="5568.807" Y="4518.471" Z="131.5308" />
+		<While Condition="DoQuest(34461)" >
+			<Code File="InteractWith" MobId="231012" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="34461" QuestObjectiveIndex="1" X="5580.643" Y="4467.705" Z="130.8468" />
+			<Code File="UseItem" ItemId="111956" QuestId="34461" QuestObjectiveIndex="2" TerminateWhen="!HasItem(111956)" />
+
+			<Code File="InteractWith" MobId="80600" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34461" X="5566.078" Y="4518.871" Z="131.6672" />
+			<Code File="Misc\RunLua" Lua="C_Garrison.PlaceBuilding(23, 26);" QuestId="34461" />
+
+			<Code File="InteractWith" MobId="231217" NonCompeteDistance="0" WaitForNpcs="false" PreInteractMountStrategy="Dismount" QuestId="34461" QuestObjectiveIndex="5" X="5588.321" Y="4480.14" Z="130.0595" />
+			<Code File="RunCode" Code="await SkipCutscene(1500);" />
+		</While>
+		<TurnIn QuestName="Build Your Barracks" QuestId="34461" TurnInName="Gazlowe" TurnInId="78466" X="5589.756" Y="4479.972" Z="130.0145" />
+
+		<PickUp QuestName="We Need An Army" QuestId="34861" GiverName="Gazlowe" GiverId="78466" X="5589.756" Y="4479.972" Z="130.0145" />
+		<TurnIn QuestName="We Need An Army" QuestId="34861" TurnInName="Warmaster Zog" TurnInId="79740" X="5561.588" Y="4507.861" Z="132.6916" />
+
+		<PickUp QuestName="Winds of Change" QuestId="34462" GiverName="Warmaster Zog" GiverId="79740" X="5561.588" Y="4507.861" Z="132.6916" />
+
+		<PickUp QuestName="The Land Provides" QuestId="34960" GiverName="Icevine" GiverId="231100" X="5523.285" Y="4191.386" Z="58.1792" />
+		<Code File="InteractWith" MobIds="231096, 231097, 231098" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34960" QuestObjectiveIndex="1" X="5403.646" Y="4161.833" Z="58.11107" />
+
+		<Code File="InteractWith" MobId="80577" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34462" QuestObjectiveIndex="1" X="5710.485" Y="4003.895" Z="66.43501" />
+
+		<TurnIn QuestName="The Land Provides" QuestId="34960" TurnInName="Gazlowe" TurnInId="78466" X="5568.307" Y="4518.051" Z="131.6171" />
+		<TurnIn QuestName="Winds of Change" QuestId="34462" TurnInName="Warmaster Zog" TurnInId="79740" X="5560.988" Y="4509.086" Z="132.6963" />
+
+		<PickUp QuestName="Mission Probable" QuestId="34775" GiverName="Warmaster Zog" GiverId="79740" X="5560.988" Y="4509.086" Z="132.6963" />
+		<While Condition="DoQuest(34775)" >
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[
+					async Task DoMission(int missionID, params int[] followerList)
+					{
+						foreach (int follower in followerList)
+						{
+							string luaString = $@"
+								local missionID = {missionID};
+								local followerID = {follower};
+								local allFollowers = C_Garrison.GetFollowers(1);
+								for i=1,#allFollowers do
+									if (allFollowers[i].garrFollowerID == followerID)  then  
+										C_Garrison.AddFollowerToMission(missionID, allFollowers[i].followerID);
+										break;
+									end
+								end
+							";
+							Lua.DoString(luaString);
+							await Coroutine.Sleep(750);
+						}
+						await Coroutine.Sleep(1000);
+						Lua.DoString($"C_Garrison.StartMission({missionID});");
+						await Coroutine.Sleep(2500);
+						Lua.DoString("GarrisonMissionFrame.CloseButton:Click();");
+					}
+				]]>
+			</Code>
+			<Code File="InteractWith" MobId="80432" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34775" X="5560.988" Y="4509.086" Z="132.6963" />
+			<Code File="RunCode" Code="await DoMission(2, 34);" />
+		</While>
+		<TurnIn QuestName="Mission Probable" QuestId="34775" TurnInName="Warmaster Zog" TurnInId="79740" X="5560.338" Y="4508.412" Z="132.6962" />
+
+		<PickUp QuestName="Den of Wolves" QuestId="34379" GiverName="Farseer Drek&apos;Thar" GiverId="76411" X="5580.16" Y="4540.435" Z="133.8068" />
+		<While Condition="DoQuest(34379)" >
+			<Code File="InteractWith" MobId="78320" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34379" QuestObjectiveIndex="1" X="5582.015" Y="4549.983" Z="134.6224" />
+			<Code File="WaitTimer" WaitTime="75000" TerminateWhen="!Me.InVehicle" />
+		</While>
+		<TurnIn QuestName="Den of Wolves" QuestId="34379" TurnInName="Durotan" TurnInId="70860" X="5912.299" Y="6234.854" Z="51.47817" />
+
+		<PickUp QuestName="Rally the Frostwolves" QuestId="34380" GiverName="Durotan" GiverId="70860" X="5912.299" Y="6234.854" Z="51.47817" />
+
+		<PickUp QuestName="Honor Has Its Rewards" QuestId="33816" GiverName="Farseer Drek&apos;Thar" GiverId="80456" X="5912.629" Y="6224.741" Z="49.51729" />
+		<MoveTo QuestId="33816" X="5965.978" Y="6433.73" Z="62.66983" />
+		<TurnIn QuestName="Honor Has Its Rewards" QuestId="33816" TurnInName="Farseer Drek&apos;Thar" TurnInId="76616" X="5962.262" Y="6424.31" Z="62.72422" />
+
+		<Code File="InteractWith" MobId="78971" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34380" QuestObjectiveIndex="1" X="5826.33" Y="6324.658" Z="88.98999" />
+
+		<TurnIn QuestName="Rally the Frostwolves" QuestId="34380" TurnInName="Durotan" TurnInId="76557" X="5911.684" Y="6227.206" Z="49.89631" />
+
+		<PickUp QuestName="Gormaul Tower" QuestId="33784" GiverName="Durotan" GiverId="76557" X="5911.684" Y="6227.206" Z="49.89631" />
+		<While Condition="DoQuest(33784)" >
+			<While Condition="!IsObjectiveComplete(1, 33784)" >
+				<Code File="ForceSetVendor" DoSell="true" DoRepair="true" />
+				<DisableBehavior Name="Pull" />
+				<MoveTo X="6472.194" Y="6206.137" Z="220.6776" />
+				<MoveTo X="6502.937" Y="6215.323" Z="223.3406" />
+				<EnableBehavior Name="Pull" />
+			</While>
+			<DisableBehavior Name="Vendor" />
+			<Code File="KillUntilComplete" MobIds="73373, 73371, 75240, 75241, 73472" QuestId="33784" QuestObjectiveIndex="3" X="6458.332" Y="6293.213" Z="228.0956" />
+			<Code File="KillUntilComplete" MobId="78173" QuestId="33784" QuestObjectiveIndex="4" X="6458.332" Y="6293.213" Z="228.0956" />
+			<Code File="KillUntilComplete" MobId="76208" QuestId="33784" X="6454.606" Y="6318.067" Z="228.1328" />
+			<EnableBehavior Name="Vendor" />
+		</While>
+		<TurnIn QuestName="Gormaul Tower" QuestId="33784" TurnInName="Durotan" TurnInId="76240" X="6453.622" Y="6300.132" Z="227.9792" />
+
+		<PickUp QuestName="These Colors Don&apos;t Run" QuestId="33526" GiverName="Durotan" GiverId="70860" X="6453.622" Y="6300.132" Z="227.9792" />
+		<Code File="InteractWith" MobIds="73371, 73373, 75240" MobState="Dead" AuraIdMissingFromMob="151088" CollectionDistance="200" InteractByUsingItemId="107279" PreInteractMountStrategy="Dismount" QuestId="33526" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="6580.101" Y="6209.452" Z="230.5385" />
+				<Hotspot X="6673.887" Y="6166.925" Z="238.4791" />
+			</HuntingGrounds>
+		</Code>
+		<TurnIn QuestName="These Colors Don&apos;t Run" QuestId="33526" TurnInName="Durotan" TurnInId="74273" X="6892.22" Y="5848.928" Z="258.6867" />
+
+		<PickUp QuestName="Deeds Left Undone" QuestId="33546" GiverName="Durotan" GiverId="74273" X="6892.22" Y="5848.928" Z="258.6867" />
+		<Code File="InteractWith" MobId="225681" CollectionDistance="200" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="33546" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="6864.71" Y="5844.665" Z="258.688" />
+				<Hotspot X="6780.106" Y="5861.861" Z="258.6879" />
+				<Hotspot X="6748.134" Y="5794.884" Z="258.688" />
+			</HuntingGrounds>
+		</Code>
+		<Code File="InteractWith" MobId="75167" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="33546" QuestObjectiveIndex="2" X="6791.877" Y="5759.449" Z="258.687" />
+		<TurnIn QuestName="Deeds Left Undone" QuestId="33546" TurnInName="Durotan" TurnInId="75177" X="6656.731" Y="5917.148" Z="253.9552" />
+
+		<PickUp QuestName="Great Balls of Fire!" QuestId="33408" GiverName="Durotan" GiverId="75177" X="6656.731" Y="5917.148" Z="253.9552" />
+		<While Condition="DoQuest(33408)" >
+			<Code File="Hooks\Avoid" AvoidName="AvoidBalls" Command="Add" ObjectId="224636" Radius="5" />
+			<Code File="Hooks\Avoid" AvoidName="BallsOfFire" Command="Add" ObjectType="AreaTrigger" ObjectId="5669" Radius="6" AvoidLocationProducer="WoWMathHelper.GetNearestPointOnLineSegment(Me.Location, AREATRIGGER.Location, AREATRIGGER.Location.RayCast(AREATRIGGER.Rotation, 8))" />
+			<DisableBehavior Name="Rest" />
+			<MoveTo QuestId="33408" X="6611.14" Y="5735.416" Z="318.1961" />
+			<EnableBehavior Name="Rest" />
+			<Code File="Hooks\Avoid" AvoidName="AvoidBalls" Command="Remove" />
+			<Code File="Hooks\Avoid" AvoidName="BallsOfFire" Command="Remove" />
+		</While>
+		<TurnIn QuestName="Great Balls of Fire!" QuestId="33408" TurnInName="Thrall" TurnInId="75186" X="6627.207" Y="5669.256" Z="318.9779" />
+
+		<PickUp QuestName="The Butcher of Bladespire" QuestId="33410" GiverName="Thrall" GiverId="75186" X="6627.207" Y="5669.256" Z="318.9779" />
+		<Code File="KillUntilComplete" MobId="74254" QuestId="33410" X="6651.311" Y="5771.417" Z="318.8704" />
+		<TurnIn QuestName="The Butcher of Bladespire" QuestId="33410" TurnInName="Thrall" TurnInId="75186" X="6627.469" Y="5669.572" Z="319.0056" />
+
+		<PickUp QuestName="To the Slaughter" QuestId="33622" GiverName="Thrall" GiverId="75186" X="6627.469" Y="5669.572" Z="319.0056" />
+		<PickUp QuestName="Armed and Dangerous" QuestId="33344" GiverName="Thrall" GiverId="75186" X="6627.469" Y="5669.572" Z="319.0056" />
+
+		<Code File="InteractWith" MobIds="76547, 76238" CollectionDistance="200" PreInteractMountStrategy="Dismount" QuestId="33344" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="6734.001" Y="5696.473" Z="325.0714" />
+				<Hotspot X="6736.498" Y="5696.355" Z="325.0714" />
+				<Hotspot X="6804.311" Y="5763.31" Z="325.2136" />
+				<Hotspot X="6859.418" Y="5840.621" Z="325.2137" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" MobIds="75057, 73469, 73470, 73472" QuestId="33344" >
+			<HuntingGrounds>
+				<Hotspot X="6734.001" Y="5696.473" Z="325.0714" />
+				<Hotspot X="6736.498" Y="5696.355" Z="325.0714" />
+				<Hotspot X="6804.311" Y="5763.31" Z="325.2136" />
+				<Hotspot X="6859.418" Y="5840.621" Z="325.2137" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="To the Slaughter" QuestId="33622" TurnInName="Durotan" TurnInId="75177" X="6820.193" Y="5792.598" Z="325.1946" />
+		<TurnIn QuestName="Armed and Dangerous" QuestId="33344" TurnInName="Durotan" TurnInId="75177" X="6820.193" Y="5792.598" Z="325.1946" />
+		<RecheckCheckpoints />
+
+		<PickUp QuestName="Last Steps" QuestId="33527" GiverName="Durotan" GiverId="75177" X="6820.193" Y="5792.598" Z="325.1946" />
+		<While Condition="DoQuest(33527)" >
+			<Code File="InteractWith" MobId="231902" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33527" QuestObjectiveIndex="1" X="6822.468" Y="5793.372" Z="325.1928" />
+			<Code File="RunCode" Code="await SkipCutscene();" />
+			<Code File="KillUntilComplete" MobId="74105" QuestId="33527" QuestObjectiveIndex="2" X="6786.949" Y="5837.969" Z="410.1527" />
+		</While>
+		<TurnIn QuestName="Last Steps" QuestId="33527" TurnInName="Durotan" TurnInId="75188" X="6812.266" Y="5769.107" Z="410.1512" />
+
+		<PickUp QuestName="Moving In" QuestId="33657" GiverName="Durotan" GiverId="75188" X="6812.266" Y="5769.107" Z="410.1512" />
+		<While Condition="DoQuest(33657)" >
+			<Code File="InteractWith" MobId="75560" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33657" QuestObjectiveIndex="1" X="6812.266" Y="5769.107" Z="410.1512" />
+			<Code File="WaitTimer" WaitTime="75000" TerminateWhen="!Me.InVehicle" />
+		</While>
+		<TurnIn QuestName="Moving In" QuestId="33657" TurnInName="Durotan" TurnInId="70860" X="6805.324" Y="5852.89" Z="259.4542" />
+
+		<PickUp QuestName="Save Wolf Home" QuestId="33468" GiverName="Durotan" GiverId="70860" X="6805.324" Y="5852.89" Z="259.4542" />	
+		<PickUp QuestName="Mopping Up" QuestId="33412" GiverName="Snowrunner Rolga" GiverId="81678" X="6783.155" Y="5955.171" Z="257.5318" />
+		<PickUp QuestName="Slavery and Strife" QuestId="33119" GiverName="Guse" GiverId="78222" X="6752.774" Y="6014.066" Z="249.8488" />
+		<PickUp QuestName="Slaying Slavers" QuestId="33898" GiverName="Gol&apos;kosh the Axe" GiverId="76662" X="6674.753" Y="6034.76" Z="122.0152" />
+
+		<Code File="InteractWith" MobId="221674" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33119" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="6653.02" Y="5965.208" Z="126.7929" />
+				<Hotspot X="6557.425" Y="5859.498" Z="143.7344" />
+				<Hotspot X="6532.418" Y="5780.777" Z="153.7574" />
+				<Hotspot X="6542.585" Y="5679.835" Z="166.7959" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" MobIds="72752, 72833, 73698" QuestId="33898" >
+			<HuntingGrounds>
+				<Hotspot X="6653.02" Y="5965.208" Z="126.7929" />
+				<Hotspot X="6557.425" Y="5859.498" Z="143.7344" />
+				<Hotspot X="6532.418" Y="5780.777" Z="153.7574" />
+				<Hotspot X="6542.585" Y="5679.835" Z="166.7959" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="Slavery and Strife" QuestId="33119" TurnInName="Mulverick" TurnInId="72890" X="6583.291" Y="5624.532" Z="166.9945" />
+		<PickUp QuestName="Mulverick&apos;s Plight" QuestId="33483" GiverName="Mulverick" GiverId="72890" X="6583.291" Y="5624.532" Z="166.9945" />
+
+		<Code File="KillUntilComplete" MobIds="73698, 76706" QuestId="33483" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="6694.144" Y="5753.974" Z="149.8438" />
+				<Hotspot X="6749.252" Y="5774.848" Z="146.0568" />
+				<Hotspot X="6734.078" Y="5889.526" Z="130.8856" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" MobId="72873" QuestId="33483" QuestObjectiveIndex="2" X="6810.295" Y="5823.988" Z="155.736" />
+
+		<Code File="InteractWith" MobId="225826" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33483" QuestObjectiveIndex="3" X="6584.63" Y="5624.969" Z="167.0403" />
+
+		<TurnIn QuestName="Mulverick&apos;s Plight" QuestId="33483" TurnInName="Mulverick" TurnInId="79047" X="6585.363" Y="5628.748" Z="166.9465" />
+		<PickUp QuestName="The Slavemaster&apos;s Demise" QuestId="33484" GiverName="Mulverick" GiverId="79047" X="6585.363" Y="5628.748" Z="166.9465" />
+
+		<If Condition="!IsQuestCompleted(34732)" >
+			<Code File="InteractWith" MobId="79047" NonCompeteDistance="0" X="6585.363" Y="5628.748" Z="166.9465" TerminateWhen="IsQuestCompleted(34732)" />
+			<Code File="RunCode" Code="QuestFrame.Instance.CompleteQuest();" />
+		</If>
+
+		<TurnIn QuestName="Slaying Slavers" QuestId="33898" TurnInName="Gol&apos;kosh the Axe" TurnInId="76662" X="6667.514" Y="6030.175" Z="122.0151" />
+		<TurnIn QuestName="Mopping Up" QuestId="33412" TurnInName="Igrimar the Resolute" TurnInId="74635" X="7112.747" Y="6011.25" Z="133.9278" />
+		<PickUp QuestName="The Warlord&apos;s Guard" QuestId="33450" GiverName="Igrimar the Resolute" GiverId="74635" X="7112.747" Y="6011.25" Z="133.9278" />
+		<PickUp QuestName="The Cure" QuestId="33454" GiverName="Igrimar the Resolute" GiverId="74635" X="7112.747" Y="6011.25" Z="133.9278" />
+
+		<While Condition="DoQuest(33454)" >
+			<Code File="InteractWith" MobId="74672" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33454" QuestObjectiveIndex="1" TerminateWhen="!HasItem(106958)" >
+				<HuntingGrounds>
+					<Hotspot X="7212.741" Y="5880.073" Z="119.9016" />
+					<Hotspot X="7114.16" Y="5919.813" Z="122.1392" />
+				</HuntingGrounds>
+			</Code>
+			<Code File="KillUntilComplete" MobId="74697" QuestId="33454" TerminateWhen="GetItemCount(106958) &gt;= 5" >
+				<HuntingGrounds>
+					<Hotspot X="7212.741" Y="5880.073" Z="119.9016" />
+					<Hotspot X="7114.16" Y="5919.813" Z="122.1392" />
+				</HuntingGrounds>
+			</Code>
+		</While>
+
+		<Code File="KillUntilComplete" MobId="74704" QuestId="33450" QuestObjectiveIndex="1" X="7243.046" Y="5856.667" Z="122.1872" />
+		<Code File="KillUntilComplete" MobId="74706" QuestId="33450" QuestObjectiveIndex="3" X="7207.031" Y="5774.095" Z="140.4184" />
+		<Code File="KillUntilComplete" MobId="74707" QuestId="33450" QuestObjectiveIndex="2" X="7292.974" Y="5781.785" Z="114.6329" />
+
+		<TurnIn QuestName="The Warlord&apos;s Guard" QuestId="33450" TurnInName="Igrimar the Resolute" TurnInId="74635" X="7086.967" Y="6009.568" Z="133.8979" />
+		<TurnIn QuestName="The Cure" QuestId="33454" TurnInName="Igrimar the Resolute" TurnInId="74635" X="7086.967" Y="6009.568" Z="133.8979" />
+		<RecheckCheckpoints />
+
+		<PickUp QuestName="The Fall of the Warlord" QuestId="33467" GiverName="Igrimar the Resolute" GiverId="74635" X="7086.967" Y="6009.568" Z="133.8979" />
+		<While Condition="DoQuest(33467)" >
+			<Code File="InteractWith" MobId="227291" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33467" QuestObjectiveIndex="1" X="7209.454" Y="6079.362" Z="117.4467" TerminateWhen="Unit(73763, u =&gt; u.IsAlive) != null" />
+			<Code File="KillUntilComplete" MobId="73763" QuestId="33467" X="7193.51" Y="6095.673" Z="117.4467" TerminateWhen="Unit(73763, u =&gt; u.IsAlive) == null" />
+		</While>
+		<TurnIn QuestName="The Fall of the Warlord" QuestId="33467" TurnInName="Snowrunner Rolga" TurnInId="81678" X="6782.367" Y="5956.62" Z="257.2826" />
+
+		<TurnIn QuestName="The Slavemaster&apos;s Demise" QuestId="33484" TurnInName="Guse" TurnInId="78222" X="6750.845" Y="6011.901" Z="250.0344" />
+
+		<While Condition="!QuestFlaggedCompleted(34505)" >
+			<Code File="InteractWith" MobIds="78870, 78894" CollectionDistance="200" NumOfTimes="24" KeepTargetSelected="true" PreInteractMountStrategy="Dismount" TerminateWhen="IsObjectiveComplete(2, 34505) ? true : QuestFlaggedCompleted(34505)" >
+				<HuntingGrounds>
+					<Hotspot X="6186.249" Y="5902.038" Z="137.8327" />
+					<Hotspot X="6098.588" Y="5939.749" Z="128.1218" />
+				</HuntingGrounds>
+			</Code>
+			<Code File="KillUntilComplete" MobId="78791" TerminateWhen="IsObjectiveComplete(1, 34505) ? true : QuestFlaggedCompleted(34505)" >
+				<HuntingGrounds>
+					<Hotspot X="6186.249" Y="5902.038" Z="137.8327" />
+					<Hotspot X="6098.588" Y="5939.749" Z="128.1218" />
+				</HuntingGrounds>
+			</Code>
+		</While>
+
+		<Code File="KillUntilComplete" MobId="74702" QuestId="33468" QuestObjectiveIndex="4" X="5933.991" Y="6152.673" Z="66.55297" />
+		<Code File="KillUntilComplete" MobId="74700" QuestId="33468" QuestObjectiveIndex="2" X="5904.124" Y="6318.178" Z="52.79211" />
+
+		<PickUp QuestName="Free Our Brothers and Sisters" QuestId="33807" GiverName="Wor&apos;gol Defender" GiverId="74507" X="5899.873" Y="6337.848" Z="53.44947" />
+
+		<Code File="KillUntilComplete" MobId="74708" QuestId="33468" QuestObjectiveIndex="3" X="5772.216" Y="6287.971" Z="93.66785" />
+
+		<Code File="InteractWith" MobIds="74339, 74544" NonCompeteDistance="0" ProactiveCombatStrategy="NoClear" PreInteractMountStrategy="Dismount" QuestId="33807" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="5807.658" Y="6295.139" Z="83.98937" />
+				<Hotspot X="5919.034" Y="6346.213" Z="53.92973" />
+				<Hotspot X="5941.945" Y="6223.872" Z="49.16644" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" MobIds="74329, 74514" QuestId="33468" >
+			<HuntingGrounds>
+				<Hotspot X="5807.658" Y="6295.139" Z="83.98937" />
+				<Hotspot X="5919.034" Y="6346.213" Z="53.92973" />
+				<Hotspot X="5941.945" Y="6223.872" Z="49.16644" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="Free Our Brothers and Sisters" QuestId="33807" TurnInName="Draka" TurnInId="74651" X="5909.983" Y="6233.565" Z="51.28295" />
+		<TurnIn QuestName="Save Wolf Home" QuestId="33468" TurnInName="Draka" TurnInId="74651" X="5909.983" Y="6233.565" Z="51.28295" />
+		<RecheckCheckpoints />
+
+		<PickUp QuestName="The Farseer" QuestId="33469" GiverName="Draka" GiverId="74651" X="5909.983" Y="6233.565" Z="51.28295" />
+		<Code File="KillUntilComplete" MobId="74653" QuestId="33469" X="5926.022" Y="6477.342" Z="27.85993" />
+		<TurnIn QuestName="The Farseer" QuestId="33469" TurnInName="Farseer Drek&apos;Thar" TurnInId="74272" X="5920.239" Y="6480.475" Z="29.47891" />
+
+		<PickUp QuestName="Pool of Visions" QuestId="33470" GiverName="Farseer Drek&apos;Thar" GiverId="74272" X="5920.239" Y="6480.475" Z="29.47891" />
+		<While Condition="DoQuest(33470)" >
+			<Code File="InteractWith" MobId="74272" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33470" X="5920.239" Y="6480.475" Z="29.47891" />
+			<Code File="RunCode" Code="await SkipCutscene();" />
+		</While>
+		<TurnIn QuestName="Pool of Visions" QuestId="33470" TurnInName="Farseer Drek&apos;Thar" TurnInId="74272" X="5920.239" Y="6480.475" Z="29.47891" />
+
+		<PickUp QuestName="Back to Bladespire Citadel" QuestId="33473" GiverName="Farseer Drek&apos;Thar" GiverId="74272" X="5920.239" Y="6480.475" Z="29.47891" />
+		<Code File="InteractWith" MobId="76782" GossipOptions="2" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33473" QuestObjectiveIndex="1" X="5986.553" Y="6183.685" Z="70.07306" />
+		<TurnIn QuestName="Back to Bladespire Citadel" QuestId="33473" TurnInName="Durotan" TurnInId="70860" X="6805.12" Y="5853.257" Z="259.4378" />
+
+		<PickUp QuestName="Ga&apos;nar&apos;s Vengeance" QuestId="32783" GiverName="Durotan" GiverId="70860" X="6805.12" Y="5853.257" Z="259.4378" />
+		<PickUp QuestName="Securing the South" QuestId="32989" GiverName="Durotan" GiverId="70860" X="6805.12" Y="5853.257" Z="259.4378" />
+		<TurnIn QuestName="Ga&apos;nar&apos;s Vengeance" QuestId="32783" TurnInName="Ga&apos;nar" TurnInId="70909" X="7219.51" Y="5620.848" Z="125.7956" />
+
+		<PickUp QuestName="Let the Hunt Begin!" QuestId="32791" GiverName="Ga&apos;nar" GiverId="70909" X="7219.51" Y="5620.848" Z="125.7956" />
+		<Code File="InteractWith" MobId="70878" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="32791" QuestObjectiveIndex="1" X="7219.51" Y="5620.848" Z="125.7956" />
+		<Code File="KillUntilComplete" MobIds="70900, 71716, 78645" QuestId="32791" QuestObjectiveIndex="2" X="7193.782" Y="5405.48" Z="66.2515" />
+		<Code File="KillUntilComplete" MobIds="70900, 78644, 78645" QuestId="32791" QuestObjectiveIndex="4" X="7220.652" Y="5302.349" Z="62.38413" />
+		<TurnIn QuestName="Let the Hunt Begin!" QuestId="32791" TurnInName="Ga&apos;nar" TurnInId="74000" X="7221.124" Y="5300.958" Z="62.38804" />
+
+		<PickUp QuestName="Leave Nothing Behind!" QuestId="32792" GiverName="Ga&apos;nar" GiverId="74000" X="7221.124" Y="5300.958" Z="62.38804" />
+		<PickUp QuestName="They Rely on Numbers" QuestId="32929" GiverName="Ligra the Unyielding" GiverId="74222" X="7225.797" Y="5305.864" Z="62.31234" />
+
+		<Code File="KillUntilComplete" MobId="71669" QuestId="32792" QuestObjectiveIndex="2" X="7104.727" Y="5187.14" Z="81.8525" />
+		<Code File="InteractWith" MobId="220568" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="32792" QuestObjectiveIndex="1" X="7040.031" Y="5124.936" Z="89.71972" />
+		<Code File="InteractWith" MobIds="220578, 220579" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="32792" QuestObjectiveIndex="3" X="6886.912" Y="4933.849" Z="129.8292" />
+
+		<Code File="KillUntilComplete" MobIds="71647, 71784, 74205" QuestId="32929" >
+			<HuntingGrounds>
+				<Hotspot X="6972.005" Y="4952.741" Z="133.1182" />
+				<Hotspot X="7085.94" Y="4970.529" Z="132.7614" />
+				<Hotspot X="7083.013" Y="5093.365" Z="99.78802" />
+				<Hotspot X="7107.353" Y="5229.868" Z="81.5927" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="They Rely on Numbers" QuestId="32929" TurnInName="Kal&apos;gor the Honorable" TurnInId="74223" X="6968.002" Y="4671.444" Z="186.8565" />
+		<PickUp QuestName="Articles of the Fallen" QuestId="32804" GiverName="Kal&apos;gor the Honorable" GiverId="74223" X="6968.002" Y="4671.444" Z="186.8565" />
+		<TurnIn QuestName="Leave Nothing Behind!" QuestId="32792" TurnInName="Ga&apos;nar" TurnInId="70910" X="6968.002" Y="4671.444" Z="186.8565" />
+		<PickUp QuestName="Wrath of Gronn" QuestId="32794" GiverName="Ga&apos;nar" GiverId="70910" X="6968.002" Y="4671.444" Z="186.8565" />
+
+		<Code File="InteractWith" MobIds="220621, 220622, 220623" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="32804" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="6934.877" Y="4671.698" Z="171.7792" />
+				<Hotspot X="6842.216" Y="4602.966" Z="175.011" />
+				<Hotspot X="6911.226" Y="4495.661" Z="176.5709" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" QuestId="32794" >
+			<HuntingGrounds>
+				<Hotspot X="6934.877" Y="4671.698" Z="171.7792" />
+				<Hotspot X="6842.216" Y="4602.966" Z="175.011" />
+				<Hotspot X="6911.226" Y="4495.661" Z="176.5709" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="74160" PursueWhen="Unit(71646) != null &amp;&amp; UNIT.Location.DistanceSqr(Unit(71646).Location) &lt; 10f*10f" />
+			</PursuitList>
+		</Code>
+
+		<TurnIn QuestName="Articles of the Fallen" QuestId="32804" TurnInName="Kal&apos;gor the Honorable" TurnInId="74223" X="6969.972" Y="4667.882" Z="186.6414" />
+		<TurnIn QuestName="Wrath of Gronn" QuestId="32794" TurnInName="Ga&apos;nar" TurnInId="70941" X="6905.212" Y="4554.696" Z="68.04826" />
+		<RecheckCheckpoints />
+
+		<PickUp QuestName="The Eldest" QuestId="32795" GiverName="Ga&apos;nar" GiverId="70941" X="6905.212" Y="4554.696" Z="68.04826" />
+		<While Condition="DoQuest(32795)" >
+			<Code File="InteractWith" MobId="70941" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="30" QuestId="32795" X="6903.576" Y="4555.241" Z="68.05191" TerminateWhen="Unit(70863, u =&gt; u.Attackable) != null" />
+			<!--<Code File="Hooks\Avoid" AvoidName="Grulloc_Smash" Command="Add" ObjectId="141290" Radius="5" AvoidLocationProducer="UNIT.Location.RayCast(UNIT.Rotation, 8)" /> -->
+			<Code File="KillUntilComplete" MobIds="70863, 70941, 74006" QuestId="32795" QuestObjectiveIndex="2" X="6863.835" Y="4546.19" Z="68.06511" TerminateWhen="Unit(70863, u =&gt; u.Attackable) == null" />
+			<!--<Code File="Hooks\Avoid" AvoidName="Grulloc_Smash" Command="Remove" /> -->
+		</While>
+		<TurnIn QuestName="The Eldest" QuestId="32795" TurnInName="Ga&apos;nar" TurnInId="70941" X="6918.649" Y="4561.068" Z="68.06332" />
+
+		<PickUp QuestName="To the Garrison" QuestId="32796" GiverName="Ga&apos;nar" GiverId="70941" X="6918.649" Y="4561.068" Z="68.06332" />
+		<TurnIn QuestName="Securing the South" QuestId="32989" TurnInName="Lokra" TurnInId="72274" X="6140.984" Y="5149.423" Z="131.5139" />
+		<PickUp QuestName="They Who Held Fast" QuestId="32990" GiverName="Lokra" GiverId="72274" X="6140.984" Y="5149.423" Z="131.5139" />
+
+		<Code File="InteractWith" MobId="72449" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="32990" QuestObjectiveIndex="1" X="6123.32" Y="4978.218" Z="136.096" />
+		<Code File="InteractWith" MobId="72383" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="32990" QuestObjectiveIndex="2" X="6116.865" Y="4964.471" Z="137.2572" />
+
+		<PickUp QuestName="Of Fire and Thunder" QuestId="33013" GiverName="Wounded Frostwolf Shaman" GiverId="74358" X="6116.865" Y="4964.471" Z="137.2572" />
+
+		<Code File="InteractWith" MobId="72381" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="32990" QuestObjectiveIndex="3" X="6125.41" Y="5059.927" Z="134.0654" />
+		<Code File="InteractWith" MobId="72380" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="32990" QuestObjectiveIndex="4" X="6138.918" Y="5105.398" Z="131.6728" />
+
+		<TurnIn QuestName="They Who Held Fast" QuestId="32990" TurnInName="Lokra" TurnInId="72274" X="6137.964" Y="5145.937" Z="131.5974" />
+		<PickUp QuestName="Into the Boneslag" QuestId="32991" GiverName="Lokra" GiverId="72274" X="6137.964" Y="5145.937" Z="131.5974" />
+
+		<Code File="InteractWith" MobId="72400" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="32991" QuestObjectiveIndex="1" X="6275.804" Y="5037.123" Z="48.83661" />
+		<Code File="InteractWith" MobId="72399" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="32991" QuestObjectiveIndex="2" X="6453.149" Y="4995.143" Z="59.12407" />
+
+		<Code File="InteractWith" MobId="221379" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="33013" QuestObjectiveIndex="1" X="6469.604" Y="4867.203" Z="48.96756" />
+
+		<Code File="InteractWith" MobId="72494" GossipOptions="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="32991" QuestObjectiveIndex="3" X="6516.35" Y="4797.256" Z="67.18911" />
+
+		<Code File="InteractWith" MobId="221378" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" PreInteractMountStrategy="Dismount" QuestId="33013" QuestObjectiveIndex="2" X="6502.44" Y="4774.682" Z="67.34713" />
+
+		<TurnIn QuestName="Of Fire and Thunder" QuestId="33013" />
+
+		<TurnIn QuestName="Into the Boneslag" QuestId="32991" TurnInName="Lokra" TurnInId="72274" X="6420.9" Y="4595.448" Z="85.31989" />
+		<PickUp QuestName="Moving Target" QuestId="32992" GiverName="Lokra" GiverId="72274" X="6420.9" Y="4595.448" Z="85.31989" />
+		<TurnIn QuestName="Moving Target" QuestId="32992" TurnInName="Lokra" TurnInId="72274" X="5966.316" Y="4118.405" Z="119.579" />
+		<PickUp QuestName="The Strength of Our Bonds" QuestId="32993" GiverName="Lokra" GiverId="72274" X="5966.316" Y="4118.405" Z="119.579" />
+		<TurnIn QuestName="The Strength of Our Bonds" QuestId="32993" TurnInName="Karg Bloodfury" TurnInId="72373" X="5829.763" Y="3639.596" Z="120.8975" />
+		<RecheckCheckpoints />
+		<PickUp QuestName="Where&apos;s My Wolf?!" QuestId="33826" GiverName="Karg Bloodfury" GiverId="72373" X="5829.763" Y="3639.596" Z="120.8975" />
+		<PickUp QuestName="Karg Unchained" QuestId="33785" GiverName="Karg Bloodfury" GiverId="72373" X="5829.763" Y="3639.596" Z="120.8975" />
+
+		<Code File="KillUntilComplete" MobId="72864" QuestId="33826" QuestObjectiveIndex="1" X="5776.353" Y="3493.4" Z="129.689" />
+
+		<Code File="InteractWith" MobId="72500" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="33826" QuestObjectiveIndex="2" X="5634.755" Y="3768.084" Z="112.6257" />
+
+		<TurnIn QuestName="Where&apos;s My Wolf?!" QuestId="33826" TurnInName="Karg Bloodfury" TurnInId="72373" X="5628.331" Y="3773.092" Z="112.7493" />
+		<PickUp QuestName="Enfilade" QuestId="32994" GiverName="Karg Bloodfury" GiverId="72373" X="5628.331" Y="3773.092" Z="112.7493" />
+		<PickUp QuestName="The Master Siegesmith" QuestId="33828" GiverName="Lokra" GiverId="72274" X="5628.331" Y="3773.092" Z="112.7493" />
+
+		<Code File="KillUntilComplete" MobId="76594" QuestId="33828" X="5217.489" Y="3683.95" Z="128.2281" />
+
+		<While Condition="DoQuest(32994)" >
+			<!-- <Code File="InteractWith" MobId="222870" Range="5" CollectionDistance="200" IgnoreLoSToTarget="true" PreInteractMountStrategy="Dismount" QuestId="32994" QuestObjectiveIndex="1" TerminateWhen="!HasItem(104039)"  >
+				<HuntingGrounds>
+					<Hotspot X="5241.917" Y="3727.076" Z="124.0342" />
+					<Hotspot X="5258.393" Y="3581.216" Z="121.1488" />
+					<Hotspot X="5333.14" Y="3688.726" Z="119.9269" />
+				</HuntingGrounds>
+			</Code> -->
+			<Code File="KillUntilComplete" MobIds="72328, 73360" QuestId="32994" TerminateWhen="GetItemCount(104039) &gt;= 5" >
+				<HuntingGrounds>
+					<Hotspot X="5241.917" Y="3727.076" Z="124.0342" />
+					<Hotspot X="5258.393" Y="3581.216" Z="121.1488" />
+					<Hotspot X="5333.14" Y="3688.726" Z="119.9269" />
+				</HuntingGrounds>
+			</Code>
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[ 
+				async Task InteractWithNearbyTank()
+				{
+					if (!HasItem(104039)) return;
+					var tank = Object(222870);
+					if (tank == null) return;
+					// CTM to tank location to ensure bot is standing within interact range.
+					WoWMovement.ClickToMove(tank.Location);
+					await Coroutine.Wait(6000, () => tank.WithinInteractRange);
+					await CommonCoroutines.StopMoving();
+					tank.Interact();
+					await Coroutine.Sleep(3000);    
+				} 
+				]]>
+			</Code>
+
+			<While Condition="HasItem(104039)" >
+				<MoveTo X="5240.938" Y="3739.942" Z="123.1777" />
+				<Code File="RunCode" Code="await InteractWithNearbyTank()" />
+
+				<MoveTo X="5244.663" Y="3692.977" Z="128.6403" />
+				<Code File="RunCode" Code="await InteractWithNearbyTank()" />
+
+				<MoveTo X="5287.375" Y="3647.036" Z="126.6929" />
+				<Code File="RunCode" Code="await InteractWithNearbyTank()" />
+
+				<MoveTo X="5308.948" Y="3683.901" Z="123.5076" />
+				<Code File="RunCode" Code="await InteractWithNearbyTank()" />
+
+				<MoveTo X="5344.581" Y="3702.833" Z="119.3919" />
+				<Code File="RunCode" Code="await InteractWithNearbyTank()" />
+			</While>
+		</While>
+
+		<Code File="KillUntilComplete" MobIds="72322, 72328, 73360, 74067, 78812" QuestId="33785" >
+			<HuntingGrounds>
+				<Hotspot X="5241.917" Y="3727.076" Z="124.0342" />
+				<Hotspot X="5258.393" Y="3581.216" Z="121.1488" />
+				<Hotspot X="5333.14" Y="3688.726" Z="119.9269" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="Enfilade" QuestId="32994" TurnInName="Karg Bloodfury" TurnInId="72373" X="5329.116" Y="3712.271" Z="121.1709" />
+		<TurnIn QuestName="Karg Unchained" QuestId="33785" TurnInName="Karg Bloodfury" TurnInId="72373" X="5329.116" Y="3712.271" Z="121.1709" />
+		<TurnIn QuestName="The Master Siegesmith" QuestId="33828" TurnInName="Lokra" TurnInId="72274" X="5329.116" Y="3712.271" Z="121.1709" />
+		<RecheckCheckpoints />
+
+		<PickUp QuestName="Return to the Pack" QuestId="33493" GiverName="Lokra" GiverId="72274" X="5329.116" Y="3712.271" Z="121.1709" />
+		<If Condition="QuestDone(33493) &amp;&amp; HasItem(110560) &amp;&amp; Unit(72322) != null" >
+			<Code File="RunCode" Code="
+				await CommonCoroutines.LandAndDismount();
+				Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 110560).Use();
+				await Coroutine.Sleep(500);
+				await Coroutine.Wait(7000, () =&gt; !Me.IsCasting);
+			" />
+		</If>
+
+		<TurnIn QuestName="To the Garrison" QuestId="32796" TurnInName="Durotan" TurnInId="74163" X="5634.907" Y="4535.513" Z="119.0016" />
+		<TurnIn QuestName="Return to the Pack" QuestId="33493" TurnInName="Durotan" TurnInId="74163" X="5634.907" Y="4535.513" Z="119.0016" />
+
+		<PickUp QuestName="Bigger is Better" QuestId="36567" GiverName="Gazlowe" GiverId="78466" X="5566.695" Y="4518.127" Z="131.6816" />
+		<While Condition="DoQuest(36567)" >
+			<Code File="InteractWith" MobId="237191" WaitForNpcs="false" NonCompeteDistance="0" X="5574.363" Y="4501.94" Z="130.6332" />
+			<Code File="InteractWith" MobId="80600" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="36567" X="5566.078" Y="4518.871" Z="131.6672" />
+			<Code File="Misc\RunLua" WaitTime="2000" Lua="C_Garrison.UpgradeGarrison(1);" />
+			<Code File="RunCode" Code="await SkipCutscene();" />
+		</While>
+		<TurnIn QuestName="Bigger is Better" QuestId="36567" TurnInName="Gazlowe" TurnInId="78466" X="5557.775" Y="4590.021" Z="140.8976" />
+
+		<Checkpoint Level="92.5" />
+
+		<Code File="LoadProfile" ProfileName="Gorgrond.xml" />
+
+
+	</QuestOrder>
+</HBProfile>

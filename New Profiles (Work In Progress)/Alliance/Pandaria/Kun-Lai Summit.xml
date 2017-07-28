@@ -1,0 +1,620 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/EchoQuestingSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Kun-Lai Summit ($Rev: 6041 $)</Name>
+
+	<DefaultNavType>Fly</DefaultNavType>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<Blackspots>
+		<Blackspot X="3415.721" Y="1103.839" Z="660.1633" Radius="1" /> <!-- Stolen Grummel supplies in Howlingwind Cavern -->
+	</Blackspots>
+
+	<Blacklist>
+		<Mob Name="Seething Sha" Id="65761" Flags="Pull" />
+		<Mob Name="Dookya" Id="120797" Flags="Combat" />
+	</Blacklist>
+
+	<QuestOrder IgnoreCheckpoints="false" >
+		<!-- Check function status -->
+			<Code File="RunCode" Type="Definition" >
+				<![CDATA[
+					bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+				]]>
+			</Code>
+			<If Condition="profileFunctionsEnabled == null || profileFunctionsEnabled == false" >
+				<Code File="RunCode">
+					<![CDATA[ Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!"); ]]>
+				</Code>
+				<Code File="LoadProfile" ProfileName="..\..\Functions\Activate Functions.xml" />
+			</If>
+		<!-- END Check function status -->
+
+		<If Condition="Me.IsHorde" >
+			<Code File="LoadProfile" ProfileName="..\..\1-110 Autoloader.xml" />
+		</If>
+		<!-- RunCode Methods -->
+			<!-- <Code File="RunCode">
+			<![CDATA[
+				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
+				Lua.DoString("SetCVar('AutoLootDefault', 1);");
+				CharacterSettings.Instance.LootMobs = true;
+				CharacterSettings.Instance.Save();
+				Lua.DoString("for i=1,GetNumAddOns() do local relo=false if IsAddOnLoaded(i) then relo=true DisableAddOn(i) end if relo then relo=nil ReloadUI() end end");
+				await Coroutine.Sleep(1500);
+				Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
+			]]>
+			</Code> -->
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</Code>
+		<!-- END RunCode Methods -->
+
+
+		<PickUp QuestName="The Road to Kun-Lai" VariantQuestIds="31254, 31255" GiverName="Messenger Grummle" GiverId="63778" X="476.3332" Y="-71.71638" Z="177.9425" />
+		<Code File="InteractWith" MobId="62738" NonCompeteDistance="0" VariantQuestIds="31254, 31255" QuestObjectiveIndex="1" X="479.4644" Y="-71.89752" Z="177.8801" />
+
+		<PickUp QuestName="Robbing Robbers of Robbers" QuestId="31286" GiverName="Len the Whisperer" GiverId="63484" X="901.1431" Y="-149.3496" Z="429.5531" />
+		<PickUp QuestName="Educating Saurok" QuestId="31287" GiverName="Len the Whisperer" GiverId="63484" X="901.1431" Y="-149.3496" Z="429.5531" />
+
+		<Code File="KillUntilComplete" MobId="63494" QuestId="31287" X="1174.812" Y="-98.66934" Z="430.6844" />
+
+		<Code File="InteractWith" MobIds="213516, 213517, 2135418, 213519, 213520" CollectionDistance="200" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="31286" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="1149.685" Y="-98.90009" Z="431.0589" />
+				<Hotspot X="1057.923" Y="-59.92813" Z="438.2638" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="Robbing Robbers of Robbers" QuestId="31286" TurnInName="Len the Whisperer" TurnInId="63484" X="900.413" Y="-149.1099" Z="429.3419" />
+		<TurnIn QuestName="Educating Saurok" QuestId="31287" TurnInName="Len the Whisperer" TurnInId="63484" X="900.413" Y="-149.1099" Z="429.3419" />
+
+		<Code File="InteractWith" MobId="63367" NonCompeteDistance="0" VariantQuestIds="31254, 31255" QuestObjectiveIndex="2" X="1161.693" Y="-119.6766" Z="475.9497" />
+
+		<PickUp QuestName="The Spring Drifter" QuestId="31285" GiverName="Brewmaster Boof" GiverId="63367" X="1161.693" Y="-119.6766" Z="475.9497" />
+		<While Condition="DoQuest(31285)" >
+			<Code File="InteractWith" MobId="63517" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="31285" QuestObjectiveIndex="1" X="1171.518" Y="-117.0213" Z="474.7739" TerminateWhen="Me.InVehicle" />
+			<Code File="WaitTimer" WaitTime="85000" TerminateWhen="!Me.InVehicle" />
+		</While>
+		<TurnIn QuestName="The Spring Drifter" QuestId="31285" TurnInName="Brewmaster Boof" TurnInId="63367" X="1733.272" Y="292.6294" Z="475.5529" />
+
+		<TurnIn QuestName="The Road to Kun-Lai" VariantQuestIds="31254, 31255" TurnInName="Mayor Bramblestaff" TurnInId="59073" X="1782.913" Y="318.2578" Z="478.0307" />
+		<PickUp QuestName="Call Out Their Leader" QuestId="30457" GiverName="Mayor Bramblestaff" GiverId="59073" X="1782.913" Y="318.2578" Z="478.0307" />
+
+		<If Condition="!IsQuestCompleted(30855)" > <!-- Don't set our Hearthstone here if we're already done with this hub -->
+			<Code File="SetHearthstone" AreaId="6359" MobId="62871" X="1770.263" Y="292.2343" Z="482.0368" />
+		</If>
+
+		<PickUp QuestName="Hit Medicine" QuestId="30460" GiverName="Apothecary Cheng" GiverId="59077" X="1747.549" Y="359.5384" Z="481.7313" />
+		<PickUp QuestName="All of the Arrows" QuestId="30459" GiverName="Commander Hsieh" GiverId="59076" X="1845.203" Y="412.1212" Z="486.6359" />
+
+		<While Condition="DoQuest(30459, 30460)" >
+			<DisableBehavior Name="Pull" />
+			<Code File="InteractWith" MobId="59143" CollectionDistance="200" InteractByUsingItemId="79819" PreInteractMountStrategy="Dismount" QuestId="30460" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="1854.698" Y="481.8683" Z="490.2986" />
+					<Hotspot X="1867.171" Y="579.4279" Z="487.9962" />
+					<Hotspot X="1972.37" Y="529.5756" Z="485.5519" />
+				</HuntingGrounds>
+			</Code>
+
+			<Code File="InteractWith" MobId="210759" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="30459" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="1854.698" Y="481.8683" Z="490.2986" />
+					<Hotspot X="1867.171" Y="579.4279" Z="487.9962" />
+					<Hotspot X="1972.37" Y="529.5756" Z="485.5519" />
+				</HuntingGrounds>
+			</Code>
+			<EnableBehavior Name="Pull" />
+		</While>
+
+		<Code File="KillUntilComplete" QuestId="30457" >
+			<HuntingGrounds>
+				<Hotspot X="1854.698" Y="481.8683" Z="490.2986" />
+				<Hotspot X="1867.171" Y="579.4279" Z="487.9962" />
+				<Hotspot X="1972.37" Y="529.5756" Z="485.5519" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="59021" PursueWhen="!IsObjectiveComplete(1, 30457)" />
+				<PursueUnit Id="58961" PursueWhen="!IsObjectiveComplete(1, 30457)" />
+				<PursueUnit Id="59083" PursueWhen="!IsObjectiveComplete(2, 30457)" />
+			</PursuitList>
+		</Code>
+
+		<TurnIn QuestName="All of the Arrows" QuestId="30459" TurnInName="Commander Hsieh" TurnInId="59076" X="1847.962" Y="408.4032" Z="485.0999" />
+		<TurnIn QuestName="Call Out Their Leader" QuestId="30457" TurnInName="Mayor Bramblestaff" TurnInId="59073" X="1787.228" Y="319.7869" Z="478.0307" />
+		<TurnIn QuestName="Hit Medicine" QuestId="30460" TurnInName="Apothecary Cheng" TurnInId="59077" X="1748.158" Y="358.9515" Z="481.648" />
+
+		<PickUp NQuestName="Admiral Taylor has Awakened" QuestId="30508" GiverName="Apothecary Cheng" GiverId="59077" X="1748.158" Y="358.9515" Z="481.648" />
+		<TurnIn QuestName="Admiral Taylor has Awakened" QuestId="30508" TurnInName="Admiral Taylor" TurnInId="59441" X="1732.784" Y="358.439" Z="489.63" />
+		<!--<PickUp QuestName="Eastwind Rest" QuestId="30513" GiverName="General Nazgrim" GiverId="59442" X="1732.784" Y="358.439" Z="489.63" /> Horde version, add Alliance version if we decide to do it -->
+		<PickUp QuestName="Repossession" QuestId="30469" GiverName="Merchant Shi" GiverId="59263" X="1906.998" Y="149.451" Z="476.8762" />
+		<PickUp QuestName="My Son..." QuestId="30467" GiverName="Merchant Shi" GiverId="59263" X="1906.998" Y="149.451" Z="476.8762" />
+		<PickUp QuestName="Enraged Vengeance" QuestId="30468" GiverName="Swordmistress Mei" GiverId="59273" X="1917.322" Y="160.8786" Z="476.8751" />
+		<PickUp QuestName="The Waterspeaker&apos;s Staff" QuestId="30496" GiverName="Waterspeaker Gorai" GiverId="60973" X="1946.683" Y="139.9151" Z="475.9292" />
+		<PickUp QuestName="Free the Dissenters" QuestId="30967" GiverName="Waterspeaker Gorai" GiverId="60973" X="1946.683" Y="139.9151" Z="475.9292" />
+		<TurnIn QuestName="My Son..." QuestId="30467" TurnInName="Wu-Peng" TurnInId="59272" X="2411.891" Y="165.5197" Z="490.6941" />
+		<PickUp QuestName="Father and Child Reunion" QuestId="30834" GiverName="Wu-Peng" GiverId="59272" X="2412.294" Y="165.3536" Z="490.8026" />
+
+		<Code File="InteractWith" MobId="61566" GossipOptions="1" CollectionDistance="200" QuestId="30967" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="2392.875" Y="243.7047" Z="479.5095" />
+				<Hotspot X="2337.073" Y="168.3645" Z="481.8304" />
+				<Hotspot X="2274.827" Y="161.8361" Z="475.4525" />
+				<Hotspot X="2136.071" Y="157.0125" Z="476.8527" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="InteractWith" MobIds="210887" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="30469" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="2392.875" Y="243.7047" Z="479.5095" />
+				<Hotspot X="2337.073" Y="168.3645" Z="481.8304" />
+				<Hotspot X="2274.827" Y="161.8361" Z="475.4525" />
+				<Hotspot X="2136.071" Y="157.0125" Z="476.8527" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" MobId="59180" QuestId="30496" X="2385.011" Y="234.4117" Z="479.5061" />
+
+		<Code File="KillUntilComplete" MobIds="59165, 59166, 61130" QuestId="30468" >
+			<HuntingGrounds>
+				<Hotspot X="2392.875" Y="243.7047" Z="479.5095" />
+				<Hotspot X="2337.073" Y="168.3645" Z="481.8304" />
+				<Hotspot X="2274.827" Y="161.8361" Z="475.4525" />
+				<Hotspot X="2136.071" Y="157.0125" Z="476.8527" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="The Waterspeaker&apos;s Staff" QuestId="30496" TurnInName="Waterspeaker Gorai" TurnInId="60973" X="1938.454" Y="136.9254" Z="475.9276" />
+		<TurnIn QuestName="Free the Dissenters" QuestId="30967" TurnInName="Waterspeaker Gorai" TurnInId="60973" X="1938.454" Y="136.9254" Z="475.9276" />
+		<TurnIn QuestName="Repossession" QuestId="30469" TurnInName="Merchant Shi" TurnInId="59263" X="1913.942" Y="145.1105" Z="476.7903" />
+		<RecheckCheckpoints />
+		<If Condition="HasQuest(30834)" >
+			<MoveTo X="1912.527" Y="146.2959" Z="476.7479" />
+			<Code File="WaitTimer" WaitTime="30000" TerminateWhen="Unit(59263, u =&gt; u.QuestGiverStatus == QuestGiverStatus.TurnIn) != null" />
+		</If>
+		<TurnIn QuestName="Father and Child Reunion" QuestId="30834" TurnInName="Merchant Shi" TurnInId="59263" X="1913.942" Y="145.1105" Z="476.7903" />
+		<TurnIn QuestName="Enraged Vengeance" QuestId="30468" TurnInName="Swordmistress Mei" TurnInId="59273" X="1919.256" Y="155.2879" Z="476.2486" />
+
+		<PickUp QuestName="The Ritual" QuestId="30480" GiverName="Waterspeaker Gorai" GiverId="60973" X="1934.174" Y="135.453" Z="475.9273" />
+		<While Condition="DoQuest(30480)" >
+			<Code File="InteractWith" MobId="60973" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="30480" QuestObjectiveIndex="1" X="1934.174" Y="135.453" Z="475.9273" />
+			<Code File="KillUntilComplete" MobId="61530" QuestId="30480" X="1921.477" Y="148.4768" Z="476.1479" />
+		</While>
+		<TurnIn QuestName="The Ritual" QuestId="30480" TurnInName="Waterspeaker Gorai" TurnInId="60973" X="1921.477" Y="148.4768" Z="476.1479" />
+
+		<PickUp QuestName="Cleansing the Mere" QuestId="30828" GiverName="Waterspeaker Gorai" GiverId="60973" X="1921.477" Y="148.4768" Z="476.1479" />
+		<While Condition="DoQuest(30828)" >
+			<Code File="InteractWith" MobId="61500" CollectionDistance="200" WaitTime="8000" QuestId="30828" QuestObjectiveIndex="1" TerminateWhen="Unit(59170, u =&gt; u.IsAlive) != null" >
+				<HuntingGrounds>
+					<Hotspot X="2071.049" Y="381.962" Z="475.4526" />
+					<Hotspot X="2074.641" Y="396.5464" Z="475.4526" />
+					<Hotspot X="2118.865" Y="486.9227" Z="475.4526" />
+					<Hotspot X="1959.823" Y="361.1898" Z="475.4526" />
+				</HuntingGrounds>
+			</Code>
+			<Code File="KillUntilComplete" MobId="59170" QuestId="30828" TerminateWhen="Unit(59170, u =&gt; u.IsAlive) == null" />
+		</While>
+		<TurnIn QuestName="Cleansing the Mere" QuestId="30828" TurnInName="Waterspeaker Gorai" TurnInId="61065" X="2120.667" Y="482.1006" Z="475.4527" />
+
+		<PickUp QuestName="The Fall of Shai Hu" QuestId="30855" GiverName="Waterspeaker Gorai" GiverId="61065" X="2120.667" Y="482.1006" Z="475.4527" />
+		<While Condition="DoQuest(30855)" >
+			<Code File="RunCode"><![CDATA[ TreeHooks.Instance.InsertHook("Questbot_Main", 0, _shaihuDeshield ?? (_shaihuDeshield = new  CommonBehaviors.Actions.ActionRunCoroutine(ctx => ShaiHuDeshieldHook()))); ]]></Code>
+			<Code File="RunCode" Type="Definition" >
+				<![CDATA[
+					private Styx.TreeSharp.Composite _shaihuDeshield;
+					private WoWUnit _shaiHu = null;
+					private WoWUnit _explosiveHatred = null;
+
+					private async Task<bool> ShaiHuDeshieldHook()
+					{
+						if (IsQuestCompleted(30855)) return false;
+						if (!Me.IsAlive || !Me.IsValid) return false;
+
+						if (_shaiHu == null || !_shaiHu.IsValid || _shaiHu.IsDead)
+						{
+							_shaiHu = ObjectManager.GetObjectsOfType<WoWUnit>().FirstOrDefault(x => x.Entry == 61069 && x.IsAlive);
+							if (_shaiHu == null || !_shaiHu.IsValid || _shaiHu.IsDead) return false;
+						}
+
+						if (!_shaiHu.HasAura(118633)) return false;
+
+						if (_explosiveHatred == null || !_explosiveHatred.IsValid || _explosiveHatred.IsDead)
+						{
+							_explosiveHatred = ObjectManager.GetObjectsOfType<WoWUnit>().FirstOrDefault(x => x.Entry == 61070 && x.IsAlive);
+							if (_explosiveHatred == null || !_explosiveHatred.IsValid || _explosiveHatred.IsDead) return false;
+						}
+
+						if (!_explosiveHatred.Aggro)
+							return (await CommonCoroutines.MoveTo(_explosiveHatred.Location)).IsSuccessful();
+
+						if (_explosiveHatred.Aggro && _explosiveHatred.Location.DistanceSqr(_shaiHu.Location) > 10f*10f )
+							return (await CommonCoroutines.MoveTo(_shaiHu.Location)).IsSuccessful();
+
+						return false;
+					}
+				]]>
+			</Code>
+			<Code File="KillUntilComplete" MobId="61069" QuestId="30855" X="2160.171" Y="396.4362" Z="476.0465" />
+			<Code File="RunCode"><![CDATA[ TreeHooks.Instance.RemoveHook("Questbot_Main", _shaihuDeshield); ]]></Code>
+		</While>
+		<TurnIn QuestName="The Fall of Shai Hu" QuestId="30855" TurnInName="Waterspeaker Gorai" TurnInId="60973" X="1919.871" Y="155.3849" Z="476.2679" />
+		<RecheckCheckpoints />
+
+		<PickUp QuestName="The Missing Muskpaw" QuestId="30488" GiverName="Lao Muskpaw" GiverId="59353" X="2728.264" Y="387.6115" Z="508.3667" />
+		<PickUp QuestName="Fresh Needle Scent" QuestId="30489" GiverName="Lao Muskpaw" GiverId="59353" X="2728.264" Y="387.6115" Z="508.3667" />
+
+		<Code File="KillUntilComplete" MobId="55593" QuestId="30489" >
+			<HuntingGrounds>
+				<Hotspot X="2561.182" Y="279.022" Z="492.1964" />
+				<Hotspot X="2504.423" Y="220.7564" Z="490.5366" />
+				<Hotspot X="2531.973" Y="144.6785" Z="477.0906" />
+			</HuntingGrounds>
+		</Code>
+
+		<While Condition="HasQuest(30488)" >
+			<MoveTo X="2506.381" Y="148.2587" Z="466.4555" />
+			<Code File="KillUntilComplete" MobId="61697" X="2507.637" Y="148.0505" Z="466.4344" TerminateWhen="Unit(61693, u =&gt; u.QuestGiverStatus == QuestGiverStatus.TurnIn) != null" />
+			<TurnIn QuestName="The Missing Muskpaw" QuestId="30488" TurnInName="Muskpaw Jr." TurnInId="61693" X="2505.534" Y="146.1015" Z="467.3815" />
+		</While>
+
+		<PickUp QuestName="At the Yak Wash" QuestId="30491" GiverName="Muskpaw Jr." GiverId="61693" X="2505.534" Y="146.1015" Z="467.3815" />
+		<If Condition="HasQuest(30491) &amp;&amp; Unit(61874) != null" >
+			<Code File="InteractWith" MobId="61874" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="2508.288" Y="140.3464" Z="471.044" TerminateWhen="Unit(61874) == null" />
+			<Code File="WaitTimer" WaitTime="35000" TerminateWhen="!Me.InVehicle" />
+		</If>
+
+		<TurnIn QuestName="Fresh Needle Scent" QuestId="30489" TurnInName="Lao Muskpaw" TurnInId="59353" X="2728.809" Y="384.3907" Z="508.367" />
+
+		<While Condition="NeedsQuest(30587)" >
+			<MoveTo X="2585.152" Y="479.0675" Z="516.6027" />
+		</While>
+
+		<While Condition="DoQuest(30491)" >
+			<Code File="InteractWith" MobId="59319" CollectionDistance="200" ProactiveCombatStrategy="ClearAll" PreInteractMountStrategy="Dismount" QuestId="30491" QuestObjectiveIndex="1" TerminateWhen="Me.InVehicle" >
+				<HuntingGrounds>
+					<Hotspot X="2585.57" Y="482.6975" Z="516.6346" />
+					<Hotspot X="2602.372" Y="608.2495" Z="524.3631" />
+					<Hotspot X="2689.228" Y="566.1033" Z="529.3974" />
+				</HuntingGrounds>
+			</Code>
+
+			<While Condition="Me.InVehicle" >
+				<DisableBehavior Name="All" />
+				<Code File="Misc\RunLua" Lua="OverrideActionBarButton2:Click();" />
+				<MoveTo Percision="3.0001" X="2738.443" Y="368.2168" Z="509.0924" />
+			</While>
+			<EnableBehavior Name="All" />
+		</While>
+
+		<While Condition="DoQuest(30587) || !IsQuestCompleted(30582)" >
+			<Code File="InteractWith" MobId="59335" InteractByLooting="true" PreInteractMountStrategy="Dismount" CollectionDistance="200" NumOfTimes="15" TerminateWhen="!DoQuest(30587) &amp;&amp; IsQuestCompleted(30582)" >
+				<HuntingGrounds>
+					<Hotspot X="2585.57" Y="482.6975" Z="516.6346" />
+					<Hotspot X="2602.372" Y="608.2495" Z="524.3631" />
+					<Hotspot X="2689.228" Y="566.1033" Z="529.3974" />
+				</HuntingGrounds>
+			</Code>
+		</While>
+
+		<TurnIn QuestName="Yakity Yak" QuestId="30587" TurnInName="Lao Muskpaw" TurnInId="59353" X="2729.518" Y="389.9694" Z="508.5858" />
+		<TurnIn QuestName="The Late Mrs. Muskpaw" QuestId="30582" TurnInName="Lao Muskpaw" TurnInId="59353" X="2729.518" Y="389.9694" Z="508.5858" />
+		<PickUp QuestName="The Fearmaster" QuestId="30804" GiverName="Lao Muskpaw" GiverId="59353" X="2729.518" Y="389.9694" Z="508.5858" />
+		<TurnIn QuestName="At the Yak Wash" QuestId="30491" TurnInName="Muskpaw Jr." TurnInId="59354" X="2727.047" Y="376.2675" Z="508.3687" />
+		<RecheckCheckpoints />
+		<PickUp QuestName="Back in Yak" QuestId="30492" GiverName="Muskpaw Jr." GiverId="59354" X="2727.047" Y="376.2675" Z="508.3687" />
+
+		<Code File="KillUntilComplete" MobId="59656" QuestId="30804" X="2539.395" Y="585.8605" Z="519.5493" />
+
+		<TurnIn QuestName="The Fearmaster" QuestId="30804" TurnInName="Lao Muskpaw" TurnInId="59353" X="2713.56" Y="375.4242" Z="508.2632" />
+
+		<MoveTo QuestId="30492" X="3048.355" Y="784.3994" Z="528.7874" />
+		<TurnIn QuestName="Back in Yak" QuestId="30492" TurnInName="Lucky Eightcoins" TurnInId="59371" X="3046.947" Y="787.3079" Z="528.988" />
+
+		<PickUp QuestName="A Grummle&apos;s Luck" QuestId="30808" GiverName="Lucky Eightcoins" GiverId="59371" X="3046.947" Y="787.3079" Z="528.988" />
+		<PickUp QuestName="Oil Stop" QuestId="30614" GiverName="Slimy Inkstain" GiverId="59402" X="3081.021" Y="744.6951" Z="527.4802" />
+		<PickUp QuestName="Traffic Issues" QuestId="30616" GiverName="Smokey Sootassle" GiverId="59597" X="3096.972" Y="777.1479" Z="527.4807" />
+
+		<Code File="InteractWith" MobId="211530" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="30614" QuestObjectiveIndex="1" X="2768.114" Y="877.714" Z="559.2214" />
+
+		<Code File="InteractWith" MobIds="211536, 211537, 211538" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="30808" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="2763.401" Y="895.8904" Z="560.3408" />
+				<Hotspot X="2788.806" Y="937.3049" Z="567.5781" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" MobIds="59826, 59790" QuestId="30616" >
+			<HuntingGrounds>
+				<Hotspot X="2763.401" Y="895.8904" Z="560.3408" />
+				<Hotspot X="2788.806" Y="937.3049" Z="567.5781" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="A Grummle&apos;s Luck" QuestId="30808" TurnInName="Lucky Eightcoins" TurnInId="59371" X="3043.917" Y="792.488" Z="528.9973" />
+		<TurnIn QuestName="Oil Stop" QuestId="30614" TurnInName="Slimy Inkstain" TurnInId="59402" X="3078.15" Y="743.7411" Z="527.4811" />
+		<TurnIn QuestName="Traffic Issues" QuestId="30616" TurnInName="Smokey Sootassle" TurnInId="59597" X="3098.005" Y="778.3289" Z="527.4822" />
+		<RecheckCheckpoints />
+
+		<PickUp QuestName="Roadside Assistance" QuestId="30617" GiverName="Smokey Sootassle" GiverId="59597" X="3098.005" Y="778.3289" Z="527.4822" />
+		<Code File="InteractWith" MobId="211539" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="30617" QuestObjectiveIndex="1" >
+			<HuntingGrounds WaypointVisitStrategy="InOrder" >
+				<Hotspot X="3157.243" Y="828.9268" Z="529.5039" />
+				<Hotspot X="3085.614" Y="893.2441" Z="560.5237" />
+				<Hotspot X="2909.89" Y="971.6129" Z="575.7623" />
+				<Hotspot X="2927.846" Y="1139.625" Z="612.7661" />
+				<Hotspot X="3033.501" Y="1186.239" Z="647.3431" />
+			</HuntingGrounds>
+		</Code>
+		<If Condition="QuestDone(30617)" >
+			<TurnIn QuestName="Roadside Assistance" QuestId="30617" TurnInName="Brother Lintpocket" TurnInId="59701" X="3053.512" Y="1201.691" Z="651.6894" />
+			<Code File="UseItem" ItemId="88381" TerminateWhen="!HasItem(88381)" />
+			<Code File="DeleteItems" Ids="88381" />
+		</If>
+
+		<PickUp QuestName="Path Less Traveled" QuestId="30999" GiverName="Lorewalker Cho" GiverId="61847" X="3049.255" Y="1249.597" Z="655.5846" />
+		<TurnIn QuestName="Path Less Traveled" QuestId="30999" TurnInName="Uncle Cloverleaf" TurnInId="59696" X="3064.296" Y="1254.772" Z="655.8102" />
+		<PickUp QuestName="Instant Courage" QuestId="30601" GiverName="Uncle Cloverleaf" GiverId="59696" X="3064.296" Y="1254.772" Z="655.8102" />
+		<PickUp QuestName="Resupplying One Keg" QuestId="30618" GiverName="Big Sal" GiverId="59695" X="3044.109" Y="1227.949" Z="655.0032" />
+		<PickUp QuestName="They Stole My Luck!" QuestId="30621" GiverName="Ji-Lu the Lucky" GiverId="59716" X="3108.833" Y="1248.695" Z="654.8389" />
+
+		<If Condition="Me.HearthstoneAreaId != 6360" >
+			<Code File="InteractWith" MobId="59688" GossipOptions="1" NonCompeteDistance="0" X="3110.613" Y="1245.309" Z="654.8383" />
+			<Code File="Misc\RunLua" Lua="StaticPopup1Button1:Click();" />
+		</If>
+
+		<Code File="InteractWith" MobIds="211266, 211268, 211270" CollectionDistance="200" InteractByLooting="true" NonCompeteDistance="0" QuestId="30618" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="3482.529" Y="1147.89" Z="654.9885" />
+				<Hotspot X="3515.565" Y="1243.236" Z="643.4633" />
+				<Hotspot X="3570.368" Y="1159.952" Z="645.3489" />
+				<Hotspot X="3636.209" Y="1268.719" Z="652.5953" />
+				<Hotspot X="3582.57" Y="1351.868" Z="658.1702" />
+				<Hotspot X="3489.473" Y="1336.535" Z="636.4725" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="InteractWith" MobId="59818" GossipOptions="1,1" CollectionDistance="200" NonCompeteDistance="0" QuestId="30601" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="3482.529" Y="1147.89" Z="654.9885" />
+				<Hotspot X="3515.565" Y="1243.236" Z="643.4633" />
+				<Hotspot X="3570.368" Y="1159.952" Z="645.3489" />
+				<Hotspot X="3636.209" Y="1268.719" Z="652.5953" />
+				<Hotspot X="3582.57" Y="1351.868" Z="658.1702" />
+				<Hotspot X="3489.473" Y="1336.535" Z="636.4725" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" MobIds="59693, 59967" QuestId="30621" >
+			<HuntingGrounds>
+				<Hotspot X="3482.529" Y="1147.89" Z="654.9885" />
+				<Hotspot X="3515.565" Y="1243.236" Z="643.4633" />
+				<Hotspot X="3570.368" Y="1159.952" Z="645.3489" />
+				<Hotspot X="3636.209" Y="1268.719" Z="652.5953" />
+				<Hotspot X="3582.57" Y="1351.868" Z="658.1702" />
+				<Hotspot X="3489.473" Y="1336.535" Z="636.4725" />
+			</HuntingGrounds>
+		</Code>
+
+		<If Condition="QuestDone(30601, 30618, 30621) &amp;&amp; Me.HearthstoneAreaId == 6360 &amp;&amp; Unit(59693) != null" >
+			<Code File="UseHearthstone" />
+		</If>
+
+		<TurnIn QuestName="They Stole My Luck!" QuestId="30621" TurnInName="Ji-Lu the Lucky" TurnInId="59716" X="3108.708" Y="1248.956" Z="654.8375" />
+		<TurnIn QuestName="Instant Courage" QuestId="30601" TurnInName="Uncle Cloverleaf" TurnInId="59696" X="3067.353" Y="1255.903" Z="656.0046" />
+		<TurnIn QuestName="Resupplying One Keg" QuestId="30618" TurnInName="Big Sal" TurnInId="59695" X="3045.531" Y="1228.407" Z="654.9615" />
+		<RecheckCheckpoints />
+
+		<PickUp QuestName="Comin&apos; Round the Mountain" QuestId="30487" GiverName="Uncle Cloverleaf" GiverId="59696" X="3063.735" Y="1255.185" Z="655.8023" />
+		<While Condition="DoQuest(30487)" >
+			<Code File="InteractWith" MobId="60094" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="30487" X="3055.961" Y="1249.963" Z="655.2157" TerminateWhen="Me.InVehicle" />
+			<DisableBehavior Name="All" />
+			<Code File="WaitTimer" WaitTime="130000" TerminateWhen="!Me.InVehicle" />
+			<EnableBehavior Name="All" />
+		</While>
+		<TurnIn QuestName="Comin&apos; Round the Mountain" QuestId="30487" TurnInName="Lucky Bluestring" TurnInId="60175" X="3573.516" Y="1829.477" Z="877.8937" />
+
+		<PickUp QuestName="One Traveler&apos;s Misfortune" QuestId="30683" GiverName="Lucky Bluestring" GiverId="60175" X="3573.516" Y="1829.477" Z="877.8937" />
+		<While Condition="DoQuest(30683)" >
+			<Code File="InteractWith" MobId="212903" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="30683" X="3565" Y="1710.754" Z="848.9905" />
+			<Code File="KillUntilComplete" MobIds="63155, 60769" WaitForNpcs="false" QuestId="30683" QuestObjectiveIndex="2" X="3557.404" Y="1705.836" Z="845.8382" />
+		</While>
+		<TurnIn QuestName="One Traveler&apos;s Misfortune" QuestId="30683" TurnInName="Lucky Bluestring" TurnInId="60175" X="3574.884" Y="1829.438" Z="877.8266" />
+
+		<PickUp QuestName="Seeker&apos;s Folly" QuestId="30684" GiverName="Lucky Bluestring" GiverId="60175" X="3574.884" Y="1829.438" Z="877.8266" />
+		<Code File="InteractWith" MobId="211597" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="30684" QuestObjectiveIndex="1" X="3569.238" Y="2035.615" Z="965.8555" />
+		<Code File="InteractWith" MobId="211601" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="30684" QuestObjectiveIndex="2" X="3532.517" Y="2166.308" Z="1029.938" />
+		<Code File="InteractWith" MobId="211602" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="30684" QuestObjectiveIndex="3" X="3452.115" Y="2137.425" Z="1082.389" />
+		<TurnIn QuestName="Seeker&apos;s Folly" QuestId="30684" TurnInName="Lorewalker Cho" TurnInId="60795" X="3484.781" Y="2101.709" Z="1084.038" />
+
+		<PickUp QuestName="The Tongue of Ba-Shon" QuestId="30829" GiverName="Lorewalker Cho" GiverId="60795" X="3484.781" Y="2101.709" Z="1084.038" />
+		<While Condition="DoQuest(30829)" >
+			<Code File="InteractWith" MobId="60795" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="30829" X="3484.781" Y="2101.709" Z="1084.038" TerminateWhen="Unit(61315) != null" />
+			<Code File="KillUntilComplete" MobId="61305" QuestId="30829" X="3482.55" Y="2106.052" Z="1084.038" TerminateWhenm="Unit(61315) == null" />
+		</While>
+		<TurnIn QuestName="The Tongue of Ba-Shon" QuestId="30829" TurnInName="Lorewalker Cho" TurnInId="60795" X="3484.405" Y="2103.142" Z="1084.038" />
+
+		<PickUp QuestName="Staying Connected" QuestId="30795" GiverName="Lorewalker Cho" GiverId="60795" X="3484.405" Y="2103.142" Z="1084.038" />
+		<While Condition="DoQuest(30795)" >
+			<Code File="InteractWith" MobId="60796" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="3481.489" Y="2103.619" Z="1084.038" TerminateWhen="Unit(60796) == null" />
+			<MoveTo X="3581.839" Y="1222.938" Z="748.5472" />
+			<Code File="UseItem" ItemId="81712" QuestId="30795" X="3581.839" Y="1222.938" Z="748.5472" />
+		</While>
+		<TurnIn QuestName="Staying Connected" QuestId="30795" TurnInName="Image of Lorewalker Cho" TurnInId="61297" X="3581.839" Y="1222.938" Z="748.5472" />
+
+		<If Condition="NeedsQuest(30935)" > <!-- Hook is no longer needed once we have this quest or completed this quest. -->
+			<If Condition="!HasItem(81712)" > <!-- Get Amulet back to communicate with Lorewalker Cho -->
+				<Code File="InteractWith" MobId="60887" GossipOptions="1" NonCompeteDistance="0" X="3578.688" Y="1220.81" Z="748.5789" />
+			</If>
+			<Code File="Hooks\DoWhen" ActivityName="SummonLorewalker" AllowUseWhileMounted="true" UseWhen="(BotPoi.Current.Type == PoiType.QuestTurnIn || BotPoi.Current.Type == PoiType.QuestPickUp) &amp;&amp; Unit(61297, u =&gt; u.CreatedByUnit == Me) == null" >
+				<Code File="ForcedDismount" />
+				<Code File="UseItem" ItemId="81712" WaitTime="2000" TerminateWhen="Unit(61297, u =&gt; u.CreatedByUnit == Me) != null" />
+			</Code>
+		</If>
+
+		<PickUp QuestName="An End to Everything" QuestId="30796" GiverName="Image of Lorewalker Cho" GiverId="61297" X="3581.839" Y="1222.938" Z="748.5472" />
+		<PickUp QuestName="It Was Almost Alive" QuestId="30797" GiverName="Curious Text" GiverId="211754" X="3620.315" Y="1260.253" Z="749.3459" />
+
+		<Code File="InteractWith" MobId="211780" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="30797" QuestObjectiveIndex="1" X="3620.315" Y="1260.253" Z="749.3459" />
+
+		<Code File="KillUntilComplete" MobId="60825" QuestId="30796" >
+			<HuntingGrounds>
+				<Hotspot X="3611.439" Y="1244.746" Z="748.5464" />
+				<Hotspot X="3614.101" Y="1296.482" Z="748.5314" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="An End to Everything" QuestId="30796" TurnInName="Image of Lorewalker Cho" TurnInId="61297" X="3606.463" Y="1296.226" Z="748.5017" />
+		<TurnIn QuestName="It Was Almost Alive" QuestId="30797" TurnInName="Image of Lorewalker Cho" TurnInId="61297" X="3606.463" Y="1296.226" Z="748.5017" />
+		<RecheckCheckpoints />
+
+		<PickUp QuestName="The Tomb of Shadows" QuestId="30799" GiverName="Image of Lorewalker Cho" GiverId="61297" X="3588.361" Y="1232.934" Z="748.545" />
+		<Code File="InteractWith" MobId="211770" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="30799" QuestObjectiveIndex="1" X="3800.92" Y="1265.526" Z="760.1294" />
+		<Code File="InteractWith" MobId="211794" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="30799" QuestObjectiveIndex="3" X="3742.89" Y="1266.934" Z="759.1806" />
+		<Code File="InteractWith" MobId="211793" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="30799" QuestObjectiveIndex="2" X="3802.897" Y="1312.011" Z="758.95" />
+		<TurnIn QuestName="The Tomb of Shadows" QuestId="30799" TurnInName="Image of Lorewalker Cho" TurnInId="61297" X="3781.194" Y="1295.65" Z="758.7421" />
+
+		<PickUp QuestName="Breaking the Emperor&apos;s Shield" QuestId="30798" GiverName="Image of Lorewalker Cho" GiverId="61297" X="3781.194" Y="1295.65" Z="758.7421" />
+		<Code File="KillUntilComplete" MobId="60572" QuestId="30798" X="3478.931" Y="1524.967" Z="814.9631" />
+		<TurnIn QuestName="Breaking the Emperor&apos;s Shield" QuestId="30798" TurnInName="Image of Lorewalker Cho" TurnInId="61297" X="3488.501" Y="1521.567" Z="816.376" />
+
+		<If Condition="!IsQuestCompleted(30935)" > <!-- Avoid is no longer needed once we have this quest or completed this quest. -->
+			<Code File="Hooks\Avoid" AvoidName="AvoidKnockbackTrap" ObjectType="GameObject" ObjectId="211965" Radius="5" />
+		</If>
+
+		<PickUp QuestName="Stealing Their Thunder King" QuestId="30800" GiverName="Image of Lorewalker Cho" GiverId="61297" X="3488.501" Y="1521.567" Z="816.376" />
+		<Code File="InteractWith" MobId="211967" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="30800" QuestObjectiveIndex="1" X="3609.664" Y="1668.898" Z="742.9729" />
+		<Code File="InteractWith" MobId="211968" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="30800" QuestObjectiveIndex="2" X="3639.965" Y="1785.062" Z="742.9732" />
+		<TurnIn QuestName="Stealing Their Thunder King" QuestId="30800" TurnInName="Image of Lorewalker Cho" TurnInId="61297" X="3639.965" Y="1785.062" Z="742.9732" />
+
+		<PickUp QuestName="Lessons from History" QuestId="30801" GiverName="Image of Lorewalker Cho" GiverId="61297" X="3639.965" Y="1785.062" Z="742.9732" />
+		<While Condition="DoQuest(30801)" >
+			<Code File="InteractWith" MobId="211594" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="30801" X="3639.965" Y="1785.062" Z="742.9732" />
+			<Code File="RunCode" Code="await SkipCutscene();" />
+		</While>
+		<TurnIn QuestName="Lessons from History" QuestId="30801" TurnInName="Image of Lorewalker Cho" TurnInId="61297" X="3639.965" Y="1785.062" Z="742.9732" />
+
+		<PickUp QuestName="Chasing the Storm" QuestId="30802" GiverName="Image of Lorewalker Cho" GiverId="61297" X="3639.965" Y="1785.062" Z="742.9732" />
+		<Code File="KillUntilComplete" MobId="61842" QuestId="30802" X="3619.699" Y="1666.794" Z="742.9736" />
+		<TurnIn QuestName="Chasing the Storm" QuestId="30802" TurnInName="Image of Lorewalker Cho" TurnInId="61297" X="3632.106" Y="1660.628" Z="742.666" />
+		<RecheckCheckpoints />
+
+		<PickUp QuestName="Fisherman&apos;s Tale" QuestId="30935" GiverName="Image of Lorewalker Cho" GiverId="61297" X="3632.106" Y="1660.628" Z="742.666" />
+
+		<While Condition="DoQuest(30935)" >
+			<Code File="InteractWith" MobId="61382" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="30935" QuestObjectiveIndex="1" X="3678.745" Y="1524.184" Z="782.0529" />
+			<Code File="InteractWith" MobId="61380" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="30935" QuestObjectiveIndex="2" X="3935.016" Y="874.2041" Z="417.1737" TerminateWhen="Me.InVehicle" />
+			<Code File="WaitTimer" WaitTime="130000" TerminateWhen="!Me.InVehicle" />
+		</While>
+
+		<Code File="Hooks\Avoid" AvoidName="AvoidKnockbackTrap" Command="Remove" />
+
+		<TurnIn QuestName="Fisherman&apos;s Tale" QuestId="30935" TurnInName="Lorewalker Cho" TurnInId="61371" X="4401.564" Y="938.3234" Z="116.2356" />
+
+		<Code File="KillUntilComplete" MobIds="60580, 60581, 64202" TerminateWhen="Me.Level &gt;= 90" >
+			<HuntingGrounds>
+				<Hotspot X="4522.924" Y="604.6374" Z="23.80291" />
+				<Hotspot X="4454.896" Y="566.0837" Z="28.34293" />
+				<Hotspot X="4395.742" Y="394.1635" Z="22.911" />
+				<Hotspot X="4377.044" Y="364.9227" Z="21.91896" />
+			</HuntingGrounds>
+		</Code>
+
+		<Checkpoint Level="90" />
+
+		<While Condition="Me.ZoneId == 5841" > <!-- Go to Shrine -->
+			<If Condition="Unit(61511) != null" > <!-- Zouchin Village -->
+				<Code File="InteractWith" MobId="61511" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="4364.724" Y="930.0962" Z="109.5062" TerminateWhen="Me.ZoneId != 5841" />
+				<Code File="Misc\RunLua" WaitTime="750" Lua="local o=TakeTaxiNode;TakeTaxiNode=function(s) TaxiNodeOnButtonEnter(_G[&quot;TaxiButton&quot;..s]);o(s);end end" />
+				<Code File="Misc\RunLua" Lua="GetNumRoutes(31); TakeTaxiNode(31);" />
+				<Else>
+					<MoveTo X="3123.553" Y="1223.18" Z="654.2182" />
+					<Code File="InteractWith" MobId="61504" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="3123.5" Y="1223.213" Z="654.2193" TerminateWhen="Me.ZoneId != 5841" />
+					<Code File="Misc\RunLua" Lua="GetNumRoutes(31); TakeTaxiNode(31);" />
+				</Else>
+			</If>
+		</While>
+
+		<If Condition="Me.ZoneId == 6141 || Me.ZoneId == 6554" >
+			<MoveTo X="1698.72" Y="889.4329" Z="470.9242" />
+			<Code File="SetHearthstone" AreaId="6519" MobId="62996" X="1698.72" Y="889.4329" Z="470.9242" />
+			<Code File="ForceSetVendor" DoSell="true" DoRepair="true" />
+		</If>
+
+		<Code File="LoadProfile" ProfileName="../90-100 Autoloader.xml" />
+
+	</QuestOrder>
+</HBProfile>
