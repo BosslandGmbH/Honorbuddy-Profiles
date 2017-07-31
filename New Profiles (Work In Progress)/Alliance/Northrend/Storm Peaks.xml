@@ -773,21 +773,32 @@
 				<DisableBehavior Name="All" />
 				<Code File="UseItem" ItemId="41430" X="7155.736" Y="-748.3411" Z="891.1084" TerminateWhen="Me.InVehicle" />
 				<Code File="RunCode" Code="
-					WoWUnit dwarfAgressor = null;
 					while (DoQuest(12855) &amp;&amp; Me.InVehicle)
 					{
-						dwarfAgressor = ObjectManager.GetObjectsOfType&lt;WoWUnit&gt;().OrderBy(x =&gt; x.DistanceSqr).FirstOrDefault(x =&gt; (x.Entry == 29652 || x.Entry == 29696) &amp;&amp; x.IsAlive &amp;&amp; x.DistanceSqr &lt; 40f*40f);
+						WoWUnit dwarfAgressor = ObjectManager.GetObjectsOfType&lt;WoWUnit&gt;().OrderBy(x =&gt; x.DistanceSqr).FirstOrDefault(x =&gt; (x.Entry == 29652 || x.Entry == 29696) &amp;&amp; x.IsAlive &amp;&amp; x.DistanceSqr &lt; 40f*40f);
 
-						dwarfAgressor.Target();
+						if (dwarfAgressor == null)
+						{
+							await Coroutine.Sleep(200);
+							continue;
+						}
+						
+						if (StyxWoW.Me.CurrentTarget != dwarfAgressor)
+							dwarfAgressor.Target();
 
-						if (dwarfAgressor != null &amp;&amp; dwarfAgressor.IsValid &amp;&amp; Lua.GetReturnVal&lt;bool&gt;(&quot;return GetPetActionCooldown(1) == 0;&quot;, 0))
+						if (dwarfAgressor.IsValid &amp;&amp; Lua.GetReturnVal&lt;bool&gt;(&quot;return GetPetActionCooldown(1) == 0;&quot;, 0))
+						{
 							Lua.DoString(&quot;CastPetAction(1);&quot;);
-						if (dwarfAgressor != null &amp;&amp; dwarfAgressor.IsValid &amp;&amp; dwarfAgressor.DistanceSqr &lt; 30f*30f &amp;&amp; Lua.GetReturnVal&lt;bool&gt;(&quot;return GetPetActionCooldown(2) == 0;&quot;, 0))
+							await CommonCoroutines.SleepForRandomReactionTime();
+						}
+						if (dwarfAgressor.IsValid &amp;&amp; dwarfAgressor.DistanceSqr &lt; 30f*30f &amp;&amp; Lua.GetReturnVal&lt;bool&gt;(&quot;return GetPetActionCooldown(2) == 0;&quot;, 0))
 						{
 							Lua.DoString(&quot;CastPetAction(2);&quot;);
 							SpellManager.ClickRemoteLocation(WoWMathHelper.CalculatePointInFront(dwarfAgressor.Location, dwarfAgressor.Rotation, 3));
+							await CommonCoroutines.SleepForRandomReactionTime();
 						}
-						await Coroutine.Yield();
+						
+						await Coroutine.Sleep(200);
 					}
 				" /> <!-- HB-API is returning incorrect values, so using Lua.-->
 				<EnableBehavior Name="All" />
