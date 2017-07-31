@@ -731,16 +731,59 @@
 
 		<PickUp QuestName="The Battle for Gilneas City" QuestId="24904" GiverName="Lorna Crowley" GiverId="37783" X="-1371.84" Y="1211.442" Z="35.55802" />
 		<While Condition="DoQuest(24904)" >
-			<MoveTo X="-1390.441" Y="1231.996" Z="35.55811" />
-			<Code File="WaitTimer" WaitTime="600000" TerminateWhen="Unit(38218) != null || Unit(38553) == null" /> <!-- Wait for event to be ready -->
-			<Code File="InteractWith" MobId="38553" GossipOptions="1" WaitForNpcs="false" />
-			<DisableBehavior Name="Pull" />
-			<Code File="EscortGroup" QuestId="24904" EscortNpcId="38218" EscortCountMax="1" EscortMaxFightDistance="15" EscortMaxFollowDistance="15" SearchForNpcsRadius="100" TerminateWhen="Unit(38218) == null" />
-			<If Condition="Unit(38469) != null" > <!-- If Sylvanas is near us, event finished properly. -->
-				<RunTo X="-1675.245" Y="1616.768" Z="20.4879" />
-				<Code File="EscortGroup" QuestId="24904" EscortNpcId="38470" EscortCountMax="1" EscortMaxFightDistance="15" EscortMaxFollowDistance="5" TerminateWhen="Me.X &gt; -1500" />
+			<If Condition="!Me.HasAura(72069)" >
+				<MoveTo X="-1390.441" Y="1231.996" Z="35.55811" />
+				<Code File="WaitTimer" WaitTime="600000" TerminateWhen="Unit(38218) != null || Unit(38553) == null" /> <!-- Wait for event to be ready -->
+				<Code File="InteractWith" MobId="38553" GossipOptions="1" NonCompeteDistance="0" WaitForNpcs="false" />
 			</If>
-			<EnableBehavior Name="Pull" />
+			<Code File="RunCode"><![CDATA[ TreeHooks.Instance.InsertHook("Questbot_Profile", 0, _ctmSimpleEscort ?? (_ctmSimpleEscort = new  CommonBehaviors.Actions.ActionRunCoroutine(ctx => CTMSimpleEscort()))); ]]></Code>
+			<Code File="RunCode" Type="Definition" ><![CDATA[
+					private Styx.TreeSharp.Composite _ctmSimpleEscort;
+					private WoWUnit _escortPoi;
+					private Vector3 _antiThrottleCoordinate;
+					private Stopwatch _throttleTimer = new Stopwatch();
+					private Random rnd = new Random();
+
+					public async Task<bool> CTMSimpleEscort()
+					{
+						if (NeedsQuest(24904) || QuestDone(24904)) return false;
+						if (!_throttleTimer.IsRunning)
+							_throttleTimer.Start();
+						if (_escortPoi == null || !_escortPoi.IsValid)
+						{
+							_escortPoi = ObjectManager.GetObjectsOfType<WoWUnit>().FirstOrDefault(unit => unit.Entry == 38415 || unit.Entry == 38218 || unit.Entry == 38470);
+							if (_escortPoi == null) return false;
+							_antiThrottleCoordinate = _escortPoi.Location;
+						}
+						if (_throttleTimer.Elapsed > TimeSpan.FromSeconds(3) && _antiThrottleCoordinate.DistanceSquared(_escortPoi.Location) > 30f * 30f)
+						{
+							_throttleTimer.Restart();
+							_antiThrottleCoordinate = _escortPoi.Location;
+						}
+						if (_escortPoi.DistanceSqr > 30f * 30f || !_escortPoi.InLineOfSight)
+						{
+							TreeRoot.StatusText = $"Moving to {_escortPoi.Name}.";
+							return (await CommonCoroutines.MoveTo(_antiThrottleCoordinate)).IsSuccessful();
+						}
+						if (_escortPoi.DistanceSqr <= 30f * 30f)
+						{
+							TreeRoot.StatusText = $"Following {_escortPoi.Name}.";
+							if (!_escortPoi.IsMoving && _escortPoi.DistanceSqr <= 8f*8f)
+							{
+								if (_escortPoi.CurrentTarget != null && _escortPoi.CurrentTarget.IsAlive && _escortPoi.CurrentTarget != BotPoi.Current.AsObject)
+									BotPoi.Current = new BotPoi(_escortPoi.CurrentTarget, PoiType.Kill, Bots.Quest.QuestOrder.QuestOrder.Instance.NavType);
+								return true;				
+							}
+							await Coroutine.Sleep(rnd.Next(487, 1655));
+							WoWMovement.ClickToMove(WoWMathHelper.CalculatePointBehind(_escortPoi.Location, _escortPoi.Rotation, 3f));
+							return true;
+						}
+						return true;
+					}
+			]]>
+			</Code>
+			<Code File="WaitTimer" WaitTime="60000" QuestId="24904" TerminateWhen="Unit(38415) == null &amp;&amp; Unit(38218) == null &amp;&amp; Unit(38469) == null" />
+			<Code File="RunCode"><![CDATA[ TreeHooks.Instance.RemoveHook("Questbot_Profile", _ctmSimpleEscort); ]]></Code>
 		</While>
 		<TurnIn QuestName="The Battle for Gilneas City" QuestId="24904" TurnInName="Lorna Crowley" TurnInId="38611" X="-1662.187" Y="1593.643" Z="23.12992" />
 
