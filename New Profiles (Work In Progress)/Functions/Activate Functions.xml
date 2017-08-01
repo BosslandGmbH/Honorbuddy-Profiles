@@ -74,35 +74,51 @@ private static async void LoggingOnLogMessage(System.Collections.ObjectModel.Rea
 
 private static async Task<bool> MainHook()
 {
-	if (!s_mainPulseTimer.IsRunning)
-		s_mainPulseTimer.Start();
+	try 
+	{
+		if (!s_mainPulseTimer.IsRunning)
+			s_mainPulseTimer.Start();
 
-	if (StyxWoW.Me == null || !StyxWoW.Me.IsValid || StyxWoW.Me.InVehicle || StyxWoW.Me.OnTaxi)
-		return false;
+		if (StyxWoW.Me == null || !StyxWoW.Me.IsValid || StyxWoW.Me.InVehicle || StyxWoW.Me.OnTaxi)
+			return false;
 
-	if (MerchantFrame.Instance.IsVisible)
+		if (MerchantFrame.Instance.IsVisible)
+			await AfkMode.Run();
+
+		if (s_mainPulseTimer.Elapsed < TimeSpan.FromSeconds(5))
+			return false;
+
+		s_mainPulseTimer.Restart();
+
 		await AfkMode.Run();
-
-	if (s_mainPulseTimer.Elapsed < TimeSpan.FromSeconds(5))
+		SanityEngine.Run();
+		ActiveVendoring.Run();
 		return false;
-
-	s_mainPulseTimer.Restart();
-
-	await AfkMode.Run();
-	SanityEngine.Run();
-	ActiveVendoring.Run();
-	return false;
+	}
+	catch (NullReferenceException ex)
+	{
+		FancyLog.WriteRed("[Functions]: ", "Error: Null reference in MainHook! " + ex.Message);
+		return false;
+	}
 }
 
 private static async Task<bool> ProfileHook()
 {
-	await CustomAntiStuck.Run();
-	DeleteItems.Run();
-	if (await GuildBankDepositor.Run())
-		return true;
+	try
+	{
+		await CustomAntiStuck.Run();
+		DeleteItems.Run();
+		if (await GuildBankDepositor.Run())
+			return true;
 
-	await UseArtifactPowerItems.Run();
-	return TreasureHunter.Run();
+		await UseArtifactPowerItems.Run();
+		return TreasureHunter.Run();
+	}
+	catch (NullReferenceException ex)
+	{
+		FancyLog.WriteRed("[Functions]: ", "Error: Null reference in ProfileHook! " + ex.Message);
+		return false;
+	}
 }
 ]]>
 		</Code>
