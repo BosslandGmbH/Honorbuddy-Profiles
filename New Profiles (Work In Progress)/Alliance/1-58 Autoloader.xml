@@ -7,6 +7,52 @@
 	<Name>1-58 Autoloader ($ShortHash$)</Name>
 
 	<QuestOrder>
+		<!-- Check function status -->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+			private static bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+			private static bool IsStoreProfile(string path) => path.StartsWith("store://");
+			private static string Slashify(string path) => IsStoreProfile(path) ? path.Replace(@"\", "/") : path.Replace("/", @"\");
+
+			public __CompiledBatchClass__()
+			{
+				if (profileFunctionsEnabled == null || profileFunctionsEnabled == false)
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!");
+					LoadProfile(@"..\Functions\Activate Functions.xml");
+				}
+			}
+
+			private static void LoadProfile(string path)
+			{
+				var profile = GetNewPath(path);
+				if (!IsStoreProfile(profile) && !File.Exists(profile))
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Profile does not exist.\n" + profile);
+					return;
+				}
+
+				Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Loading: " + profile);
+				ProfileManager.LoadNew(profile, false);
+			}
+
+			private static string GetNewPath(string path)
+			{
+				if (IsStoreProfile(path))
+					return Slashify(path);
+
+				var currentProfile = ProfileManager.XmlLocation;
+				if (IsStoreProfile(currentProfile))
+					return Slashify(currentProfile + "/../" + path);
+
+				var absolutePath = Path.Combine(Path.GetDirectoryName(currentProfile), path);
+				absolutePath = Path.GetFullPath(absolutePath);
+				var canonicalPath = new Uri(absolutePath).LocalPath;
+				return Slashify(canonicalPath);
+			}]]>
+		</Code>
+		<!-- END Check function status -->
+
 		<If Condition="Me.IsHorde" >
 			<Code File="LoadProfile" ProfileName="..\1-110 Autoloader.xml" />
 		</If>
@@ -156,7 +202,7 @@
 					<Code File="ForcedDismount" />
 					<DisableBehavior Name="FlightPath" />
 					<Code File="UseTransport" TransportId="190536"
-						WaitAtX="2229.971" WaitAtY="5130.375" WaitAtZ="5.343726" 
+						WaitAtX="2229.971" WaitAtY="5130.375" WaitAtZ="5.343726"
 						TransportStartX="2218.391" TransportStartY="5119.588" TransportStartZ="0.02626281"
 						StandOnX="2224.698" StandOnY="5120.346" StandOnZ="9.452395"
 						TransportEndX="-8288.816" TransportEndY="1424.703" TransportEndZ="0.04"
@@ -180,9 +226,9 @@
 						WaitAtX="593.5266" WaitAtY="-5103.054" WaitAtZ="5.260394"
 						StandOnX="589.7733" StandOnY="-5118.479" StandOnZ="9.560918"
 						TransportStartX="584.0138" TransportStartY="-5118.855" TransportStartZ="0.04796536"
-						TransportEndX="-3674.43" TransportEndY="-586.774" TransportEndZ="-0.04061334" 
+						TransportEndX="-3674.43" TransportEndY="-586.774" TransportEndZ="-0.04061334"
 						GetOffX="-3687.306" GetOffY="-602.1353" GetOffZ="4.406231"
-					/>	
+					/>
 					<EnableBehavior Name="FlightPath" />
 				</If>
 			</If>
@@ -208,7 +254,7 @@
 					<MoveTo Nav="Fly" X="8181.152" Y="1001.966" Z="7.060309" />
 					<Code File="ForcedDismount" />
 					<Code File="UseTransport" TransportId="176310"
-						WaitAtX="8177.582" WaitAtY="1003.428" WaitAtZ="6.633576" 
+						WaitAtX="8177.582" WaitAtY="1003.428" WaitAtZ="6.633576"
 						TransportStartX="8162.587" TransportStartY="1005.365" TransportStartZ="-0.04886735"
 						StandOnX="8171.134" StandOnY="1005.961" StandOnZ="6.141735"
 						TransportEndX="-8650.719" TransportEndY="1346.051" TransportEndZ="-0.01967851"
@@ -219,7 +265,7 @@
 					<Code File="RunCode" Code="EKLog(Colors.LightGreen, &quot;We're in Kalimdor, using the Ratchet boat to Booty Bay.&quot;);" />
 					<MoveTo Nav="Fly" X="-995.5635" Y="-3827.638" Z="5.630721" />
 					<Code File="UseTransport" TransportId="20808"
-						WaitAtX="-996.8669" WaitAtY="-3826.07" WaitAtZ="5.536246" 
+						WaitAtX="-996.8669" WaitAtY="-3826.07" WaitAtZ="5.536246"
 						TransportStartX="-1005.613" TransportStartY="-3841.648" TransportStartZ="0.01553879"
 						StandOnX="-997.3311" StandOnY="-3836.707" StandOnZ="6.030852"
 						TransportEndX="-14277.75" TransportEndY="582.8661" TransportEndZ="0.03330701"

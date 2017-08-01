@@ -52,17 +52,49 @@ END INITORDER COMMENT -->
 
 	<QuestOrder>
 		<!-- Check function status -->
-			<Code File="RunCode" Type="Definition" >
-				<![CDATA[
-					bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
-				]]>
-			</Code>
-			<If Condition="profileFunctionsEnabled == null || profileFunctionsEnabled == false" >
-				<Code File="RunCode">
-					<![CDATA[ Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!"); ]]>
-				</Code>
-				<Code File="LoadProfile" ProfileName="..\..\..\Functions\Activate Functions.xml" />
-			</If>
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+			private static bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+			private static bool IsStoreProfile(string path) => path.StartsWith("store://");
+			private static string Slashify(string path) => IsStoreProfile(path) ? path.Replace(@"\", "/") : path.Replace("/", @"\");
+
+			public __CompiledBatchClass__()
+			{
+				if (profileFunctionsEnabled == null || profileFunctionsEnabled == false)
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!");
+					LoadProfile(@"..\..\..\Functions\Activate Functions.xml");
+				}
+			}
+
+			private static void LoadProfile(string path)
+			{
+				var profile = GetNewPath(path);
+				if (!IsStoreProfile(profile) && !File.Exists(profile))
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Profile does not exist.\n" + profile);
+					return;
+				}
+
+				Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Loading: " + profile);
+				ProfileManager.LoadNew(profile, false);
+			}
+
+			private static string GetNewPath(string path)
+			{
+				if (IsStoreProfile(path))
+					return Slashify(path);
+
+				var currentProfile = ProfileManager.XmlLocation;
+				if (IsStoreProfile(currentProfile))
+					return Slashify(currentProfile + "/../" + path);
+
+				var absolutePath = Path.Combine(Path.GetDirectoryName(currentProfile), path);
+				absolutePath = Path.GetFullPath(absolutePath);
+				var canonicalPath = new Uri(absolutePath).LocalPath;
+				return Slashify(canonicalPath);
+			}]]>
+		</Code>
 		<!-- END Check function status -->
 
 		<If Condition="Me.IsHorde" >
@@ -197,8 +229,8 @@ END INITORDER COMMENT -->
 					<Code File="KillUntilComplete" MobId="106644" X="1062.331" Y="5131.072" Z="57.09336" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
 				</If>
  
- 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
- 					<MoveTo X="1155.388" Y="5060.562" Z="57.71455" />
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<MoveTo X="1155.388" Y="5060.562" Z="57.71455" />
 					<Code File="RunCode"><![CDATA[
 							await CommonCoroutines.LandAndDismount();
 							await CommonCoroutines.StopMoving();
@@ -210,27 +242,27 @@ END INITORDER COMMENT -->
 					</Code>
 					<Code File="WaitTimer" WaitTime="3000" />
 					<Code File="InteractWith" MobId="59271" X="1153.517" Y="5062.131" Z="57.71968" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
- 					<MoveTo X="1180.539" Y="5023.105" Z="55.99846" />
- 				</If>
+					<MoveTo X="1180.539" Y="5023.105" Z="55.99846" />
+				</If>
 
- 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
- 					<MoveTo X="1212.571" Y="4977.054" Z="60.06469" />
- 					<Code File="WaitTimer" WaitTime="75000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
- 				</If>
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<MoveTo X="1212.571" Y="4977.054" Z="60.06469" />
+					<Code File="WaitTimer" WaitTime="75000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+				</If>
 
- 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
- 					<Code File="KillUntilComplete" MobId="106652" X="998.9809" Y="4920.242" Z="36.2779" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
- 				</If>
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<Code File="KillUntilComplete" MobId="106652" X="998.9809" Y="4920.242" Z="36.2779" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 5" />
+				</If>
 
- 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
- 					<Code File="InteractWith" MobId="249821" InteractByLooting="true" WaitTime="1500" X="1004.361" Y="4931.698" Z="36.27974" />
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<Code File="InteractWith" MobId="249821" InteractByLooting="true" WaitTime="1500" X="1004.361" Y="4931.698" Z="36.27974" />
 					<Code File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
 					<Code File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
- 				</If>
+				</If>
 
- 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
- 					<Code File="InteractWith" MobId="106846" X="1006.182" Y="4917.022" Z="36.27739" />
- 				</If>
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+					<Code File="InteractWith" MobId="106846" X="1006.182" Y="4917.022" Z="36.27739" />
+				</If>
 			</While>
 		<!-- END Story: Artifact Weapon - Skull of the Man'ari -->
 

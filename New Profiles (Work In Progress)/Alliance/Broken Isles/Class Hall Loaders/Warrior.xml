@@ -22,7 +22,7 @@
 	<Vendors>
 	</Vendors>
 
-<!-- INITORDER COMMENT 
+<!-- INITORDER COMMENT
 	<InitOrder>
 		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
 		<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
@@ -39,17 +39,49 @@ END INITORDER COMMENT -->
 
 	<QuestOrder> <!-- No checkpoints here. -->
 		<!-- Check function status -->
-			<Code File="RunCode" Type="Definition" >
-				<![CDATA[
-					bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
-				]]>
-			</Code>
-			<If Condition="profileFunctionsEnabled == null || profileFunctionsEnabled == false" >
-				<Code File="RunCode">
-					<![CDATA[ Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!"); ]]>
-				</Code>
-				<Code File="LoadProfile" ProfileName="..\..\..\Functions\Activate Functions.xml" />
-			</If>
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+			private static bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+			private static bool IsStoreProfile(string path) => path.StartsWith("store://");
+			private static string Slashify(string path) => IsStoreProfile(path) ? path.Replace(@"\", "/") : path.Replace("/", @"\");
+
+			public __CompiledBatchClass__()
+			{
+				if (profileFunctionsEnabled == null || profileFunctionsEnabled == false)
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!");
+					LoadProfile(@"..\..\..\Functions\Activate Functions.xml");
+				}
+			}
+
+			private static void LoadProfile(string path)
+			{
+				var profile = GetNewPath(path);
+				if (!IsStoreProfile(profile) && !File.Exists(profile))
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Profile does not exist.\n" + profile);
+					return;
+				}
+
+				Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Loading: " + profile);
+				ProfileManager.LoadNew(profile, false);
+			}
+
+			private static string GetNewPath(string path)
+			{
+				if (IsStoreProfile(path))
+					return Slashify(path);
+
+				var currentProfile = ProfileManager.XmlLocation;
+				if (IsStoreProfile(currentProfile))
+					return Slashify(currentProfile + "/../" + path);
+
+				var absolutePath = Path.Combine(Path.GetDirectoryName(currentProfile), path);
+				absolutePath = Path.GetFullPath(absolutePath);
+				var canonicalPath = new Uri(absolutePath).LocalPath;
+				return Slashify(canonicalPath);
+			}]]>
+		</Code>
 		<!-- END Check function status -->
 
 		<If Condition="Me.IsHorde" >
@@ -136,7 +168,7 @@ END INITORDER COMMENT -->
 						{
 							Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, "[Azyul Navigator]: ", System.Windows.Media.Colors.LightGreen, "Using Dalaran Hearthstone!");
 							await CommonCoroutines.LandAndDismount("Using Hearthstone to reach Dalaran (Broken Isles)");
-							await CommonCoroutines.StopMoving(); 
+							await CommonCoroutines.StopMoving();
 							WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
 							if (dalaranHearth.CooldownTimeLeft <= TimeSpan.FromMinutes(3))
 							{
@@ -190,7 +222,7 @@ END INITORDER COMMENT -->
 								end
 							end
 						";
-						
+
 						int timeLeft = Lua.GetReturnVal<int>(luaString, 0);
 
 						if (timeLeft == 0)
@@ -299,9 +331,9 @@ END INITORDER COMMENT -->
 					<Code File="InteractWith" MobId="96469" GossipOptions="1" QuestId="40579" X="796.1858" Y="7228.977" Z="106.7501" />
 				</If>
 
-				<Code File="UserDialog" QuestId="40579" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" 
+				<Code File="UserDialog" QuestId="40579" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue"
 				Text="Choose an artifact weapon.\n\nIf you do not choose within 5minutes, the bot will pick the one appropriate for your current specialization." />
-				
+
 				<If Condition="!IsQuestCompleted(40579)" >
 					<If Condition="Me.Specialization == WoWSpec.WarriorArms" >
 						<Code File="Misc\RunLua" QuestId="40579" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1000" />
@@ -534,7 +566,7 @@ END INITORDER COMMENT -->
 
 		<!-- Load into existing zone -->
 			<!-- Azsuna -->
-			<If Condition="currentZone == 1" > 
+			<If Condition="currentZone == 1" >
 				<If Condition="Me.HasAura(213170)" >
 					<Code File="InteractWith" MobId="96679" GossipOptions="1" X="1082.998" Y="7229.331" Z="98.11864" />
 					<Code File="WaitTimer" WaitTime="10000" />
@@ -544,7 +576,7 @@ END INITORDER COMMENT -->
 			<!-- END Azsuna -->
 
 			<!-- Val'sharah -->
-			<If Condition="currentZone == 2" > 
+			<If Condition="currentZone == 2" >
 				<If Condition="Me.HasAura(213170)" >
 					<Code File="InteractWith" MobId="96679" GossipOptions="1" X="1082.998" Y="7229.331" Z="98.11864" />
 					<Code File="WaitTimer" WaitTime="10000" />
@@ -564,7 +596,7 @@ END INITORDER COMMENT -->
 			<!-- END Highmountain -->
 
 			<!-- Stormheim -->
-			<If Condition="currentZone == 4" > 
+			<If Condition="currentZone == 4" >
 				<If Condition="Me.HasAura(213170)" >
 					<Code File="InteractWith" MobId="96679" GossipOptions="1" X="1082.998" Y="7229.331" Z="98.11864" />
 					<Code File="WaitTimer" WaitTime="10000" />

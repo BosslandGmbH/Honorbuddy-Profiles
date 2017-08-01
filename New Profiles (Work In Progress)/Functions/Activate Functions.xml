@@ -1,801 +1,1733 @@
 <HBProfile>
 	<Name>Activate Functions</Name>
 	<QuestOrder>
-		<!-- Profile Config -->
-			<!--Run on Profile Load-->
-			<Code File="RunCode" Type="Definition">
+		<!--__CompiledBatchClass__-->
+		<Code File="RunCode" Type="Definition">
 			<![CDATA[
-				public __CompiledBatchClass__()
-				{
-					// Just in case button already exists for some reason.
-					System.Windows.Application.Current.Dispatcher.Invoke(ProfileConfig.RemoveButton);
-					System.Windows.Application.Current.Dispatcher.Invoke(ProfileConfig.AddButton);
-				}
-			]]>
-			</Code>
+private static readonly Stopwatch s_mainPulseTimer = new Stopwatch();
 
-			<!--Profile Config Button-->
-			<Code File="RunCode" Type="Definition">
+private static readonly Styx.TreeSharp.Composite s_mainComposite = new CommonBehaviors.Actions.ActionRunCoroutine(cr => MainHook());
+
+private static readonly Styx.TreeSharp.Composite s_profileComposite = new CommonBehaviors.Actions.ActionRunCoroutine(cr => ProfileHook());
+
+public __CompiledBatchClass__()
+{
+	// Just in case button already exists.
+	System.Windows.Application.Current.Dispatcher.Invoke(ButtonManager.RemoveButton);
+	System.Windows.Application.Current.Dispatcher.Invoke(ButtonManager.AddButton);
+
+	// Tell Honorbuddy that the functions are running
+	AppDomainData.FunctionsEnabled = true;
+	AppDomainData.AntiStuckToggle = true;
+	AppDomainData.AfkModeWhitelist = new List<uint>();
+
+	TreeHooks.Instance.InsertHook("Questbot_Main", 0, s_mainComposite);
+	TreeHooks.Instance.InsertHook("Questbot_Profile", 0, s_profileComposite);
+	Targeting.Instance.IncludeTargetsFilter += RareHunter.IncludeRareTargetingFilter;
+	LootTargeting.Instance.RemoveTargetsFilter += CustomLooting.IncludeCustomLootingFilter;
+	Logging.OnLogMessage += LoggingOnLogMessage;
+	BotEvents.OnBotStarted += BotEventsOnBotStarted;
+
+	if (string.IsNullOrWhiteSpace(CharacterSettings.Instance.LastUsedPath)
+		|| CharacterSettings.Instance.LastUsedPath.Contains("Activate Functions"))
+	{
+		FancyLog.WriteBlue("[Functions]: ", "Loading auto loader");
+		ProfileLoader.Load(@"..\1-110 Autoloader.xml");
+	}
+	else
+	{
+		FancyLog.WriteBlue("[Functions]: ", "Loading " + CharacterSettings.Instance.LastUsedPath);
+		ProfileManager.LoadNew(CharacterSettings.Instance.LastUsedPath, false);
+	}
+}
+
+private static void BotEventsOnBotStarted(EventArgs args)
+{
+	DisableAddons.Run();
+}
+
+private static async void LoggingOnLogMessage(System.Collections.ObjectModel.ReadOnlyCollection<Logging.LogMessage> messages)
+{
+	foreach (Logging.LogMessage message in messages)
+	{
+		if (message.Message.Contains("Bot stopping!"))
+		{
+			if (message.Message.Contains("User pressed the stop button") || message.Message.Contains("Nothing more to do"))
+			{
+				Stats.Instance.OutputFunctionStats();
+				TreeHooks.Instance.RemoveHook("Questbot_Main", s_mainComposite);
+				TreeHooks.Instance.RemoveHook("Questbot_Profile", s_profileComposite);
+				Targeting.Instance.IncludeTargetsFilter -= RareHunter.IncludeRareTargetingFilter;
+				LootTargeting.Instance.RemoveTargetsFilter -= CustomLooting.IncludeCustomLootingFilter;
+				System.Windows.Application.Current.Dispatcher.Invoke(ButtonManager.RemoveButton);
+				BotEvents.OnBotStarted -= BotEventsOnBotStarted;
+				AppDomainData.FunctionsEnabled = false;
+
+				FancyLog.WriteYellow("[Function Engine]", " User stopped the bot or there's nothing else to do.  Shutting down.");
+				Logging.OnLogMessage -= LoggingOnLogMessage;
+			}
+
+			await SanityEngine.HandleBotStopped(message);
+		}
+	}
+}
+
+private static async Task<bool> MainHook()
+{
+	try 
+	{
+		if (!s_mainPulseTimer.IsRunning)
+			s_mainPulseTimer.Start();
+
+		if (StyxWoW.Me == null || !StyxWoW.Me.IsValid || StyxWoW.Me.InVehicle || StyxWoW.Me.OnTaxi)
+			return false;
+
+		if (MerchantFrame.Instance.IsVisible)
+			await AfkMode.Run();
+
+		if (s_mainPulseTimer.Elapsed < TimeSpan.FromSeconds(5))
+			return false;
+
+		s_mainPulseTimer.Restart();
+
+		await AfkMode.Run();
+		SanityEngine.Run();
+		ActiveVendoring.Run();
+		return false;
+	}
+	catch (NullReferenceException ex)
+	{
+		FancyLog.WriteRed("[Functions]: ", "Error: Null reference in MainHook! " + ex.Message);
+		return false;
+	}
+}
+
+private static async Task<bool> ProfileHook()
+{
+	try
+	{
+		await CustomAntiStuck.Run();
+		DeleteItems.Run();
+		if (await GuildBankDepositor.Run())
+			return true;
+
+		await UseArtifactPowerItems.Run();
+		return TreasureHunter.Run();
+	}
+	catch (NullReferenceException ex)
+	{
+		FancyLog.WriteRed("[Functions]: ", "Error: Null reference in ProfileHook! " + ex.Message);
+		return false;
+	}
+}
+]]>
+		</Code>
+		<!--END __CompiledBatchClass__-->
+		<!--ActiveVendoring-->
+		<Code File="RunCode" Type="Definition">
 			<![CDATA[
-				public static class ProfileConfig
-				{
-					private static System.Windows.Controls.Button s_profileConfigButton;
+public static class ActiveVendoring
+{
+	public static void Run()
+	{
+		if (!Settings.Instance.UseActiveVendoring || StyxWoW.Me.CurrentMap.ExpansionId == 6)
+			return;
 
-					public static void AddButton()
-					{
-						s_profileConfigButton = new System.Windows.Controls.Button
-						{
-							Name = "btnProfileConfig",
-							Content = "Profile Config",
-							HorizontalAlignment = System.Windows.HorizontalAlignment.Right,
-							VerticalAlignment = System.Windows.VerticalAlignment.Bottom,
-							Width = 120,
-							Height = 25,
-							Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(132, 98, 199)),
-							Margin = new System.Windows.Thickness(0, 0, 136, 26)
-						};
+		double bagslotTotal = StyxWoW.Me.FreeNormalBagSlots + StyxWoW.Me.BagItems.Count;
+		double bagslotPercentageDeficit = Math.Round(StyxWoW.Me.FreeNormalBagSlots / bagslotTotal * 100);
+		WoWUnit nearbyVendor = ObjectManager.GetObjectsOfType<WoWUnit>()
+											.FirstOrDefault(
+												x => x.IsAlive && x.IsFriendly && x.IsAnyVendor && x.DistanceSqr <= 60f * 60f);
 
-						s_profileConfigButton.Click += (sender, args) => SettingsViewModel.ShowWindow();
+		if (Vendors.ForceSell || !(bagslotPercentageDeficit < 35) || nearbyVendor == null)
+			return;
 
-						var grid = (System.Windows.Controls.Grid)((Honorbuddy.MainWindow)System.Windows.Application.Current.MainWindow).Content;
-						grid.Children.Add(s_profileConfigButton);
-					}
-
-					public static void RemoveButton()
-					{
-						var grid = (System.Windows.Controls.Grid)((Honorbuddy.MainWindow)System.Windows.Application.Current.MainWindow).Content;
-						var profileConfigButton = grid.Children.OfType<System.Windows.Controls.Button>().FirstOrDefault(btn => btn.Name == "btnProfileConfig");
-						if (profileConfigButton != null)
-							grid.Children.Remove(s_profileConfigButton);
-					}
-				}
-			]]>
-			</Code>
-
-			<!--Settings Model-->
-			<Code File="RunCode" Type="Definition">
+		ProfileManager.CurrentProfile.VendorManager.ForcedVendors.Add(new Vendor((int)nearbyVendor.Entry,
+																				 nearbyVendor.Name,
+																				 Vendor.VendorType.Sell,
+																				 nearbyVendor.Location,
+																				 NavType.Run));
+		FancyLog.WriteYellow("> [Active Vendoring] ", "Forcing the bot to vendor since we're near a vendor.");
+		Vendors.ForceSell = true;
+		Stats.Instance.TimesForceVendored++;
+	}
+}
+]]>
+		</Code>
+		<!--END ActiveVendoring-->
+		<!--AfkMode-->
+		<Code File="RunCode" Type="Definition">
 			<![CDATA[
-				public class Settings : GarrisonBuddy.JsonSettings<Settings>
+public static class AfkMode
+{
+	private static LocalPlayer Me => StyxWoW.Me;
+
+	public static async Task<bool> Run()
+	{
+		if (!Settings.Instance.AfkMode)
+			return false;
+
+		CleanupQuestlog();
+
+		if (!Me.IsAlive || Me.IsActuallyInCombat)
+			return false;
+
+		await OpenItems();
+		DeleteItems();
+		await ForceSell();
+		return false;
+	}
+
+	private static void CleanupQuestlog()
+	{
+		if (QuestLog.Instance.GetAllQuests().Count < 20)
+			return;
+
+		FancyLog.WriteYellow("[AFK Mode]: ", "Cleaning up questlog of low level quests since it is almost full.");
+		int levelDeficit = Me.Level - 3;
+
+		foreach (PlayerQuest quest in QuestLog.Instance.GetAllQuests())
+		{
+			if (quest.Level == -1 && Me.Level == 110)
+				continue;
+
+			if (quest.Level >= levelDeficit)
+				continue;
+
+			FancyLog.WriteYellow("[AFK Mode]: ", $"Abandoning quest: {quest.Name}");
+			QuestLog.Instance.AbandonQuestById(quest.Id);
+		}
+
+		Stats.Instance.QuestlogCleanups++;
+	}
+
+	private static void DeleteItems()
+	{
+		List<WoWItem> itemsToDelete = (from item in Me.BagItems
+									   let itemInfo = item.ItemInfo
+									   where itemInfo.SellPrice == 00 && item.GetEffect(0) == null
+											 && (itemInfo.Bond == WoWItemBondType.None
+												 || itemInfo.BeginQuestId != 0 && itemInfo.RequiredLevel < Me.Level - 5)
+									   select item).ToList();
+		foreach (WoWItem item in itemsToDelete)
+		{
+			FancyLog.WriteYellow("[AFK Mode]: ", $"Force deleting > {item.Name}.");
+			item.PickUp();
+			Lua.DoString("DeleteCursorItem();");
+			Stats.Instance.DeletedItems++;
+		}
+	}
+
+	private static async Task ForceSell()
+	{
+		if (!MerchantFrame.Instance.IsVisible)
+			return;
+
+		IEnumerable<WoWItem> sellList =
+			Me.BagItems.Where(item => item.ItemInfo.SellPrice != 0 && !AppDomainData.AfkModeWhitelist.Contains(item.Entry));
+		foreach (WoWItem item in sellList)
+		{
+			if (!MerchantFrame.Instance.IsVisible)
+				break;
+
+			if (!item.IsValid)
+				continue;
+
+			FancyLog.WriteYellow("[AFK Mode]: ", $"Force selling > {item.Name}.");
+			item.UseContainerItem();
+			await Coroutine.Sleep(500);
+			Stats.Instance.SoldItems++;
+		}
+	}
+
+	private static async Task OpenItems()
+	{
+		List<WoWItem> itemsToOpen = Me.BagItems.Where(item => item.IsOpenable).ToList();
+		foreach (WoWItem item in itemsToOpen)
+		{
+			FancyLog.WriteYellow("[AFK Mode]: ", $"Opening > {item.Name}.");
+			item.Use();
+			await Coroutine.Wait(1000, () => LootFrame.Instance.IsVisible);
+			LootFrame.Instance.LootAll();
+			await Coroutine.Wait(3000, () => !LootFrame.Instance.IsVisible);
+			Stats.Instance.OpenedItems++;
+		}
+	}
+}
+]]>
+		</Code>
+		<!--END AfkMode-->
+		<!--AntiStuck-->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+public static class CustomAntiStuck
+{
+	private static readonly Stopwatch s_antiStuckTimerLongTerm = new Stopwatch();
+
+	private static readonly Stopwatch s_antiStuckTimerShortTerm = new Stopwatch();
+
+	private static Vector3 s_lastPointLong = Vector3.Zero;
+
+	private static Vector3 s_lastPointShort = Vector3.Zero;
+
+	private static LocalPlayer Me => StyxWoW.Me;
+
+	public static async Task<bool> Run()
+	{
+		if (!Settings.Instance.UseAntiStuck || AppDomainData.AntiStuckToggle == null || AppDomainData.AntiStuckToggle == false)
+			return false;
+
+		if (!s_antiStuckTimerLongTerm.IsRunning)
+			s_antiStuckTimerLongTerm.Start();
+
+		if (s_antiStuckTimerLongTerm.Elapsed > TimeSpan.FromMinutes(5))
+		{
+			s_antiStuckTimerLongTerm.Restart();
+			return await HandleLongTermStuck();
+		}
+
+		if (!s_antiStuckTimerShortTerm.IsRunning)
+			s_antiStuckTimerShortTerm.Start();
+
+		if (s_antiStuckTimerShortTerm.Elapsed > TimeSpan.FromSeconds(5))
+		{
+			s_antiStuckTimerShortTerm.Restart();
+			return await HandleShortTermStuck();
+		}
+
+		return false;
+	}
+
+	private static WoWItem GetHearthstone()
+	{
+		const uint WoDHearthstone = 110560;
+		const uint BrokenIslesDalaranHearthstone = 140192;
+		const uint Hearthstone = 6948;
+
+		WoWItem FindItem(uint itemEntry) => Me.BagItems.FirstOrDefault(i => i.Entry == itemEntry);
+
+		WoWItem hearthstone = null;
+		if (Me.CurrentMap.ExpansionId == 5)
+		{
+			hearthstone = FindItem(WoDHearthstone);
+		}
+		else if (Me.CurrentMap.ExpansionId == 6)
+		{
+			hearthstone = FindItem(BrokenIslesDalaranHearthstone);
+		}
+
+		return hearthstone ?? FindItem(Hearthstone);
+	}
+
+	private static async Task<bool> HandleLongTermStuck()
+	{
+		if (!IsStuck(false))
+			return false;
+
+		WoWItem hearthstone = GetHearthstone();
+		if (hearthstone == null)
+			return false;
+
+		uint currentMapId = Me.MapId;
+		Stats.Instance.LongTermStucks++;
+		FancyLog.WriteYellow("[Anti-Stuck]: ", "Long-term stuck detection activated!");
+		await CommonCoroutines.StopMoving();
+		await CommonCoroutines.LandAndDismount();
+
+		if (hearthstone.CooldownTimeLeft != TimeSpan.Zero)
+		{
+			FancyLog.WriteYellow("[Anti-Stuck]: ", "Awaiting Hearthstone cooldown before attempting hearth!");
+			await Coroutine.Wait(901000, () => hearthstone.CooldownTimeLeft == TimeSpan.Zero);
+		}
+
+		hearthstone.Interact();
+		await Coroutine.Sleep(11500);
+		FancyLog.WriteYellow("[Anti-Stuck]: ", "Reloading profile.");
+		if (Me.MapId != currentMapId)
+		{
+			FancyLog.WriteYellow("[Anti-Stuck]: ", "Our map location has changed, loading the autoloaders.");
+			string profilePath = Path.GetDirectoryName(ProfileManager.XmlLocation) + "/../../1-110 Autoloader.xml";
+			string absolutePath = Path.GetFullPath(profilePath);
+			ProfileManager.LoadNew(absolutePath);
+		}
+		else
+		{
+			ProfileManager.LoadNew(ProfileManager.XmlLocation);
+		}
+
+		await Coroutine.Sleep(5000);
+		s_antiStuckTimerLongTerm.Restart();
+		return true;
+	}
+
+	private static async Task<bool> HandleShortTermStuck()
+	{
+		if (!IsStuck(true))
+			return false;
+
+		if (!Me.IsMoving)
+		{
+			s_lastPointShort = Vector3.Zero;
+			return false;
+		}
+
+		Stats.Instance.ShortTermStucks++;
+		FancyLog.WriteYellow("[Anti-Stuck]: ", "Short-term stuck detection activated!");
+		await CommonCoroutines.StopMoving();
+		Navigator.Clear();
+		if (Me.IsFlying)
+		{
+			WoWMovement.Move(WoWMovement.MovementDirection.Backwards, TimeSpan.FromMilliseconds(2000));
+			BlackspotManager.AddBlackspot(new Blackspot(s_lastPointShort, 2.5f, 2.5f));
+			await Coroutine.Sleep(2000);
+		}
+		else
+		{
+			WoWMovement.Move(WoWMovement.MovementDirection.Backwards, TimeSpan.FromMilliseconds(1000));
+			BlackspotManager.AddBlackspot(new Blackspot(s_lastPointShort, 2.5f, 2.5f));
+		}
+
+		return true;
+	}
+
+	private static bool IsStuck(bool shortTerm)
+	{
+		const int ResurrectionSicknessAura = 15007;
+		if (!Settings.Instance.UseAntiStuck || Me.IsDead || Me.IsActuallyInCombat || Me.HasAura(ResurrectionSicknessAura))
+			return false;
+
+		bool isStuck;
+		if (shortTerm)
+		{
+			isStuck = StyxWoW.Me.Location.DistanceSquared(s_lastPointShort) <= 2.5f * 2.5f;
+			s_lastPointShort = Me.Location;
+		}
+		else
+		{
+			isStuck = StyxWoW.Me.Location.DistanceSquared(s_lastPointLong) < 10f * 10f;
+			s_lastPointLong = Me.Location;
+		}
+
+		return isStuck;
+	}
+}
+]]>
+		</Code>
+		<!--END AntiStuck-->
+		<!--AppDomainData-->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+public static class AppDomainData
+{
+	public static List<uint> AfkModeWhitelist
+	{
+		get => Get<List<uint>>("QuestingProfiles_AFKModeWhitelist");
+		set => Set("QuestingProfiles_AFKModeWhitelist", value);
+	}
+
+	public static bool? AntiStuckToggle
+	{
+		get => Get<bool?>("QuestingProfiles_AntiStuckToggle");
+		set => Set("QuestingProfiles_AntiStuckToggle", value);
+	}
+
+	public static bool? FunctionsEnabled
+	{
+		get => Get<bool?>("QuestingProfiles_FunctionsEnabled");
+		set => Set("QuestingProfiles_FunctionsEnabled", value);
+	}
+
+	private static T Get<T>(string name)
+	{
+		return (T)AppDomain.CurrentDomain.GetData(name);
+	}
+
+	private static void Set(string name, object data)
+	{
+		AppDomain.CurrentDomain.SetData(name, data);
+	}
+}
+]]>
+		</Code>
+		<!--END AppDomainData-->
+		<!--ButtonManager-->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+public static class ButtonManager
+{
+	private static System.Windows.Controls.Button s_profileConfigButton;
+
+	public static void AddButton()
+	{
+		s_profileConfigButton = new System.Windows.Controls.Button
+		{
+			Name = "btnProfileConfig",
+			Content = "Profile Config",
+			HorizontalAlignment = System.Windows.HorizontalAlignment.Right,
+			VerticalAlignment = System.Windows.VerticalAlignment.Bottom,
+			Width = 120,
+			Height = 25,
+			Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(132, 98, 199)),
+			Margin = new System.Windows.Thickness(0, 0, 136, 26)
+		};
+
+		s_profileConfigButton.Click += (sender, args) => SettingsView.ShowDialog();
+
+		var grid = (System.Windows.Controls.Grid)((Honorbuddy.MainWindow)System.Windows.Application.Current.MainWindow).Content;
+		grid.Children.Add(s_profileConfigButton);
+	}
+
+	public static void RemoveButton()
+	{
+		var grid = (System.Windows.Controls.Grid)((Honorbuddy.MainWindow)System.Windows.Application.Current.MainWindow).Content;
+		System.Windows.Controls.Button profileConfigButton = grid.Children.OfType<System.Windows.Controls.Button>().FirstOrDefault(btn => btn.Name == "btnProfileConfig");
+		if (profileConfigButton != null)
+			grid.Children.Remove(s_profileConfigButton);
+	}
+}
+]]>
+		</Code>
+		<!--END ButtonManager-->
+		<!--CustomLooting-->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+public static class CustomLooting
+{
+	private static readonly List<WoWGuid> s_timerBlacklist = new List<WoWGuid>();
+
+	public static void IncludeCustomLootingFilter(List<WoWObject> lootUnits)
+	{
+		if (!Settings.Instance.CustomLooting)
+			return;
+
+		if (lootUnits.Any(unit => !s_timerBlacklist.Contains(unit.Guid) && unit is WoWUnit && unit.ToUnit().Lootable))
+		{
+			foreach (WoWObject blacklistUnit in lootUnits)
+			{
+				if (!s_timerBlacklist.Contains(blacklistUnit.Guid) && blacklistUnit is WoWUnit && blacklistUnit.ToUnit().Lootable)
+					s_timerBlacklist.Add(blacklistUnit.Guid);
+			}
+
+			Stats.Instance.TimeSaved = Stats.Instance.TimeSaved.Add(TimeSpan.FromMilliseconds(2623));
+		}
+
+		lootUnits.RemoveAll(lootUnit => lootUnit is WoWUnit && lootUnit.ToUnit().Classification != WoWUnitClassificationType.Rare
+										&& !IsNeededForQuestObjective(lootUnit.ToUnit()));
+	}
+
+	private static bool IsNeededForQuestObjective(WoWUnit objectiveMob)
+	{
+		// Ignore Outlands and Northrend due to creature cache issues.
+		if (StyxWoW.Me.CurrentMap.ExpansionId == 1 || StyxWoW.Me.CurrentMap.ExpansionId == 2)
+			return true;
+
+		foreach (PlayerQuest playerQuest in QuestLog.Instance.GetAllQuests())
+		{
+			if (playerQuest.IsCompleted || playerQuest.IsFailed)
+				continue;
+
+			List<Quest.QuestObjective> mainObjectives = playerQuest.GetObjectives();
+			uint[] normalObjectives = playerQuest.NormalObjectiveRequiredCounts;
+
+			List<uint> allObjectiveIds = mainObjectives.Select(objective => objective.ID).ToList();
+			allObjectiveIds.AddRange(normalObjectives);
+
+			foreach (uint objective in allObjectiveIds)
+			{
+				if (!objectiveMob.GetCachedInfo(out WoWCache.CreatureCacheEntry cacheEntry))
+					continue;
+
+				if (cacheEntry.QuestItems.ToList().Contains(objective))
+					return true;
+			}
+		}
+
+		return false;
+	}
+}
+]]>
+		</Code>
+		<!--END CustomLooting-->
+		<!--DeleteItems-->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+public static class DeleteItems
+{
+	public static void Run()
+	{
+		if (!Settings.Instance.DeleteItems.Any())
+			return;
+
+		IEnumerable<WoWItem> deleteItems =
+			StyxWoW.Me.BagItems.Where(i => Settings.Instance.DeleteItems.Contains(i.Entry.ToString())
+										   || Settings.Instance.DeleteItems.Contains(i.Name)
+										   || Settings.Instance.DeleteItems.Contains(i.Quality.ToString()) && !i.IsSoulbound);
+		foreach (WoWItem deleteItem in deleteItems)
+		{
+			FancyLog.WriteBlue("[Delete Items]: ", $"Deleting {deleteItem.Name} from our bags.");
+			deleteItem.PickUp();
+			Lua.DoString("DeleteCursorItem();");
+		}
+	}
+}
+]]>
+		</Code>
+		<!--END DeleteItems-->
+		<!--DisableAddons-->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+public static class DisableAddons
+{
+	public static void Run()
+	{
+		if (!Settings.Instance.DisableAddons)
+			return;
+
+		const string LuaCode = @"
+			local needsReload = false;
+			for i = 1, GetNumAddOns() do
+				if IsAddOnLoaded(i) then
+					needsReload = true
+					DisableAddOn(i)
+				end
+			end
+			if needsReload then
+				ReloadUI()
+			end";
+		Lua.DoString(LuaCode);
+	}
+}
+]]>
+		</Code>
+		<!--END DisableAddons-->
+		<!--FancyLog-->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+public static class FancyLog
+{
+	public static void Write(string header, System.Windows.Media.Color msgColor, string message)
+	{
+		Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, header, msgColor, message);
+	}
+
+	public static void WriteBlue(string header, string message)
+	{
+		Write(header, System.Windows.Media.Colors.CornflowerBlue, message);
+	}
+
+	public static void WriteRed(string header, string message)
+	{
+		Write(header, System.Windows.Media.Colors.Red, message);
+	}
+
+	public static void WriteYellow(string header, string message)
+	{
+		Write(header, System.Windows.Media.Colors.Yellow, message);
+	}
+}
+]]>
+		</Code>
+		<!--END FancyLog-->
+		<!--GuildBankDepositor-->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+public static class GuildBankDepositor
+{
+	private const int MobileBanking = 83958;
+
+	private static LocalPlayer Me => StyxWoW.Me;
+
+	public static async Task<bool> Run()
+	{
+		if (!Settings.Instance.GuildBankItems.Any())
+			return false;
+
+		List<WoWItem> depositItems = GetItemsToDeposit().ToList();
+		if (!depositItems.Any())
+			return false;
+
+		WoWGameObject guildBank = GetMobileBank();
+		if (guildBank == null || !guildBank.IsValid)
+		{
+			if (!SpellManager.CanCast(MobileBanking) || !SpellManager.Cast(MobileBanking))
+				return false;
+
+			await Coroutine.Wait(3500,
+								 () =>
+								 {
+									 guildBank = GetMobileBank();
+									 return guildBank != null && guildBank.IsValid;
+								 });
+
+			return true;
+		}
+
+		var guildBankFrame = new GuildBankFrame();
+		guildBank.Interact();
+		await Coroutine.Wait(2500, () => guildBankFrame.IsVisible);
+		await Coroutine.Sleep(1000);
+
+		foreach (WoWItem item in depositItems)
+		{
+			if (!Me.IsValid || !Me.IsAlive || Me.IsActuallyInCombat || !guildBankFrame.IsVisible)
+				break;
+
+			FancyLog.WriteBlue("[Deposit Items]: ", $"Depositing {item.Name} into the guild bank.");
+			item.UseContainerItem();
+			await Coroutine.Sleep(750);
+		}
+
+		return false;
+	}
+
+	private static IEnumerable<WoWItem> GetItemsToDeposit()
+	{
+		return Me.BagItems.Where(x => Settings.Instance.GuildBankItems.Contains(x.Entry.ToString())
+									  || Settings.Instance.GuildBankItems.Contains(x.Name)
+									  || Settings.Instance.GuildBankItems.Contains(x.Quality.ToString()) && !x.IsSoulbound);
+	}
+
+	private static WoWGameObject GetMobileBank()
+	{
+		return ObjectManager.GetObjectsOfType<WoWGameObject>()
+							.FirstOrDefault(o => o.SubType == WoWGameObjectType.GuildBank && o.CanUse() && o.CreatedBy == Me);
+	}
+}
+]]>
+		</Code>
+		<!--END GuildBankDepositor-->
+		<!--ProfileLoader-->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+public static class ProfileLoader
+{
+	public static void Load(string path)
+	{
+		string profile = GetNewPath(path);
+		if (!IsStoreProfile(profile) && !File.Exists(profile))
+		{
+			FancyLog.WriteRed("[Functions]: ", "Error: Profile does not exist");
+			return;
+		}
+
+		FancyLog.WriteBlue("[Functions]: ", "Loading " + profile);
+		ProfileManager.LoadNew(profile);
+	}
+
+	private static string GetNewPath(string path)
+	{
+		if (IsStoreProfile(path))
+			return Slashify(path);
+
+		string currentProfile = ProfileManager.XmlLocation;
+		if (IsStoreProfile(currentProfile))
+			return Slashify(currentProfile + "/../" + path);
+
+		// Convert path name to absolute, and canonicalize it...
+		string absolutePath = Path.Combine(Path.GetDirectoryName(currentProfile), path);
+		absolutePath = Path.GetFullPath(absolutePath);
+		string canonicalPath = new Uri(absolutePath).LocalPath;
+		return Slashify(canonicalPath);
+	}
+
+	private static bool IsStoreProfile(string path)
+	{
+		return path.StartsWith("store://");
+	}
+
+	private static string Slashify(string path)
+	{
+		// Converts all slashes to back-slashes if path is local; otherwise converts all back-slashes to slashes
+		return IsStoreProfile(path) ? path.Replace(@"\", "/") : path.Replace("/", @"\");
+	}
+}
+]]>
+		</Code>
+		<!--END ProfileLoader-->
+		<!--RareHunter-->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+public static class RareHunter
+{
+	private static readonly List<WoWGuid> s_rareBlacklist = new List<WoWGuid>();
+
+	public static void IncludeRareTargetingFilter(List<WoWObject> incomingUnits, HashSet<WoWObject> outgoingUnits)
+	{
+		if (!Settings.Instance.HuntRareMobs)
+			return;
+
+		foreach (WoWObject rareUnit in incomingUnits)
+		{
+			if (!(rareUnit is WoWUnit) || BlackspotManager.IsBlackspotted(rareUnit.Location)
+				|| rareUnit.ToUnit().Classification != WoWUnitClassificationType.Rare || rareUnit.ToUnit().IsTagged
+				|| !rareUnit.ToUnit().Attackable)
+				continue;
+
+			if (!s_rareBlacklist.Contains(rareUnit.Guid))
+			{
+				s_rareBlacklist.Add(rareUnit.ToUnit().Guid);
+				Stats.Instance.RaresKilled++;
+				FancyLog.WriteBlue("[Rare Killer]: ",
+								   $"Rare detected near us!\n	Name     :: {rareUnit.ToUnit().Name}\n	Entry     :: {rareUnit.ToUnit().Entry}\n	Location :: {rareUnit.ToUnit().Location}");
+			}
+
+			outgoingUnits.Add(rareUnit);
+		}
+	}
+}
+]]>
+		</Code>
+		<!--END RareHunter-->
+		<!--SanityEngine-->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+public static class SanityEngine
+{
+	public static async Task HandleBotStopped(Logging.LogMessage message)
+	{
+		if (!Settings.Instance.SanityEngine)
+			return;
+
+		Stats.Instance.InsaneCounter++;
+
+		if (message.Message.Contains("after 20 seconds"))
+		{
+			FancyLog.WriteYellow("[Sanity Engine]",
+								 " The bot was shutdown by a quest PickUp/TurnIn failure!  Attempting to fix this..");
+			Lua.DoString("ReloadUI();");
+			await Task.Delay(5000);
+			TreeRoot.Start();
+		}
+
+		if (message.Message.Contains("Fatal error"))
+		{
+			FancyLog.WriteYellow("[Sanity Engine]", " Bot was stopped due to a fatal error! Attempting to start it again.");
+			await Task.Delay(2000);
+			TreeRoot.Start();
+		}
+	}
+
+	public static void Run()
+	{
+		if (!Settings.Instance.SanityEngine)
+			return;
+
+		HandleTurnInBug();
+		HandleGhostFrameBug();
+		HandleFlightMasterQuestGiverBug();
+	}
+
+	private static void HandleFlightMasterQuestGiverBug()
+	{
+		//FlightMaster-QuestGiver bug.  Where if the quest giver is also a flight master and the bot leaves the taxi frame open while
+		// trying to turn in or pick up a quest.
+		if (TaxiFrame.Instance.IsVisible && (BotPoi.Current.Type == PoiType.QuestTurnIn || BotPoi.Current.Type == PoiType.QuestPickUp)
+			&& !StyxWoW.Me.IsMoving)
+		{
+			TaxiFrame.Instance.Close();
+			FancyLog.WriteBlue("> [Sanity Engine] ", "Sticky flight master quest frame detected, closing it.");
+			Stats.Instance.InsaneCounter++;
+		}
+	}
+
+	private static void HandleGhostFrameBug()
+	{
+		//Ghost frame bug.  Where the bot tries picking up a quest but there is no quest description, title or text.
+		if (QuestFrame.Instance.IsVisible && QuestFrame.Instance.CurrentShownQuestId == 0
+			&& Lua.GetReturnVal<bool>("return QuestFrameAcceptButton:IsVisible()", 0))
+		{
+			QuestFrame.Instance.Close();
+			FancyLog.WriteBlue("> [Sanity Engine] ", "Sticky quest frame detected, closing it.");
+			Stats.Instance.InsaneCounter++;
+		}
+	}
+
+	private static void HandleTurnInBug()
+	{
+		// TurnIn bug where if the bot tries turning in the quest at the immediate second that the quest is completed,
+		// the quest will show on the frame as incomplete even though it is.
+		if (QuestFrame.Instance.IsVisible && QuestFrame.Instance.CurrentShownQuestId != 0
+			&& Lua.GetReturnVal<bool>("return QuestFrameCompleteButton:IsVisible();", 0)
+			&& !Lua.GetReturnVal<bool>("return QuestFrameCompleteButton:IsEnabled();", 0))
+		{
+			QuestFrame.Instance.Close();
+			FancyLog.WriteBlue("> [Sanity Engine] ", "Sticky quest frame detected, closing it.");
+			Stats.Instance.InsaneCounter++;
+		}
+	}
+}
+]]>
+		</Code>
+		<!--END SanityEngine-->
+		<!--Settings-->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+public class Settings : GarrisonBuddy.JsonSettings<Settings>
+{
+	private bool _afkMode;
+
+	private bool _customLooting;
+
+	private bool _disableAddons = true;
+
+	private bool _findTreasureChests = true;
+
+	private bool _huntRareMobs = true;
+
+	private bool _sanityEngine = true;
+
+	private bool _useActiveVendoring = true;
+
+	private bool _useAntiStuck = true;
+
+	private bool _useArtifactPowerItems;
+
+	public Settings() : base(Path.Combine(CharacterSettingsDirectory, "QuestSettings.json"))
+	{
+		Load();
+	}
+
+	/// <summary>
+	///     Sells everything in your bags when visiting a vendor, deletes items that can't be sold, and opens openable items.
+	///     Also keeps the quest log clean so it doesn't get full and reacts to players around you.
+	/// </summary>
+	public bool AfkMode
+	{
+		get => _afkMode;
+		set => SetProperty(ref _afkMode, value);
+	}
+
+	/// <summary>
+	///     Only loot quest-related NPCs.  Does NOT work in Outland and Northrend expansion zones.
+	/// </summary>
+	public bool CustomLooting
+	{
+		get => _customLooting;
+		set => SetProperty(ref _customLooting, value);
+	}
+
+	public System.Collections.ObjectModel.ObservableCollection<string> DeleteItems { get; set; } = new System.Collections.ObjectModel.ObservableCollection<string>();
+
+	public bool DisableAddons
+	{
+		get => _disableAddons;
+		set => SetProperty(ref _disableAddons, value);
+	}
+
+	/// <summary>
+	///     Actively looks for treasure chests around the player and loots them.
+	///     Treasure chests typically give you a large amount of experience and a blue item.
+	/// </summary>
+	public bool FindTreasureChests
+	{
+		get => _findTreasureChests;
+		set => SetProperty(ref _findTreasureChests, value);
+	}
+
+	public System.Collections.ObjectModel.ObservableCollection<string> GuildBankItems { get; set; } = new System.Collections.ObjectModel.ObservableCollection<string>();
+
+	/// <summary>
+	///     Actively kills rares as they are detected near the bot.
+	/// </summary>
+	public bool HuntRareMobs
+	{
+		get => _huntRareMobs;
+		set => SetProperty(ref _huntRareMobs, value);
+	}
+
+	/// <summary>
+	///     Looks for bugs and tries to fix them as the bot is running.
+	///     Some bugs include sticky quest frames, pick up / turn in quest failures, NPC phasing issues, etc.
+	/// </summary>
+	public bool SanityEngine
+	{
+		get => _sanityEngine;
+		set => SetProperty(ref _sanityEngine, value);
+	}
+
+	/// <summary>
+	///     Looks for vendors close to the player and will use them if your bags are under a set percentage of remaining slots.
+	///     This will prevent the bot from leaving a town with a low bagslot count as often the bot will do this, and end up
+	///     running back to town before quests are complete which wastes time.
+	/// </summary>
+	public bool UseActiveVendoring
+	{
+		get => _useActiveVendoring;
+		set => SetProperty(ref _useActiveVendoring, value);
+	}
+
+	/// <summary>
+	///     Utilizes a short-term and long-term custom antistuck method.
+	///     Short-term antistuck will make the bot back off of the stuck location and blackspot it from the navigation system
+	///     so the bot will calculate a new path.
+	///     Long-term antistuck will make the bot use the Hearthstone(s) to get out of the location and will reload the
+	///     profile.
+	/// </summary>
+	public bool UseAntiStuck
+	{
+		get => _useAntiStuck;
+		set => SetProperty(ref _useAntiStuck, value);
+	}
+
+	/// <summary>
+	///     Uses artifact power items.
+	/// </summary>
+	public bool UseArtifactPowerItems
+	{
+		get => _useArtifactPowerItems;
+		set => SetProperty(ref _useArtifactPowerItems, value);
+	}
+
+	private void SetProperty<T>(ref T storage, T value, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+	{
+		if (Equals(storage, value))
+			return;
+
+		storage = value;
+		OnPropertyChanged(propertyName);
+	}
+}
+]]>
+		</Code>
+		<!--END Settings-->
+		<!--SettingsView-->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+public static class SettingsView
+{
+	private const string ViewString = @"
+<UserControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+			 xmlns:d=""http://schemas.microsoft.com/expression/blend/2008""
+			 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+			 xmlns:mc=""http://schemas.openxmlformats.org/markup-compatibility/2006""
+			 xmlns:my=""http://metro.mahapps.com/winfx/xaml/controls"">
+	<Grid Width=""500"">
+		<Grid.RowDefinitions>
+			<RowDefinition Height=""*"" />
+			<RowDefinition Height=""*"" />
+		</Grid.RowDefinitions>
+		<Image Grid.Row=""0"" Margin=""0, 0, 0, 5"" Source=""https://cdn.pook.io/questing/header.jpg"" />
+		<Button Margin=""5"" x:Name=""DiscordButton"" Grid.Row=""0"" HorizontalAlignment=""Left"" VerticalAlignment=""Top""
+				ToolTip=""https://discord.gg/H3extPY"">
+			<StackPanel>
+				<Path HorizontalAlignment=""Center"" Fill=""#8C9EFF""
+					  Data=""M40,12c0,0-4.585-3.588-10-4l-0.488,0.976C34.408,10.174,36.654,11.891,39,14&#10;&#9;c-4.045-2.065-8.039-4-15-4s-10.955,1.935-15,4c2.346-2.109,5.018-4.015,9.488-5.024L18,8c-5.681,0.537-10,4-10,4s-5.121,7.425-6,22&#10;&#9;c5.162,5.953,13,6,13,6l1.639-2.185C13.857,36.848,10.715,35.121,8,32c3.238,2.45,8.125,5,16,5s12.762-2.55,16-5&#10;&#9;c-2.715,3.121-5.857,4.848-8.639,5.815L33,40c0,0,7.838-0.047,13-6C45.121,19.425,40,12,40,12z M17.5,30c-1.933,0-3.5-1.791-3.5-4&#10;&#9;c0-2.209,1.567-4,3.5-4s3.5,1.791,3.5,4C21,28.209,19.433,30,17.5,30z M30.5,30c-1.933,0-3.5-1.791-3.5-4c0-2.209,1.567-4,3.5-4&#10;&#9;s3.5,1.791,3.5,4C34,28.209,32.433,30,30.5,30z"" />
+				<Label HorizontalAlignment=""Center"" Foreground=""#8C9EFF"" Content=""Join us on Discord"" />
+			</StackPanel>
+		</Button>
+		<Button x:Name=""ReportIssueButton"" Grid.Row=""0"" Margin=""5"" HorizontalAlignment=""Left"" VerticalAlignment=""Bottom"" Content=""Report Issue"" Background=""#C6880F""/>
+		<my:MetroAnimatedTabControl Grid.Row=""1"" Height=""400"">
+			<TabItem Header=""Changelog"">
+				<Grid>
+					<RichTextBox x:Name=""ChangelogTextBox"" Margin=""5, 0, 5, 30"" IsReadOnly=""True"" BorderThickness=""0""
+							 VerticalScrollBarVisibility=""Auto"" SelectionOpacity=""0""/>
+					<Button x:Name=""GitHubButton"" Grid.Row=""0"" Margin=""5"" HorizontalAlignment=""Left"" VerticalAlignment=""Bottom"" Content=""See Commits on GitHub""/>
+				</Grid>
+			</TabItem>
+			<TabItem Header=""Stats"">
+				<WrapPanel VerticalAlignment=""Center"" HorizontalAlignment=""Center"">
+					<GroupBox Header=""Treasure Hunter"" IsEnabled=""{Binding Settings.FindTreasureChests}"">
+						<StackPanel Orientation=""Horizontal"">
+							<Label>Treasures Found:</Label>
+							<Label Content=""{Binding Stats.TreasuresFound}"" />
+						</StackPanel>
+					</GroupBox>
+					<GroupBox Header=""RareHunter"" IsEnabled=""{Binding Settings.HuntRareMobs}"">
+						<StackPanel Orientation=""Horizontal"">
+							<Label>Rares Killed:</Label>
+							<Label Content=""{Binding Stats.RaresKilled}"" />
+						</StackPanel>
+					</GroupBox>
+					<GroupBox Header=""Active Vendoring"" IsEnabled=""{Binding Settings.UseActiveVendoring}"">
+						<StackPanel Orientation=""Horizontal"">
+							<Label>Times Force Vendored:</Label>
+							<Label Content=""{Binding Stats.TimesForceVendored}"" />
+						</StackPanel>
+					</GroupBox>
+					<GroupBox Header=""Anti-Stuck"" IsEnabled=""{Binding Settings.UseAntiStuck}"">
+						<StackPanel>
+							<StackPanel Orientation=""Horizontal"">
+								<Label>Long Term Stucks:</Label>
+								<Label Content=""{Binding Stats.LongTermStucks}"" />
+							</StackPanel>
+							<StackPanel Orientation=""Horizontal"">
+								<Label>Short Term Stucks:</Label>
+								<Label Content=""{Binding Stats.ShortTermStucks}"" />
+							</StackPanel>
+						</StackPanel>
+					</GroupBox>
+					<GroupBox Header=""Sanity Engine"" IsEnabled=""{Binding Settings.SanityEngine}""
+							  VerticalAlignment=""Top"" Height=""65"">
+						<StackPanel Orientation=""Horizontal"">
+							<Label>Insane Counter:</Label>
+							<Label Content=""{Binding Stats.InsaneCounter}"" />
+						</StackPanel>
+					</GroupBox>
+					<GroupBox Header=""Custom Looting"" IsEnabled=""{Binding Settings.CustomLooting}""
+							  VerticalAlignment=""Top"" Height=""65"">
+						<StackPanel Orientation=""Horizontal"">
+							<Label>Time Saved:</Label>
+							<Label Content=""{Binding Stats.TimeSaved}"" ContentStringFormat=""{}{0:hh}h {0:mm}m {0:ss}s""/>
+						</StackPanel>
+					</GroupBox>
+					<GroupBox Header=""Afk Mode"" IsEnabled=""{Binding Settings.AfkMode}"">
+						<StackPanel>
+							<StackPanel Orientation=""Horizontal"">
+								<Label>Deleted Items:</Label>
+								<Label Content=""{Binding Stats.DeletedItems}"" />
+							</StackPanel>
+							<StackPanel Orientation=""Horizontal"">
+								<Label>Opened Items:</Label>
+								<Label Content=""{Binding Stats.OpenedItems}"" />
+							</StackPanel>
+							<StackPanel Orientation=""Horizontal"">
+								<Label>Quest Log Cleanups:</Label>
+								<Label Content=""{Binding Stats.QuestlogCleanups}"" />
+							</StackPanel>
+							<StackPanel Orientation=""Horizontal"">
+								<Label>Sold Items:</Label>
+								<Label Content=""{Binding Stats.SoldItems}"" />
+							</StackPanel>
+						</StackPanel>
+					</GroupBox>
+				</WrapPanel>
+			</TabItem>
+			<TabItem Header=""Settings"">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height=""3*"" />
+						<RowDefinition Height=""*"" />
+					</Grid.RowDefinitions>
+					<GroupBox Header=""General"" Grid.Row=""0"" Margin=""10"">
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width=""*"" />
+								<ColumnDefinition Width=""*"" />
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height=""*"" />
+								<RowDefinition Height=""*"" />
+								<RowDefinition Height=""*"" />
+								<RowDefinition Height=""*"" />
+							</Grid.RowDefinitions>
+							<CheckBox Content=""Use Anti-Stuck"" Grid.Column=""0"" Grid.Row=""0"" Margin=""10, 2, 0, 0""
+									  IsChecked=""{Binding Settings.UseAntiStuck}"">
+								<CheckBox.ToolTip>
+									<TextBlock>
+										Utilizes a short-term and long-term custom antistuck method.
+										<LineBreak />
+										- Short-term antistuck will make the bot back off of the stuck location and blackspot it from the navigation system so the bot will calculate a new path.
+										<LineBreak />
+										- Long-term antistuck will make the bot use the Hearthstone(s) to get out of the location and will reload the profile.
+									</TextBlock>
+								</CheckBox.ToolTip>
+							</CheckBox>
+							<CheckBox Content=""Find Treasure Chests"" Grid.Column=""0"" Grid.Row=""1"" Margin=""10, 2, 0, 0""
+									  IsChecked=""{Binding Settings.FindTreasureChests}"">
+								<CheckBox.ToolTip>
+									<TextBlock>
+										Actively looks for treasure chests around the player and loots them.
+										<LineBreak />
+										Treasure chests typically give you a large amount of experience and a blue item.
+									</TextBlock>
+								</CheckBox.ToolTip>
+							</CheckBox>
+							<CheckBox Content=""Custom Looting"" Grid.Column=""0"" Grid.Row=""2"" Margin=""10, 2, 0, 0""
+									  IsChecked=""{Binding Settings.CustomLooting}"">
+								<CheckBox.ToolTip>
+									<TextBlock>
+										Only loot quest-related NPCs.
+										<TextBlock />
+										Does NOT work in Outland and Northrend expansion zones.
+									</TextBlock>
+								</CheckBox.ToolTip>
+							</CheckBox>
+							<CheckBox Content=""Use Active Vendoring"" Grid.Column=""0"" Grid.Row=""3"" Margin=""10, 2, 0, 0""
+									  IsChecked=""{Binding Settings.UseActiveVendoring}"">
+								<CheckBox.ToolTip>
+									<TextBlock>
+										Looks for vendors close to the player and will use them if your bags are under a set percentage of remaining slots.
+										<LineBreak />
+										This will prevent the bot from leaving a town with a low bag slot count as often the bot will do this,
+										<LineBreak />
+										and end up running back to town before quests are complete which wastes time.
+									</TextBlock>
+								</CheckBox.ToolTip>
+							</CheckBox>
+							<CheckBox Content=""Afk Mode"" Grid.Column=""1"" Grid.Row=""0"" Margin=""10, 2, 0, 0""
+									  IsChecked=""{Binding Settings.AfkMode}"">
+								<CheckBox.ToolTip>
+									<TextBlock>
+										Sells everything in your bags when visiting a vendor, deletes items that can't be sold, and opens openable items.
+										<LineBreak />
+										Also keeps the quest log clean so it doesn't get full and reacts to players around you.
+									</TextBlock>
+								</CheckBox.ToolTip>
+							</CheckBox>
+							<CheckBox Content=""Sanity Engine"" Grid.Column=""1"" Grid.Row=""1"" Margin=""10, 2, 0, 0""
+									  IsChecked=""{Binding Settings.SanityEngine}"">
+								<CheckBox.ToolTip>
+									<TextBlock>
+										Looks for bugs and tries to fix them as the bot is running.
+										<LineBreak />
+										Some bugs include sticky quest frames, pick up / turn in quest failures, NPC phasing issues, etc.
+									</TextBlock>
+								</CheckBox.ToolTip>
+							</CheckBox>
+							<CheckBox Content=""Hunt Rare Mobs"" Grid.Column=""1"" Grid.Row=""2"" Margin=""10, 2, 0, 0""
+									  IsChecked=""{Binding Settings.HuntRareMobs}""
+									  ToolTip=""Actively kills rares as they are detected near the bot."" />
+							<CheckBox Content=""Disable Addons"" Grid.Column=""1"" Grid.Row=""3"" Margin=""10, 2, 0, 0""
+									  IsChecked=""{Binding Settings.DisableAddons}"">
+								<CheckBox.ToolTip>
+									<TextBlock>
+										Some addons may cause problems with the bot.
+										<LineBreak/>
+										Only disable this if you know what you're doing.
+									</TextBlock>
+								</CheckBox.ToolTip>
+							</CheckBox>
+						</Grid>
+					</GroupBox>
+					<GroupBox Header=""Broken Isles (Legion)"" Grid.Row=""1"" Margin=""10"">
+						<Grid>
+							<CheckBox Content=""Use Artifact Power Items"" Grid.Column=""0"" Grid.Row=""0""
+									  Margin=""10, 2, 0, 0"" IsChecked=""{Binding Settings.UseArtifactPowerItems}""
+									  ToolTip=""Use Artifact Power items for the current weapon.""/>
+						</Grid>
+					</GroupBox>
+				</Grid>
+			</TabItem>
+			<TabItem Header=""Delete Items"">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width=""*"" />
+						<ColumnDefinition Width=""*"" />
+					</Grid.ColumnDefinitions>
+					<ListBox x:Name=""DeleteItemsListBox"" Grid.Column=""0"" Margin=""5""
+							 ItemsSource=""{Binding Settings.DeleteItems}"" />
+					<StackPanel Grid.Column=""1"" VerticalAlignment=""Center"">
+						<TextBox x:Name=""DeleteItemsTextBox"" Margin=""5, 0"" />
+						<Button x:Name=""DeleteItemsAddButton"" Margin=""70, 5"">Add</Button>
+						<Button x:Name=""DeleteItemsRemoveButton"" Margin=""70, 25, 70, 0"">Remove</Button>
+					</StackPanel>
+				</Grid>
+			</TabItem>
+			<TabItem Header=""Guild Bank Items"">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width=""*"" />
+						<ColumnDefinition Width=""*"" />
+					</Grid.ColumnDefinitions>
+					<ListBox x:Name=""GuildBankItemsListBox"" Grid.Column=""0"" Margin=""5""
+							 ItemsSource=""{Binding Settings.GuildBankItems}"" />
+					<StackPanel Grid.Column=""1"" VerticalAlignment=""Center"">
+						<TextBox x:Name=""GuildBankItemsTextBox"" Margin=""5, 0"" />
+						<Button x:Name=""GuildBankItemsAddButton"" Margin=""70, 5"">Add</Button>
+						<Button x:Name=""GuildBankItemsRemoveButton"" Margin=""70, 25, 70, 0"">Remove</Button>
+					</StackPanel>
+				</Grid>
+			</TabItem>
+		</my:MetroAnimatedTabControl>
+	</Grid>
+</UserControl>
+";
+
+	private static MahApps.Metro.Controls.MetroWindow s_configWindow;
+
+	private static System.Windows.Controls.UserControl s_settingsControl;
+
+	public static void ShowDialog()
+	{
+		s_settingsControl = (System.Windows.Controls.UserControl)System.Windows.Markup.XamlReader.Parse(ViewString);
+		s_settingsControl.DataContext = new SettingsVm();
+		s_settingsControl.Loaded += SettingsControlOnLoaded;
+
+		s_configWindow = new MahApps.Metro.Controls.MetroWindow
+		{
+			ShowIconOnTitleBar = true,
+			Title = "Quest Profile Config",
+			Content = s_settingsControl,
+			SizeToContent = System.Windows.SizeToContent.WidthAndHeight,
+			ResizeMode = System.Windows.ResizeMode.NoResize,
+			WindowTransitionsEnabled = true,
+			Icon = GetWaspIcon()
+		};
+
+		s_configWindow.Closed += (sender, args) =>
+		{
+			Settings.Instance.Save();
+			FancyLog.WriteYellow("> [Function Engine] ", "User settings saved");
+		};
+
+		((System.Windows.Controls.Button)s_settingsControl.FindName("DiscordButton")).Click += DiscordButtonOnClick;
+		((System.Windows.Controls.Button)s_settingsControl.FindName("ReportIssueButton")).Click += ReportIssueButtonOnClick;
+		((System.Windows.Controls.Button)s_settingsControl.FindName("GitHubButton")).Click += GitHubButtonOnClick;
+		((System.Windows.Controls.Button)s_settingsControl.FindName("DeleteItemsAddButton")).Click += DeleteItemsAddButtonOnClick;
+		((System.Windows.Controls.Button)s_settingsControl.FindName("DeleteItemsRemoveButton")).Click += DeleteItemsRemoveButtonOnClick;
+		((System.Windows.Controls.Button)s_settingsControl.FindName("GuildBankItemsAddButton")).Click += GuildBankItemsAddButtonOnClick;
+		((System.Windows.Controls.Button)s_settingsControl.FindName("GuildBankItemsRemoveButton")).Click += GuildBankItemsRemoveButtonOnClick;
+
+		s_configWindow.ShowDialog();
+	}
+
+	private static async void DeleteItemsAddButtonOnClick(object sender, System.Windows.RoutedEventArgs routedEventArgs)
+	{
+		var deleteItemsTextBox = (System.Windows.Controls.TextBox)s_settingsControl.FindName("DeleteItemsTextBox");
+		string newItem = deleteItemsTextBox.Text;
+		if (string.IsNullOrWhiteSpace(newItem))
+		{
+			await ShowMessageAsync("Item Name is Empty", "Enter an item to add");
+			return;
+		}
+
+		if (Settings.Instance.DeleteItems.Contains(newItem))
+		{
+			await ShowMessageAsync("Item Already Exists", "Delete items already contains " + newItem);
+			deleteItemsTextBox.Clear();
+			return;
+		}
+
+		Settings.Instance.DeleteItems.Add(newItem);
+		deleteItemsTextBox.Clear();
+	}
+
+	private static async void DeleteItemsRemoveButtonOnClick(object sender, System.Windows.RoutedEventArgs routedEventArgs)
+	{
+		var deleteItemsListBox = (System.Windows.Controls.ListBox)s_settingsControl.FindName("DeleteItemsListBox");
+		if (deleteItemsListBox.SelectedIndex == -1)
+		{
+			await ShowMessageAsync("No Item Selected", "Select an item to delete");
+			return;
+		}
+
+		Settings.Instance.DeleteItems.RemoveAt(deleteItemsListBox.SelectedIndex);
+	}
+
+	private static async void DiscordButtonOnClick(object sender, System.Windows.RoutedEventArgs routedEventArgs)
+	{
+		if (await ShowMessageAsync("Continue to external site?",
+								   "https://discord.gg/H3extPY is not an official Bossland site",
+								   MahApps.Metro.Controls.Dialogs.MessageDialogStyle.AffirmativeAndNegative))
+			Process.Start("https://discord.gg/H3extPY");
+	}
+
+	private static System.Windows.Media.Imaging.BitmapImage GetWaspIcon()
+	{
+		System.Windows.Resources.StreamResourceInfo resourceStream =
+			System.Windows.Application.GetResourceStream(new Uri("/Honorbuddy;component/Images/HbWasp.ico", UriKind.Relative));
+		var bitmap = new System.Windows.Media.Imaging.BitmapImage();
+		bitmap.BeginInit();
+		bitmap.StreamSource = resourceStream.Stream;
+		bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+		bitmap.EndInit();
+		bitmap.Freeze();
+		return bitmap;
+	}
+
+	private static async void GitHubButtonOnClick(object sender, System.Windows.RoutedEventArgs routedEventArgs)
+	{
+		if (await ShowMessageAsync("Continue to external site?",
+								   "https://github.com/BosslandGmbH/Honorbuddy-Profiles"
+								   + "\n/commits/master is not an official Bossland site",
+								   MahApps.Metro.Controls.Dialogs.MessageDialogStyle.AffirmativeAndNegative))
+			Process.Start("https://github.com/BosslandGmbH/Honorbuddy-Profiles/commits/master");
+	}
+
+	private static async void GuildBankItemsAddButtonOnClick(object sender, System.Windows.RoutedEventArgs routedEventArgs)
+	{
+		var guildBankItemsTextBox = (System.Windows.Controls.TextBox)s_settingsControl.FindName("GuildBankItemsTextBox");
+		string newItem = guildBankItemsTextBox.Text;
+		if (string.IsNullOrWhiteSpace(newItem))
+		{
+			await ShowMessageAsync("Item Name is Empty", "Enter an item to add");
+			return;
+		}
+
+		if (Settings.Instance.GuildBankItems.Contains(newItem))
+		{
+			await ShowMessageAsync("Item Already Exists", "Guild bank items already contains " + newItem);
+			guildBankItemsTextBox.Clear();
+			return;
+		}
+
+		Settings.Instance.GuildBankItems.Add(newItem);
+		guildBankItemsTextBox.Clear();
+	}
+
+	private static async void GuildBankItemsRemoveButtonOnClick(object sender, System.Windows.RoutedEventArgs routedEventArgs)
+	{
+		var guildBankListBox = (System.Windows.Controls.ListBox)s_settingsControl.FindName("GuildBankItemsListBox");
+		if (guildBankListBox.SelectedIndex == -1)
+		{
+			await ShowMessageAsync("No Item Selected", "Select an item to delete");
+			return;
+		}
+
+		Settings.Instance.GuildBankItems.RemoveAt(guildBankListBox.SelectedIndex);
+	}
+
+	private static async void ReportIssueButtonOnClick(object sender, System.Windows.RoutedEventArgs routedEventArgs)
+	{
+		if (await ShowMessageAsync("Continue to The Buddy Forum?",
+								   "https://www.thebuddyforum.com/threads"
+								   + "\n/official-honorbuddy-mega-profile-pack-lvl-1-to-110.131188",
+								   MahApps.Metro.Controls.Dialogs.MessageDialogStyle.AffirmativeAndNegative))
+			Process.Start("https://www.thebuddyforum.com/threads/official-honorbuddy-mega-profile-pack-lvl-1-to-110.131188");
+	}
+
+	private static async void SettingsControlOnLoaded(object sender, System.Windows.RoutedEventArgs routedEventArgs)
+	{
+		var changelogTextBox = (System.Windows.Controls.RichTextBox)s_settingsControl.FindName("ChangelogTextBox");
+		await changelogTextBox.Dispatcher.BeginInvoke(new Action(async () =>
+		{
+			changelogTextBox.Selection.Text = "Loading changelog...";
+			using (var client = new System.Net.WebClient())
+			{
+				string changelog = await client.DownloadStringTaskAsync("https://cdn.pook.io/questing/changelog.rtf");
+				using (var stream = new MemoryStream(System.Text.Encoding.Default.GetBytes(changelog)))
 				{
-					public Settings()
-						: base(Path.Combine(CharacterSettingsDirectory, "QuestSettings.json"))
-					{
-						Load();
-					}
-
-					/// <summary>
-					///     Sells everything in your bags when visiting a vendor, deletes items that can't be sold, and opens openable items.
-					///     Also keeps the quest log clean so it doesn't get full and reacts to players around you.
-					/// </summary>
-					public bool AfkMode { get; set; } = false;
-
-					/// <summary>
-					///     Only loot quest-related NPCs.  Does NOT work in Outland and Northrend expansion zones.
-					/// </summary>
-					public bool CustomLooting { get; set; } = false;
-
-					/// <summary>
-					///     Actively kills rares as they are detected near the bot.
-					/// </summary>
-					public bool HuntRareMobs { get; set; } = true;
-
-					/// <summary>
-					///     Actively looks for treasure chests around the player and loots them.
-					///     Treasure chests typically give you a large amount of experience and a blue item.
-					/// </summary>
-					public bool FindTreasureChests { get; set; } = true;
-
-					/// <summary>
-					///     Looks for bugs and tries to fix them as the bot is running.
-					///     Some bugs include sticky quest frames, pick up / turn in quest failures, NPC phasing issues, etc.
-					/// </summary>
-					public bool SanityEngine { get; set; } = true;
-
-					/// <summary>
-					///     Utilizes a short-term and long-term custom antistuck method.
-					///     Short-term antistuck will make the bot back off of the stuck location and blackspot it from the navigation system so the bot will calculate a new path.
-					///     Long-term antistuck will make the bot use the Hearthstone(s) to get out of the location and will reload the profile.
-					/// </summary>
-					public bool UseAntiStuck { get; set; } = true;
-
-					/// <summary>
-					///     Looks for vendors close to the player and will use them if your bags are under a set percentage of remaining slots.
-					///     This will prevent the bot from leaving a town with a low bagslot count as often the bot will do this, and end up running back to town before quests are complete which wastes time.
-					/// </summary>
-					public bool UseActiveVendoring { get; set; } = true;
-
-					// TODO: Add RAF invite names?
+					changelogTextBox.Selection.Load(stream, System.Windows.DataFormats.Rtf);
 				}
-			]]>
-			</Code>
-
-			<!--Settings View-->
-			<Code File="RunCode" Type="Definition">
-				<![CDATA[
-					public static class SettingsView
-					{
-						public const string ViewString = @"
-						<UserControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-							xmlns:d=""http://schemas.microsoft.com/expression/blend/2008""
-							xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-							xmlns:mc=""http://schemas.openxmlformats.org/markup-compatibility/2006""
-							xmlns:my=""http://metro.mahapps.com/winfx/xaml/controls""
-							xmlns:runCode=""clr-namespace:QuestSettings.RunCode""
-							mc:Ignorable=""d"" d:DataContext=""{d:DesignInstance runCode:SettingsViewModel}"">
-							<Grid Width=""500"">
-								<Grid.RowDefinitions>
-									<RowDefinition Height=""*""/>
-									<RowDefinition Height=""*""/>
-									<RowDefinition Height=""*""/>
-								</Grid.RowDefinitions>
-
-								<Image Grid.Row=""0"" Margin=""0, 0, 0, 5"" Source=""https://cdn.pook.io/questing/header.jpg""/>
-							
-								<Grid Grid.Row=""0"" HorizontalAlignment=""Left"" VerticalAlignment=""Top""> 
-									<Grid.RowDefinitions>
-										<RowDefinition Height=""*""/>
-										<RowDefinition Height=""*""/>
-									</Grid.RowDefinitions>
-									
-									<Canvas Grid.Row=""0""  HorizontalAlignment=""Center""  Height=""50"" Width=""50"">
-										<Path Fill=""#8C9EFF"" Data=""M40,12c0,0-4.585-3.588-10-4l-0.488,0.976C34.408,10.174,36.654,11.891,39,14&#10;&#9;c-4.045-2.065-8.039-4-15-4s-10.955,1.935-15,4c2.346-2.109,5.018-4.015,9.488-5.024L18,8c-5.681,0.537-10,4-10,4s-5.121,7.425-6,22&#10;&#9;c5.162,5.953,13,6,13,6l1.639-2.185C13.857,36.848,10.715,35.121,8,32c3.238,2.45,8.125,5,16,5s12.762-2.55,16-5&#10;&#9;c-2.715,3.121-5.857,4.848-8.639,5.815L33,40c0,0,7.838-0.047,13-6C45.121,19.425,40,12,40,12z M17.5,30c-1.933,0-3.5-1.791-3.5-4&#10;&#9;c0-2.209,1.567-4,3.5-4s3.5,1.791,3.5,4C21,28.209,19.433,30,17.5,30z M30.5,30c-1.933,0-3.5-1.791-3.5-4c0-2.209,1.567-4,3.5-4&#10;&#9;s3.5,1.791,3.5,4C34,28.209,32.433,30,30.5,30z""/>
-									</Canvas>
-									<Label Grid.Row=""1""  HorizontalAlignment=""Center"" VerticalAlignment=""Top"" Foreground=""#8C9EFF"" Content=""Join us on Discord""/>
-								</Grid>
-							
-							
-							<Grid Grid.Row=""1"">
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width=""*""/>
-									<ColumnDefinition Width=""*""/>
-								</Grid.ColumnDefinitions>
-								<Grid.RowDefinitions>
-									<RowDefinition Height=""*""/>
-									<RowDefinition Height=""*""/>
-									<RowDefinition Height=""*""/>
-									<RowDefinition Height=""*""/>
-								</Grid.RowDefinitions>
-
-								<CheckBox Content=""Use Anti-Stuck"" ToolTip=""Utilizes a short-term and long-term custom antistuck method. Short-term antistuck will make the bot back off of the stuck location and blackspot it from the navigation system so the bot will calculate a new path. Long-term antistuck will make the bot use the Hearthstone(s) to get out of the location and will reload the profile."" Grid.Column=""0"" Grid.Row=""0"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.UseAntiStuck}""/>
-								<CheckBox Content=""Find Treasure Chests"" ToolTip=""Actively looks for treasure chests around the player and loots them. Treasure chests typically give you a large amount of experience and a blue item."" Grid.Column=""0"" Grid.Row=""1"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.FindTreasureChests}""/>
-								<CheckBox Content=""Custom Looting"" ToolTip=""Only loot quest-related NPCs.  Does NOT work in Outland and Northrend expansion zones."" Grid.Column=""0"" Grid.Row=""2"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.CustomLooting}""/>
-								<CheckBox Content=""Use Active Vendoring"" ToolTip=""Looks for vendors close to the player and will use them if your bags are under a set percentage of remaining slots. This will prevent the bot from leaving a town with a low bagslot count as often the bot will do this, and end up running back to town before quests are complete which wastes time."" Grid.Column=""0"" Grid.Row=""3"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.UseActiveVendoring}""/>
-								<CheckBox Content=""Afk Mode"" ToolTip=""Sells everything in your bags when visiting a vendor, deletes items that can't be sold, and opens openable items. Also keeps the quest log clean so it doesn't get full and reacts to players around you."" Grid.Column=""1"" Grid.Row=""0"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.AfkMode}""/>
-								<CheckBox Content=""Sanity Engine"" ToolTip=""Looks for bugs and tries to fix them as the bot is running. Some bugs include sticky quest frames, pick up / turn in quest failures, NPC phasing issues, etc."" Grid.Column=""1"" Grid.Row=""1"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.SanityEngine}""/>
-								<CheckBox Content=""Hunt Rare Mobs"" ToolTip=""Actively kills rares as they are detected near the bot."" Grid.Column=""1"" Grid.Row=""2"" Margin=""10, 2, 0, 0"" IsChecked=""{Binding Model.HuntRareMobs}""/>
-							</Grid>
-
-							<my:MetroAnimatedTabControl Grid.Row=""2"" Margin=""0, 5, 0, 1"" Height=""314"">
-								<TabItem Header=""Changelog"">
-									<RichTextBox Name=""ChangeLogTextBox"" IsReadOnly=""True"" BorderThickness=""0"" VerticalScrollBarVisibility=""Auto""/>
-								</TabItem>
-								<TabItem Header=""Delete Items""/>
-								<TabItem Header=""Guild Bank Items""/>
-							</my:MetroAnimatedTabControl>
-							</Grid>
-						</UserControl>";
-					}
-				]]>
-			</Code>
-
-			<!--Settings View Model-->
-			<Code File="RunCode" Type="Definition">
-				<![CDATA[
-					public class SettingsViewModel
-					{
-						public Settings Model => Settings.Instance;
-
-						public static void ShowWindow()
-						{
-							var settingsControl = (System.Windows.Controls.UserControl)System.Windows.Markup.XamlReader.Parse(SettingsView.ViewString);
-							var viewModel = new SettingsViewModel();
-							settingsControl.DataContext = viewModel;
-
-							var window = new MahApps.Metro.Controls.MetroWindow { ShowIconOnTitleBar = true, Title = "Quest Profile Config", Content = settingsControl, SizeToContent = System.Windows.SizeToContent.WidthAndHeight , ResizeMode = System.Windows.ResizeMode.NoResize };
-							window.WindowTransitionsEnabled = true;
-
-							System.Windows.Resources.StreamResourceInfo resourceStream = System.Windows.Application.GetResourceStream(new Uri("/Honorbuddy;component/Images/HbWasp.ico", UriKind.Relative));
-					
-							using (var stream = resourceStream.Stream)
-							{ 
-								var bitmap = new System.Windows.Media.Imaging.BitmapImage();
-								bitmap.BeginInit();
-								bitmap.StreamSource = resourceStream.Stream;
-								bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
-								bitmap.EndInit();
-								bitmap.Freeze();
-								window.Icon = bitmap;
-							}
-							
-							var changeLogTextBox = (System.Windows.Controls.RichTextBox)settingsControl.FindName("ChangeLogTextBox");
-							if (changeLogTextBox == null) FancyLog(Colors.MediumPurple, "> [Function Engine] ", Colors.Yellow, "Changelog failed to load!");
-															
-							SetChangeLog(changeLogTextBox);
-															
-							window.Closed += (sender, args) => 
-							{
-									viewModel.Model.Save();
-									FancyLog(Colors.MediumPurple, "> [Function Engine] ", Colors.Yellow, "User settings saved!");
-							};
-		
-							window.ShowDialog();
-						}
-		
-						private static void SetChangeLog(System.Windows.Controls.RichTextBox changelogTextBox)
-						{
-							using (var client = new System.Net.WebClient())
-							{
-								string str = client.DownloadString("https://cdn.pook.io/questing/changelog.rtf");
-								using (var stream = new MemoryStream(System.Text.Encoding.Default.GetBytes(str)))
-								{
-									changelogTextBox.Selection.Load(stream, System.Windows.DataFormats.Rtf);
-								}
-							}
-						}
-					}
-				]]>
-			</Code>
-		<!-- END Profile Config -->
-
-		<!-- Functions -->
-			<!-- Tell Honorbuddy that the functions are running. -->
-				<Code File="RunCode" >
-				<![CDATA[
-					AppDomain.CurrentDomain.SetData("QuestingProfiles_FunctionsEnabled", true);
-					AppDomain.CurrentDomain.SetData("QuestingProfiles_AntiStuckToggle", true);
-				]]>
-				</Code>
-			<!-- END Tell Honorbuddy that the functions are running. -->
-
-			<!-- Get AppData information -->
-				<Code File="RunCode" Code="AppDomain.CurrentDomain.SetData(&quot;Questing_AFKModeWhitelist&quot;, new List&lt;uint&gt;{0});" />
-				<Code File="RunCode" Type="Definition" >
-					<![CDATA[
-						static bool? antiStuckToggle => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_AntiStuckToggle");
-						static List<uint> afkModeWhitelist = (List<uint>)AppDomain.CurrentDomain.GetData("Questing_AFKModeWhitelist");
-					]]>
-				</Code>
-			<!-- END Get AppData information -->
-
-			<!-- Main Function Pulser -->
-				<Code File="RunCode">
-				<![CDATA[
-					TreeHooks.Instance.InsertHook("Questbot_Main", 0,
-						_activateFunctionsComposite ?? (_activateFunctionsComposite = new CommonBehaviors.Actions.ActionRunCoroutine(ctx => FunctionPulser())));	
-				]]>
-				</Code>
-				<Code File="RunCode" Type="Definition" ><![CDATA[
-					private static Styx.TreeSharp.Composite _activateFunctionsComposite;
-					private static Stopwatch _mainPulseTimer = new Stopwatch();
-					private static bool _treasureFunctionRunning = false;
-
-					private async Task<bool> FunctionPulser()
-					{
-
-						if (!_mainPulseTimer.IsRunning)	_mainPulseTimer.Start();
-						if (StyxWoW.Me == null || !StyxWoW.Me.IsValid || Me.InVehicle || Me.OnTaxi) return false;
-
-						if (Settings.Instance.AfkMode && MerchantFrame.Instance.IsVisible) await AFKMode();
-						if (Settings.Instance.FindTreasureChests && _treasureFunctionRunning && BotPoi.Current.Type != PoiType.Kill && BotPoi.Current.Type != PoiType.Loot && Me.IsAlive && !Me.IsActuallyInCombat)
-						{
-							await TreasureHunter();
-							return true;
-						}
-
-						if (_mainPulseTimer.Elapsed < TimeSpan.FromSeconds(5)) return false;
-						_mainPulseTimer.Restart();
-
-						if (Settings.Instance.AfkMode) await AFKMode();
-						if (Settings.Instance.SanityEngine) await SanityEngine();
-						if (Settings.Instance.UseAntiStuck) await CustomAntiStuck.StuckHandler();
-						if (Settings.Instance.UseActiveVendoring) ActiveVendorLogic();
-						if (Settings.Instance.FindTreasureChests) await TreasureHunter();
-
-						return false;
-					}
-				]]>
-				</Code>
-				<!-- <Code File="RunCode" Code="BotEvents.OnBotStopped += ShutDownFunctionsOnStop;" /> -->
-				<Code File="RunCode" Code="Logging.OnLogMessage += LogMonitorFunction;" />
-			<!-- END Main Function Pulser -->
-
-			<!-- Rare, Looting and Treasure Filters -->
-				<Code File="RunCode" ><![CDATA[
-					Targeting.Instance.IncludeTargetsFilter += IncludeRareTargetingFilter;
-					LootTargeting.Instance.RemoveTargetsFilter += IncludeCustomLootingFilter;
-				]]>
-				</Code>
-			<!-- END Rare, Looting and Treasure Filters -->
-
-			<!-- Main Function Definitions -->
-				<Code File="RunCode" Type="Definition" ><![CDATA[
-					private async void LogMonitorFunction(System.Collections.ObjectModel.ReadOnlyCollection<Logging.LogMessage> messages)
-					{
-						foreach (var message in messages)
-						{
-							if (message.Message.Contains("Bot stopping!"))
-							{
-								if (message.Message.Contains("User pressed the stop button") || message.Message.Contains("Nothing more to do"))
-								{
-									OutputFunctionStats();
-									TreeHooks.Instance.RemoveHook("Questbot_Main", _activateFunctionsComposite);
-									Targeting.Instance.IncludeTargetsFilter -= IncludeRareTargetingFilter;
-									LootTargeting.Instance.RemoveTargetsFilter -= IncludeCustomLootingFilter;
-									System.Windows.Application.Current.Dispatcher.Invoke(ProfileConfig.RemoveButton);
-									AppDomain.CurrentDomain.SetData("QuestingProfiles_FunctionsEnabled", false);
-
-									FancyLog(Colors.MediumPurple, "[Function Engine]", Colors.Yellow, " User stopped the bot or there's nothing else to do.  Shutting down.");
-									Logging.OnLogMessage -= LogMonitorFunction;
-								}
-
-								if (!Settings.Instance.SanityEngine)
-									return;
-
-								_insaneCounter ++;
-
-								if (message.Message.Contains("after 20 seconds"))
-								{
-									FancyLog(Colors.MediumPurple, "[Sanity Engine]", Colors.Yellow, " The bot was shutdown by a quest PickUp/TurnIn failure!  Attempting to fix this..");
-									Lua.DoString("ReloadUI();");
-									await Task.Delay(5000);
-									TreeRoot.Start();
-								}
-
-								if (message.Message.Contains("Fatal error"))
-								{
-									FancyLog(Colors.MediumPurple, "[Sanity Engine]", Colors.Yellow, " Bot was stopped due to a fatal error! Attempting to start it again.");
-									await Task.Delay(2000);
-									TreeRoot.Start();
-								}
-							}
-						}
-					}
-
-					private static void OutputFunctionStats()
-					{
-						if (Settings.Instance.AfkMode)
-						FancyLog(Colors.MediumPurple, "> [AFKMode] ", Colors.CornflowerBlue, $"\n     Items Deleted		:: {_deletedItems}\n     Items Opened		:: {_openedItems}\n     Items Sold		:: {_sellAllItems}\n     Questlog Cleanups	:: {_questlogCleanups}\n");
-
-						if (Settings.Instance.UseActiveVendoring)
-						FancyLog(Colors.MediumPurple, "> [Active Vendoring] ", Colors.CornflowerBlue, $"\n     Times Force Vendored	:: {_timesForceVendored}\n");
-
-						if (Settings.Instance.CustomLooting)
-						FancyLog(Colors.MediumPurple, "> [Custom Looting] ", Colors.CornflowerBlue, $"\n     Time Saved		:: {Honorbuddy.QuestBehaviorCore.Utility.PrettyTime(TimeSaved).ToString()}\n");
-
-						if (Settings.Instance.UseAntiStuck)
-						FancyLog(Colors.MediumPurple, "> [Anti Stuck] ", Colors.CornflowerBlue, $"\n     Short-Term Stucks	:: {_shortTermStucks}\n     Long-Term Stucks	:: {_longTermStucks}\n");
-
-						if (Settings.Instance.HuntRareMobs)
-						FancyLog(Colors.MediumPurple, "> [Rare Killer] ", Colors.CornflowerBlue, $"\n     Rares Killed		:: {_raresKilled}\n");
-
-						if (Settings.Instance.FindTreasureChests)
-						FancyLog(Colors.MediumPurple, "> [Treasure Hunter] ", Colors.CornflowerBlue, $"\n     Treasures Found	:: {_treasuresFound}\n");
-
-						if (Settings.Instance.SanityEngine)
-						FancyLog(Colors.MediumPurple, "> [Sanity Engine] ", Colors.CornflowerBlue, $"\n     Times Went Insane	:: {_insaneCounter}\n");
-					}
-
-					private static void FancyLog(System.Windows.Media.Color colorOne, string messageOne, System.Windows.Media.Color colorTwo, string messageTwo)
-					{
-						Bots.Professionbuddy.PBLog.Log(colorOne, $"{messageOne}", colorTwo, $"{messageTwo}");
-					}
-				]]>
-				</Code>
-			<!-- END Main Function Definitions -->
-
-			<!-- AFK Mode -->
-				<Code File="RunCode" Type="Definition" ><![CDATA[
-						private static int _deletedItems = 0;
-						private static int _sellAllItems = 0;
-						private static int _openedItems = 0;
-						private static int _questlogCleanups = 0;
-						private static int _playerReactions = 0;
-
-						private async Task<bool> AFKMode()
-						{
-							if (QuestLog.Instance.GetAllQuests().Count() >= 20)
-							{
-								FancyLog(Colors.MediumPurple, "[AFK Mode]: ", Colors.Yellow, "Cleaning up questlog of low level quests since it is almost full.");
-								var levelDeficit = Me.Level - 3;
-
-								foreach (PlayerQuest quest in QuestLog.Instance.GetAllQuests())
-								{
-									if (quest.Level == -1 && Me.Level == 110)
-										continue;
-									if (quest.Level >= levelDeficit)
-										continue;
-
-									FancyLog(Colors.MediumPurple, "[AFK Mode]: ", Colors.Yellow, $"Abandoning quest: {quest.Name}");
-									QuestLog.Instance.AbandonQuestById(quest.Id);
-								}
-
-								_questlogCleanups ++;
-							}
-
-							if (!Me.IsAlive || Me.IsActuallyInCombat) return false;
-
-							var inventoryManager = Me.BagItems;
-
-							if (inventoryManager.Any(item => item.IsOpenable))
-							{
-								var openList = inventoryManager.Where(item => item.IsOpenable);
-								foreach (WoWItem openMe in openList)
-								{
-									FancyLog(Colors.MediumPurple, "[AFK Mode]: ", Colors.Yellow, $"Opening > {openMe.Name}.");
-									openMe.Use();
-									await Coroutine.Wait(1000, () => LootFrame.Instance.IsVisible);
-									LootFrame.Instance.LootAll();
-									await Coroutine.Wait(3000, () => !LootFrame.Instance.IsVisible);
-									_openedItems ++;
-								}
-							}
-
-							if (inventoryManager.Any(item => item.ItemInfo.SellPrice == 00 && item.GetEffect(0) == null && (item.ItemInfo.Bond == WoWItemBondType.None || (item.ItemInfo.BeginQuestId != 0 && item.ItemInfo.RequiredLevel < (Me.Level - 5))) && !afkModeWhitelist.Contains(item.Entry)))
-							{
-								var deleteList = inventoryManager.Where(item => item.ItemInfo.SellPrice == 00 && item.GetEffect(0) == null && (item.ItemInfo.Bond == WoWItemBondType.None || (item.ItemInfo.BeginQuestId != 0 && item.ItemInfo.RequiredLevel < (Me.Level - 5))));
-								foreach (WoWItem deleteMe in deleteList)
-								{
-									FancyLog(Colors.MediumPurple, "[AFK Mode]: ", Colors.Yellow, $"Force deleting > {deleteMe.Name}.");
-									deleteMe.PickUp();
-									Lua.DoString("DeleteCursorItem();");
-									_deletedItems ++;
-								}
-							}
-
-							if (MerchantFrame.Instance.IsVisible)
-							{
-								var sellList = inventoryManager.Where(item => item.ItemInfo.SellPrice != 0 && !afkModeWhitelist.Contains(item.Entry));
-								foreach (WoWItem sellMe in sellList)
-								{
-									if (!MerchantFrame.Instance.IsVisible) break;
-									if (!sellMe.IsValid) continue;
-
-									FancyLog(Colors.MediumPurple, "[AFK Mode]: ", Colors.Yellow, $"Force selling > {sellMe.Name}.");
-									sellMe.UseContainerItem();
-									await Coroutine.Sleep(500);
-									_sellAllItems ++;
-								}
-							}
-
-							return false;
-						}
-				]]>
-				</Code>
-			<!-- END AFK Mode -->
-
-			<!-- Anti-Stuck -->
-				<Code File="RunCode" Type="Definition"><![CDATA[
-					private static int _shortTermStucks = 0;
-					private static int _longTermStucks = 0;
-
-					private static class CustomAntiStuck
-					{
-						private static bool _useAntiStuck = true;
-						private static Stopwatch _antiStuckTimerLongTerm = new Stopwatch();
-
-						private static Vector3 LastPointLong = new Vector3(0f,0f,0f);
-						private static Vector3 LastPointShort = new Vector3(0f,0f,0f);
-
-						public static async Task<bool> StuckHandler()
-						{
-							if (antiStuckToggle == null || antiStuckToggle == false)
-								return false;
-
-							if (!_antiStuckTimerLongTerm.IsRunning)
-								_antiStuckTimerLongTerm.Start();
-
-							if (_antiStuckTimerLongTerm.Elapsed > TimeSpan.FromMinutes(5))
-							{
-								_antiStuckTimerLongTerm.Restart();
-								if (IsStuck(false))
-								{
-									WoWItem hearthItem = null;
-
-									if (StyxWoW.Me.CurrentMap.ExpansionId == 5 && StyxWoW.Me.BagItems.Any(x => x.Entry == 110560)) // WoD Hearth
-										hearthItem = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 110560);
-									else if (StyxWoW.Me.CurrentMap.ExpansionId == 6 && StyxWoW.Me.BagItems.Any(x => x.Entry == 140192)) // Broken Isles Dalaran Hearth
-										hearthItem = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
-									else 
-										hearthItem = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 6948); // Normal Hearth
-
-									if (hearthItem == null) return false;
-
-									uint currentMapId = StyxWoW.Me.MapId;
-
-									_longTermStucks ++;
-									FancyLog(Colors.MediumPurple, "[Anti-Stuck]: ", Colors.Yellow, "Long-term stuck detection activated!");
-									await CommonCoroutines.StopMoving();
-									await CommonCoroutines.LandAndDismount();
-
-									if (hearthItem.CooldownTimeLeft != TimeSpan.Zero)
-									{
-										FancyLog(Colors.MediumPurple, "[Anti-Stuck]: ", Colors.Yellow, "Awaiting Hearthstone cooldown before attempting hearth!");
-										await Coroutine.Wait(901000, () => hearthItem.CooldownTimeLeft == TimeSpan.Zero);
-									}
-									hearthItem.Interact();
-									await Coroutine.Sleep(11500);
-									FancyLog(Colors.MediumPurple, "[Anti-Stuck]: ", Colors.Yellow, "Reloading profile.");
-
-									if (StyxWoW.Me.MapId != currentMapId)
-									{
-										FancyLog(Colors.MediumPurple, "[Anti-Stuck]: ", Colors.Yellow, "Our map location has changed, loading the autoloaders.");
-										string profilePath =  Path.GetDirectoryName(ProfileManager.XmlLocation) + "/../../1-110 Autoloader.xml";
-										string absolutePath = Path.GetFullPath(profilePath);
-										ProfileManager.LoadNew(absolutePath);
-									}
-									else
-										ProfileManager.LoadNew(ProfileManager.XmlLocation);
-
-									await Coroutine.Sleep(5000);
-									_antiStuckTimerLongTerm.Restart();
-									return true;
-								}
-								return false;
-							}
-
-							if (IsStuck(true)) 
-							{								
-								if (!StyxWoW.Me.IsMoving)
-								{
-									LastPointShort = new Vector3(0f,0f,0f);
-									return false;
-								}
-
-								_shortTermStucks ++;
-								FancyLog(Colors.MediumPurple, "[Anti-Stuck]: ", Colors.Yellow, "Short-term stuck detection activated!");
-								await CommonCoroutines.StopMoving();
-								Navigator.Clear();
-								if (StyxWoW.Me.IsFlying)
-								{
-									WoWMovement.Move(WoWMovement.MovementDirection.Backwards, TimeSpan.FromMilliseconds(2000));
-									BlackspotManager.AddBlackspot(new Blackspot(LastPointShort, 2.5f, 2.5f));
-									await Coroutine.Sleep(2000);
-								}
-								else
-								{
-									WoWMovement.Move(WoWMovement.MovementDirection.Backwards, TimeSpan.FromMilliseconds(1000));
-									BlackspotManager.AddBlackspot(new Blackspot(LastPointShort, 2.5f, 2.5f));
-								}
-								return true;
-							}
-							return false;
-						}
-
-						private static bool IsStuck(bool shortTerm)
-						{
-							if (!_useAntiStuck) return false; 
-							if (StyxWoW.Me.IsDead) return false;
-							if (StyxWoW.Me.IsActuallyInCombat) return false;
-							if (StyxWoW.Me.HasAura("Resurrection Sickness")) return false;
-
-							var currentPoint = StyxWoW.Me.Location;
-
-							if (shortTerm)
-							{
-								bool isStuckShort = StyxWoW.Me.Location.DistanceSquared(LastPointShort) <= 2.5f * 2.5f;
-								LastPointShort = currentPoint;
-								return isStuckShort;
-							}
-							else if (!shortTerm)
-							{
-								bool isStuckLong = StyxWoW.Me.Location.DistanceSquared(LastPointLong) < 10f * 10f;
-								LastPointLong = currentPoint;
-								return isStuckLong;
-							}
-							return false;
-						}
-					}
-				]]>
-				</Code>
-			<!-- END Anti-Stuck -->
-
-			<!-- Custom Looting -->
-				<Code File="RunCode" Type="Definition" ><![CDATA[
-					static TimeSpan TimeSaved = TimeSpan.Zero;
-					static List<WoWGuid> TimerBlacklist = new List<WoWGuid>();
-
-					static bool IsNeededForQuestObjective(WoWUnit objectiveMob)
-					{
-						if (StyxWoW.Me.CurrentMap.ExpansionId == 1 || StyxWoW.Me.CurrentMap.ExpansionId == 2) return true; // Ignore Outlands and Northrend due to creature cache issues.
-						foreach (var playerQuest in Styx.WoWInternals.QuestLog.Instance.GetAllQuests())
-						{
-							if (playerQuest.IsCompleted || playerQuest.IsFailed)
-								continue;
-
-							var mainObjectives = playerQuest.GetObjectives();
-							var normalObjectives = playerQuest.NormalObjectiveRequiredCounts;
-
-							var allObjectiveIds = mainObjectives.Select(objective => objective.ID).ToList();
-							allObjectiveIds.AddRange(normalObjectives);
-
-							foreach (var objective in allObjectiveIds)
-							{
-								if (!objectiveMob.GetCachedInfo(out WoWCache.CreatureCacheEntry cacheEntry)) continue;
-								if (cacheEntry.QuestItems.ToList().Contains(objective))
-									return true;
-							}	
-						}
-						return false;
-					}
-
-					private static void IncludeCustomLootingFilter(List<WoWObject> lootUnits)
-					{
-						if (!Settings.Instance.CustomLooting)
-							return;
-
-						if (lootUnits.Any(unit => !TimerBlacklist.Contains(unit.Guid) && unit is WoWUnit && unit.ToUnit().Lootable))
-						{
-							foreach (WoWObject blacklistUnit in lootUnits)
-							{
-								if (!TimerBlacklist.Contains(blacklistUnit.Guid) && blacklistUnit is WoWUnit && blacklistUnit.ToUnit().Lootable)
-									TimerBlacklist.Add(blacklistUnit.Guid);
-							}
-							TimeSaved = TimeSaved.Add(TimeSpan.FromMilliseconds(2623));
-						}
-
-						lootUnits.RemoveAll(lootUnit => lootUnit is WoWUnit && lootUnit.ToUnit().Classification != WoWUnitClassificationType.Rare && !IsNeededForQuestObjective(lootUnit.ToUnit()));						
-					}
-				]]>
-				</Code>
-			<!-- END Custom Looting -->
-
-			<!-- Active Vendoring -->
-				<Code File="RunCode" Type="Definition" ><![CDATA[
-					private static int _timesForceVendored = 0;
-
-					private static void ActiveVendorLogic()
-					{
-						if (StyxWoW.Me.CurrentMap.ExpansionId == 6) return;
-						double bagslotTotal = StyxWoW.Me.FreeNormalBagSlots + StyxWoW.Me.BagItems.Count();
-						double bagslotPercentageDeficit = Math.Round((StyxWoW.Me.FreeNormalBagSlots/bagslotTotal)*100);
-						WoWUnit nearbyVendor = ObjectManager.GetObjectsOfType<WoWUnit>().FirstOrDefault(x => x.IsAlive && x.IsFriendly && x.IsAnyVendor && x.DistanceSqr <= 60f*60f);
-
-						if (Vendors.ForceSell || !(bagslotPercentageDeficit < 35) || nearbyVendor == null) return;
-
-						ProfileManager.CurrentProfile.VendorManager.ForcedVendors.Add(new Vendor((int)nearbyVendor.Entry, nearbyVendor.Name, Vendor.VendorType.Sell, nearbyVendor.Location, NavType.Run));
-						FancyLog(Colors.MediumPurple, "> [Active Vendoring] ", Colors.Yellow, "Forcing the bot to vendor since we're near a vendor.");
-						Vendors.ForceSell = true;
-						_timesForceVendored ++;
-					}
-				]]>
-				</Code>
-			<!-- END Active Vendoring -->
-
-			<!-- Rare Hunter -->
-				<Code File="RunCode" Type="Definition" ><![CDATA[
-					private static List<WoWGuid> _rareBlacklist = new List<WoWGuid>();
-					private static int _raresKilled = 0;
-
-					private static void IncludeRareTargetingFilter(List<WoWObject> incomingUnits, HashSet<WoWObject> outgoingUnits)
-					{
-						if (!Settings.Instance.HuntRareMobs)
-							return;
-
-						foreach (var rareUnit in incomingUnits)
-						{
-							if (!(rareUnit is WoWUnit) || BlackspotManager.IsBlackspotted(rareUnit.Location) ||
-								rareUnit.ToUnit().Classification != WoWUnitClassificationType.Rare || rareUnit.ToUnit().IsTagged ||
-								!rareUnit.ToUnit().Attackable) continue;
-							if (!_rareBlacklist.Contains(rareUnit.Guid))
-							{
-								_rareBlacklist.Add(rareUnit.ToUnit().Guid);
-								_raresKilled ++;
-								FancyLog(Colors.MediumPurple, "[Rare Killer]: ", Colors.CornflowerBlue, $"Rare detected near us!\n	Name     :: {rareUnit.ToUnit().Name}\n	Entry     :: {rareUnit.ToUnit().Entry}\n	Location :: {rareUnit.ToUnit().Location}");
-							}
-							outgoingUnits.Add(rareUnit);
-						}
-					}
-				]]>
-				</Code>
-			<!-- END Rare Hunter -->
-
-			<!-- Sanity Engine -->
-				<Code File="RunCode" Type="Definition" ><![CDATA[
-						private static int _insaneCounter = 0;
-
-						private async Task<bool> SanityEngine()
-						{
-							if (QuestFrame.Instance.IsVisible && QuestFrame.Instance.CurrentShownQuestId != 0 && Lua.GetReturnVal<bool>("return QuestFrameCompleteButton:IsVisible();", 0) && !Lua.GetReturnVal<bool>("return QuestFrameCompleteButton:IsEnabled();", 0))
-							{
-								//TurnIn bug where if the bot tries turning in the quest at the immediate second that the quest is completed, the quest will show on the frame as incomplete even though it is.
-								QuestFrame.Instance.Close();
-								FancyLog(Colors.MediumPurple, "> [Sanity Engine] ", Colors.CornflowerBlue, $"Sticky quest frame detected, closing it.");
-								_insaneCounter ++;
-							}
-							if (QuestFrame.Instance.IsVisible && QuestFrame.Instance.CurrentShownQuestId == 0 && Lua.GetReturnVal<bool>("return QuestFrameAcceptButton:IsVisible()", 0))
-							{
-								//Ghost frame bug.  Where the bot tries picking up a quest but there is no quest description, title or text.
-								QuestFrame.Instance.Close();
-								FancyLog(Colors.MediumPurple, "> [Sanity Engine] ", Colors.CornflowerBlue, $"Sticky quest frame detected, closing it.");
-								_insaneCounter ++;
-							}
-							if (TaxiFrame.Instance.IsVisible && (BotPoi.Current.Type == PoiType.QuestTurnIn || BotPoi.Current.Type == PoiType.QuestPickUp) && !Me.IsMoving)
-							{
-								//FlightMaster-QuestGiver bug.  Where if the quest giver is also a flight master and the bot leaves the taxi frame open while trying to turn in or pick up a quest.
-								TaxiFrame.Instance.Close();
-								FancyLog(Colors.MediumPurple, "> [Sanity Engine] ", Colors.CornflowerBlue, $"Sticky quest frame detected, closing it.");
-								_insaneCounter ++;
-							}
-							return false;
-						}
-				]]>
-				</Code>
-			<!-- END Sanity Engine -->
-
-			<!-- Treasure Hunter -->
-				<Code File="RunCode" Type="Definition" ><![CDATA[
-						private List<WoWGuid> _treasureBlacklist = new List<WoWGuid>();
-						private bool _treasureIsLogged = false;
-						private WoWGameObject _treasurePoi;
-						private Vector3 _treasureLocation;
-						private static int _treasuresFound = 0;
-						private static HashSet<uint> _treasureList = new HashSet<uint>(){2843, 2844, 2850, 181798, 181800, 181802, 207472, 207473, 207474, 207475, 207476, 207478, 207480, 207484, 207485, 207486, 207487, 207488, 207489, 207492, 207493, 207496, 207512, 207513, 207520, 207528, 207529, 207533};
-
-						public async Task<bool> TreasureHunter()
-						{
-							if (!Me.IsAlive || Me.IsActuallyInCombat) return false;
-
-							if (_treasurePoi == null || !_treasurePoi.IsValid)
-							{
-								_treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>().OrderBy(obj => obj.DistanceSqr).FirstOrDefault(obj => !_treasureBlacklist.Contains(obj.Guid) && !BlackspotManager.IsBlackspotted(obj.Location) && _treasureList.Contains(obj.Entry) && obj.CanUse());
-								if (_treasurePoi == null)
-								{
-									_treasureFunctionRunning = false;
-									_treasureIsLogged = false;
-									_treasureLocation = new Vector3(0,0,0);
-									return false;
-								}
-								if (Navigator.LookupPathInfo(_treasurePoi).Navigability != PathNavigability.Navigable)
-								{
-									_treasureBlacklist.Add(_treasurePoi.Guid);
-									FancyLog(Colors.MediumPurple, "[Treasure Hunter]: ", Colors.CornflowerBlue, $"Treasure detected near us, but we can't navigate to it!\n	Name     :: {_treasurePoi.Name}\n	Entry     :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
-									_treasurePoi = null;
-									return false;
-								}
-								_treasureLocation = _treasurePoi.Location;
-								_treasureFunctionRunning = true;
-								_treasuresFound ++;
-								return true;
-							}
-
-							if (!_treasureLocation.Equals(new Vector3(0,0,0)) && _treasureLocation.DistanceSquared((WoWMovement.ActiveMover ?? StyxWoW.Me).Location) > 5 * 5)
-							{
-								_treasureFunctionRunning = true;
-								TreeRoot.StatusText = $"Moving to interact with treasure: {_treasurePoi.Name}";
-								Flightor.MoveTo(_treasureLocation);
-								return true;
-							}
-
-							if (!_treasureIsLogged)
-							{
-								_treasureIsLogged = true;
-								FancyLog(Colors.MediumPurple, "[Treasure Hunter]: ", Colors.CornflowerBlue, $"Treasure detected near us!\n	Name     :: {_treasurePoi.Name}\n	Entry     :: {_treasurePoi.Entry}\n	Location :: {_treasurePoi.Location}");
-							}
-
-							TreeRoot.StatusText = $"Interacting with treasure: {_treasurePoi.Name}";
-
-							if (_treasurePoi.CanUse())
-							{
-								_treasureFunctionRunning = true;
-								_treasurePoi.Interact();
-								return true;
-							}
-
-							return false;
-						}
-				]]>
-				</Code>
-			<!-- END Treasure Hunter -->
-		<!-- END Functions -->
-
-		<If Condition="string.IsNullOrEmpty(CharacterSettings.Instance.LastUsedPath) || CharacterSettings.Instance.LastUsedPath.Contains(&quot;Activate Functions&quot;)" >
-			<Code File="LoadProfile" ProfileName="..\1-110 Autoloader.xml" />
-		</If>
-		<If Condition="!string.IsNullOrEmpty(CharacterSettings.Instance.LastUsedPath)" >
-			<Code File="RunCode" Code="ProfileManager.LoadNew(CharacterSettings.Instance.LastUsedPath, false);" />
-		</If>
-
-		<Code File="Halt" />
-
+			}
+		}));
+	}
+
+	private static async Task<bool> ShowMessageAsync(string title,
+													 string message,
+													 MahApps.Metro.Controls.Dialogs.MessageDialogStyle style = MahApps.Metro.Controls.Dialogs.MessageDialogStyle.Affirmative)
+	{
+		return await MahApps.Metro.Controls.Dialogs.DialogManager.ShowMessageAsync(s_configWindow, title, message, style) == MahApps.Metro.Controls.Dialogs.MessageDialogResult.Affirmative;
+	}
+
+	private class SettingsVm
+	{
+		public Settings Settings => Settings.Instance;
+
+		public Stats Stats => Stats.Instance;
+	}
+}
+]]>
+		</Code>
+		<!--END SettingsView-->
+		<!--Stats-->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+public class Stats : System.ComponentModel.INotifyPropertyChanged
+{
+	private int _deletedItems;
+
+	private int _insaneCounter;
+
+	private int _longTermStucks;
+
+	private int _openedItems;
+
+	private int _questLogCleanups;
+
+	private int _raresKilled;
+
+	private int _shortTermStucks;
+
+	private int _soldItems;
+
+	private TimeSpan _timeSaved = TimeSpan.Zero;
+
+	private int _timesForceVendored;
+
+	private int _treasuresFound;
+
+	private Stats()
+	{
+	}
+
+	public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+
+	public static Stats Instance { get; } = new Stats();
+
+	public int DeletedItems
+	{
+		get => _deletedItems;
+		set => SetProperty(ref _deletedItems, value);
+	}
+
+	public int InsaneCounter
+	{
+		get => _insaneCounter;
+		set => SetProperty(ref _insaneCounter, value);
+	}
+
+	public int LongTermStucks
+	{
+		get => _longTermStucks;
+		set => SetProperty(ref _longTermStucks, value);
+	}
+
+	public int OpenedItems
+	{
+		get => _openedItems;
+		set => SetProperty(ref _openedItems, value);
+	}
+
+	public int QuestlogCleanups
+	{
+		get => _questLogCleanups;
+		set => SetProperty(ref _questLogCleanups, value);
+	}
+
+	public int RaresKilled
+	{
+		get => _raresKilled;
+		set => SetProperty(ref _raresKilled, value);
+	}
+
+	public int ShortTermStucks
+	{
+		get => _shortTermStucks;
+		set => SetProperty(ref _shortTermStucks, value);
+	}
+
+	public int SoldItems
+	{
+		get => _soldItems;
+		set => SetProperty(ref _soldItems, value);
+	}
+
+	public TimeSpan TimeSaved
+	{
+		get => _timeSaved;
+		set => SetProperty(ref _timeSaved, value);
+	}
+
+	public int TimesForceVendored
+	{
+		get => _timesForceVendored;
+		set => SetProperty(ref _timesForceVendored, value);
+	}
+
+	public int TreasuresFound
+	{
+		get => _treasuresFound;
+		set => SetProperty(ref _treasuresFound, value);
+	}
+
+	public void OutputFunctionStats()
+	{
+		if (Settings.Instance.AfkMode)
+		{
+			FancyLog.WriteBlue("> [AFKMode] ",
+							   $"\n     Items Deleted		:: {DeletedItems}\n     Items Opened		:: {OpenedItems}\n     Items Sold		:: {SoldItems}\n     Questlog Cleanups	:: {QuestlogCleanups}\n");
+		}
+
+		if (Settings.Instance.UseActiveVendoring)
+			FancyLog.WriteBlue("> [Active Vendoring] ", $"\n     Times Force Vendored	:: {TimesForceVendored}\n");
+
+		if (Settings.Instance.CustomLooting)
+			FancyLog.WriteBlue("> [Custom Looting] ", $"\n     Time Saved		:: {Honorbuddy.QuestBehaviorCore.Utility.PrettyTime(TimeSaved)}\n");
+
+		if (Settings.Instance.UseAntiStuck)
+		{
+			FancyLog.WriteBlue("> [Anti Stuck] ",
+							   $"\n     Short-Term Stucks	:: {ShortTermStucks}\n     Long-Term Stucks	:: {LongTermStucks}\n");
+		}
+
+		if (Settings.Instance.HuntRareMobs)
+			FancyLog.WriteBlue("> [Rare Killer] ", $"\n     Rares Killed		:: {RaresKilled}\n");
+
+		if (Settings.Instance.FindTreasureChests)
+			FancyLog.WriteBlue("> [Treasure Hunter] ", $"\n     Treasures Found	:: {TreasuresFound}\n");
+
+		if (Settings.Instance.SanityEngine)
+			FancyLog.WriteBlue("> [Sanity Engine] ", $"\n     Times Went Insane	:: {InsaneCounter}\n");
+	}
+
+	protected virtual void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+	{
+		PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+	}
+
+	private void SetProperty<T>(ref T storage, T value, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+	{
+		if (Equals(storage, value))
+			return;
+
+		storage = value;
+		OnPropertyChanged(propertyName);
+	}
+}
+]]>
+		</Code>
+		<!--END Stats-->
+		<!--TreasureHunter-->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+public static class TreasureHunter
+{
+	private static readonly List<WoWGuid> s_treasureBlacklist = new List<WoWGuid>();
+
+	private static readonly HashSet<uint> s_treasureList = new HashSet<uint>
+	{
+		2843,
+		2844,
+		2850,
+		181798,
+		181800,
+		181802,
+		207472,
+		207473,
+		207474,
+		207475,
+		207476,
+		207478,
+		207480,
+		207484,
+		207485,
+		207486,
+		207487,
+		207488,
+		207489,
+		207492,
+		207493,
+		207496,
+		207512,
+		207513,
+		207520,
+		207528,
+		207529,
+		207533
+	};
+
+	private static bool s_isRunning;
+
+	private static bool s_treasureIsLogged;
+
+	private static Vector3 s_treasureLocation;
+
+	private static WoWGameObject s_treasurePoi;
+
+	public static bool Run()
+	{
+		if (!Settings.Instance.FindTreasureChests || !s_isRunning)
+			return false;
+
+		if (FindValidTreasure())
+			return true;
+
+		if (MoveToTreasure())
+			return true;
+
+		LogTreasure();
+		return InteractWithTreasure();
+	}
+
+	private static bool FindValidTreasure()
+	{
+		if (s_treasurePoi != null && s_treasurePoi.IsValid)
+			return false;
+
+		s_treasurePoi = ObjectManager.GetObjectsOfType<WoWGameObject>()
+									 .OrderBy(obj => obj.DistanceSqr)
+									 .FirstOrDefault(obj => !s_treasureBlacklist.Contains(obj.Guid)
+															&& !BlackspotManager.IsBlackspotted(obj.Location)
+															&& s_treasureList.Contains(obj.Entry) && obj.CanUse());
+		if (s_treasurePoi == null)
+		{
+			s_isRunning = false;
+			s_treasureIsLogged = false;
+			s_treasureLocation = Vector3.Zero;
+			return false;
+		}
+
+		if (Navigator.LookupPathInfo(s_treasurePoi).Navigability != PathNavigability.Navigable)
+		{
+			s_treasureBlacklist.Add(s_treasurePoi.Guid);
+			FancyLog.WriteBlue("[Treasure Hunter]: ",
+							   $"Treasure detected near us, but we can't navigate to it!\n	Name     :: {s_treasurePoi.Name}\n	Entry     :: {s_treasurePoi.Entry}\n	Location :: {s_treasurePoi.Location}");
+			s_treasurePoi = null;
+			return false;
+		}
+
+		s_treasureLocation = s_treasurePoi.Location;
+		s_isRunning = true;
+		Stats.Instance.TreasuresFound++;
+		return true;
+	}
+
+	private static bool InteractWithTreasure()
+	{
+		TreeRoot.StatusText = $"Interacting with treasure: {s_treasurePoi.Name}";
+
+		if (!s_treasurePoi.CanUse())
+			return false;
+
+		s_isRunning = true;
+		s_treasurePoi.Interact();
+		return true;
+	}
+
+	private static void LogTreasure()
+	{
+		if (s_treasureIsLogged)
+			return;
+
+		s_treasureIsLogged = true;
+		FancyLog.WriteBlue("[Treasure Hunter]: ",
+						   $"Treasure detected near us!\n	Name     :: {s_treasurePoi.Name}\n	Entry     :: {s_treasurePoi.Entry}\n	Location :: {s_treasurePoi.Location}");
+	}
+
+	private static bool MoveToTreasure()
+	{
+		if (s_treasureLocation.Equals(Vector3.Zero)
+			|| !(s_treasureLocation.DistanceSquared((WoWMovement.ActiveMover ?? StyxWoW.Me).Location) > 5 * 5))
+			return false;
+
+		s_isRunning = true;
+		TreeRoot.StatusText = $"Moving to interact with treasure: {s_treasurePoi.Name}";
+		Flightor.MoveTo(s_treasureLocation);
+		return true;
+	}
+}
+]]>
+		</Code>
+		<!--END TreasureHunter-->
+		<!--UseArtifactPowerItems-->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+public static class UseArtifactPowerItems
+{
+	private static LocalPlayer Me => StyxWoW.Me;
+
+	public static async Task Run()
+	{
+		if (!Settings.Instance.UseArtifactPowerItems || !Lua.GetReturnVal<bool>("return HasArtifactEquipped()", 0))
+			return;
+
+		List<WoWItem> artifactPowerItems = GetArtifactPowerItems().ToList();
+		if (!artifactPowerItems.Any())
+			return;
+
+		FancyLog.WriteBlue("[Use AP Items]: ", "Using artifact power boost items.");
+		foreach (WoWItem item in artifactPowerItems)
+		{
+			if (!Me.IsValid || !Me.IsAlive || Me.IsActuallyInCombat)
+				break;
+
+			await CommonCoroutines.StopMoving();
+			item.Use();
+			await Coroutine.Sleep(500);
+			await Coroutine.Wait(1600, () => !SpellManager.GlobalCooldown);
+			await Coroutine.Wait(2500, () => !Me.IsCasting);
+		}
+	}
+
+	private static IEnumerable<WoWItem> GetArtifactPowerItems()
+	{
+		return Me.BagItems.Where(x => x.ItemInfo.ConsumableClass == WoWItemConsumableClass.Other
+									  && x.GetEffect(0)?.Spell?.Name == "Empowering");
+	}
+}
+]]>
+		</Code>
+		<!--END UseArtifactPowerItems-->
 	</QuestOrder>
 </HBProfile>
