@@ -52,17 +52,49 @@ END INITORDER COMMENT -->
 
 	<QuestOrder>
 		<!-- Check function status -->
-			<Code File="RunCode" Type="Definition" >
-				<![CDATA[
-					bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
-				]]>
-			</Code>
-			<If Condition="profileFunctionsEnabled == null || profileFunctionsEnabled == false" >
-				<Code File="RunCode">
-					<![CDATA[ Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!"); ]]>
-				</Code>
-				<Code File="LoadProfile" ProfileName="..\..\..\Functions\Activate Functions.xml" />
-			</If>
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+			private static bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+			private static bool IsStoreProfile(string path) => path.StartsWith("store://");
+			private static string Slashify(string path) => IsStoreProfile(path) ? path.Replace(@"\", "/") : path.Replace("/", @"\");
+
+			public __CompiledBatchClass__()
+			{
+				if (profileFunctionsEnabled == null || profileFunctionsEnabled == false)
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!");
+					LoadProfile(@"..\..\..\Functions\Activate Functions.xml");
+				}
+			}
+
+			private static void LoadProfile(string path)
+			{
+				var profile = GetNewPath(path);
+				if (!IsStoreProfile(profile) && !File.Exists(profile))
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Profile does not exist.\n" + profile);
+					return;
+				}
+
+				Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Loading: " + profile);
+				ProfileManager.LoadNew(profile, false);
+			}
+
+			private static string GetNewPath(string path)
+			{
+				if (IsStoreProfile(path))
+					return Slashify(path);
+
+				var currentProfile = ProfileManager.XmlLocation;
+				if (IsStoreProfile(currentProfile))
+					return Slashify(currentProfile + "/../" + path);
+
+				var absolutePath = Path.Combine(Path.GetDirectoryName(currentProfile), path);
+				absolutePath = Path.GetFullPath(absolutePath);
+				var canonicalPath = new Uri(absolutePath).LocalPath;
+				return Slashify(canonicalPath);
+			}]]>
+		</Code>
 		<!-- END Check function status -->
 
 		<If Condition="Me.IsAlliance" >
@@ -148,7 +180,7 @@ END INITORDER COMMENT -->
 			<PickUp QuestName="A Friendly Accord" QuestId="40847" GiverName="Fleet Admiral Tethys" GiverId="94159" X="-949.3837" Y="4549.32" Z="698.2386" />
 			<While Condition="DoQuest(40847)" >
 				<If Condition="Me.MapId != 0" > <!-- Go to Eastern Kingdoms -->
-          <Code File="InteractWith" MobId="97004" GossipOptions="1" X="-973.3143" Y="4435.202" Z="735.7393" />
+		  <Code File="InteractWith" MobId="97004" GossipOptions="1" X="-973.3143" Y="4435.202" Z="735.7393" />
 					<Code File="InteractWith" MobId="249382" X="-916.7535" Y="4534.221" Z="706.9974" /> <!-- Open bookcase to leave hidden room -->
 					<If Condition="Me.Z &gt; 605" > <!-- NOTE: <CheckFunction> : Dalaran to Dalaran Portal Room -->
 						<MoveTo X="-850.0136" Y="4460.374" Z="735.6611" />
@@ -157,7 +189,7 @@ END INITORDER COMMENT -->
 					<MoveTo X="-872.8339" Y="4501.604" Z="580.1613" />
 					<Code File="InteractWith" MobId="246009" WaitTime="1000" X="-869.9479" Y="4503.124" Z="580.4584" />
 				</If>
-        <Code File="InteractWith" MobId="246009" WaitTime="1000" NumOftimes="5" InteractBlacklistTimeInSeconds="3" X="-869.9479" Y="4503.124" Z="580.4584" TerminateWhen="Object(246009) == null" />
+		<Code File="InteractWith" MobId="246009" WaitTime="1000" NumOftimes="5" InteractBlacklistTimeInSeconds="3" X="-869.9479" Y="4503.124" Z="580.4584" TerminateWhen="Object(246009) == null" />
 				<MoveTo Nav="Fly" X="-14336.99" Y="500.0012" Z="19.68285" />
 			</While>
 			<TurnIn QuestName="A Friendly Accord" QuestId="40847" TurnInName="Fleet Admiral Tethys" TurnInId="102120" X="-14335.34" Y="499.5063" Z="19.76163" />
@@ -167,7 +199,7 @@ END INITORDER COMMENT -->
 				<Code File="InteractWith" MobId="102120" GossipOptions="1" QuestId="40849" X="-14335.34" Y="499.5063" Z="19.76163" TerminateWhen="Me.MapId != 0" />
 				<Code File="WaitTimer" WaitTime="250000" TerminateWhen="Me.MapId != 0" />
 
-        <Code File="Hooks\Avoid" AvoidName="Campfire" Command="Add" ObjectType="GameObject" ObjectId="248575" Radius="5" />
+		<Code File="Hooks\Avoid" AvoidName="Campfire" Command="Add" ObjectType="GameObject" ObjectId="248575" Radius="5" />
 				<Code File="Hooks\Avoid" AvoidName="LandMines" Command="Add" ObjectId="246459" Radius="4" />
 				<Code File="Hooks\Avoid" AvoidName="Dreadhound" Command="Add" ObjectId="102191" Radius="10" AvoidWhen="!UNIT.Aggro &amp;&amp; UNIT.HasAura(201626)" />
 				<!--<Code File="Hooks\Avoid" AvoidName="DreadCrewman" Command="Add" ObjectId="102194" Radius="5" AvoidWhen="!UNIT.Aggro" />-->
@@ -181,7 +213,7 @@ END INITORDER COMMENT -->
 						]]>
 					</Code>
 				</Code>
-        
+		
 
 				<DisableBehavior Name="Pull" />
 				<UseMount Value="false" />
@@ -197,12 +229,12 @@ END INITORDER COMMENT -->
 						</Code>
 					</Code>
 
-          <MoveTo DestName="Base of gangplank" X="-1207.379" Y="5841.867" Z="1.545728" />
-          <Code File="MyCTM" DestName="Top of gangplank" X="-1198.049" Y="5831.344" Z="5.916203" />
-          <Code File="MyCTM" DestName="Deck of Horizon's Edge"  X="-1188.347" Y="5831.994" Z="5.565567" />
-          <MoveTo DestName="First Mate DeGauza" X="-1213.962" Y="5800.845" Z="20.04547" />
+		  <MoveTo DestName="Base of gangplank" X="-1207.379" Y="5841.867" Z="1.545728" />
+		  <Code File="MyCTM" DestName="Top of gangplank" X="-1198.049" Y="5831.344" Z="5.916203" />
+		  <Code File="MyCTM" DestName="Deck of Horizon's Edge"  X="-1188.347" Y="5831.994" Z="5.565567" />
+		  <MoveTo DestName="First Mate DeGauza" X="-1213.962" Y="5800.845" Z="20.04547" />
 
-          <!--<Code File="MyCTM" X="-1294.44" Y="5842.177" Z="20.11839" />
+		  <!--<Code File="MyCTM" X="-1294.44" Y="5842.177" Z="20.11839" />
 					<Code File="MyCTM" X="-1275.617" Y="5835.776" Z="16.98751" />
 					<Code File="MyCTM" X="-1264.342" Y="5816.942" Z="12.57043" />-->
 
@@ -228,7 +260,7 @@ END INITORDER COMMENT -->
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
 					<!-- NOTE: <AddAvoid>: Stuff starts  falling from the ceiling -->
-          <Code File="Hooks\DoWhen" ActivityName="KeepStealth" Command="Remove" />
+		  <Code File="Hooks\DoWhen" ActivityName="KeepStealth" Command="Remove" />
 
 					<Code File="InteractWith" MobId="246473" X="-1214.47" Y="6139.858" Z="47.08427" TerminateWhen="Object(246473) == null" />
 					<MoveTo X="-1233.155" Y="6148.064" Z="35.43583" />
@@ -239,24 +271,24 @@ END INITORDER COMMENT -->
 							]]>
 						</Code>
 					</Code>
-          <MoveTo DestName="Temple of 1000 Lights" X="-1292.88" Y="6173.626" Z="32.61359" />
-          <MoveTo DestName="Temple of 1000 Lights" X="-1292.88" Y="6173.626" Z="32.61359" />
-          <MoveTo DestName="Temple of 1000 Lights" X="-1292.88" Y="6173.626" Z="32.61359" />
-          <MoveTo DestName="Temple of 1000 Lights" X="-1292.88" Y="6173.626" Z="32.61359" />
-          <Code File="KillUntilComplete" MobId="102298" TerminateWhen="Unit(102300) == null" >
-            <HuntingGrounds>
-              <Hotspot Name="Dread Squallshaper 0" X="-1259.086" Y="6159.048" Z="32.61351" />
-              <Hotspot Name="Dread Squallshaper 3" X="-1253.966" Y="6158.459" Z="32.32325" />
-              <Hotspot Name="Dread Squallshaper 1" X="-1268.929" Y="6183.299" Z="32.61333" />
-              <Hotspot Name="Dread Squallshaper 2" X="-1292.88" Y="6173.626" Z="32.61359" />
-            </HuntingGrounds>
-          </Code>
+		  <MoveTo DestName="Temple of 1000 Lights" X="-1292.88" Y="6173.626" Z="32.61359" />
+		  <MoveTo DestName="Temple of 1000 Lights" X="-1292.88" Y="6173.626" Z="32.61359" />
+		  <MoveTo DestName="Temple of 1000 Lights" X="-1292.88" Y="6173.626" Z="32.61359" />
+		  <MoveTo DestName="Temple of 1000 Lights" X="-1292.88" Y="6173.626" Z="32.61359" />
+		  <Code File="KillUntilComplete" MobId="102298" TerminateWhen="Unit(102300) == null" >
+			<HuntingGrounds>
+			  <Hotspot Name="Dread Squallshaper 0" X="-1259.086" Y="6159.048" Z="32.61351" />
+			  <Hotspot Name="Dread Squallshaper 3" X="-1253.966" Y="6158.459" Z="32.32325" />
+			  <Hotspot Name="Dread Squallshaper 1" X="-1268.929" Y="6183.299" Z="32.61333" />
+			  <Hotspot Name="Dread Squallshaper 2" X="-1292.88" Y="6173.626" Z="32.61359" />
+			</HuntingGrounds>
+		  </Code>
 					<Code File="Hooks\DoWhen" ActivityName="InterruptHeal" Command="Remove" />
 					<MoveTo X="-1337.985" Y="6277.858" Z="9.483399" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
-          <MoveTo DestName="Dread Admiral Eliza" X="-1359.75" Y="6322.288" Z="9.493173" />
+		  <MoveTo DestName="Dread Admiral Eliza" X="-1359.75" Y="6322.288" Z="9.493173" />
 					<Code File="Hooks\Avoid" AvoidName="MusketBarrage" Command="Add" ObjectId="63677" Radius="5" AvoidWhen="UNIT.CastingSpellId == 208226" AvoidLocationProducer="UNIT.Location.RayCast(UNIT.Rotation, 8)" />
 					<Code File="KillUntilComplete" MobId="102293" X="-1359.75" Y="6322.288" Z="9.492381" TerminateWhen="IsScenarioCriteriaComplete(1)" />
 					<Code File="Hooks\Avoid" AvoidName="MusketBarrage" Command="Remove" />

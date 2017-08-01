@@ -51,17 +51,49 @@ END INITORDER COMMENT -->
 
 	<QuestOrder>
 		<!-- Check function status -->
-			<Code File="RunCode" Type="Definition" >
-				<![CDATA[
-					bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
-				]]>
-			</Code>
-			<If Condition="profileFunctionsEnabled == null || profileFunctionsEnabled == false" >
-				<Code File="RunCode">
-					<![CDATA[ Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!"); ]]>
-				</Code>
-				<Code File="LoadProfile" ProfileName="..\..\..\Functions\Activate Functions.xml" />
-			</If>
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+			private static bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+			private static bool IsStoreProfile(string path) => path.StartsWith("store://");
+			private static string Slashify(string path) => IsStoreProfile(path) ? path.Replace(@"\", "/") : path.Replace("/", @"\");
+
+			public __CompiledBatchClass__()
+			{
+				if (profileFunctionsEnabled == null || profileFunctionsEnabled == false)
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!");
+					LoadProfile(@"..\..\..\Functions\Activate Functions.xml");
+				}
+			}
+
+			private static void LoadProfile(string path)
+			{
+				var profile = GetNewPath(path);
+				if (!IsStoreProfile(profile) && !File.Exists(profile))
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Profile does not exist.\n" + profile);
+					return;
+				}
+
+				Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Loading: " + profile);
+				ProfileManager.LoadNew(profile, false);
+			}
+
+			private static string GetNewPath(string path)
+			{
+				if (IsStoreProfile(path))
+					return Slashify(path);
+
+				var currentProfile = ProfileManager.XmlLocation;
+				if (IsStoreProfile(currentProfile))
+					return Slashify(currentProfile + "/../" + path);
+
+				var absolutePath = Path.Combine(Path.GetDirectoryName(currentProfile), path);
+				absolutePath = Path.GetFullPath(absolutePath);
+				var canonicalPath = new Uri(absolutePath).LocalPath;
+				return Slashify(canonicalPath);
+			}]]>
+		</Code>
 		<!-- END Check function status -->
 
 		<If Condition="Me.IsAlliance" >
@@ -173,22 +205,22 @@ END INITORDER COMMENT -->
 					</Code>
 				</If>
 
-        <If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0" >
-          <!--<Code File="Message" Text="Arms Quest Started" LogColor="White" />
-        </If>
+		<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0" >
+		  <!--<Code File="Message" Text="Arms Quest Started" LogColor="White" />
+		</If>
 				<If Condition="!IsObjectiveComplete(3, 41105)" > -->
 					<MoveTo Nav="Fly" DestName="The Whispering Forest" X="2030.779" Y="2429.772" Z="133.3699" />
-          <MoveTo DestName="The Ghost King" X="2100.453" Y="2433.33" Z="118.8875" />
+		  <MoveTo DestName="The Ghost King" X="2100.453" Y="2433.33" Z="118.8875" />
 				</If>
 
 				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1 || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
 					<!-- Checking 1 and 2 because upon entering the area, 1 seemed to have "went away?" -->
-          <Code File="KillUntilComplete" MobIds="101122, 101127, 101875" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1 &amp;&amp; Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" >
-            <HuntingGrounds>
-              <Hotspot Name="The Ghost King 0" X="2100.453" Y="2433.33" Z="118.8875" />
-              <Hotspot Name="The Ghost King 1" X="2130.445" Y="2420.438" Z="119.1646" />
-            </HuntingGrounds>
-          </Code>
+		  <Code File="KillUntilComplete" MobIds="101122, 101127, 101875" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1 &amp;&amp; Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" >
+			<HuntingGrounds>
+			  <Hotspot Name="The Ghost King 0" X="2100.453" Y="2433.33" Z="118.8875" />
+			  <Hotspot Name="The Ghost King 1" X="2130.445" Y="2420.438" Z="119.1646" />
+			</HuntingGrounds>
+		  </Code>
 				</If>
 
 

@@ -59,7 +59,7 @@
 		<Vendor Name="Darbrul" Type="Repair" Entry="99205" X="5867.962" Y="4547.085" Z="614.298" UsableWhen="IsQuestCompleted(40229)" />
 	</Vendors>
 
-<!-- INITORDER COMMENT 
+<!-- INITORDER COMMENT
 	<InitOrder>
 		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
 		<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
@@ -76,17 +76,49 @@ END INITORDER COMMENT -->
 
 	<QuestOrder>
 		<!-- Check function status -->
-			<Code File="RunCode" Type="Definition" >
-				<![CDATA[
-					bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
-				]]>
-			</Code>
-			<If Condition="profileFunctionsEnabled == null || profileFunctionsEnabled == false" >
-				<Code File="RunCode">
-					<![CDATA[ Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!"); ]]>
-				</Code>
-				<Code File="LoadProfile" ProfileName="..\..\Functions\Activate Functions.xml" />
-			</If>
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+			private static bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+			private static bool IsStoreProfile(string path) => path.StartsWith("store://");
+			private static string Slashify(string path) => IsStoreProfile(path) ? path.Replace(@"\", "/") : path.Replace("/", @"\");
+
+			public __CompiledBatchClass__()
+			{
+				if (profileFunctionsEnabled == null || profileFunctionsEnabled == false)
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!");
+					LoadProfile(@"..\..\Functions\Activate Functions.xml");
+				}
+			}
+
+			private static void LoadProfile(string path)
+			{
+				var profile = GetNewPath(path);
+				if (!IsStoreProfile(profile) && !File.Exists(profile))
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Profile does not exist.\n" + profile);
+					return;
+				}
+
+				Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Loading: " + profile);
+				ProfileManager.LoadNew(profile, false);
+			}
+
+			private static string GetNewPath(string path)
+			{
+				if (IsStoreProfile(path))
+					return Slashify(path);
+
+				var currentProfile = ProfileManager.XmlLocation;
+				if (IsStoreProfile(currentProfile))
+					return Slashify(currentProfile + "/../" + path);
+
+				var absolutePath = Path.Combine(Path.GetDirectoryName(currentProfile), path);
+				absolutePath = Path.GetFullPath(absolutePath);
+				var canonicalPath = new Uri(absolutePath).LocalPath;
+				return Slashify(canonicalPath);
+			}]]>
+		</Code>
 		<!-- END Check function status -->
 
 		<If Condition="Me.IsHorde" >
@@ -630,7 +662,7 @@ END INITORDER COMMENT -->
 			<!-- Mounts and Shapeshifts can cause weird issues here. -->
 			<Code File="RunCode"><![CDATA[
 					await CommonCoroutines.LandAndDismount();
-					foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null)) 
+					foreach (var aura in new[]{768,783,5487,2645,24858}.Select(id =>Me.GetAuraById(id)).Where(a => a != null))
 					aura.TryCancelAura();
 				]]>
 			</Code>
@@ -708,7 +740,7 @@ END INITORDER COMMENT -->
 					await VehicleMove(new WoWPoint(3879.25, -4900.002, 147.643));
 					await VehicleKill(97796);
 					await VehicleKill(109386);
-					await VehicleKill(97803);" />	
+					await VehicleKill(97803);" />
 			</While>
 			<Code File="RunCode" Code="await VehicleTurnIn(questId: 39983, unitId: 97891, giverSpot: new WoWPoint(3935.409, -4995.921, 148.4869));" />
 
@@ -729,7 +761,7 @@ END INITORDER COMMENT -->
 				<Code File="RunCode" Code="
 					await VehicleMove(new WoWPoint(3479.334, -4854.102, 134.7919));
 					await VehicleKill(97940);
-				" />	
+				" />
 			</While>
 			<Code File="RunCode" Code="await VehicleTurnIn(questId: 39990, unitId: 97892, giverSpot: new WoWPoint(3478.842, -4909.076, 144.3305));" />
 
@@ -745,7 +777,7 @@ END INITORDER COMMENT -->
 				" />
 			</While>
 			<Code File="WaitTimer" WaitTime="20000" TerminateWhen="Me.ZoneId == 7731" />
-			<EnableBehavior Name="All" />				
+			<EnableBehavior Name="All" />
 		</If>
 		<TurnIn QuestName="Huln's War - The Nathrezim" QuestId="39992" TurnInName="Spiritwalker Ebonhorn" TurnInId="98825" X="4057.205" Y="4320.374" Z="675.4365" />
 	<!-- END Story: Huln's War -->
@@ -760,7 +792,7 @@ END INITORDER COMMENT -->
 			<Code File="InteractWith" QuestId="42622" >
 				<HuntingGrounds>
 					<Hotspot X="4123.049" Y="4405.591" Z="667.7467" />
-					<Hotspot X="4086.152" Y="4308.324" Z="768.3868" /> 
+					<Hotspot X="4086.152" Y="4308.324" Z="768.3868" />
 					<Hotspot X="4019.743" Y="4332.312" Z="768.4916" />
 					<Hotspot X="4052.286" Y="4420.277" Z="768.3255" />
 					<Hotspot  />
@@ -770,7 +802,7 @@ END INITORDER COMMENT -->
 				<PursuitList>
 					<PursueGameObject Id="250904" PursueWhen="!IsObjectiveComplete(2, 42622)" />
 					<PursueGameObject Id="250905" PursueWhen="!IsObjectiveComplete(3, 42622)" />
-					<PursueUnit Id="108145" ConvertWhen="!IsObjectiveComplete(3, 42622)" PursueWhen="!IsObjectiveComplete(3, 42622)" ConvertBy="Killing" />  
+					<PursueUnit Id="108145" ConvertWhen="!IsObjectiveComplete(3, 42622)" PursueWhen="!IsObjectiveComplete(3, 42622)" ConvertBy="Killing" />
 				</PursuitList>
 			</Code>
 		</While> -->
@@ -778,7 +810,7 @@ END INITORDER COMMENT -->
 		<TurnIn QuestName="The Bloodtotem Tribe" QuestId="38916" TurnInName="Spiritwalker Ebonhorn" TurnInId="94571" X="3865.907" Y="4516.458" Z="776.5803" />
 
 		<If Condition="NeedsQuest(39575)" >
-			<!-- We want to clear our bags and repair first so that the bot won't traverse back through the Hill Ettins --> 
+			<!-- We want to clear our bags and repair first so that the bot won't traverse back through the Hill Ettins -->
 			<Code File="ForceSetVendor" DoSell="true" DoRepair="true" />
 		</If>
 
@@ -1021,7 +1053,7 @@ END INITORDER COMMENT -->
 					<PursueGameObject Id="1234" />
 					<PursueUnit Id="94984" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
 					<PursueUnit Id="94983" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
-					<!--IsFlying doesn't work for these mobs. 
+					<!--IsFlying doesn't work for these mobs.
 						<PursueUnit Id="94986" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.IsFlying &amp;&amp; !UNIT.TaggedByOther" /> -->
 				</PursuitList>
 			</Code>
@@ -1035,8 +1067,8 @@ END INITORDER COMMENT -->
 
 		<While Condition="DoQuest(39321)" >
 			<Code File="KillUntilComplete" MobId="95194" QuestId="39321" QuestObjectiveIndex="1" X="5389.364" Y="3978.481" Z="816.6586" />
-			<Code File="KillUntilComplete" MobId="95195" QuestId="39321" QuestObjectiveIndex="2" X="5448.787" Y="4144.175" Z="813.1237" /> 
-			<Code File="KillUntilComplete" MobId="95196" QuestId="39321" QuestObjectiveIndex="3" X="5292.383" Y="4113.406" Z="932.7659" /> 
+			<Code File="KillUntilComplete" MobId="95195" QuestId="39321" QuestObjectiveIndex="2" X="5448.787" Y="4144.175" Z="813.1237" />
+			<Code File="KillUntilComplete" MobId="95196" QuestId="39321" QuestObjectiveIndex="3" X="5292.383" Y="4113.406" Z="932.7659" />
 		</While>
 
 		<While Condition="DoQuest(39429)" >
@@ -1211,7 +1243,7 @@ END INITORDER COMMENT -->
 					<PursueUnit Id="95290" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther" />
 				</PursuitList>
 			</Code>
-		</While>	
+		</While>
 	<!-- END Story: The Bloodtotem Tribe -->
 
 		<PickUp QuestName="Step into the Dark" QuestId="40229" GiverName="Navarrogg" GiverId="95392" X="5821.911" Y="4201.273" Z="709.0323" />
@@ -1486,7 +1518,7 @@ END INITORDER COMMENT -->
 		<Code File="InteractWith" MobIds="96591, 98808" QuestId="40170" QuestObjectiveIndex="1" InteractByGossipOptions="1" >
 			<HuntingGrounds>
 				<Hotspot X="4473.76" Y="4797.701" Z="658.9086" />
-				<Hotspot X="4411.5" Y="4773.652" Z="654.4877" /> 
+				<Hotspot X="4411.5" Y="4773.652" Z="654.4877" />
 				<Hotspot X="4551.579" Y="4794.254" Z="669.1888" />
 				<Hotspot X="4458.153" Y="4708.652" Z="649.8495" />
 			</HuntingGrounds>
@@ -1495,7 +1527,7 @@ END INITORDER COMMENT -->
 		<Code File="KillUntilComplete" MobId="98808" QuestId="39859" QuestObjectiveIndex="1" >
 			<HuntingGrounds>
 				<Hotspot X="4473.76" Y="4797.701" Z="658.9086" />
-				<Hotspot X="4411.5" Y="4773.652" Z="654.4877" /> 
+				<Hotspot X="4411.5" Y="4773.652" Z="654.4877" />
 				<Hotspot X="4551.579" Y="4794.254" Z="669.1888" />
 				<Hotspot X="4458.153" Y="4708.652" Z="649.8495" />
 			</HuntingGrounds>
@@ -1512,7 +1544,7 @@ END INITORDER COMMENT -->
 		<PickUp QuestName="Bear Huntin'" QuestId="39392" GiverName="Hemet Nesingwary" GiverId="94409" X="4500.406" Y="4858.703" Z="661.8903" />
 
 		<While Condition="DoQuest(40216, 39123, 39124, 39392)" >
-			<!-- NOTE: <AddFailsafe> : Can detect if Addie is nearby by checking the HasAura.  May need to use this interactwith if she disapears. 
+			<!-- NOTE: <AddFailsafe> : Can detect if Addie is nearby by checking the HasAura.  May need to use this interactwith if she disapears.
 						194963
 			-->
 			<Code File="RunCode" Type="Definition" Code="bool addieDetected => StyxWoW.Me.GetAllAuras().Any(aura => aura.SpellId == 194963 || aura.SpellId == 188723 || aura.SpellId == 194937 || aura.SpellId == 194978);" />
@@ -1741,7 +1773,7 @@ END INITORDER COMMENT -->
 
 			<While Condition="!IsQuestCompleted(40230)">
 				<Code File="RunCode" Code="
-					await VehicleMove(new WoWPoint(6218.297, 4186.135, 70.21992)); 
+					await VehicleMove(new WoWPoint(6218.297, 4186.135, 70.21992));
 					await VehicleKill(98809);
 				"/>
 			</While>
@@ -1767,7 +1799,7 @@ END INITORDER COMMENT -->
 
 	<!-- SideQuests: Icepine Point -->
 		<TurnIn QuestName="Procuring a Prototype" QuestId="39386" TurnInName="Razik Gazbolt" TurnInId="96513" X="4294.724" Y="3614.605" Z="898.6747" />
-		
+
 		<PickUp QuestName="Critter Scatter Shot" QuestId="39670" GiverName="Razik Gazbolt" GiverId="96513" X="4294.724" Y="3614.605" Z="898.6747" />
 		<PickUp QuestName="A True Hunter" QuestId="40000" GiverName="Lorna Stoutfoot" GiverId="97974" X="4304.073" Y="3617.26" Z="898.8616" />
 
@@ -1798,7 +1830,7 @@ END INITORDER COMMENT -->
 				<Code File="RunCode"><![CDATA[
 						var packLeader = Unit(97957, u => u.Aggro && u.CurrentTarget.IsMe);
 						var howler = Unit(98273, u => u.Aggro && u.CurrentTarget.IsMe);
-						if (packLeader != null && howler != null) 
+						if (packLeader != null && howler != null)
 						{
 							Bots.Grind.LevelBot.BehaviorFlags &= ~Bots.Grind.BehaviorFlags.Combat;
 							WoWItem handCannon = StyxWoW.Me.BagItems.FirstOrDefault(i => i.Entry == 128651);
@@ -1810,7 +1842,7 @@ END INITORDER COMMENT -->
 						}
 					]]>
 				</Code>
-			</Code> 
+			</Code>
 		</If>
 		<While Condition="DoQuest(39656)" >
 			<Code File="KillUntilComplete" MobId="97957" QuestId="39656" QuestObjectiveIndex="1" >

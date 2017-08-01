@@ -28,13 +28,13 @@
 	<Blacklist>
 	</Blacklist>
 
-	<Mailboxes> 
+	<Mailboxes>
 	</Mailboxes>
 
 	<Vendors>
 	</Vendors>
 
-<!-- INITORDER COMMENT 
+<!-- INITORDER COMMENT
 	<InitOrder>
 		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
 		<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
@@ -51,17 +51,49 @@ END INITORDER COMMENT -->
 
 	<QuestOrder>
 		<!-- Check function status -->
-			<Code File="RunCode" Type="Definition" >
-				<![CDATA[
-					bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
-				]]>
-			</Code>
-			<If Condition="profileFunctionsEnabled == null || profileFunctionsEnabled == false" >
-				<Code File="RunCode">
-					<![CDATA[ Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!"); ]]>
-				</Code>
-				<Code File="LoadProfile" ProfileName="..\..\..\Functions\Activate Functions.xml" />
-			</If>
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+			private static bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+			private static bool IsStoreProfile(string path) => path.StartsWith("store://");
+			private static string Slashify(string path) => IsStoreProfile(path) ? path.Replace(@"\", "/") : path.Replace("/", @"\");
+
+			public __CompiledBatchClass__()
+			{
+				if (profileFunctionsEnabled == null || profileFunctionsEnabled == false)
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!");
+					LoadProfile(@"..\..\..\Functions\Activate Functions.xml");
+				}
+			}
+
+			private static void LoadProfile(string path)
+			{
+				var profile = GetNewPath(path);
+				if (!IsStoreProfile(profile) && !File.Exists(profile))
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Profile does not exist.\n" + profile);
+					return;
+				}
+
+				Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Loading: " + profile);
+				ProfileManager.LoadNew(profile, false);
+			}
+
+			private static string GetNewPath(string path)
+			{
+				if (IsStoreProfile(path))
+					return Slashify(path);
+
+				var currentProfile = ProfileManager.XmlLocation;
+				if (IsStoreProfile(currentProfile))
+					return Slashify(currentProfile + "/../" + path);
+
+				var absolutePath = Path.Combine(Path.GetDirectoryName(currentProfile), path);
+				absolutePath = Path.GetFullPath(absolutePath);
+				var canonicalPath = new Uri(absolutePath).LocalPath;
+				return Slashify(canonicalPath);
+			}]]>
+		</Code>
 		<!-- END Check function status -->
 
 		<If Condition="Me.IsHorde" >
@@ -144,11 +176,11 @@ END INITORDER COMMENT -->
 		<!-- Second Artifact -->
 			<If Condition="HasQuest(43980)" >
 				<While Condition="DoQuest(43980)" >
- 					<Code File="Misc\RunLua" Lua="LoadAddOn(&quot;Blizzard_QuestChoice&quot;);" />
+					<Code File="Misc\RunLua" Lua="LoadAddOn(&quot;Blizzard_QuestChoice&quot;);" />
 					<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
 						<Code File="InteractWith" MobId="101195" GossipOptions="1" QuestId="43980" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
 					</If>
-					<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.  
+					<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.
 					<Code File="Misc\RunLua" QuestId="43980" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
 					<Code File="UserDialog" QuestId="43980" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
 				</While>
@@ -159,11 +191,11 @@ END INITORDER COMMENT -->
 		<!-- Third Artifact -->
 			<If Condition="HasQuest(44431)" >
 				<While Condition="DoQuest(44431)" >
- 					<Code File="Misc\RunLua" Lua="LoadAddOn(&quot;Blizzard_QuestChoice&quot;);" />
+					<Code File="Misc\RunLua" Lua="LoadAddOn(&quot;Blizzard_QuestChoice&quot;);" />
 					<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
 						<Code File="InteractWith" MobId="101195" GossipOptions="1" QuestId="44431" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
 					</If>
-					<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.  
+					<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.
 					<Code File="Misc\RunLua" QuestId="44431" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
 					<Code File="UserDialog" QuestId="44431" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
 				</While>
@@ -174,7 +206,7 @@ END INITORDER COMMENT -->
 		<!-- Fourth Artifact -->
 			<If Condition="HasQuest(44443)" >
 				<While Condition="DoQuest(44443)" >
- 					<Code File="Misc\RunLua" Lua="LoadAddOn(&quot;Blizzard_QuestChoice&quot;);" />
+					<Code File="Misc\RunLua" Lua="LoadAddOn(&quot;Blizzard_QuestChoice&quot;);" />
 					<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
 						<Code File="InteractWith" MobId="101195" WaitTime="2000" GossipOptions="1" QuestId="44443" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
 					</If>
@@ -248,7 +280,7 @@ END INITORDER COMMENT -->
 				<Code File="WaitTimer" WaitTime="40000" TerminateWhen="InDeepSlumber_MoveOn" />
 				<MoveTo X="4102.368" Y="7374.856" Z="22.9132" />
 				<Code File="WaitTimer" WaitTime="40000" TerminateWhen="InDeepSlumber_MoveOn" />
-				
+
 				<Code File="Hooks\DoWhen" ActivityName="PreventCorruption" Command="Remove" />
 
 				<Code File="Hooks\DoWhen" ActivityName="RemoveRoots" AllowUseDuringCombat="true" UseWhen="Me.HasAura(186456)" >
@@ -362,7 +394,7 @@ END INITORDER COMMENT -->
 								}
 
 								if (healMe == null) return;
-								
+
 								if (healMe == Me) healMeName = "Me";
 								else healMeName = healMe.Name;
 
@@ -395,7 +427,7 @@ END INITORDER COMMENT -->
 								}
 
 								StyxWoW.Me.SetFacing(healMe.Location);
-								await CommonCoroutines.StopMoving(); 
+								await CommonCoroutines.StopMoving();
 
 								if (healMe.HealthPercent < 15 && SpellManager.CanCast(18562))
 								{
@@ -507,7 +539,7 @@ END INITORDER COMMENT -->
 					<Code File="MyCTM" X="1783.71" Y="1500.368" Z="10.05346" TerminateWhen="Me.HasAura(213170)" /> <!-- <CheckMapId~>  Probably ZoneId for this - Shut off when entered Class Hall -->
 				</If>
 			</If>
-			<TurnIn QuestName="Cleansing the Mother Tree" QuestId="41689" TurnInName="Lyessa Bloomwatcher" TurnInId="104577" X="3970.218" Y="7389.277" Z="23.91248" />	
+			<TurnIn QuestName="Cleansing the Mother Tree" QuestId="41689" TurnInName="Lyessa Bloomwatcher" TurnInId="104577" X="3970.218" Y="7389.277" Z="23.91248" />
 		<!-- END Story: Artifact Weapon - G'Hanir, the Mother Tree -->
 
 

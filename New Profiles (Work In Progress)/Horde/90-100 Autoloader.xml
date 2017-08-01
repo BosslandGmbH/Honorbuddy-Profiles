@@ -7,6 +7,52 @@
 	<Name>90-100 Autoloader ($ShortHash$)</Name>
 
 	<QuestOrder>
+		<!-- Check function status -->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+			private static bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+			private static bool IsStoreProfile(string path) => path.StartsWith("store://");
+			private static string Slashify(string path) => IsStoreProfile(path) ? path.Replace(@"\", "/") : path.Replace("/", @"\");
+
+			public __CompiledBatchClass__()
+			{
+				if (profileFunctionsEnabled == null || profileFunctionsEnabled == false)
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!");
+					LoadProfile(@"..\Functions\Activate Functions.xml");
+				}
+			}
+
+			private static void LoadProfile(string path)
+			{
+				var profile = GetNewPath(path);
+				if (!IsStoreProfile(profile) && !File.Exists(profile))
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Profile does not exist.\n" + profile);
+					return;
+				}
+
+				Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Loading: " + profile);
+				ProfileManager.LoadNew(profile, false);
+			}
+
+			private static string GetNewPath(string path)
+			{
+				if (IsStoreProfile(path))
+					return Slashify(path);
+
+				var currentProfile = ProfileManager.XmlLocation;
+				if (IsStoreProfile(currentProfile))
+					return Slashify(currentProfile + "/../" + path);
+
+				var absolutePath = Path.Combine(Path.GetDirectoryName(currentProfile), path);
+				absolutePath = Path.GetFullPath(absolutePath);
+				var canonicalPath = new Uri(absolutePath).LocalPath;
+				return Slashify(canonicalPath);
+			}]]>
+		</Code>
+		<!-- END Check function status -->
+
 		<If Condition="Me.IsAlliance" >
 			<Code File="LoadProfile" ProfileName="..\1-110 Autoloader.xml" />
 		</If>
@@ -37,7 +83,7 @@
 				return false;
 			}
 			bool InPriorityLocationDraenor()
-			{	
+			{
 				if (StyxWoW.Me.ZoneId == 6554 || StyxWoW.Me.ZoneId == 6141) return true; // Horde Shrine
 				if (StyxWoW.Me.ZoneId == 1637) return true; // Orgrimmar
 				if (StyxWoW.Me.ZoneId == 4395) return true; // Dalaran, portal to Orgrimmar.
@@ -140,7 +186,7 @@
 						<Code File="UseTransport" TransportId="186238"
 							WaitAtX="2837.035" WaitAtY="6185.063" WaitAtZ="121.9975"
 							TransportStartX="2837.908" TransportStartY="6187.443" TransportStartZ="140.1648"
-							StandOnX="2844.346" StandOnY="6191.38" StandOnZ="122.3167"					  
+							StandOnX="2844.346" StandOnY="6191.38" StandOnZ="122.3167"
 							TransportEndX="1775.066" TransportEndY="-4299.745" TransportEndZ="151.0326"
 							GetOffX="1761.337" GetOffY="-4281.487" GetOffZ="133.1072"
 						/>
@@ -207,7 +253,7 @@
 						<Code File="ForcedDismount" />
 						<Code File="UseTransport" TransportId="164871"
 							WaitAtX="2067.045" WaitAtY="290.4988" WaitAtZ="97.03147"
-							TransportStartX="2062.376" TransportStartY="292.998" TransportStartZ="114.973" 
+							TransportStartX="2062.376" TransportStartY="292.998" TransportStartZ="114.973"
 							StandOnX="2068.475" StandOnY="294.824" StandOnZ="97.26456"
 							TransportEndX="1833.509" TransportEndY="-4391.543" TransportEndZ="152.7679"
 							GetOffX="1840.091" GetOffY="-4392.189" GetOffZ="135.233" />

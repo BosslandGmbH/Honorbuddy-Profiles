@@ -34,13 +34,58 @@
 		<Mob Name="Wrath-Lord Lekos" Id="97069" Flags="Pull" />
 	</Blacklist>
 
-	<Mailboxes> 
+	<Mailboxes>
 	</Mailboxes>
 
 	<Vendors>
 	</Vendors>
 
 	<QuestOrder>
+		<!-- Check function status -->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+			private static bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+			private static bool IsStoreProfile(string path) => path.StartsWith("store://");
+			private static string Slashify(string path) => IsStoreProfile(path) ? path.Replace(@"\", "/") : path.Replace("/", @"\");
+
+			public __CompiledBatchClass__()
+			{
+				if (profileFunctionsEnabled == null || profileFunctionsEnabled == false)
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!");
+					LoadProfile(@"..\..\Functions\Activate Functions.xml");
+				}
+			}
+
+			private static void LoadProfile(string path)
+			{
+				var profile = GetNewPath(path);
+				if (!IsStoreProfile(profile) && !File.Exists(profile))
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Profile does not exist.\n" + profile);
+					return;
+				}
+
+				Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Loading: " + profile);
+				ProfileManager.LoadNew(profile, false);
+			}
+
+			private static string GetNewPath(string path)
+			{
+				if (IsStoreProfile(path))
+					return Slashify(path);
+
+				var currentProfile = ProfileManager.XmlLocation;
+				if (IsStoreProfile(currentProfile))
+					return Slashify(currentProfile + "/../" + path);
+
+				var absolutePath = Path.Combine(Path.GetDirectoryName(currentProfile), path);
+				absolutePath = Path.GetFullPath(absolutePath);
+				var canonicalPath = new Uri(absolutePath).LocalPath;
+				return Slashify(canonicalPath);
+			}]]>
+		</Code>
+		<!-- END Check function status -->
 		<!-- Init Settings -->
 			<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
 
@@ -52,7 +97,7 @@
 			<LootMobs Value="true" />
 			<TargetingDistance Value="45" />
 		<!-- END Init Settings -->
-		
+
 		<!-- RunCode Methods -->
 			<Code File="RunCode" Type="Definition"><![CDATA[
 					bool DoQuest(params uint[] questIds)
@@ -390,7 +435,7 @@
 						<Hotspot X="4325.488" Y="-446.7546" Z="-283.3723" />
 					</HuntingGrounds>
 					<PursuitList>
-						<PursueGameObject Id="244588" PursueWhen="GAMEOBJECT.DynamicFlags == -65020 &amp;&amp; GAMEOBJECT.Y &gt; -580" /> 
+						<PursueGameObject Id="244588" PursueWhen="GAMEOBJECT.DynamicFlags == -65020 &amp;&amp; GAMEOBJECT.Y &gt; -580" />
 					</PursuitList>
 				</Code>
 				<EnableBehavior Name="Pull" />
@@ -507,7 +552,7 @@
 			<If Condition="Me.Specialization == WoWSpec.DemonHunterVengeance" >
 				<PickUp QuestName="Between Us and Freedom" QuestId="40255" GiverName="Kor'vas Bloodthorn" GiverId="97644" X="4282.924" Y="-451.7708" Z="259.5196" />
 			</If> -->
-			
+
 			<If Condition="NeedsBreadcrumbQuest(39694, 39688, 40255, 40256)" >
 				<Code File="InteractWith" MobId="97644" InteractByQuestFrameDisposition="Accept" X="4282.924" Y="-451.7708" Z="259.5193" TerminateWhen="DoQuest(39694, 39688, 40255, 40256)" />
 				<Code File="MyCTM" X="4202.687" Y="-451.0579" Z="269.8311" />
@@ -550,7 +595,7 @@
 			<PickUp QuestName="Demons Among Them" QuestId="44463" GiverName="Jace Darkweaver" GiverId="102585" X="-8386.645" Y="256.592" Z="155.3483" />
 			<While Condition="DoQuest(44463)" >
 				<Code File="InteractWith" MobId="100429" GossipOptions="1" QuestId="44463" QuestObjectiveIndex="1" X="-8361.81" Y="230.6198" Z="157.9789" />
-				<Code File="RunCode" Code="await SkipCutscene();" />					
+				<Code File="RunCode" Code="await SkipCutscene();" />
 				<Code File="KillUntilComplete" MobId="100993" QuestId="44463" QuestObjectiveIndex="2" >
 					<HuntingGrounds>
 						<Hotspot X="-8378.479" Y="254.7162" Z="155.3473" />
