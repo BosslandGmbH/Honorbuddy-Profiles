@@ -248,6 +248,8 @@ public static class CustomAntiStuck
 {
 	private static readonly Stopwatch s_antiStuckTimerLongTerm = new Stopwatch();
 
+	private static readonly Stopwatch s_antiStuckTimerShortTerm = new Stopwatch();
+
 	private static Vector3 s_lastPointLong = Vector3.Zero;
 
 	private static Vector3 s_lastPointShort = Vector3.Zero;
@@ -268,7 +270,16 @@ public static class CustomAntiStuck
 			return await HandleLongTermStuck();
 		}
 
-		return await HandleShortTermStuck();
+		if (!s_antiStuckTimerShortTerm.IsRunning)
+			s_antiStuckTimerShortTerm.Start();
+
+		if (s_antiStuckTimerShortTerm.Elapsed > TimeSpan.FromSeconds(5))
+		{
+			s_antiStuckTimerShortTerm.Restart();
+			return await HandleShortTermStuck();
+		}
+
+		return false;
 	}
 
 	private static WoWItem GetHearthstone()
@@ -1302,7 +1313,7 @@ public static class SettingsView
 	{
 		if (await ShowMessageAsync("Continue to external site?",
 								   "https://github.com/BosslandGmbH/Honorbuddy-Profiles"
-								   + "/commits/master is not an official Bossland site",
+								   + "\n/commits/master is not an official Bossland site",
 								   MahApps.Metro.Controls.Dialogs.MessageDialogStyle.AffirmativeAndNegative))
 			Process.Start("https://github.com/BosslandGmbH/Honorbuddy-Profiles/commits/master");
 	}
