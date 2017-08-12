@@ -266,14 +266,13 @@
 								orderby loc.DistanceSquared(Me.Location)
 								select unit).FirstOrDefault();
 
-						while (killUnit != null && killUnit.IsAlive)
+						while (killUnit != null && killUnit.IsValid && killUnit.IsAlive)
 						{
 							Me.SetFacing(killUnit.Location);
 							Lua.DoString("if GetPetActionCooldown(2) == 0 then CastPetAction(2) else CastPetAction(1) end", 0);
 							await Coroutine.Sleep(1000);
-							await Coroutine.Yield();
 						}
-						await Coroutine.Yield();
+						await Coroutine.Sleep(100);
 					}
 				]]>
 			</Code>
