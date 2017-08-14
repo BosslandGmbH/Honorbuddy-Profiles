@@ -1259,8 +1259,9 @@ END INITORDER COMMENT -->
 					<Code File="KillUntilComplete" MobId="98016" QuestId="40044" QuestObjectiveIndex="3" X="3827.463" Y="1730.771" Z="-0.8196021" />
 				</While>
 
-				<While Condition="DoQuest(40046)" >
-					<Code File="InteractWith" InteractByLooting="true" PreInteractMountStrategy="Dismount" MobId="252239" QuestId="40046" QuestObjectiveIndex="1" >
+				<While Condition="!IsQuestCompleted(40046)" >
+					<PickUp QuestName="Scavenging the Shallows" QuestId="40046" GiverName="Havi" GiverId="97973" X="3521.013" Y="1614.097" Z="11.35879" />
+					<Code File="InteractWith" InteractByLooting="true" PreInteractMountStrategy="Dismount" MobId="252239" QuestId="40046" NumOfTimes="25" >
 						<HuntingGrounds>
 							<Hotspot X="3782.412" Y="1751.082" Z="-0.7120258" />
 							<Hotspot X="3656.904" Y="1735.113" Z="-0.03174806" />
@@ -1271,6 +1272,9 @@ END INITORDER COMMENT -->
 							<Hotspot X="3444.761" Y="1677.632" Z="-0.2858756" />
 						</HuntingGrounds>
 					</Code>
+					<If Condition="!IsQuestCompleted(40046)" > <!-- Sometimes the item is never lootable.  Bug on Blizz's end. -->
+						<Code File="AbandonQuest" QuestId="40046" />
+					</If>
 				</While>
 
 				<While Condition="DoQuest(43595)" >
@@ -1775,11 +1779,7 @@ END INITORDER COMMENT -->
 			</If> -->
 
 			<PickUp QuestName="A Murky Fate" QuestId="40120" GiverName="Morheim Ancestor" GiverId="98587" X="2907.359" Y="493.566" Z="16.40273" />
-			<Code File="InteractWith" MobId="98577" NonCompeteDistance="0" Range="3" InteractByUsingItemId="129725" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="40120" QuestObjectiveIndex="1" >
-				<HuntingGrounds>
-					<Hotspot X="2882.382" Y="416.4601" Z="15.81335" />
-				</HuntingGrounds>
-			</Code>
+			<Code File="InteractWith" MobId="98577" NonCompeteDistance="0" Range="3" InteractByUsingItemId="129725" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="40120" QuestObjectiveIndex="1" X="2882.382" Y="416.4601" Z="15.81335" />
 			<TurnIn QuestName="A Murky Fate" QuestId="40120" TurnInName="Morheim Ancestor" TurnInId="98587" X="2907.359" Y="493.566" Z="16.40273" />
 
 			<Code File="InteractWith" MobState="DontCare" NumOfTimes="100" TerminateWhen="!HasQuest(40111)" >
