@@ -1,0 +1,610 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/EchoQuestingSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Gorgrond ($ShortHash$)</Name>
+
+	<DefaultNavType>Fly</DefaultNavType>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+		<Vendor Name="Masha Longhorn" Entry="85821" Type="Repair" X="7613.162" Y="1792.368" Z="81.1739" />
+		<Vendor Name="Trader Yula" Entry="85968" Type="Food" X="6330.835" Y="713.717" Z="113.9123" />
+		<Vendor Name="Thaelin Darkanvil" Entry="75136" Type="Food" X="6331.465" Y="732.6285" Z="115.7077" UsableWhen="SpellManager.HasSpell(164012)" />
+		<Vendor Name="Budgy" Entry="84234" Type="Repair" X="6610.504" Y="1286.526" Z="64.83903" />
+	</Vendors>
+
+	<Blackspots>
+		<Blackspot X="6245.452" Y="654.035" Z="84.70582" Radius="12" />
+		<Blackspot X="1440.788" Y="549.9026" Z="85.38272" Radius="14.15243" />
+		<Blackspot X="5815.613" Y="1279.295" Z="109.7877" Radius="8" /> <!-- Sparring areana / custom building -->
+		<Blackspot X="6392.612" Y="387.1232" Z="11.79635" Radius="10" /> <!-- Mushroom with nav issues. -->
+	</Blackspots>
+
+	<Blacklist>
+		<Mob Name="Crater Lord Igneous" Id="81528" Flags="Pull" />
+		<Mob Name="Biolante" Id="75207" Flags="Pull" />
+	</Blacklist>
+
+	<QuestOrder IgnoreCheckpoints="false" > <!-- Not skipping to checkpoints here because this zone gives a LOT more experience than others -->
+		<!-- Check function status -->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+			private static bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+			private static bool IsStoreProfile(string path) => path.StartsWith("store://");
+			private static string Slashify(string path) => IsStoreProfile(path) ? path.Replace(@"\", "/") : path.Replace("/", @"\");
+
+			public __CompiledBatchClass__()
+			{
+				if (profileFunctionsEnabled == null || profileFunctionsEnabled == false)
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!");
+					LoadProfile(@"..\..\Functions\Activate Functions.xml");
+				}
+			}
+
+			private static void LoadProfile(string path)
+			{
+				var profile = GetNewPath(path);
+				if (!IsStoreProfile(profile) && !File.Exists(profile))
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Profile does not exist.\n" + profile);
+					return;
+				}
+
+				Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Loading: " + profile);
+				ProfileManager.LoadNew(profile, false);
+			}
+
+			private static string GetNewPath(string path)
+			{
+				if (IsStoreProfile(path))
+					return Slashify(path);
+
+				var currentProfile = ProfileManager.XmlLocation;
+				if (IsStoreProfile(currentProfile))
+					return Slashify(currentProfile + "/../" + path);
+
+				var absolutePath = Path.Combine(Path.GetDirectoryName(currentProfile), path);
+				absolutePath = Path.GetFullPath(absolutePath);
+				var canonicalPath = new Uri(absolutePath).LocalPath;
+				return Slashify(canonicalPath);
+			}]]>
+		</Code>
+		<!-- END Check function status -->
+
+		<If Condition="Me.IsHorde" >
+			<Code File="LoadProfile" ProfileName="..\..\Questing Autoloader.xml" />
+		</If>
+		<!-- RunCode Methods -->
+			<!-- <Code File="RunCode">
+			<![CDATA[
+				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
+				Lua.DoString("SetCVar('AutoLootDefault', 1);");
+				CharacterSettings.Instance.LootMobs = true;
+				CharacterSettings.Instance.Save();
+				Lua.DoString("for i=1,GetNumAddOns() do local relo=false if IsAddOnLoaded(i) then relo=true DisableAddOn(i) end if relo then relo=nil ReloadUI() end end");
+				await Coroutine.Sleep(1500);
+				Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
+			]]>
+			</Code> -->
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</Code>
+		<!-- END RunCode Methods -->
+
+
+		<If Condition="Me.ZoneId == 7078" >
+			<Code File="InteractWith" MobId="81103" PreInteractMountStrategy="Dismount" X="1864.912" Y="217.4834" Z="76.69113" TerminateWhen="Me.ZoneId != 7078" />
+			<Code File="Misc\RunLua" WaitTime="1000" Lua="GetNumRoutes(30); TakeTaxiNode(30);" />
+		</If>
+
+		<PickUp QuestName="Welcome to Gorgrond" QuestId="35033" GiverName="Yrel" GiverId="80978" X="6470.26" Y="-167.3336" Z="120.0861" />
+		<MoveTo QuestId="35033" X="6760.497" Y="-185.0738" Z="86.40657" />
+		<TurnIn QuestName="Welcome to Gorgrond" QuestId="35033" TurnInName="Rangari D&apos;kaan" TurnInId="80921" X="6760.497" Y="-185.0738" Z="86.40657" />
+
+		<PickUp QuestName="A Harvester Has Come" QuestId="35065" GiverName="Rangari D&apos;kaan" GiverId="80921" X="6760.497" Y="-185.0738" Z="86.40657" />
+		<PickUp QuestName="Wake of the Genesaur" QuestId="35834" GiverName="Rangari Kaalya" GiverId="80922" X="6765.589" Y="-182.4602" Z="86.42409" />
+
+		<While Condition="DoQuest(35065)" >
+			<If Condition="!Me.IsIndoors" >
+				<MoveTo X="6925.565" Y="-139.3381" Z="88.76813" />
+			</If>
+			<Code File="KillUntilComplete" MobId="84373" MovementBy="NavigatorOnly" QuestId="35065" X="7035.318" Y="-104.0773" Z="47.52919" />
+		</While>
+
+		<Code File="KillUntilComplete" MobIds="84391, 84402, 84862" QuestId="35834" >
+			<HuntingGrounds>
+				<Hotspot X="6905.187" Y="-194.8674" Z="91.89562" />
+				<Hotspot X="6847.811" Y="-153.0393" Z="83.85111" />
+				<Hotspot X="6841.458" Y="-123.1841" Z="85.34238" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="A Harvester Has Come" QuestId="35065" TurnInName="Rangari D&apos;kaan" TurnInId="75146" X="6745.611" Y="-101.9806" Z="75.67336" />
+		<PickUp QuestName="He Drew Aggro...culture" QuestId="36595" GiverName="Rangari D&apos;kaan" GiverId="75146" X="6745.611" Y="-101.9806" Z="75.67336" />
+		<TurnIn QuestName="Wake of the Genesaur" QuestId="35834" TurnInName="Rangari Kaalya" TurnInId="80987" X="6743.355" Y="-94.44005" Z="76.15961" />
+
+		<While Condition="DoQuest(36595)" >
+			<Code File="KillUntilComplete" MobId="84451" WaitForNpcs="false" QuestId="36595" X="6941.834" Y="-245.2231" Z="93.0052" />
+			<Code File="InteractWith" MobId="80874" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="36595" QuestObjectiveIndex="1" X="6941.834" Y="-245.2231" Z="93.0052" />
+		</While>
+
+		<TurnIn QuestName="He Drew Aggro...culture" QuestId="36595" TurnInName="Thaelin Darkanvil" TurnInId="75136" X="6731.283" Y="-101.3168" Z="76.35802" />
+		<PickUp QuestName="Lost Mole Machines" QuestId="35055" GiverName="Thaelin Darkanvil" GiverId="75136" X="6731.283" Y="-101.3168" Z="76.35802" />
+		<PickUp QuestName="Rescue Rangari" QuestId="35050" GiverName="Rangari D&apos;kaan" GiverId="75146" X="6742.249" Y="-105.84" Z="75.85777" />
+
+		<While Condition="!QuestFlaggedCompleted(36571)" >
+			<While Condition="!IsObjectiveComplete(2, 36571) ? true : QuestFlaggedCompleted(36571)" >
+				<Code File="InteractWith" MobId="85809" MobState="Alive" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" NumOfTimes="40" TerminateWhen="IsObjectiveComplete(2, 36571) ? true : QuestFlaggedCompleted(36571)" >
+					<HuntingGrounds>
+						<Hotspot X="6666.748" Y="-73.82074" Z="74.56107" />
+						<Hotspot X="6738.956" Y="-10.21964" Z="74.35654" />
+						<Hotspot X="6669.567" Y="53.75103" Z="74.7565" />
+						<Hotspot X="6592.527" Y="85.5151" Z="73.68153" />
+						<Hotspot X="6496.028" Y="-18.16534" Z="74.04074" />
+					</HuntingGrounds>
+				</Code>
+			</While>
+
+			<Code File="KillUntilComplete" TerminateWhen="QuestFlaggedCompleted(36571)" >
+				<HuntingGrounds>
+					<Hotspot X="6666.748" Y="-73.82074" Z="74.56107" />
+					<Hotspot X="6738.956" Y="-10.21964" Z="74.35654" />
+					<Hotspot X="6669.567" Y="53.75103" Z="74.7565" />
+					<Hotspot X="6592.527" Y="85.5151" Z="73.68153" />
+					<Hotspot X="6496.028" Y="-18.16534" Z="74.04074" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueUnit Id="80744" PursueWhen="IsObjectiveComplete(1, 36571) ? false : !QuestFlaggedCompleted(36571)" />
+					<PursueUnit Id="85807" PursueWhen="IsObjectiveComplete(3, 36571) ? false : !QuestFlaggedCompleted(36571)" />
+				</PursuitList>
+			</Code>
+		</While>
+
+		<Code File="InteractWith" MobId="81018" GossipOptions="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="35050" QuestObjectiveIndex="1" X="6694.046" Y="202.3939" Z="58.18812" />
+		<Code File="InteractWith" MobId="81013" GossipOptions="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="35050" QuestObjectiveIndex="2" X="6627.704" Y="347.8167" Z="65.16475" />
+		<Code File="InteractWith" MobId="81020" GossipOptions="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="35050" QuestObjectiveIndex="3" X="6398.726" Y="558.6309" Z="94.34076" />
+
+		<While Condition="DoQuest(35055)" >
+			<Code File="InteractWith" MobId="84766" GossipOptions="1" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="35055" QuestObjectiveIndex="1" X="6313.416" Y="648.0197" Z="101.7593" />
+			<MoveTo X="6297.82" Y="690.7001" Z="116.4006" />
+			<Code File="WaitTimer" WaitTime="30000" QuestId="35055" QuestObjectiveIndex="2" />
+		</While>
+
+		<TurnIn QuestName="Rescue Rangari" QuestId="35050" TurnInName="Rangari D&apos;kaan" TurnInId="75146" X="6297.82" Y="690.7001" Z="116.4006" />
+		<TurnIn QuestName="Lost Mole Machines" QuestId="35055" TurnInName="Thaelin Darkanvil" TurnInId="75136" X="6300.774" Y="693.6065" Z="116.6118" />
+
+		<PickUp QuestName="We Need An Outpost" QuestId="35063" GiverName="Thaelin Darkanvil" GiverId="75136" X="6300.774" Y="693.6065" Z="116.6118" />
+		<While Condition="DoQuest(35063)" >
+			<Code File="Misc\RunLua" Lua="LoadAddOn(&quot;Blizzard_QuestChoice&quot;);" />
+			<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+				<Code File="InteractWith" MobId="81119" NonCompeteDistance="0" QuestId="35063" X="6300.774" Y="693.6065" Z="116.6118" />
+			</If>
+			<Code File="Misc\RunLua" QuestId="35063" Lua="QuestChoiceFrameOption2.OptionButton:Click()" WaitTime="1000" />
+			<Code File="RunCode" Code="await SkipCutscene(1000);" />
+		</While>
+		<TurnIn QuestName="We Need An Outpost" QuestId="35063" TurnInName="Thaelin Darkanvil" TurnInId="75136" X="6327.882" Y="733.675" Z="114.9154" />
+
+		<PickUp QuestName="A Rediscovered Legend" QuestId="34704" GiverName="Rangari Jonaa" GiverId="81076" X="6323.159" Y="742.7142" Z="114.1529" />
+		<PickUp QuestName="Rage and Wisdom" QuestId="35686" GiverName="Vindicator Maraad" GiverId="75127" X="6333.95" Y="742.2335" Z="115.8319" />
+		<PickUp QuestName="Rangari in the Red" QuestId="35666" GiverName="Rangari D&apos;kaan" GiverId="75146" X="6326.324" Y="709.9796" Z="113.9437" />
+		<!-- <PickUp QuestName="Seeking the Scout" QuestId="36432" GiverName="Rangari D&apos;kaan" GiverId="75146" X="6326.324" Y="709.9796" Z="113.9437" /> Uncomment if we ignore the checkpoint in Gorgrond -->
+
+		<While Condition="DoQuest(35686)" >
+			<Code File="InteractWith" MobId="81074" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="35686" QuestObjectiveIndex="1" X="6354.602" Y="746.45" Z="116.6622" />
+			<Code File="WaitTimer" WaitTime="25000" TerminateWhen="!Me.InVehicle" />
+		</While>
+
+		<TurnIn QuestName="Rage and Wisdom" QuestId="35686" TurnInName="Rangari Erdanii" TurnInId="82610" X="5954.456" Y="1282.288" Z="143.2834" />
+		<PickUp QuestName="Seedbearers of Bad News" QuestId="35664" GiverName="Rangari Erdanii" GiverId="82610" X="5954.456" Y="1282.288" Z="143.2834" />
+		<PickUp QuestName="A Harsh Reminder" QuestId="35693" GiverName="Rangari Erdanii" GiverId="82610" X="5954.456" Y="1282.288" Z="143.2834" />
+
+		<Code File="InteractWith" MobId="82392" CollectionDistance="200" ProactiveCombatStrategy="ClearMobsThatWillAggro" PreInteractMountStrategy="Dismount" QuestId="35664" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="6072.556" Y="1523.921" Z="66.12755" />
+				<Hotspot X="6132.607" Y="1411.892" Z="44.29523" />
+				<Hotspot X="6093.178" Y="1309.896" Z="75.49532" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" MobId="80685" QuestId="35693" >
+			<HuntingGrounds>
+				<Hotspot X="6072.556" Y="1523.921" Z="66.12755" />
+				<Hotspot X="6132.607" Y="1411.892" Z="44.29523" />
+				<Hotspot X="6093.178" Y="1309.896" Z="75.49532" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="Seedbearers of Bad News" QuestId="35664" TurnInName="Rangari Erdanii" TurnInId="82610" X="6105.998" Y="1393.028" Z="55.21286" />
+		<TurnIn QuestName="A Harsh Reminder" QuestId="35693" TurnInName="Rangari Erdanii" TurnInId="82610" X="6105.998" Y="1393.028" Z="55.21286" />
+
+		<PickUp QuestName="We Have Company" QuestId="35665" GiverName="Rangari Erdanii" GiverId="82610" X="6103.776" Y="1390.896" Z="56.67579" />
+		<Code File="InteractWith" MobId="81056" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="35665" QuestObjectiveIndex="1" X="6226.479" Y="1448.742" Z="40.22564" />
+		<TurnIn QuestName="We Have Company" QuestId="35665" TurnInName="Rexxar" TurnInId="82832" X="6228.931" Y="1443.355" Z="39.95553" />
+
+		<PickUp QuestName="Cauterizing Wounds" QuestId="35730" GiverName="Rexxar" GiverId="82832" X="6229.97" Y="1441.353" Z="39.95614" />
+		<Code File="InteractWith" MobId="233180" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="35730" QuestObjectiveIndex="1" X="6243.872" Y="1436.678" Z="39.95614" />
+		<Code File="InteractWith" MobId="82802" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="35730" QuestObjectiveIndex="2" X="6243.872" Y="1436.678" Z="39.95614" />
+		<TurnIn QuestName="Cauterizing Wounds" QuestId="35730" TurnInName="Rexxar" TurnInId="82832" X="6233.039" Y="1442.123" Z="39.95614" />
+
+		<PickUp QuestName="On the Mend" QuestId="35026" GiverName="Rexxar" GiverId="82832" X="6233.039" Y="1442.123" Z="39.95614" />
+		<PickUp QuestName="Basilisk Butcher" QuestId="35870" GiverName="Rexxar" GiverId="82832" X="6233.039" Y="1442.123" Z="39.95614" />
+		<TurnIn QuestName="A Rediscovered Legend" QuestId="34704" TurnInName="Gladiator Akaani" TurnInId="79322" X="6155.519" Y="1568.616" Z="61.6616" />
+		<PickUp QuestName="Getting Gladiators" QuestId="34699" GiverName="Gladiator Akaani" GiverId="79322" X="6155.519" Y="1568.616" Z="61.6616" />
+		<PickUp QuestName="Slave Hunters" QuestId="34698" GiverName="Kash&apos;drakor" GiverId="79320" X="6150.879" Y="1566.024" Z="61.55746" />
+		<PickUp QuestName="Nazgrel" QuestId="34700" GiverName="Kash&apos;drakor" GiverId="79320" X="6150.879" Y="1566.024" Z="61.55746" />
+		<PickUp QuestName="Krav&apos;ogra" QuestId="34702" GiverName="Beatface" GiverId="79331" X="6151.789" Y="1571.513" Z="61.76796" /> <!-- NOTE, Sparring Arena specific quest. -->
+		<PickUp QuestName="Need More Teeth" QuestId="34012" GiverName="Prowler Sasha" GiverId="75008" X="5988.569" Y="1675.995" Z="79.46302" />
+
+		<Code File="KillUntilComplete" MobId="79623" QuestId="34698" QuestObjectiveIndex="2" X="5968.919" Y="1702.284" Z="117.6974" />
+
+		<Code File="InteractWith" MobId="233284" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34699" QuestObjectiveIndex="3" X="6054.048" Y="1771.059" Z="79.47798" />
+
+		<Code File="KillUntilComplete" MobId="79621" QuestId="34698" QuestObjectiveIndex="1" X="5956.041" Y="1762.372" Z="62.67952" />
+
+		<While Condition="DoQuest(34702)" >
+			<Code File="InteractWith" MobId="81388" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" WaitTime="8000" QuestId="34702" X="5911.843" Y="1766.637" Z="62.54105" TerminateWhen="Unit(75864, u =&gt; u.Attackable) != null" />
+			<Code File="KillUntilComplete" MobIds="79727, 79728, 79726, 75864" WaitForNpcs="false" QuestId="34702" X="5919.237" Y="1767.982" Z="61.36032" />
+		</While>
+
+		<Code File="InteractWith" MobId="233317" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34699" QuestObjectiveIndex="2" X="5894.483" Y="1815.482" Z="62.67872" />
+		<Code File="InteractWith" MobId="233308" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34699" QuestObjectiveIndex="1" X="5926.596" Y="1861.803" Z="68.32646" />
+
+		<Code File="KillUntilComplete" MobId="79626" QuestId="34698" QuestObjectiveIndex="3" X="5852.444" Y="1878.192" Z="84.76141" />
+
+		<Code File="KillUntilComplete" MobIds="75819, 75835" QuestId="34012" >
+			<HuntingGrounds>
+				<Hotspot X="5934.243" Y="1820.222" Z="62.67846" />
+				<Hotspot X="6047.292" Y="1721.439" Z="77.74983" />
+				<Hotspot X="5991.5" Y="1894.125" Z="89.24087" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="Getting Gladiators" QuestId="34699" TurnInName="Bruto" TurnInId="77014" X="5885.706" Y="2050.876" Z="71.93219" />
+		<PickUp QuestName="The Axe of Kor&apos;gall" QuestId="34703" GiverName="Bruto" GiverId="77014" X="5885.706" Y="2050.876" Z="71.93219" />
+
+		<While Condition="DoQuest(34703)" >
+			<Code File="Hooks\DoWhen" ActivityName="DestroyBarricade" LogExecution="false" UseWhen="Object(227114) != null &amp;&amp; Object(227114).ToGameObject().State == WoWGameObjectState.Ready &amp;&amp; Object(227114).Location.DistanceSqr(Me.Location) &lt; 8f*8f" >
+				<Code File="RunCode">
+					<![CDATA[
+						var barricadePoi = Object(227114);
+						await CommonCoroutines.StopMoving();
+						barricadePoi.Interact();
+						await Coroutine.Sleep(2000);
+					]]>
+				</Code>
+			</Code>
+			<Code File="KillUntilComplete" MobId="77020" QuestId="34703" X="5779.675" Y="2088.353" Z="69.78963" />
+			<MoveTo X="5811.233" Y="2054.506" Z="69.70794" />
+			<Code File="MyCTM" X="5823.251" Y="2033.554" Z="59.96763" />
+			<Code File="Hooks\DoWhen" ActivityName="DestroyBarricade" Command="Remove" />
+		</While>
+
+		<Code File="InteractWith" MobId="233369" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="34700" QuestObjectiveIndex="1" X="5745.294" Y="2051.911" Z="49.50441" />
+
+		<TurnIn QuestName="Need More Teeth" QuestId="34012" TurnInName="Prowler Sasha" TurnInId="75008" X="5986.364" Y="1676.672" Z="79.17661" />
+		<TurnIn QuestName="Krav&apos;ogra" QuestId="34702" TurnInName="Beatface" TurnInId="79331" X="6150.46" Y="1571.255" Z="61.72909" />
+		<TurnIn QuestName="The Axe of Kor&apos;gall" QuestId="34703" TurnInName="Gladiator Akaani" TurnInId="79322" X="6153.623" Y="1573.231" Z="61.992" />
+		<TurnIn QuestName="Slave Hunters" QuestId="34698" TurnInName="Kash&apos;drakor" TurnInId="79320" X="6153.623" Y="1573.231" Z="61.992" />
+		<TurnIn QuestName="Nazgrel" QuestId="34700" TurnInName="Kash&apos;drakor" TurnInId="79320" X="6153.623" Y="1573.231" Z="61.992" />
+		<PickUp QuestName="The Sparring Arena" QuestId="35137" GiverName="Gladiator Akani" GiverId="79322" X="6153.623" Y="1573.231" Z="61.992" /> <!-- Note, Sparring Arena only -->
+
+		<If Condition="!IsQuestCompleted(35883)" >
+			<Code File="InteractWith" MobId="79337" NonCompeteDistance="0" X="6158.788" Y="1572.491" Z="61.98489" TerminateWhen="IsQuestCompleted(35883)" />
+			<Code File="RunCode" Code="QuestFrame.Instance.CompleteQuest();" />
+		</If>
+
+		<Code File="KillUntilComplete" MobIds="81685, 83458" QuestId="35026" >
+			<HuntingGrounds>
+				<Hotspot X="6230.342" Y="1511.749" Z="45.60844" />
+				<Hotspot X="6284.997" Y="1573.265" Z="46.7049" />
+				<Hotspot X="6198.48" Y="1351.736" Z="46.82314" />
+				<Hotspot X="6344.844" Y="1349.015" Z="45.30824" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" MobId="74962" QuestId="35870" X="6275.293" Y="1413.364" Z="36.54895" />
+
+		<While Condition="!QuestFlaggedCompleted(36603)" >
+			<Code File="Hooks\Avoid" AvoidName="AcidPool" Command="Add" IgnoreLootInAvoid="true" ObjectType="AreaTrigger" ObjectId="8093" Radius="4" />
+			<Code File="KillUntilComplete" TerminateWhen="QuestFlaggedCompleted(36603)" >
+				<HuntingGrounds>
+					<Hotspot X="6380.934" Y="1779.483" Z="62.27605" />
+					<Hotspot X="6517.275" Y="1765.613" Z="48.43047" />
+					<Hotspot X="6662.872" Y="1771.329" Z="38.16269" />
+					<Hotspot X="6815.59" Y="1663.614" Z="37.77621" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueUnit Id="85924" PursueWhen="!IsObjectiveComplete(1, 36603)" />
+					<PursueUnit Id="85960" PursueWhen="!IsObjectiveComplete(2, 36603)" />
+					<PursueUnit Id="85942" PursueWhen="!IsObjectiveComplete(3, 36603)" />
+				</PursuitList>
+			</Code>
+			<Code File="Hooks\Avoid" AvoidName="AcidPool" Command="Remove" />
+		</While>
+
+		<If Condition="QuestDone(35026, 35870)" >
+			<DisableBehavior Name="FlightPath" /> <!-- This NPC is a flight master. If the 'updating nodes' hook runs, the taxi menu won't be closed - causing these turn ins to fail -->
+			<TurnIn QuestName="On the Mend" QuestId="35026" TurnInName="Nisha" TurnInId="81674" X="6589.009" Y="1316.222" Z="64.83028" />
+			<TurnIn QuestName="Basilisk Butcher" QuestId="35870" TurnInName="Nisha" TurnInId="81674" X="6589.009" Y="1316.222" Z="64.83028" />
+			<EnableBehavior Name="FlightPath" />
+		</If>
+
+		<PickUp QuestName="Is This One of Yours?" QuestId="36508" GiverName="Rexxar" GiverId="83569" X="6603.039" Y="1298.88" Z="64.63521" />
+		<Code File="InteractWith" MobId="83569" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="36508" QuestObjectiveIndex="1" X="6602.24" Y="1298.957" Z="64.63441" />
+		<TurnIn QuestName="Is This One of Yours?" QuestId="36508" TurnInName="Rangari Erdanii" TurnInId="82610" X="6590.212" Y="1291.63" Z="64.64575" />
+
+		<PickUp QuestName="The Crystal Shard" QuestId="36208" GiverName="Rangari Erdanii" GiverId="82610" X="6590.212" Y="1291.63" Z="64.64575" />
+		<PickUp QuestName="Hard Shell" QuestId="36210" GiverName="Rangari Erdanii" GiverId="82610" X="6590.212" Y="1291.63" Z="64.64575" />
+		<PickUp QuestName="Bad at Breaking" QuestId="35037" GiverName="Rexxar" GiverId="80856" X="6602.42" Y="1298.478" Z="64.63549" />
+		<PickUp QuestName="Nisha&apos;s Vengeance" QuestId="35934" GiverName="Rexxar" GiverId="80856" X="6602.42" Y="1298.478" Z="64.63549" />
+
+		<Code File="KillUntilComplete" MobId="85988" QuestId="35037" QuestObjectiveIndex="1" X="6635.153" Y="1152.994" Z="29.67082" />
+		<Code File="KillUntilComplete" MobId="83774" QuestId="35037" QuestObjectiveIndex="2" X="6768.378" Y="1156.091" Z="71.45708" />
+
+		<PickUp QuestName="The Gronn Strategy" QuestId="35925" GiverName="Weaponization Orders" GiverId="233391" X="6752.733" Y="1159.872" Z="70.98831" />
+
+		<Code File="KillUntilComplete" MobId="75091" QuestId="35934" >
+			<HuntingGrounds>
+				<Hotspot X="6701.206" Y="1149.404" Z="47.56308" />
+				<Hotspot X="6669.514" Y="1196.668" Z="37.36621" />
+				<Hotspot X="6588.766" Y="1199.034" Z="50.54492" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="InteractWith" MobId="83489" CollectionDistance="200" InteractByLooting="true" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="36208" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="6719.807" Y="1300.427" Z="24.21097" />
+				<Hotspot X="6702.429" Y="1390.97" Z="24.68876" />
+				<Hotspot X="6669.9" Y="1476.836" Z="20.45923" />
+				<Hotspot X="6780.479" Y="1451.935" Z="12.92036" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" MobId="81518" QuestId="36210" >
+			<HuntingGrounds>
+				<Hotspot X="6719.807" Y="1300.427" Z="24.21097" />
+				<Hotspot X="6702.429" Y="1390.97" Z="24.68876" />
+				<Hotspot X="6669.9" Y="1476.836" Z="20.45923" />
+				<Hotspot X="6780.479" Y="1451.935" Z="12.92036" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="Bad at Breaking" QuestId="35037" TurnInName="Rexxar" TurnInId="80856" X="6601.99" Y="1299.762" Z="64.63406" />
+		<TurnIn QuestName="Nisha&apos;s Vengeance" QuestId="35934" TurnInName="Rexxar" TurnInId="80856" X="6601.99" Y="1299.762" Z="64.63406" />
+		<TurnIn QuestName="The Gronn Strategy" QuestId="35925" TurnInName="Rexxar" TurnInId="80856" X="6601.99" Y="1299.762" Z="64.63406" />
+		<TurnIn QuestName="The Crystal Shard" QuestId="36208" TurnInName="Rangari Erdanii" TurnInId="82610" X="6590.392" Y="1292.317" Z="64.63953" />
+		<TurnIn QuestName="Hard Shell" QuestId="36210" TurnInName="Rangari Erdanii" TurnInId="82610" X="6590.392" Y="1292.317" Z="64.63953" />
+
+		<PickUp QuestName="What&apos;s Under There?" QuestId="36209" GiverName="Rangari Erdanii" GiverId="82610" X="6590.392" Y="1292.317" Z="64.63953" />
+		<While Condition="DoQuest(36209)" >
+			<Code File="UseItem" ItemId="112958" QuestId="36209" TerminateWhen="Me.HasAura(164332)" />
+			<Code File="InteractWith" MobId="231880" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="36209" QuestObjectiveIndex="1" X="6571.6" Y="1236.499" Z="63.7883" TerminateWhen="!Me.HasAura(164332)" />
+			<Code File="InteractWith" MobId="86022" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="36209" QuestObjectiveIndex="2" X="6840.418" Y="1318.075" Z="68.51578" TerminateWhen="!Me.HasAura(164332)" />
+			<Code File="InteractWith" MobId="231881" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="36209" QuestObjectiveIndex="3" X="6840.418" Y="1318.075" Z="68.51578" TerminateWhen="!Me.HasAura(164332)" />
+			<Code File="InteractWith" MobId="84503" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="36209" QuestObjectiveIndex="5" X="7288.84" Y="1537.947" Z="41.78963" TerminateWhen="!Me.HasAura(164332)" />
+			<Code File="InteractWith" MobId="231883" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="36209" QuestObjectiveIndex="6" X="7277.817" Y="1545.401" Z="42.5793" TerminateWhen="!Me.HasAura(164332)" />
+		</While>
+		<TurnIn QuestName="What&apos;s Under There?" QuestId="36209" TurnInName="Rangari Erdanii" TurnInId="82610" X="6589.203" Y="1288.488" Z="64.66018" />
+
+		<PickUp QuestName="Leave Every Soldier Behind" QuestId="36223" GiverName="Rangari Erdanii" GiverId="82610" X="6589.203" Y="1288.488" Z="64.66018" />
+		<PickUp QuestName="Fair Warning" QuestId="35128" GiverName="Rexxar" GiverId="80856" X="6602.652" Y="1298.945" Z="64.63518" />
+
+		<While Condition="DoQuest(35128, 36223) &amp;&amp; Unit(81674) != null" >
+			<Code File="InteractWith" MobId="81674" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" X="6593.715" Y="1313.134" Z="64.63544" />
+			<Code File="WaitTimer" WaitTime="30000" TerminateWhen="!Me.InVehicle" />
+		</While>
+
+		<Code File="KillUntilComplete" MobId="81043" QuestId="35128" QuestObjectiveIndex="2" X="7022.689" Y="1643.249" Z="-36.82618" />
+
+		<Code File="InteractWith" MobId="81213" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="36223" QuestObjectiveIndex="1" X="6991.152" Y="1592.586" Z="-36.68575" />
+		<Code File="InteractWith" MobId="233594" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="36223" QuestObjectiveIndex="2" X="6991.152" Y="1592.586" Z="-36.68575" />
+
+		<Code File="KillUntilComplete" MobId="81240" QuestId="35128" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="7022.689" Y="1643.249" Z="-36.82618" />
+				<Hotspot X="7056.541" Y="1573.837" Z="-34.7773" />
+				<Hotspot X="7018.042" Y="1525.874" Z="-31.68837" />
+				<Hotspot X="7060.773" Y="1607.024" Z="3.548626" />
+			</HuntingGrounds>
+		</Code>
+
+		<PickUp QuestName="A Great Escape" QuestId="35210" GiverName="Goren Tunnel" GiverId="236140" X="7033.933" Y="1633.32" Z="-36.68621" />
+		<Code File="InteractWith" MobId="235115" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="35210" QuestObjectiveIndex="1" X="7033.933" Y="1633.32" Z="-36.68621" />
+
+		<TurnIn QuestName="Leave Every Soldier Behind" QuestId="36223" TurnInName="Rexxar" TurnInId="84131" X="6930.737" Y="1471.771" Z="33.25011" />
+		<TurnIn QuestName="Fair Warning" QuestId="35128" TurnInName="Rexxar" TurnInId="84131" X="6930.737" Y="1471.771" Z="33.25011" />
+		<TurnIn QuestName="A Great Escape" QuestId="35210" TurnInName="Rexxar" TurnInId="84131" X="6930.737" Y="1471.771" Z="33.25011" />
+
+		<PickUp QuestName="Eye in the Sky" QuestId="35139" GiverName="Rexxar" GiverId="84131" X="6930.441" Y="1473.474" Z="33.27093" />
+		<While Condition="DoQuest(35139)" >
+			<Code File="InteractWith" MobId="83933" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="35139" QuestObjectiveIndex="1" X="6928.538" Y="1479.542" Z="33.41547" />
+			<Code File="RunCode" Code="await SkipCutscene();" />
+		</While>
+		<TurnIn QuestName="Eye in the Sky" QuestId="35139" TurnInName="Rexxar" TurnInId="84131" X="6926.747" Y="1476.609" Z="33.28381" />
+
+		<TurnIn QuestName="The Sparring Arena" QuestId="35137" TurnInName="Rangari Jonaa" TurnInId="81076" X="6330.475" Y="749.3412" Z="115.0581" />
+		<TurnIn QuestName="Rangari in the Red" QuestId="35666" TurnInName="Khaano" TurnInId="80762" X="6515.805" Y="214.9709" Z="28.10294" />
+		<PickUp QuestName="Scout Forensics" QuestId="35633" GiverName="Khaano" GiverId="80762" X="6515.805" Y="214.9709" Z="28.10294" />
+		<PickUp QuestName="Vengeance for the Fallen" QuestId="35640" GiverName="Dying Rangari" GiverId="82499" X="6436.096" Y="198.1395" Z="5.278067" />
+
+		<Code File="InteractWith" MobId="80809" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="35633" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="6357.409" Y="261.8988" Z="-0.6832728" />
+				<Hotspot X="6375.381" Y="165.3192" Z="-0.68542" />
+			</HuntingGrounds>
+		</Code>
+
+		<While Condition="DoQuest(35640) || !IsQuestCompleted(35642)" >
+			<!-- To avoid issues with custom looting -->
+			<Code File="InteractWith" MobId="80714" InteractByLooting="true" PreInteractMountStrategy="Dismount" CollectionDistance="200" TerminateWhen="!DoQuest(35640) &amp;&amp; IsQuestCompleted(35642)" > <!-- Obtain and complete Mysterious Pod -->
+				<HuntingGrounds>
+					<Hotspot X="6022.111" Y="603.8957" Z="24.19525" />
+					<Hotspot X="6112.663" Y="519.1295" Z="11.39996" />
+					<Hotspot X="6136.369" Y="410.3114" Z="0.01513039" />
+				</HuntingGrounds>
+			</Code>
+		</While>
+
+		<TurnIn QuestName="Scout Forensics" QuestId="35633" TurnInName="Khaano" TurnInId="82476" X="6326.431" Y="301.3986" Z="13.2915" />
+		<TurnIn QuestName="Vengeance for the Fallen" QuestId="35640" TurnInName="Khaano" TurnInId="82476" X="6326.431" Y="301.3986" Z="13.2915" />
+		<TurnIn QuestName="Mysterious Pod" QuestId="35642" TurnInName="Khaano" TurnInId="82476" X="6326.431" Y="301.3986" Z="13.2915" />
+		<PickUp QuestName="Mercy for the Living" QuestId="35644" GiverName="Khaano" GiverId="82476" X="6327.641" Y="302.8671" Z="13.49876" />
+		<PickUp QuestName="The Secret of the Fungus" QuestId="35645" GiverName="Khaano" GiverId="82476" X="6327.641" Y="302.8671" Z="13.49876" />
+
+		<Code File="InteractWith" MobId="231769" CollectionDistance="200" InteractByLooting="true" PreInteractMountStrategy="Dismount" QuestId="35645" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="6225.731" Y="385.0247" Z="3.143286" />
+				<Hotspot X="6327.978" Y="366.2695" Z="5.89921" />
+				<Hotspot X="6340.954" Y="451.2318" Z="23.34623" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" MobId="80721" QuestId="35644" >
+			<HuntingGrounds>
+				<Hotspot X="6225.731" Y="385.0247" Z="3.143286" />
+				<Hotspot X="6327.978" Y="366.2695" Z="5.89921" />
+				<Hotspot X="6340.954" Y="451.2318" Z="23.34623" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="Mercy for the Living" QuestId="35644" TurnInName="Khaano" TurnInId="82476" X="6326.04" Y="301.626" Z="13.27123" />
+		<TurnIn QuestName="The Secret of the Fungus" QuestId="35645" TurnInName="Khaano" TurnInId="82476" X="6326.04" Y="301.626" Z="13.27123" />
+		<PickUp QuestName="A Grim Harvest" QuestId="35647" GiverName="Khaano" GiverId="82476" X="6326.04" Y="301.626" Z="13.27123" />
+		<PickUp QuestName="A Heartfelt Search" QuestId="35656" GiverName="Khaano" GiverId="82476" X="6326.04" Y="301.626" Z="13.27123" />
+
+		<Code File="InteractWith" MobId="233046" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="35656" QuestObjectiveIndex="1" X="6183.101" Y="251.66" Z="0.2748558" />
+
+		<Code File="KillUntilComplete" MobId="80739" QuestId="35647" >
+			<HuntingGrounds>
+				<Hotspot X="6171.124" Y="277.6296" Z="-0.6854612" />
+				<Hotspot X="6262.604" Y="227.7242" Z="-0.5729759" />
+				<Hotspot X="6160.748" Y="157.2964" Z="-0.2703983" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="A Grim Harvest" QuestId="35647" TurnInName="Khaano" TurnInId="82477" X="6185.608" Y="247.2399" Z="0.2401021" />
+		<TurnIn QuestName="A Heartfelt Search" QuestId="35656" TurnInName="Khaano" TurnInId="82477" X="6185.608" Y="247.2399" Z="0.2401021" />
+
+		<PickUp QuestName="Heart of the Fen" QuestId="35659" GiverName="Khaano" GiverId="82477" X="6185.608" Y="247.2399" Z="0.2401021" />
+		<Code File="KillUntilComplete" MobId="86282" QuestId="35659" X="6215.176" Y="69.9891" Z="0.5506846" />
+		<TurnIn QuestName="Heart of the Fen" QuestId="35659" TurnInName="Rangari D&apos;kaan" TurnInId="75146" X="6322.278" Y="710.9202" Z="113.8832" />
+
+		<!-- Turn in Boss Quest Items -->
+		<If Condition="HasItem(114024) || HasQuest(36084)" >
+			<PickUp QuestName="Proof of Strength: Botani Bloom" QuestId="36084" GiverName="Botani Bloom" GiverId="114024" GiverType="Item" />
+			<TurnIn QuestName="Proof of Strength: Botani Bloom" QuestId="36084" TurnInName="Rangari Jonaa" TurnInId="81076" X="6349.229" Y="727.4277" Z="117.5588" />
+		</If>
+		<If Condition="HasItem(113586) || HasQuest(35944)" >
+			<PickUp QuestName="Proof of Strength: Goren Tooth" QuestId="35944" GiverName="Acid-Stained Goren Tooth" GiverId="113586" GiverType="Item" />
+			<TurnIn QuestName="Proof of Strength: Goren Tooth" QuestId="35944" TurnInName="Rangari Jonaa" TurnInId="81076" X="6349.229" Y="727.4277" Z="117.5588" />
+		</If>
+		<If Condition="HasItem(114020) || HasQuest(36078)" >
+			<PickUp QuestName="Proof of Strength: Gronnling Scale" QuestId="36078" GiverName="Gronnling Scale" GiverId="114020" GiverType="Item" />
+			<TurnIn QuestName="Proof of Strength: Gronnling Scale" QuestId="36078" TurnInName="Rangari Jonaa" TurnInId="81076" X="6349.229" Y="727.4277" Z="117.5588" />
+		</If>
+		<If Condition="HasItem(114035) || HasQuest(36103)" >
+			<PickUp QuestName="Proof of Strength: Basilisk Scale" QuestId="36103" GiverName="Basilisk Scale" GiverId="114035" GiverType="Item" />
+			<TurnIn QuestName="Proof of Strength: Basilisk Scale" QuestId="36103" TurnInName="Rangari Jonaa" TurnInId="81076" X="6349.229" Y="727.4277" Z="117.5588" />
+		</If>
+		<If Condition="HasItem(114020) || HasQuest(36078)" >
+			<PickUp QuestName="Proof of Strength: Gronnling Scale" QuestId="36078" GiverName="Gronnling Scale" GiverId="114020" GiverType="Item" />
+			<TurnIn QuestName="Proof of Strength: Gronnling Scale" QuestId="36078" TurnInName="Rangari Jonaa" TurnInId="81076" X="6349.229" Y="727.4277" Z="117.5588" />
+		</If>
+		<If Condition="HasItem(114022) || HasQuest(36081)" >
+			<PickUp QuestName="Proof of Strength: Gronn Eye" QuestId="36081" GiverName="Gronn Eye" GiverId="114022" GiverType="Item" />
+			<TurnIn QuestName="Proof of Strength: Gronn Eye" QuestId="36081" TurnInName="Rangari Jonaa" TurnInId="81076" X="6349.229" Y="727.4277" Z="117.5588" />
+		</If>
+		<If Condition="HasItem(113461) || HasQuest(35820)" >
+			<PickUp QuestName="Trophy of Glory: Khargax the Devourer" QuestId="35820" GiverName="Shimmering Scale" GiverId="113461" GiverType="Item" />
+			<TurnIn QuestName="Trophy of Glory: Khargax the Devourer" QuestId="35820" TurnInName="Vindicator Maraad" TurnInId="75127" X="6337.186" Y="745.6736" Z="116.6775" />
+		</If>
+		<If Condition="HasItem(113446) || HasQuest(35809)" >
+			<PickUp QuestName="Trophy of Glory: Dessicus" QuestId="35809" GiverName="Globe of Dead Water" GiverId="113446" GiverType="Item" />
+			<TurnIn QuestName="Trophy of Glory: Dessicus" QuestId="35809" TurnInName="Vindicator Maraad" TurnInId="75127" X="6337.186" Y="745.6736" Z="116.6775" />
+		</If>
+		<If Condition="HasItem(113445) || HasQuest(35808)" >
+			<PickUp QuestName="Trophy of Glory: Erosian" QuestId="35808" GiverName="Crystalized Steam" GiverId="113445" GiverType="Item" />
+			<TurnIn QuestName="Trophy of Glory: Erosian" QuestId="35808" TurnInName="Vindicator Maraad" TurnInId="75127" X="6337.186" Y="745.6736" Z="116.6775" />
+		</If>
+		<If Condition="HasItem(113449) || HasQuest(35812)" >
+			<PickUp QuestName="Trophy of Glory: Crater Lord Igneous" QuestId="35812" GiverName="Chunk of Crater Lord" GiverId="113449" GiverType="Item" />
+			<TurnIn QuestName="Trophy of Glory: Crater Lord Igneous" QuestId="35812" TurnInName="Vindicator Maraad" TurnInId="75127" X="6337.186" Y="745.6736" Z="116.6775" />
+		</If>
+
+		<Checkpoint Level="95" />
+
+		<Code File="LoadProfile" ProfileName="Talador.xml" />
+
+	</QuestOrder>
+</HBProfile>

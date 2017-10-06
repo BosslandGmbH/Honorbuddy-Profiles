@@ -1,0 +1,330 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Shaman - Enhancement - Doomhammer ($ShortHash$)</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Blackspots>
+		<Blackspot X="1755.788" Y="1675.757" Z="316.0116" Radius="35.41944" /> <!-- Area where tons of troggs are at on Needlerock Beatdown -->
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes> 
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+<!-- INITORDER COMMENT 
+	<InitOrder>
+		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
+		<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<Code File="EnablePlugin" Names="Anti Drown" />
+		<Code File="EnablePlugin" Names="Refreshment Detection" />
+
+		<Code File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> Use LevelBot default
+	</InitOrder>
+END INITORDER COMMENT -->
+
+	<QuestOrder>
+		<!-- Check function status -->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+			private static bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+			private static bool IsStoreProfile(string path) => path.StartsWith("store://");
+			private static string Slashify(string path) => IsStoreProfile(path) ? path.Replace(@"\", "/") : path.Replace("/", @"\");
+
+			public __CompiledBatchClass__()
+			{
+				if (profileFunctionsEnabled == null || profileFunctionsEnabled == false)
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!");
+					LoadProfile(@"..\..\..\Functions\Activate Functions.xml");
+				}
+			}
+
+			private static void LoadProfile(string path)
+			{
+				var profile = GetNewPath(path);
+				if (!IsStoreProfile(profile) && !File.Exists(profile))
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Profile does not exist.\n" + profile);
+					return;
+				}
+
+				Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Loading: " + profile);
+				ProfileManager.LoadNew(profile, false);
+			}
+
+			private static string GetNewPath(string path)
+			{
+				if (IsStoreProfile(path))
+					return Slashify(path);
+
+				var currentProfile = ProfileManager.XmlLocation;
+				if (IsStoreProfile(currentProfile))
+					return Slashify(currentProfile + "/../" + path);
+
+				var absolutePath = Path.Combine(Path.GetDirectoryName(currentProfile), path);
+				absolutePath = Path.GetFullPath(absolutePath);
+				var canonicalPath = new Uri(absolutePath).LocalPath;
+				return Slashify(canonicalPath);
+			}]]>
+		</Code>
+		<!-- END Check function status -->
+
+		<If Condition="Me.IsAlliance" >
+			<Code File="LoadProfile" ProfileName="..\..\..\Questing Autoloader.xml" />
+		</If>
+		<!-- RunCode Methods -->
+			<Code File="RunCode">
+			<![CDATA[
+				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
+				Lua.DoString("SetCVar('AutoLootDefault', 1);");
+				Lua.DoString("SetCVar('autoDismountFlying', 1);");
+				CharacterSettings.Instance.LootMobs = true;
+				CharacterSettings.Instance.Save();
+				Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
+			]]>
+			</Code>
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</Code>
+		<!-- END RunCode Methods -->
+
+		<!-- Get Continuation Quest -->
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<!-- END Third Artifact -->
+
+		<!-- Story: Artifact Weapon - Doomhammer -->
+			<PickUp QuestName="Where the Hammer Falls" QuestId="42931" GiverName="Stormcaller Mylra" GiverId="96539" X="824.2899" Y="1032.901" Z="48.26438" />
+			<While Condition="DoQuest(42931)" >
+				<Code File="InteractWith" MobId="98383" QuestId="42931" QuestObjectiveIndex="1" X="824.4809" Y="1036.075" Z="48.2606" />
+				<Code File="RunCode" Code="await SkipCutscene();" />
+			</While>
+			<TurnIn QuestName="Where the Hammer Falls" QuestId="42931" TurnInName="Thrall" TurnInId="96527" X="1027.806" Y="650.0677" Z="156.6722" />
+
+			<PickUp QuestName="What the Stonemother Knows" QuestId="42932" GiverName="Thrall" GiverId="96527" X="1027.806" Y="650.0677" Z="156.6722" />
+			<TurnIn Nav="Fly" QuestName="What the Stonemother Knows" QuestId="42932" TurnInName="Therazane" TurnInId="42465" X="2382.325" Y="178.2153" Z="182.2379" />
+
+			<PickUp QuestName="The Troggs that Fel to Earth" QuestId="42933" GiverName="Therazane" GiverId="42465" X="2382.325" Y="178.2153" Z="182.2379" />
+			<PickUp QuestName="Stone Drake Rescue" QuestId="42935" GiverName="Therazane" GiverId="42465" X="2382.325" Y="178.2153" Z="182.2379" />
+			<PickUp QuestName="Clutch Play" QuestId="42936" GiverName="Therazane" GiverId="42465" X="2382.325" Y="178.2153" Z="182.2379" />
+
+			<While Condition="DoQuest(42933, 42935)" >
+				<!-- Using navigator only because the bot is having troubles flying here. -->
+				<Code File="InteractWith" MobState="DontCare" MovementBy="NavigatorOnly" NumOfTimes="100" CollectionDistance="200" TerminateWhen="IsQuestCompleted(42933) &amp;&amp; IsQuestCompleted(42935)" >
+					<HuntingGrounds>
+						<Hotspot X="2334.989" Y="705.6506" Z="146.538" />
+						<Hotspot X="2278.323" Y="768.6853" Z="134.8703" />
+						<Hotspot X="2214.177" Y="886.3536" Z="132.0753" />
+						<Hotspot X="2362.462" Y="1010.226" Z="173.9269" />
+					</HuntingGrounds>
+					<PursuitList>
+						<PursueUnit Id="109365" PursueWhen="!IsObjectiveComplete(1, 42936)" /> <!-- Clutch Play ; Getting some to follow us for now for optimization purposes. -->
+						<PursueUnit Id="109301" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsQuestCompleted(42933)" />
+						<!-- NOTE: <CheckFunction> : UNIT.IsCasting is used to make the bot only engage troggs that are subduing the drakes.  Make sure IsCasting is flagged for these units. -->
+						<PursueUnit Id="109302" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsQuestCompleted(42935)" />
+						<PursueUnit Id="109301" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsQuestCompleted(42935)" />
+						<PursueUnit Id="109298" PursueWhen="(UNIT.IsAlive || UNIT.Lootable) &amp;&amp; !UNIT.TaggedByOther &amp;&amp; !IsQuestCompleted(42935)" />
+					</PursuitList>
+				</Code>
+			</While>
+
+			<While Condition="DoQuest(42936)" >
+				<Code File="InteractWith" MobState="DontCare" MovementBy="NavigatorOnly" MobId="109365" CollectionDistance="200" TerminateWhen="Me.Minions.Count(x =&gt; x.Entry == 109348) &gt;= 5" >
+					<HuntingGrounds>
+						<Hotspot X="2334.989" Y="705.6506" Z="146.538" />
+						<Hotspot X="2278.323" Y="768.6853" Z="134.8703" />
+						<Hotspot X="2214.177" Y="886.3536" Z="132.0753" />
+						<Hotspot X="2362.462" Y="1010.226" Z="173.9269" />
+					</HuntingGrounds>
+				</Code>
+				<MoveTo QuestId="42936" X="2090.962" Y="1466.27" Z="183.8909" />
+				<Code File="WaitTimer" QuestId="42936" WaitTime="8000" />
+			</While>
+
+			<TurnIn Nav="Fly" QuestName="The Troggs that Fel to Earth" QuestId="42933" TurnInName="Therazane" TurnInId="42465" X="2382.325" Y="178.2153" Z="182.238" />
+			<TurnIn Nav="Fly" QuestName="Stone Drake Rescue" QuestId="42935" TurnInName="Therazane" TurnInId="42465" X="2382.325" Y="178.2153" Z="182.238" />
+			<TurnIn Nav="Fly" QuestName="Clutch Play" QuestId="42936" TurnInName="Therazane" TurnInId="42465" X="2382.325" Y="178.2153" Z="182.238" />
+
+			<PickUp QuestName="Needlerock Beatdown" QuestId="42937" GiverName="Therazane" GiverId="42465" X="2382.325" Y="178.2153" Z="182.238" />
+			<While Condition="DoQuest(42937)" >
+				<Code File="Hooks\DoWhen" ActivityName="Purge_FelCloud" AllowUseDuringCombat="true" UseWhen="Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.HasAura(&quot;Fel Cloud&quot;)" >
+					<!-- Using string for HasAura because I currently lack the tools to get the actual Id from the target, and there's multiple spells on WoWhead. -->
+					<Code File="RunCode"><![CDATA[
+								SpellManager.StopCasting();
+								await Coroutine.Wait(3000, ()=> !StyxWoW.Me.IsCasting && !SpellManager.GlobalCooldown);
+								SpellManager.Cast("Purge");
+						]]>
+					</Code>
+					<Code File="WaitTimer" WaitTime="750" />
+				</Code>
+				<Code File="InteractWith" MobId="109385" WaitTime="2000" QuestId="42937" X="2368.297" Y="157.151" Z="182.4131" />
+				<UseMount Value="false" /> <!-- So the bot doesn't suicide into all three mobs -->
+				<Code File="WaitTimer" WaitTime="65000" TerminateWhen="!Me.InVehicle" />
+				<Code File="KillUntilComplete" MobId="109852" QuestId="42937" QuestObjectiveIndex="3" X="1786.377" Y="1817.717" Z="357.201" />
+				<Code File="Hooks\DoWhen" ActivityName="Purge_FelCloud" Command="Remove" />
+				<UseMount Value="true" />
+			</While>
+			<If Condition="QuestDone(42937)" >
+				<If Condition="Me.Y &gt;= 1700" > <!-- Nav issues here -->
+					<Code File="ForcedDismount" />
+					<Code File="ForcedMount" MountType="Flying" />
+					<Code File="MyCTM" X="1765.192" Y="1762.995" Z="379.5169" />
+				</If>
+				<TurnIn Nav="Fly" QuestName="Needlerock Beatdown" QuestId="42937" TurnInName="Therazane" TurnInId="42465" X="2382.325" Y="178.2153" Z="182.2379" />
+			</If>
+
+			<PickUp QuestName="The Hammer in the Deep" QuestId="40224" GiverName="Thrall" GiverId="96527" X="2356.837" Y="168.7396" Z="181.4614" />
+			<While Condition="DoQuest(40224)" >
+				<Code File="InteractWith" MobId="251961" QuestId="40224" QuestObjectiveIndex="1" PreInteractMountStrategy="Dismount" X="2361.212" Y="176.2188" Z="181.593" />
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<MoveTo X="2426.128" Y="-71.33091" Z="-176.3575" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<Code File="WaitTimer" WaitTime="30000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+				</If>
+
+				<UseMount Value="false" />
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<MoveTo X="2384.296" Y="-246.8828" Z="-170.1645" />
+				</If>
+
+				<UseMount Value="true" />
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<!-- NOTE : <CheckAvoid> : This NPC puts "Fel Flames" on the ground.  Need to walk out of it.  Assuming it's an area trigger. -->
+					<Code File="Hooks\Avoid" AvoidName="FelFlames" Command="Add" ObjectType="AreaTrigger" ObjectId="199349" Radius="10" />
+					<Code File="KillUntilComplete" MobId="98382" X="2392.265" Y="-259.5175" Z="-168.7641" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+					<Code File="Hooks\Avoid" AvoidName="FelFlames" Command="Remove" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<MoveTo X="2473.634" Y="-233.8277" Z="-170.3868" />
+					<Code File="RunCode" Code="await SkipCutscene();" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+					<MoveTo X="2528.737" Y="-191.7762" Z="-177.397" />
+					<Code File="UserDialog" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="1" Text="You must interact with these rocks manually.\n\nCurrently Honorbuddy is not able to interact with them.\n\nAfter you interact, click continue on this box to make the profile finish the rest." />
+					<!--<Code File="InteractWith" MobId="98168" Range="8" InteractByCastingSpellId="193730" IgnoreLoSToTarget="true" X="2536.821" Y="-189.6719" Z="-175.3775" />  NOTE: <CheckMe> : This object shown up strangely in-game, and didn't really show up right on the object browser.  Make sure this ID is correct. -->
+
+					<Code File="InteractWith" MobId="256905" InteractByLooting="true" MinRange="3.8" WaitTime="1500" X="2536.864" Y="-189.934" Z="-175.88" TerminateWhen="HasItem(128819)" />
+					<Code File="Misc\RunLua" Lua="LootButton1:Click();" /> <!-- Extra code in case the IW doesn't loot. -->
+					<Code File="WaitTimer" WaitTime="10000" /> <!-- Wait for little cinematic. -->
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+					<!-- NOTE: <AddAvoid> : Need to avoid this boss' slam ability. Medium->High Priority. -->
+					<Code File="KillUntilComplete" MobId="98379" X="2544.784" Y="-177.5336" Z="-177.0765" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 7" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8" >
+					<Code File="InteractWith" MobId="113709" X="2540.493" Y="-175.0397" Z="-176.5709" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 8" />
+				</If>
+
+				<Code File="InteractWith" QuestId="40224" QuestObjectiveIndex="3" InteractBlacklistTimeInSeconds="1" MobId="98383" X="2528.823" Y="-179.0243" Z="-177.1788" />
+				<Code File="WaitTimer" WaitTime="16000" />
+			</While>
+			<TurnIn QuestName="The Hammer in the Deep" QuestId="40224" TurnInName="Stormcaller Mylra" TurnInId="96539" X="829.4097" Y="1050.967" Z="48.45255" />
+		<!-- END Story: Artifact Weapon - Doomhammer -->
+
+
+		<If Condition="!IsQuestCompleted(40225)" >
+			<Code File="LoadProfile" ProfileName="../Class Hall Loaders/Shaman.xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	A Ring Reforged (40225) is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	A Ring Reforged (40225) is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

@@ -1,0 +1,154 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../Questing Profile Pack/Schemas/EchoSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Questing Autoloader ($ShortHash$)</Name>
+
+	<MinDurability>-1</MinDurability>
+	<MinFreeBagSlots>-1</MinFreeBagSlots>
+	<QuestOrder>
+		<!-- Check function status -->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+			private static bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+			private static bool IsStoreProfile(string path) => path.StartsWith("store://");
+			private static string Slashify(string path) => IsStoreProfile(path) ? path.Replace(@"\", "/") : path.Replace("/", @"\");
+
+			public __CompiledBatchClass__()
+			{
+				if (profileFunctionsEnabled == null || profileFunctionsEnabled == false)
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!");
+					LoadProfile(@"Functions\Activate Functions.xml");
+				}
+			}
+
+			private static void LoadProfile(string path)
+			{
+				var profile = GetNewPath(path);
+				if (!IsStoreProfile(profile) && !File.Exists(profile))
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Profile does not exist.\n" + profile);
+					return;
+				}
+
+				Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Loading: " + profile);
+				ProfileManager.LoadNew(profile, false);
+			}
+
+			private static string GetNewPath(string path)
+			{
+				if (IsStoreProfile(path))
+					return Slashify(path);
+
+				var currentProfile = ProfileManager.XmlLocation;
+				if (IsStoreProfile(currentProfile))
+					return Slashify(currentProfile + "/../" + path);
+
+				var absolutePath = Path.Combine(Path.GetDirectoryName(currentProfile), path);
+				absolutePath = Path.GetFullPath(absolutePath);
+				var canonicalPath = new Uri(absolutePath).LocalPath;
+				return Slashify(canonicalPath);
+			}]]>
+		</Code>
+		<!-- END Check function status -->
+		<Code File="RunCode" Type="Definition"><![CDATA[
+			bool LoremasterCheckpointCheck(float levelToCheck, int achievementId = 0, int achievementIndex = 0)
+			{
+				if (Me.LevelFraction < levelToCheck) return true;
+				if (achievementId == 0) return false;
+				return (Styx.Helpers.CharacterSettings.Instance.IgnoreCheckpoints && !IsAchievementCompleted(achievementId, achievementIndex));
+			}
+			]]>
+		</Code>
+
+		<If Condition="Me.IsAlliance" >
+			<If Condition="Me.Class == WoWClass.DeathKnight &amp;&amp; Me.Level &lt; 90 &amp;&amp; !IsQuestCompleted(13188)" >
+				<Code File="LoadProfile" ProfileName="Alliance\Starters\Death Knight.xml" />
+			</If>
+			<If Condition="Me.Race == WoWRace.Worgen &amp;&amp; Me.Level &lt; 90 &amp;&amp; Me.Class != WoWClass.DeathKnight &amp;&amp; !IsQuestCompleted(26706)" >
+				<Code File="LoadProfile" ProfileName="Alliance\Starters\Worgen.xml" />
+			</If>
+			<If Condition="LoremasterCheckpointCheck(58, 1676)" >
+				<Code File="LoadProfile" ProfileName="Alliance\1-58 Autoloader.xml" />
+			</If>
+			<If Condition="LoremasterCheckpointCheck(68, 1262)" >
+				<Code File="LoadProfile" ProfileName="Alliance\58-68 Autoloader.xml" />
+			</If>
+			<If Condition="LoremasterCheckpointCheck(80, 41)" >
+				<Code File="LoadProfile" ProfileName="Alliance\68-80 Autoloader.xml" />
+			</If>
+			<If Condition="LoremasterCheckpointCheck(85, 4875)" >
+				<Code File="LoadProfile" ProfileName="Alliance\80-85 Autoloader.xml" />
+			</If>
+			<If Condition="LoremasterCheckpointCheck(90, 6541)" >
+				<Code File="LoadProfile" ProfileName="Alliance\85-90 Autoloader.xml" />
+			</If>
+			<If Condition="LoremasterCheckpointCheck(100, 9833)" >
+				<Code File="LoadProfile" ProfileName="Alliance\90-100 Autoloader.xml" />
+			</If>
+			<If Condition="Lua.GetReturnVal&lt;uint&gt;(&quot;return GetAccountExpansionLevel();&quot;, 0) &gt;= 6" >
+				<Code File="LoadProfile" ProfileName="Alliance\100-110 Autoloader.xml" />
+			</If>
+		</If>
+
+		<If Condition="Me.IsHorde" >
+			<If Condition="Me.Class == WoWClass.DeathKnight &amp;&amp; Me.Level &lt; 90 &amp;&amp; !IsQuestCompleted(13189)" >
+				<Code File="LoadProfile" ProfileName="Horde\Starters\Death Knight.xml" />
+			</If>
+			<If Condition="Me.Race == WoWRace.Goblin &amp;&amp; Me.Level &lt; 90 &amp;&amp; Me.Class != WoWClass.DeathKnight &amp;&amp; !IsQuestCompleted(25267)" >
+				<Code File="LoadProfile" ProfileName="Horde\Starters\Goblin.xml" />
+			</If>
+			<If Condition="LoremasterCheckpointCheck(41, 1678)" >
+				<Code File="LoadProfile" ProfileName="Horde\1-41 Autoloader.xml" />
+			</If>
+			<If Condition="LoremasterCheckpointCheck(58, 1678)" >
+				<Code File="LoadProfile" ProfileName="Horde\41-58 Autoloader.xml" />
+			</If>
+			<If Condition="LoremasterCheckpointCheck(68, 1262)" >
+				<Code File="LoadProfile" ProfileName="Horde\58-68 Autoloader.xml" />
+			</If>
+			<If Condition="LoremasterCheckpointCheck(80, 41)" >
+				<Code File="LoadProfile" ProfileName="Horde\68-80 Autoloader.xml" />
+			</If>
+			<If Condition="LoremasterCheckpointCheck(85, 4875)" >
+				<Code File="LoadProfile" ProfileName="Horde\80-85 Autoloader.xml" />
+			</If>
+			<If Condition="LoremasterCheckpointCheck(90, 6541)" >
+				<Code File="LoadProfile" ProfileName="Horde\85-90 Autoloader.xml" />
+			</If>
+			<If Condition="LoremasterCheckpointCheck(100, 9923) || Lua.GetReturnVal&lt;uint&gt;(&quot;return GetAccountExpansionLevel();&quot;, 0) &lt; 6" >
+				<Code File="LoadProfile" ProfileName="Horde\90-100 Autoloader.xml" />
+			</If>
+			<If Condition="Lua.GetReturnVal&lt;uint&gt;(&quot;return GetAccountExpansionLevel();&quot;, 0) &gt;= 6" >
+				<Code File="LoadProfile" ProfileName="Horde\100-110 Autoloader.xml" />
+			</If>
+		</If>
+
+		<If Condition="Me.IsNeutralPandaren" >
+			<Code File="RunCode" Type="Definition" Code="bool LoadAlliance = false; bool LoadHorde = false;" />
+			<Code File="RunCode" >
+				<![CDATA[
+				System.Windows.Forms.DialogResult dialogResult = System.Windows.Forms.MessageBox.Show("It looks like you're loading this as a Pandaren!\n\nPush Yes to load Alliance profiles.\nPush No to load Horde profiles.", "Choose Your Destiny!", System.Windows.Forms.MessageBoxButtons.YesNo);
+				if(dialogResult == System.Windows.Forms.DialogResult.Yes)
+					LoadAlliance = true;
+				else if (dialogResult == System.Windows.Forms.DialogResult.No)
+					LoadHorde = true;
+				]]>
+			</Code>
+			<Code File="WaitTimer" WaitTime="5000" TerminateWhen="LoadAlliance || LoadHorde" />
+			<If Condition="LoadAlliance" >
+				<Code File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: We will finish the Pandaren starting zone as Alliance!&quot;);" />
+				<Code File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: If you want to change the faction, you must RELOAD the autoloader!&quot;);" />
+				<Code File="WaitTimer" WaitTime="5000" />
+				<Code File="LoadProfile" ProfileName="Alliance\Starters\Pandaren.xml" />
+			</If>
+			<If Condition="LoadHorde" >
+				<Code File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: We will finish the Pandaren starting zone as Horde!&quot;);" />
+				<Code File="RunCode" Code="Logging.Write(System.Windows.Media.Colors.Yellow, &quot;[Notification]: If you want to change the faction, you must RELOAD the autoloader!&quot;);" />
+				<Code File="WaitTimer" WaitTime="5000" />
+				<Code File="LoadProfile" ProfileName="Horde\Starters\Pandaren.xml" />
+			</If>
+		</If>
+	</QuestOrder>
+
+
+</HBProfile>

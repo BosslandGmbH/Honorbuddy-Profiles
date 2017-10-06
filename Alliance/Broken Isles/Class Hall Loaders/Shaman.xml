@@ -1,0 +1,581 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Shaman Class Hall Loader ($ShortHash$)</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<Vendors>
+	</Vendors>
+
+<!-- INITORDER COMMENT 
+	<InitOrder>
+		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
+		<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<Code File="EnablePlugin" Names="Anti Drown" />
+		<Code File="EnablePlugin" Names="Refreshment Detection" />
+
+		<Code File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> Use LevelBot default
+	</InitOrder>
+END INITORDER COMMENT -->
+
+	<QuestOrder> <!-- No checkpoints here. -->
+		<!-- Check function status -->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+			private static bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+			private static bool IsStoreProfile(string path) => path.StartsWith("store://");
+			private static string Slashify(string path) => IsStoreProfile(path) ? path.Replace(@"\", "/") : path.Replace("/", @"\");
+
+			public __CompiledBatchClass__()
+			{
+				if (profileFunctionsEnabled == null || profileFunctionsEnabled == false)
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!");
+					LoadProfile(@"..\..\..\Functions\Activate Functions.xml");
+				}
+			}
+
+			private static void LoadProfile(string path)
+			{
+				var profile = GetNewPath(path);
+				if (!IsStoreProfile(profile) && !File.Exists(profile))
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Profile does not exist.\n" + profile);
+					return;
+				}
+
+				Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Loading: " + profile);
+				ProfileManager.LoadNew(profile, false);
+			}
+
+			private static string GetNewPath(string path)
+			{
+				if (IsStoreProfile(path))
+					return Slashify(path);
+
+				var currentProfile = ProfileManager.XmlLocation;
+				if (IsStoreProfile(currentProfile))
+					return Slashify(currentProfile + "/../" + path);
+
+				var absolutePath = Path.Combine(Path.GetDirectoryName(currentProfile), path);
+				absolutePath = Path.GetFullPath(absolutePath);
+				var canonicalPath = new Uri(absolutePath).LocalPath;
+				return Slashify(canonicalPath);
+			}]]>
+		</Code>
+		<!-- END Check function status -->
+
+		<If Condition="Me.IsHorde" >
+			<Code File="LoadProfile" ProfileName="..\..\..\Questing Autoloader.xml" />
+		</If>
+		<!-- RunCode Methods -->
+			<Code File="RunCode">
+			<![CDATA[
+				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
+				Lua.DoString("SetCVar('AutoLootDefault', 1);");
+				Lua.DoString("SetCVar('autoDismountFlying', 1);");
+				CharacterSettings.Instance.LootMobs = true;
+				CharacterSettings.Instance.Save();
+				Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
+			]]>
+			</Code>
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</Code>
+		<!-- END RunCode Methods -->
+
+		<!-- ClassHall RunCode Methods -->
+			<Code File="RunCode" Type="Definition"><![CDATA[
+					int currentZone = 0;
+					bool doAzsuna = false;
+					bool doValsharah = false;
+					bool doHighmountain = false;
+					bool doStormheim = false;
+
+					async Task DalaranHearth()
+					{
+						if (!(Me.ZoneId == 7502 || Me.ZoneId == 8392) && HasItem(140192))
+						{
+							Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.DeepSkyBlue, "[Azyul Navigator]: ", System.Windows.Media.Colors.LightGreen, "Using Dalaran Hearthstone!");
+							await CommonCoroutines.LandAndDismount("Using Hearthstone to reach Dalaran (Broken Isles)");
+							await CommonCoroutines.StopMoving(); 
+							WoWItem dalaranHearth = StyxWoW.Me.BagItems.FirstOrDefault(x => x.Entry == 140192);
+							if (dalaranHearth.CooldownTimeLeft <= TimeSpan.FromMinutes(3))
+							{
+								if (dalaranHearth.CooldownTimeLeft != TimeSpan.Zero)
+								{
+									Logging.Write(System.Windows.Media.Colors.Yellow, "[Profile]: Awaiting cooldown before attempting hearth!");
+									await Coroutine.Wait(306000, () => dalaranHearth.CooldownTimeLeft == TimeSpan.Zero);
+								}
+								dalaranHearth.Interact();
+								var currentLoc = StyxWoW.Me.ZoneId;
+								await Coroutine.Wait(30000, () => StyxWoW.Me.ZoneId != currentLoc);
+								await Coroutine.Sleep(1500);
+							}
+						}
+					}
+					async Task DoMission(int missionID, params int[] followerList)
+					{
+
+						foreach (int follower in followerList)
+						{
+							string luaString = $@"
+								local missionID = {missionID};
+								local followerID = {follower};
+								local allFollowers = C_Garrison.GetFollowers();
+								for i=1,#allFollowers do
+									if (allFollowers[i].garrFollowerID == followerID)  then  
+										C_Garrison.AddFollowerToMission(missionID, allFollowers[i].followerID);
+										break;
+									end
+								end
+							";
+							Lua.DoString(luaString);
+							await Coroutine.Sleep(750);
+						}
+
+						await Coroutine.Sleep(1000);
+						Lua.DoString($"C_Garrison.StartMission({missionID});");
+
+						await Coroutine.Sleep(2500);
+						Lua.DoString("OrderHallMissionFrame.CloseButton:Click();");
+					}
+
+					bool MissionComplete(int missionID)
+					{
+						string luaString = $@"
+							local missionNum = {missionID};
+							local allMissions = C_Garrison.GetInProgressMissions(LE_FOLLOWER_TYPE_GARRISON_7_0);
+							for i=1,#allMissions do
+								if (allMissions[i].missionID == missionNum)  then  
+									return allMissions[i].timeLeftSeconds
+								end
+							end
+						";
+						
+						int timeLeft = Lua.GetReturnVal<int>(luaString, 0);
+
+						if (timeLeft == 0)
+							return true;
+						else
+							return false;
+					}
+
+					bool MissionInProgress(int missionID)
+					{
+						string luaString = $@"
+							local missionNum = {missionID};
+							local allMissions = C_Garrison.GetInProgressMissions(LE_FOLLOWER_TYPE_GARRISON_7_0);
+							for i=1,#allMissions do
+								if (allMissions[i].missionID == missionNum)  then  
+									return allMissions[i].inProgress
+								end
+							end
+						";
+						return Lua.GetReturnVal<bool>(luaString, 0);
+					}
+				]]>
+			</Code>
+		<!-- END ClassHall RunCode Methods -->
+
+		<!-- Introductory Class Hall Quests -->
+			<PickUp QuestName="A Ring Unbroken" QuestId="39746" GiverName="Thrall" GiverId="91731" X="-766.8559" Y="4483.745" Z="732.9291" />
+			<While Condition="DoQuest(39746)" >
+				<Code File="InteractWith" MobId="104681" QuestId="39746" QuestObjectiveIndex="1" X="-822.04" Y="4264.73" Z="746.27" />
+				<Code File="WaitTimer" WaitTime="65000" TerminateWhen="!Me.InVehicle" />
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+					<Code File="InteractWith" MobId="96528" GossipOptions="1" X="833.1007" Y="1077.42" Z="49.17307" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 1" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+					<If Condition="!IsScenarioCriteriaComplete(1)" >
+						<Code File="InteractWith" MobId="97168" X="793.7274" Y="1054.609" Z="48.33546" TerminateWhen="IsScenarioCriteriaComplete(1)" />
+					</If>
+					<If Condition="!IsScenarioCriteriaComplete(3)" >
+						<Code File="InteractWith" MobId="244431" X="824.3004" Y="1094.418" Z="49.35938" TerminateWhen="IsScenarioCriteriaComplete(3)" />
+					</If>
+					<If Condition="!IsScenarioCriteriaComplete(2)" >
+						<Code File="InteractWith" MobId="97169" X="865.3542" Y="1071.234" Z="49.41918" TerminateWhen="IsScenarioCriteriaComplete(2)" /> 
+					</If>
+					<Code File="WaitTimer" WaitTime="60000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+					<Code File="KillUntilComplete" MobId="97054" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" >
+						<HuntingGrounds>
+							<Hotspot X="846.5729" Y="1054.852" Z="48.67199" />
+							<Hotspot X="867.1059" Y="1092.332" Z="48.57989" />
+							<Hotspot X="809.8611" Y="1040.608" Z="48.4934" />
+							<Hotspot X="771.783" Y="1073.363" Z="50.65685" />
+							<Hotspot X="785.118" Y="1113.75" Z="47.3708" />
+						</HuntingGrounds>
+					</Code>
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+					<Code File="InteractWith" MobId="97027" X="830.4445" Y="1091.646" Z="49.35885" />
+					<Code File="RunCode"><![CDATA[
+							var falthusPoi = Unit(94721);
+							StyxWoW.Me.SetFacing(falthusPoi.Location);
+							falthusPoi.Target();
+							await Coroutine.Sleep(350);
+							Lua.DoString("ExtraActionButton1:Click();");
+						]]>
+					</Code>
+					<Code File="WaitTimer" WaitTime="18000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+				</If>
+
+				<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+					<Code File="InteractWith" MobId="247612" X="824.3004" Y="1094.42" Z="49.3594" />
+					<Code File="RunCode" Code="await SkipCutscene(5000, 3000);" />
+					<Code File="MyCTM" X="828.5081" Y="1083.99" Z="49.19622" TerminateWhen="Me.Z &lt; 51" />
+				</If>
+			</While>
+			<TurnIn QuestName="A Ring Unbroken" QuestId="39746" TurnInName="Thrall" TurnInId="96527" X="842.1788" Y="1028.28" Z="48.59131" />
+		<!-- END Introductory Class Hall Quests -->
+
+		<!-- First Artifact Quest -->
+			<PickUp QuestName="The Elements Call..." QuestId="41335" GiverName="Thrall" GiverId="96527" X="842.1788" Y="1028.28" Z="48.59131" />
+			<While Condition="DoQuest(41335)" >
+				<Code File="Misc\RunLua" Lua="LoadAddOn(&quot;Blizzard_QuestChoice&quot;);" />
+				<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+					<Code File="InteractWith" MobId="96527" GossipOptions="1" QuestId="41335" X="842.1788" Y="1028.28" Z="48.59131" />
+				</If>
+				<Code File="UserDialog" QuestId="41335" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150" ExpiryTime="300" ExpiryAction="InputEnabled_Continue" 
+				Text="Choose an artifact weapon.\n\nIf you do not choose within 5minutes, the bot will pick the one appropriate for your current specialization." />
+				
+				<If Condition="!IsQuestCompleted(41335)" >
+					<If Condition="Me.Specialization == WoWSpec.ShamanEnhancement" >
+						<Code File="Misc\RunLua" QuestId="41335" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<If Condition="Me.Specialization == WoWSpec.ShamanElemental" >
+						<Code File="Misc\RunLua" QuestId="41335" Lua="QuestChoiceFrameOption2.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<If Condition="Me.Specialization == WoWSpec.ShamanRestoration" >
+						<Code File="Misc\RunLua" QuestId="41335" Lua="QuestChoiceFrameOption3.OptionButton:Click()" WaitTime="1000" />
+					</If>
+					<Code File="Misc\RunLua" QuestId="41335" Lua="StaticPopup1Button1:Click();" />
+				</If>
+			</While>
+			<TurnIn QuestName="The Elements Call..." QuestId="41335" TurnInName="Thrall" TurnInId="96527" X="842.1788" Y="1028.28" Z="48.59131" />
+
+			<If Condition="!IsQuestCompleted(40224) &amp;&amp; NeedsQuest(40225) &amp;&amp; Me.Specialization == WoWSpec.ShamanEnhancement" > <!-- 40224 = Doomhammer -->
+				<Code File="LoadProfile" ProfileName="../Artifact Quests/Shaman - Enhancement - Doomhammer.xml" />
+			</If>
+			<If Condition="!IsQuestCompleted(39771) &amp;&amp; NeedsQuest(40225) &amp;&amp; Me.Specialization == WoWSpec.ShamanElemental" > <!-- 39771 = The Fist of Ra-Den -->
+				<Code File="LoadProfile" ProfileName="../Artifact Quests/Shaman - Elemental - The Fist of Ra-Den.xml" />
+			</If>
+			<If Condition="!IsQuestCompleted(40341) &amp;&amp; NeedsQuest(40225) &amp;&amp; Me.Specialization == WoWSpec.ShamanRestoration" > <!-- 40341 = Into The Heavens -->
+				<Code File="LoadProfile" ProfileName="../Artifact Quests/Shaman - Restoration - Scepter of Azshara.xml" />
+			</If>
+		<!-- END First Artifact Quest -->
+
+		<!-- Introductory Class Hall Quests -->
+			<PickUp QuestName="A Ring Reforged" QuestId="40225" GiverName="Stormcaller Mylra" GiverId="96539" X="829.4097" Y="1050.967" Z="48.45243" />
+			<While Condition="DoQuest(40225)" >
+				<Code File="InteractWith" MobId="96528" GossipOptions="1" QuestId="40225" QuestObjectiveIndex="1" X="824.283" Y="1090.969" Z="49.35071" />
+				<Code File="WaitTimer" WaitTime="25000" />
+				<Code File="InteractWith" MobId="245122" Range="13" WaitTime="5000" QuestId="40225" QuestObjectiveIndex="2" X="888.007" Y="1107.139" Z="49.56952" />
+			</While>
+			<TurnIn QuestName="A Ring Reforged" QuestId="40225" TurnInName="Farseer Nobundo" TurnInId="96528" X="882.3038" Y="1104.03" Z="44.34147" />
+
+			<PickUp QuestName="The Maelstrom Beckons" QuestId="40276" GiverName="Farseer Nobundo" GiverId="96528" X="882.3038" Y="1104.03" Z="44.34147" />
+			<While Condition="DoQuest(40276)" >
+				<!-- /dump GetMouseFocus():GetPowerID(); C_ArtifactUI.AddPower(powerId); -->
+				<Code File="InteractWith" MobId="245211" NonCompeteDistance="0" WaitTime="2000" QuestId="40276" X="1046.351" Y="1015.755" Z="20.03704" />
+				<If Condition="HasItem(128819)" > <!-- Doomhammer -->
+					<Code File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1351);" />
+				</If>
+				<If Condition="HasItem(128935)" > <!-- The Fist of Ra-Den -->
+					<Code File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1350);" />
+				</If>
+				<If Condition="HasItem(128911)" > <!-- Scepter of Azshara -->
+					<Code File="Misc\RunLua" Lua="C_ArtifactUI.AddPower(1352);" />
+				</If>
+			</While>
+			<TurnIn QuestName="The Maelstrom Beckons" QuestId="40276" TurnInName="Farseer Nobundo" TurnInId="96528" X="1005.25" Y="1089.549" Z="15.87103" />
+
+			<PickUp QuestName="Azeroth Needs You" QuestId="41510" GiverName="Farseer Nobundo" GiverId="96528" X="1005.25" Y="1089.549" Z="15.87103" />
+			<While Condition="DoQuest(41510)" >
+				<While Condition="DoQuest(41510)" >
+					<Code File="InteractWith" MobId="99428" NonCompeteDistance="0" WaitTime="1500" QuestId="41510" X="950.2361" Y="1051.879" Z="18.18437" />
+					<If Condition="Chance(25)" > <!-- Azsuna -->
+						<Code File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+						<Code File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+
+					<ElseIf Condition="Chance(25)" > <!-- Val'sharah -->
+						<Code File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39731);" WaitTime="1500" />
+						<Code File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</ElseIf>
+					<ElseIf Condition="Chance(25)" > <!-- Highmountain -->
+						<Code File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39733);" WaitTime="1500" />
+						<Code File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</ElseIf>
+					<Else> <!-- Stormheim -->
+						<Code File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39735); C_AdventureMap.StartQuest(39864);" WaitTime="1500" />
+						<Code File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</Else>
+
+					</If>
+				</While>
+			</While>
+			<TurnIn QuestName="Azeroth Needs You" QuestId="41510" TurnInName="Farseer Nobundo" TurnInId="96528" X="1005.25" Y="1089.549" Z="15.87103" />
+
+			<While Condition="DoQuest(39718)" >
+				<Code File="InteractWith" MobId="251313" QuestId="39718" QuestObjectiveIndex="1" X="1002.976" Y="1095.274" Z="16.24883" /> <!-- NOTE: <ConditionalCheck> : UseWhen in Class Hall, TerminateWhen Me In Dalaran -->
+				<Code File="WaitTimer" WaitTime="3000" />
+				<Code File="LoadProfile" ProfileName="../Azsuna.xml" />		
+			</While>
+		<!-- END Introductory Class Hall Quests -->
+
+		<!-- Determine Questing Status -->
+			<Code File="RunCode"><![CDATA[
+				if ((!IsQuestCompleted(40794) && Me.IsAlliance) || (!IsQuestCompleted(42244) && Me.IsHorde)) doAzsuna = true;
+				if (!IsQuestCompleted(40890)) doValsharah = true;
+				if (!IsQuestCompleted(39656)) doHighmountain = true;
+				if ((!IsQuestCompleted(39122) && Me.IsAlliance) || (!IsQuestCompleted(38882) && Me.IsHorde)) doStormheim = true;
+
+				if (doAzsuna && !NeedsQuest(39718)) currentZone = 1;
+				else if (doValsharah && !NeedsQuest(39731)) currentZone = 2;
+				else if (doHighmountain && !NeedsQuest(39733)) currentZone = 3;
+				else if (doStormheim && ((Me.IsAlliance && !NeedsQuest(39735)) || (Me.IsHorde && !NeedsQuest(39864)))) currentZone = 4;
+				else if (!doAzsuna && !doValsharah && !doHighmountain && !doStormheim) currentZone = 5;
+				else currentZone = 0;
+			]]>
+			</Code>
+			<!-- currentZone is checking if the player has started questing in a zone, but hasn't finished yet. -->
+		<!-- END Determine Questing Status -->
+
+		<!-- Tell the user what's good. -->
+			<Code File="RunCode"><![CDATA[
+					if (currentZone == 0)
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Randomizing our next questing zone!");
+					else if (currentZone == 1)
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Continuing our questing in Azsuna.");
+					else if (currentZone == 2)
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Continuing our questing in Val'sharah.");
+					else if (currentZone == 3)
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Continuing our questing in Highmountain.");
+					else if (currentZone == 4)
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Continuing our questing in Stormheim.");
+					else if (currentZone == 5)
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: All questing zones done!");
+				]]>
+			</Code>
+		<!-- END Tell the user what's good. -->
+
+		<!-- Randomize to a new zone -->
+			<While Condition="currentZone == 0" >
+				<!-- Azsuna -->
+				<If Condition="doAzsuna &amp;&amp; Chance(10)" >
+					<Code File="RunCode"><![CDATA[
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Chose Aszuna as our next questing area.  You may stop->start the bot to have it randomize again!");
+					]]>
+					</Code>
+					<If Condition="NeedsQuest(39718)" >
+						<If Condition="!Me.HasAura(213170)" >
+							<Code File="RunCode" Code="await DalaranHearth();" />
+							<MoveTo X="-843.2033" Y="4320.319" Z="744.7213" />
+							<Code File="InteractWith" MobId="251311" NonCompeteDistance="0" X="-847.5868" Y="4321.365" Z="744.8328" />
+						</If>
+						<Code File="InteractWith" MobId="99428" NonCompeteDistance="0" WaitTime="1500" X="950.2361" Y="1051.879" Z="18.18437" />
+						<Code File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39718);" WaitTime="1500" />
+						<Code File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</If>
+
+					<If Condition="Me.HasAura(213170)" >
+						<MoveTo X="1002.109" Y="1089.288" Z="15.90101" /> <!-- NOTE: <ConditionalCheck> : Leaving in Class Hall,  TerminateWhen Me In Dalaran -->
+						<Code File="InteractWith" MobId="251313" WaitTime="3000" X="1002.976" Y="1095.274" Z="16.24883" /> 
+					</If>
+					<Code File="LoadProfile" ProfileName="../Azsuna.xml" />
+				</If>
+				<!-- END Azsuna -->
+
+				<!-- Val'sharah -->
+				<If Condition="doValsharah &amp;&amp; Chance(10)" >
+					<Code File="RunCode"><![CDATA[
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Chose Val'sharah as our next questing area.  You may stop->start the bot to have it randomize again!");
+					]]>
+					</Code>
+					<If Condition="NeedsQuest(39731)" >
+						<If Condition="!Me.HasAura(213170)" >
+							<Code File="RunCode" Code="await DalaranHearth();" />
+							<MoveTo X="-843.2033" Y="4320.319" Z="744.7213" />
+							<Code File="InteractWith" MobId="251311" NonCompeteDistance="0" X="-847.5868" Y="4321.365" Z="744.8328" />
+						</If>
+						<Code File="InteractWith" MobId="99428" NonCompeteDistance="0" WaitTime="1500" X="950.2361" Y="1051.879" Z="18.18437" />
+						<Code File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39731);" WaitTime="1500" />
+						<Code File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</If>
+					<If Condition="Me.HasAura(213170)" >
+						<MoveTo X="1002.109" Y="1089.288" Z="15.90101" /> <!-- NOTE: <ConditionalCheck> : Leaving in Class Hall,  TerminateWhen Me In Dalaran -->
+						<Code File="InteractWith" MobId="251313" WaitTime="3000" X="1002.976" Y="1095.274" Z="16.24883" /> 
+					</If>
+					<Code File="LoadProfile" ProfileName="../Val'sharah.xml" />
+				</If>
+				<!-- END Val'sharah -->
+
+				<!-- Highmountain -->
+				<If Condition="doHighmountain &amp;&amp; Chance(10)" >
+					<Code File="RunCode"><![CDATA[
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Chose Highmountain as our next questing area.  You may stop->start the bot to have it randomize again!");
+					]]>
+					</Code>
+					<If Condition="NeedsQuest(39733)" >
+						<If Condition="!Me.HasAura(213170)" >
+							<Code File="RunCode" Code="await DalaranHearth();" />
+							<MoveTo X="-843.2033" Y="4320.319" Z="744.7213" />
+							<Code File="InteractWith" MobId="251311" NonCompeteDistance="0" X="-847.5868" Y="4321.365" Z="744.8328" />
+						</If>
+						<Code File="InteractWith" MobId="99428" NonCompeteDistance="0" WaitTime="1500" X="950.2361" Y="1051.879" Z="18.18437" />
+						<Code File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39733);" WaitTime="1500" />
+						<Code File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</If>
+
+					<If Condition="Me.HasAura(213170)" >
+						<MoveTo X="1002.109" Y="1089.288" Z="15.90101" /> <!-- NOTE: <ConditionalCheck> : Leaving in Class Hall,  TerminateWhen Me In Dalaran -->
+						<Code File="InteractWith" MobId="251313" WaitTime="3000" X="1002.976" Y="1095.274" Z="16.24883" /> 
+					</If>
+					<Code File="LoadProfile" ProfileName="../Highmountain.xml" />
+				</If>
+				<!-- END Highmountain -->
+
+				<!-- Stormheim -->
+				<If Condition="doStormheim &amp;&amp; Chance(10)" >
+					<Code File="RunCode"><![CDATA[
+						Logging.Write(System.Windows.Media.Colors.Yellow, $"[Profile]: Chose Stormheim as our next questing area.  You may stop->start the bot to have it randomize again!");
+					]]>
+					</Code>
+					<If Condition="(Me.IsAlliance &amp;&amp; NeedsQuest(39735)) || (Me.IsHorde &amp;&amp; NeedsQuest(39864))" >
+						<If Condition="!Me.HasAura(213170)" >
+							<Code File="RunCode" Code="await DalaranHearth();" />
+							<MoveTo X="-843.2033" Y="4320.319" Z="744.7213" />
+							<Code File="InteractWith" MobId="251311" NonCompeteDistance="0" X="-847.5868" Y="4321.365" Z="744.8328" />
+						</If>
+						<Code File="InteractWith" MobId="99428" NonCompeteDistance="0" WaitTime="1500" X="950.2361" Y="1051.879" Z="18.18437" />
+						<Code File="Misc\RunLua" Lua="OrderHallMissionFrame.Tab3:Click(); C_AdventureMap.StartQuest(39735); C_AdventureMap.StartQuest(39864);" WaitTime="1500" />
+						<Code File="Misc\RunLua" Lua="C_AdventureMap.Close();" WaitTime="1500" />
+					</If>
+
+					<If Condition="Me.HasAura(213170)" >
+						<MoveTo X="1002.109" Y="1089.288" Z="15.90101" /> <!-- NOTE: <ConditionalCheck> : Leaving in Class Hall,  TerminateWhen Me In Dalaran -->
+						<Code File="InteractWith" MobId="251313" WaitTime="3000" X="1002.976" Y="1095.274" Z="16.24883" /> 
+					</If>
+					<Code File="LoadProfile" ProfileName="../Stormheim.xml" />
+				</If>
+				<!-- END Stormheim -->
+			</While>
+		<!-- END Randomize to a new zone -->
+
+		<!-- Load into existing zone -->
+			<!-- Azsuna -->
+			<If Condition="currentZone == 1" > 
+				<If Condition="Me.HasAura(213170)" >
+					<MoveTo X="1002.109" Y="1089.288" Z="15.90101" /> <!-- NOTE: <ConditionalCheck> : Leaving in Class Hall,  TerminateWhen Me In Dalaran -->
+					<Code File="InteractWith" MobId="251313" WaitTime="3000" X="1002.976" Y="1095.274" Z="16.24883" /> 
+				</If>
+				<Code File="LoadProfile" ProfileName="../Azsuna.xml" />
+			</If>
+			<!-- END Azsuna -->
+
+			<!-- Val'sharah -->
+			<If Condition="currentZone == 2" > 
+				<If Condition="Me.HasAura(213170)" >
+					<MoveTo X="1002.109" Y="1089.288" Z="15.90101" /> <!-- NOTE: <ConditionalCheck> : Leaving in Class Hall,  TerminateWhen Me In Dalaran -->
+					<Code File="InteractWith" MobId="251313" WaitTime="3000" X="1002.976" Y="1095.274" Z="16.24883" /> 
+				</If>
+				<Code File="LoadProfile" ProfileName="../Val'sharah.xml" />
+			</If>
+			<!-- END Val'sharah -->
+
+			<!-- Highmountain -->
+			<If Condition="currentZone == 3" >
+				<If Condition="Me.HasAura(213170)" >
+					<MoveTo X="1002.109" Y="1089.288" Z="15.90101" /> <!-- NOTE: <ConditionalCheck> : Leaving in Class Hall,  TerminateWhen Me In Dalaran -->
+					<Code File="InteractWith" MobId="251313" WaitTime="3000" X="1002.976" Y="1095.274" Z="16.24883" /> 
+				</If>
+				<Code File="LoadProfile" ProfileName="../Highmountain.xml" />
+			</If>
+			<!-- END Highmountain -->
+
+			<!-- Stormheim -->
+			<If Condition="currentZone == 4" > 
+				<If Condition="Me.HasAura(213170)" >
+					<MoveTo X="1002.109" Y="1089.288" Z="15.90101" /> <!-- NOTE: <ConditionalCheck> : Leaving in Class Hall,  TerminateWhen Me In Dalaran -->
+					<Code File="InteractWith" MobId="251313" WaitTime="3000" X="1002.976" Y="1095.274" Z="16.24883" /> 
+				</If>
+				<Code File="LoadProfile" ProfileName="../Stormheim.xml" />
+			</If>
+			<!-- END Stormheim -->
+		<!-- END Load into existing zone -->
+	</QuestOrder>
+</HBProfile>

@@ -1,0 +1,389 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/QuestProfileSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Druid - Feral - Fangs of Ashamane ($ShortHash$)</Name>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Blackspots>
+		<Blackspot X="1937.373" Y="5390.136" Z="52.97282" Radius="30" />
+		<Blackspot X="1968.112" Y="5408.313" Z="46.54448" Radius="30" />
+		<Blackspot X="1907.289" Y="5381.913" Z="41.22046" Radius="30" />
+		<Blackspot X="2067.187" Y="5403.985" Z="47.4065" Radius="23" /> <!-- Stay away from center with tons of NPCs -->
+	</Blackspots>
+
+	<Blacklist>
+	</Blacklist>
+
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<!-- INITORDER COMMENT 
+	<InitOrder>
+		Perhaps add detection for loading the class hall if player hasn't unlocked this zone yet.
+		<Code File="Misc\RunLua" Lua="SetCVar('AutoLootDefault', 1)" />
+
+		<Code File="EnablePlugin" Names="Anti Drown" />
+		<Code File="EnablePlugin" Names="Refreshment Detection" />
+
+		<Code File="Misc\ProfileCompatibilityInfo" AllowBrokenAddOns="true" AllowBrokenPlugIns="true" />
+
+		<LootMobs Value="true" />
+		<TargetingDistance Value="45" /> Use LevelBot default
+	</InitOrder>
+END INITORDER COMMENT -->
+
+	<QuestOrder>
+		<!-- Check function status -->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+			private static bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+			private static bool IsStoreProfile(string path) => path.StartsWith("store://");
+			private static string Slashify(string path) => IsStoreProfile(path) ? path.Replace(@"\", "/") : path.Replace("/", @"\");
+
+			public __CompiledBatchClass__()
+			{
+				if (profileFunctionsEnabled == null || profileFunctionsEnabled == false)
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!");
+					LoadProfile(@"..\..\..\Functions\Activate Functions.xml");
+				}
+			}
+
+			private static void LoadProfile(string path)
+			{
+				var profile = GetNewPath(path);
+				if (!IsStoreProfile(profile) && !File.Exists(profile))
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Profile does not exist.\n" + profile);
+					return;
+				}
+
+				Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Loading: " + profile);
+				ProfileManager.LoadNew(profile, false);
+			}
+
+			private static string GetNewPath(string path)
+			{
+				if (IsStoreProfile(path))
+					return Slashify(path);
+
+				var currentProfile = ProfileManager.XmlLocation;
+				if (IsStoreProfile(currentProfile))
+					return Slashify(currentProfile + "/../" + path);
+
+				var absolutePath = Path.Combine(Path.GetDirectoryName(currentProfile), path);
+				absolutePath = Path.GetFullPath(absolutePath);
+				var canonicalPath = new Uri(absolutePath).LocalPath;
+				return Slashify(canonicalPath);
+			}]]>
+		</Code>
+		<!-- END Check function status -->
+
+		<If Condition="Me.IsHorde" >
+			<Code File="LoadProfile" ProfileName="..\..\..\Questing Autoloader.xml" />
+		</If>
+		<!-- RunCode Methods -->
+			<Code File="RunCode">
+			<![CDATA[
+				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
+				Lua.DoString("SetCVar('AutoLootDefault', 1);");
+				Lua.DoString("SetCVar('autoDismountFlying', 1);");
+				CharacterSettings.Instance.LootMobs = true;
+				CharacterSettings.Instance.Save();
+				Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
+			]]>
+			</Code>
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</Code>
+		<!-- END RunCode Methods -->
+
+		<!-- Get Continuation Quest -->
+		<If Condition="IsQuestCompleted(41255) &amp;&amp; NeedsQuest(42428) &amp;&amp; !HasQuest(43980) &amp;&amp; !HasQuest(44431) &amp;&amp; !HasQuest(44443)" >
+			<!-- Using Sowing the Seed (41255) to determine if we've already got the first artifact. -->
+			<Code File="InteractWith" MobId="101195" WaitTime="1250" X="3969.634" Y="7393.945" Z="23.9389" />
+			<Code File="Misc\RunLua" WaitTime="1250" Lua="QuestFrameAcceptButton:Click();" />
+		</If>
+		<!-- END Get Continuation Quest -->
+
+		<!-- Second Artifact -->
+		<If Condition="HasQuest(43980)" >
+			<While Condition="DoQuest(43980)" >
+				<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+					<Code File="InteractWith" MobId="101195" GossipOptions="1" QuestId="43980" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
+				</If>
+				<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.  
+						<Code File="Misc\RunLua" QuestId="43980" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
+				<Code File="UserDialog" QuestId="43980" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
+			</While>
+			<TurnIn QuestName="Another Weapon of Old" QuestId="43980" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.9389" />
+		</If>
+		<!-- END Second Artifact -->
+
+		<!-- Third Artifact -->
+		<If Condition="HasQuest(44431)" >
+			<While Condition="DoQuest(44431)" >
+				<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+					<Code File="InteractWith" MobId="101195" GossipOptions="1" QuestId="44431" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
+				</If>
+				<!-- NOTE: <AddFunction> : Need code to determine which button the artifact may be.  
+						<Code File="Misc\RunLua" QuestId="44431" Lua="QuestChoiceFrameOptionXXX.OptionButton:Click()" WaitTime="1200" />-->
+				<Code File="UserDialog" QuestId="44431" AllowBotStop="True" SoundCue="Exclamation" SoundCueInterval="150"	Text="Choose the artifact weapon.\n\nCurrently there is no automation for this." />
+			</While>
+			<TurnIn QuestName="More Weapons of Old" QuestId="44431" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.93885" />
+		</If>
+		<!-- END Third Artifact -->
+
+		<!-- Fourth Artifact -->
+		<If Condition="HasQuest(44443)" >
+			<While Condition="DoQuest(44443)" >
+				<If Condition="!Lua.GetReturnVal&lt;bool&gt;(&quot;return QuestChoiceFrame:IsVisible()&quot;, 0)" >
+					<Code File="InteractWith" MobId="101195" WaitTime="2000" GossipOptions="1" QuestId="44443" QuestObjectiveIndex="1" X="3969.634" Y="7393.945" Z="23.9389" />
+				</If>
+				<Code File="Misc\RunLua" QuestId="44443" Lua="QuestChoiceFrameOption1.OptionButton:Click()" WaitTime="1200" />
+				<!-- Should always be 1. -->
+			</While>
+			<TurnIn QuestName="Weapons of the Ancients" QuestId="44443" TurnInName="Rensar Greathoof" TurnInId="101195" X="3969.634" Y="7393.945" Z="23.93913" />
+		</If>
+		<!-- END Fourth Artifact -->
+
+		<!-- Story: Artifact Weapon - Fangs of Ashamane -->
+		<PickUp QuestName="The Shrine of Ashamane" QuestId="42428" GiverName="Rensar Greathoof" GiverId="101195" X="3974.796" Y="7395.398" Z="23.94462" />
+		<While Condition="DoQuest(42428)" >
+			<If Condition="Me.ZoneId == 7846" >
+				<!-- NOTE: <CheckZoneId> : -->
+				<Code File="Misc\RunLua" Lua="FlightMapFrameCloseButton:Click();" />
+				<MoveTo DestName="Danise Stargazer" X="4065.722" Y="7224.185" Z="50.15607" />
+				<Code File="InteractWith" MobId="107457" NonCompeteDistance="0" GossipOptions="2" X="4075.332" Y="7243.441" Z="52.14547" />
+			</If>
+		</While>
+		<TurnIn QuestName="The Shrine of Ashamane" QuestId="42428" TurnInName="Delandros Shimmermoon" TurnInId="107392" X="3250.186" Y="5727.08" Z="321.1192" />
+
+		<PickUp QuestName="Aid for the Ashen" QuestId="42439" GiverName="Delandros Shimmermoon" GiverId="107392" X="3250.186" Y="5727.08" Z="321.1192" />
+		<PickUp QuestName="Seeds of Renewal" QuestId="42438" GiverName="Delandros Shimmermoon" GiverId="107392" X="3250.186" Y="5727.08" Z="321.1192" />
+		<Code File="Hooks\DoWhen" ActivityName="KeepStealth" UseWhen="Me.Specialization == WoWSpec.DruidFeral &amp;&amp; Me.HasAura(768) &amp;&amp;  !Me.Combat &amp;&amp; !Me.HasAura(5215) &amp;&amp; SpellManager.CanCast(5215)" >
+			<Code File="RunCode">
+				<![CDATA[
+						SpellManager.Cast(5215);
+						await Coroutine.Wait(2000, () => Me.HasAura(5215));
+					]]>
+			</Code>
+		</Code>
+
+		<While Condition="DoQuest(42438)" >
+			<Code File="InteractWith" NumOfTimes="3" QuestId="42438" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="3405.921" Y="5746.777" Z="309.2337" />
+					<Hotspot X="3381.902" Y="5655.804" Z="311.7336" />
+					<Hotspot X="3559.406" Y="5693.792" Z="317.3441" />
+					<Hotspot X="3381.902" Y="5655.804" Z="311.7336" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueUnit Id="113000" PursueWhen="UNIT.CanInteract" />
+					<PursueUnit Id="113006" PursueWhen="UNIT.CanInteract" />
+					<PursueUnit Id="113002" PursueWhen="UNIT.CanInteract" />
+				</PursuitList>
+			</Code>
+		</While>
+
+		<While Condition="DoQuest(42439)" >
+			<Code File="KillUntilComplete" MobId="107535" QuestId="42439" QuestObjectiveIndex="1" >
+				<HuntingGrounds>
+					<Hotspot X="3548.995" Y="5657.979" Z="312.5594" />
+					<Hotspot X="3470.611" Y="5702.281" Z="310.3693" />
+					<Hotspot X="3412.158" Y="5667.433" Z="312.1592" />
+				</HuntingGrounds>
+			</Code>
+		</While>
+
+		<TurnIn QuestName="Aid for the Ashen" QuestId="42439" TurnInName="Delandros Shimmermoon" TurnInId="107392" X="3398.912" Y="5571.285" Z="311.0803" />
+		<TurnIn QuestName="Seeds of Renewal" QuestId="42438" TurnInName="Delandros Shimmermoon" TurnInId="107392" X="3398.912" Y="5571.285" Z="311.0803" />
+
+		<PickUp QuestName="The Shrine in Peril" QuestId="42440" GiverName="Delandros Shimmermoon" GiverId="107392" X="3398.912" Y="5571.285" Z="311.0803" />
+		<While Condition="DoQuest(42440)" >
+			<Code File="RunCode" Code="await SkipCutscene();" />
+			<MoveTo QuestId="42440" QuestObjectiveIndex="1" X="3485.615" Y="5540.708" Z="323.1723" />
+			<Code File="RunCode" Code="await SkipCutscene();" />
+			<!-- NOTE: <AddAvoid> : Priority - Low.  Bot does AoE of fell balls. -->
+			<Code File="KillUntilComplete" MobId="107593" QuestId="42440" QuestObjectiveIndex="2" X="3530.869" Y="5538.478" Z="323.4144" />
+		</While>
+		<TurnIn QuestName="The Shrine in Peril" QuestId="42440" TurnInName="Delandros Shimmermoon" TurnInId="107392" X="3553.168" Y="5537.865" Z="324.7963" />
+
+		<PickUp QuestName="The Fangs of Ashamane" QuestId="42430" GiverName="Delandros Shimmermoon" GiverId="107392" X="3553.168" Y="5537.865" Z="324.7963" />
+		<While Condition="DoQuest(42430)" >
+			<Code File="RunCode" Code="RoutineManager.SetCapabilityState(CapabilityFlags.MultiMobPull, CapabilityState.Disallowed);" />
+
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 0 &amp;&amp; !HasItem(128860)" >
+				<Code File="InteractWith" MobId="107729" WaitTime="5000" X="3553.777" Y="5541.796" Z="324.7946" />
+			</If>
+
+			<DisableBehavior Name="Pull" />
+			<UseMount Value="false" />
+
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 1" >
+				<MoveTo X="2013.606" Y="5425.4" Z="47.39029" />
+			</If>
+
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 2" >
+				<MoveTo X="2065.429" Y="5449.482" Z="47.30079" />
+				<Code File="InteractWith" MobId="250638" PreInteractMountStrategy="Dismount" ProactiveCombatStrategy="ClearAll" NumOfTimes="2" InteractBlacklistTimeInSeconds="1" X="2068.309" Y="5444.192" Z="47.3004" />
+				<MoveTo X="2036.443" Y="5406.984" Z="47.30103" />
+				<Code File="InteractWith" MobId="250641" PreInteractMountStrategy="Dismount" ProactiveCombatStrategy="ClearAll" NumOfTimes="2" InteractBlacklistTimeInSeconds="1" X="2043.004" Y="5367.898" Z="47.30103" />
+				<MoveTo X="2072.812" Y="5362.895" Z="47.30103" />
+				<MoveTo X="2119.902" Y="5389.882" Z="52.41041" />
+				<Code File="WaitTimer" WaitTime="15000" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 2" />
+			</If>
+
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 3" >
+				<MoveTo X="2245.052" Y="5355.108" Z="37.02452" />
+				<While Condition="!Me.HasAura(768)" >
+					<!-- Player must be in cat form to interact with this next object. -->
+					<Code File="RunCode" Code="SpellManager.Cast(768);" />
+					<Code File="WaitTimer" WaitTime="1000" />
+				</While>
+				<Code File="InteractWith" WaitTime="6000" NumOfTimes="10" MobId="250824" InteractBlacklistTimeInSeconds="1" X="2252.76" Y="5352.203" Z="36.24648" TerminateWhen="Me.InVehicle || Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 3" />
+				<!-- Silly solution, but the interact with above is to get on the platform.  We are also using it to walk into the Verstok room. -->
+			</If>
+
+			<Code File="Hooks\DoWhen" ActivityName="EnterLocation" LogExecution="false" AllowUseWhileMounted="true" UseWhen="Me.Z &gt;= 40" >
+				<MoveTo X="2245.052" Y="5355.108" Z="37.02452" />
+				<While Condition="!Me.HasAura(768)" >
+					<!-- Player must be in cat form to interact with this next object. -->
+					<Code File="RunCode" Code="SpellManager.Cast(768);" />
+					<Code File="WaitTimer" WaitTime="1000" />
+				</While>
+				<Code File="InteractWith" WaitTime="6000" NumOfTimes="10" MobId="250824" InteractBlacklistTimeInSeconds="1" X="2252.76" Y="5352.203" Z="36.24648" TerminateWhen="Me.InVehicle" />
+				<MoveTo X="2309.035" Y="5417.842" Z="14.83675" />
+			</Code>
+
+			<EnableBehavior Name="Pull" />
+
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 4" >
+				<Code File="KillUntilComplete" MobId="108003" X="2335.352" Y="5427.347" Z="13.95717" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 4" />
+			</If>
+
+			<DisableBehavior Name="Pull" />
+
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 5" >
+				<MoveTo X="2111.239" Y="5488.263" Z="-19.57687" />
+				<Code File="RunCode" Code="await SkipCutscene();" />
+			</If>
+
+			<EnableBehavior Name="Pull" />
+
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 6" >
+				<Code File="KillUntilComplete" MobId="108027" X="2079.747" Y="5425.51" Z="-36.70618" TerminateWhen="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber != 6" />
+			</If>
+
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 7" >
+				<!-- There's two Fangs of Ashamane objects here.
+						Name="Thas'dorah, Legacy of the Windrunners" Entry="101487" X="57.9757" Y="1212.47" Z="-38.09645" -->
+				<Code File="InteractWith" MobId="250386" InteractByLooting="true" WaitTime="1500" X="2060.2" Y="5404.943" Z="-34.77471" />
+				<Code File="Misc\RunLua" Lua="LootButton1:Click();" />
+				<!-- Extra code in case the IW doesn't loot. -->
+				<Code File="WaitTimer" WaitTime="10000" />
+				<!-- Wait for little cinematic. -->
+			</If>
+
+			<Code File="Hooks\DoWhen" ActivityName="EnterLocation" Command="Remove" />
+
+			<If Condition="Bots.DungeonBuddy.Helpers.ScenarioInfo.Current.CurrentStageNumber == 8" >
+				<Code File="InteractWith" MobId="108115" WaitTime="3000" X="2068.373" Y="5405.366" Z="-35.94217" />
+			</If>
+
+			<Code File="RunCode" Code="RoutineManager.SetCapabilityState(CapabilityFlags.MultiMobPull, CapabilityState.DontCare);" />
+			<UseMount Value="true" />
+		</While>
+		<TurnIn QuestName="The Fangs of Ashamane" QuestId="42430" TurnInName="Rensar Greathoof" TurnInId="101195" X="3974.796" Y="7395.398" Z="23.94462" />
+		<!-- END Story: Artifact Weapon - Fangs of Ashamane -->
+
+
+		<If Condition="!IsQuestCompleted(41255)" >
+			<PickUp QuestName="Sowing The Seed" QuestId="41255" GiverName="Rensar Greathoof" GiverId="101195" X="3974.796" Y="7395.398" Z="23.94462" />
+			<!-- We're picking this quest up even though it's not artifact specific as a method of preventing the Class Hall loader from loading another artifact profile. -->
+			<Code File="LoadProfile" ProfileName="../Class Hall Loaders/Druid.xml" />
+		</If>
+
+	</QuestOrder>
+</HBProfile>
+
+<!-- Notes:
+
+	On Eagle's Wings is used to determine if we've got the first artifact or not because NPC positions change after this quest.
+	Checking if this quest is completed can be used to determine where the NPCs are at for the bot and where we should look for them.
+	On Eagle's Wings is completed directly after completing obtaining your first artifact weapon, so it should be reliable enough to check with.
+
+	Contiuing the Legend is the quest to unlock your second artifact choice.
+
+	One Last Adventure is the quest to unlock your third artifact choice.
+-->

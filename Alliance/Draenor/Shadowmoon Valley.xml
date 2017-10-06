@@ -1,0 +1,734 @@
+<HBProfile xsi:noNamespaceSchemaLocation="../../Schemas/EchoQuestingSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Original contribution by EchoTiger -->
+	<Name>Shadowmoon Valley ($ShortHash$)</Name>
+
+	<DefaultNavType>Fly</DefaultNavType>
+
+	<MinDurability>0.3</MinDurability>
+	<MinFreeBagSlots>3</MinFreeBagSlots>
+
+	<SellGrey>true</SellGrey>
+	<SellWhite>true</SellWhite>
+	<SellGreen>true</SellGreen>
+	<SellBlue>true</SellBlue>
+	<SellPurple>false</SellPurple>
+
+	<MailGrey>false</MailGrey>
+	<MailWhite>true</MailWhite>
+	<MailGreen>true</MailGreen>
+	<MailBlue>true</MailBlue>
+	<MailPurple>true</MailPurple>
+
+	<TargetElites>true</TargetElites>
+
+	<AvoidMobs>
+	</AvoidMobs>
+
+	<Mailboxes>
+	</Mailboxes>
+
+	<Vendors>
+	</Vendors>
+
+	<Blackspots>
+		<Blackspot X="2451.832" Y="357.7309" Z="-7.92304" Radius="1" /> <!-- Drudgeboat Salvage in bad spot -->
+		<Blackspot X="2451.179" Y="320.9375" Z="-18.96798" Radius="1" /> <!-- Drudgeboat Salvage in bad spot -->
+	</Blackspots>
+
+	<Blacklist>
+		<Mob Name="Frostfire Gronn" Id="70920" Flags="Pull" />
+		<Mob Name="Volatile Spore" Id="82328" Flags="Pull" />
+		<Mob Name="Umbraspore Giant" Id="82318" Flags="Pull" />
+		<Mob Name="Void Wolf" Id="78798" Flags="Pull" />
+	</Blacklist>
+
+	<QuestOrder IgnoreCheckpoints="false" >
+		<!-- Check function status -->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+			private static bool? profileFunctionsEnabled => (bool?)AppDomain.CurrentDomain.GetData("QuestingProfiles_FunctionsEnabled");
+			private static bool IsStoreProfile(string path) => path.StartsWith("store://");
+			private static string Slashify(string path) => IsStoreProfile(path) ? path.Replace(@"\", "/") : path.Replace("/", @"\");
+
+			public __CompiledBatchClass__()
+			{
+				if (profileFunctionsEnabled == null || profileFunctionsEnabled == false)
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Please stand by as the functions are being activated!");
+					LoadProfile(@"..\..\Functions\Activate Functions.xml");
+				}
+			}
+
+			private static void LoadProfile(string path)
+			{
+				var profile = GetNewPath(path);
+				if (!IsStoreProfile(profile) && !File.Exists(profile))
+				{
+					Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Profile does not exist.\n" + profile);
+					return;
+				}
+
+				Bots.Professionbuddy.PBLog.Log(Colors.MediumPurple, "[Profile Message!]: ", Colors.Yellow, "Loading: " + profile);
+				ProfileManager.LoadNew(profile, false);
+			}
+
+			private static string GetNewPath(string path)
+			{
+				if (IsStoreProfile(path))
+					return Slashify(path);
+
+				var currentProfile = ProfileManager.XmlLocation;
+				if (IsStoreProfile(currentProfile))
+					return Slashify(currentProfile + "/../" + path);
+
+				var absolutePath = Path.Combine(Path.GetDirectoryName(currentProfile), path);
+				absolutePath = Path.GetFullPath(absolutePath);
+				var canonicalPath = new Uri(absolutePath).LocalPath;
+				return Slashify(canonicalPath);
+			}]]>
+		</Code>
+		<!-- END Check function status -->
+
+		<If Condition="Me.IsHorde" >
+			<Code File="LoadProfile" ProfileName="..\..\Questing Autoloader.xml" />
+		</If>
+		<!-- RunCode Methods -->
+			<!-- <Code File="RunCode">
+			<![CDATA[
+				Bots.Professionbuddy.PBLog.Log(System.Windows.Media.Colors.MediumPurple, "> [Profile Initialization Status] ", System.Windows.Media.Colors.CornflowerBlue, "\n     Auto-Looting	:: Enabled\n     Looting	:: Enabled\n     Game Addons	:: Disabled");
+				Lua.DoString("SetCVar('AutoLootDefault', 1);");
+				CharacterSettings.Instance.LootMobs = true;
+				CharacterSettings.Instance.Save();
+				Lua.DoString("for i=1,GetNumAddOns() do local relo=false if IsAddOnLoaded(i) then relo=true DisableAddOn(i) end if relo then relo=nil ReloadUI() end end");
+				await Coroutine.Sleep(1500);
+				Logging.Write(System.Windows.Media.Colors.MediumPurple, "> [Ready to bot!]");
+			]]>
+			</Code> -->
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[
+						bool DoQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (!HasQuest(questId) && !IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool NeedsBreadcrumbQuest(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (IsQuestCompleted(questId)) return false;
+							}
+							return true;
+						}
+						bool QuestDone(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								if (HasQuest(questId) && IsQuestCompleted(questId)) return true;
+							}
+							return false;
+						}
+						bool QuestFlaggedCompleted(params uint[] questIds)
+						{
+							foreach (var questId in questIds)
+							{
+								return Lua.GetReturnVal<bool>($"return IsQuestFlaggedCompleted({questId});", 0);
+							}
+							return false;
+						}
+						async Task SkipCutscene(int preWait = 3000, int postWait = 3000)
+						{
+					// Add detection of cutscene here.
+							await Coroutine.Sleep(preWait);
+					// Test and improve the working method.
+							Lua.DoString("MovieFrame:StopMovie(); CinematicFrame_CancelCinematic(); StopCinematic();");
+							await Coroutine.Sleep(postWait);
+						}
+					]]>
+			</Code>
+		<!-- END RunCode Methods -->
+
+
+		<If Condition="HasQuest(34575)" >
+			<TurnIn QuestName="Step Three: Prophet!" QuestId="34575" TurnInName="Prophet Velen" TurnInId="79206" X="2301.421" Y="458.8662" Z="7.836821" />
+		</If>
+
+		<PickUp QuestName="Finding a Foothold" QuestId="34582" GiverName="Prophet Velen" GiverId="79206" X="2301.424" Y="458.859" Z="7.835963" />
+		<While Condition="DoQuest(34582)" >
+			<MoveTo QuestId="33815" X="1934.22" Y="342.9869" Z="88.96427" />
+			<Code File="WaitTimer" WaitTime="60000" QuestId="34582" />
+		</While>
+		<TurnIn QuestName="Finding a Foothold" QuestId="34582" TurnInName="Vindicator Maraad" TurnInId="79470" X="1934.22" Y="342.9869" Z="88.96427" />
+
+		<PickUp QuestName="For the Alliance!" QuestId="34583" GiverName="Vindicator Maraad" GiverId="79470" X="1934.22" Y="342.9869" Z="88.96427" />
+		<Code File="InteractWith" MobId="230280" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34583" QuestObjectiveIndex="1" X="1940.138" Y="329.5135" Z="88.96427" />
+		<TurnIn QuestName="For the Alliance!" QuestId="34583" TurnInName="Baros Alexston" TurnInId="79243" X="1935.479" Y="324.4957" Z="88.98422" />
+
+		<PickUp QuestName="Looking for Lumber" QuestId="34584" GiverName="Baros Alexston" GiverId="79243" X="1935.479" Y="324.4957" Z="88.98422" />
+		<PickUp QuestName="Ravenous Ravens" QuestId="34616" GiverName="Baros Alexston" GiverId="79243" X="1935.479" Y="324.4957" Z="88.98422" />
+
+		<Code File="InteractWith" MobId="230335" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34584" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="1883.516" Y="327.5062" Z="83.47712" />
+				<Hotspot X="1861.647" Y="189.3937" Z="79.38912" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" MobId="82037" QuestId="34616" >
+			<HuntingGrounds>
+				<Hotspot X="1886.101" Y="260.7723" Z="77.7935" />
+				<Hotspot X="1781.644" Y="201.2479" Z="70.5745" />
+				<Hotspot X="1815.755" Y="133.2781" Z="76.67826" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="Looking for Lumber" QuestId="34584" TurnInName="Baros Alexston" TurnInId="79243" X="1935.549" Y="324.485" Z="88.98256" />
+		<TurnIn QuestName="Ravenous Ravens" QuestId="34616" TurnInName="Baros Alexston" TurnInId="79243" X="1935.549" Y="324.485" Z="88.98256" />
+		<RecheckCheckpoints />
+
+		<PickUp QuestName="Quakefist" QuestId="34585" GiverName="Yrel" GiverId="79567" X="1930.206" Y="329.7216" Z="89.09069" />
+		<Code File="KillUntilComplete" MobId="81360" QuestId="34585" X="1729.972" Y="263.7578" Z="72.03151" />
+		<TurnIn QuestName="Quakefist" QuestId="34585" TurnInName="Yrel" TurnInId="79567" X="1923.866" Y="329.8402" Z="89.33455" />
+
+		<PickUp QuestName="Establish Your Garrison" QuestId="34586" GiverName="Baros Alexston" GiverId="79243" X="1933.245" Y="324.0472" Z="89.02901" />
+		<While Condition="DoQuest(34586)" >
+			<Code File="InteractWith" MobId="79243" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34586" QuestObjectiveIndex="1" X="1933.245" Y="324.0472" Z="89.02901" />
+			<Code File="RunCode" Code="await SkipCutscene();" />
+		</While>
+		<TurnIn QuestName="Establish Your Garrison" QuestId="34586" TurnInName="Baros Alexston" TurnInId="77209" X="1867.081" Y="259.6523" Z="77.16481" />
+
+		<PickUp QuestName="Keeping it Together" QuestId="35176" GiverName="Baros Alexston" GiverId="77209" X="1864.709" Y="260.9365" Z="77.17206" />
+		<PickUp QuestName="Ship Salvage" QuestId="35166" GiverName="Baros Alexston" GiverId="77209" X="1864.709" Y="260.9365" Z="77.17206" />
+		<PickUp QuestName="Pale Moonlight" QuestId="35174" GiverName="Vindicator Maraad" GiverId="79457" X="1851.2" Y="244.6389" Z="77.0455" />
+
+		<Code File="InteractWith" MobId="84455" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="35176" QuestObjectiveIndex="1" X="1849.958" Y="240.2393" Z="76.66676" />
+		<Code File="InteractWith" MobId="236916" NonCompeteDistance="0" InteractBlacklistTimeInSeconds="1" QuestId="35176" QuestObjectiveIndex="3" X="1893.637" Y="210.7133" Z="77.0638" />
+		<Code File="InteractWith" MobId="81441" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="35176" QuestObjectiveIndex="2" X="1933.504" Y="327.3346" Z="88.98238" />
+
+		<TurnIn QuestName="Keeping it Together" QuestId="35176" TurnInName="Baros Alexston" TurnInId="77209" X="1866.748" Y="260.9679" Z="77.17408" />
+
+		<Code File="InteractWith" MobId="231826" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="35166" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="2280.564" Y="498.0495" Z="11.77879" />
+				<Hotspot X="2433.176" Y="404.5436" Z="2.212824" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" MobId="81670" QuestId="35174" QuestObjectiveIndex="1" X="2400.589" Y="548.7795" Z="4.815833" />
+
+		<Code File="KillUntilComplete" MobId="79205" QuestId="35174" QuestObjectiveIndex="2" >
+			<HuntingGrounds>
+				<Hotspot X="2308.392" Y="572.4628" Z="8.117545" />
+				<Hotspot X="2280.564" Y="498.0495" Z="11.77879" />
+				<Hotspot X="2433.176" Y="404.5436" Z="2.212824" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="Ship Salvage" QuestId="35166" TurnInName="Baros Alexston" TurnInId="77209" X="1868.832" Y="261.3672" Z="77.12688" />
+		<TurnIn QuestName="Pale Moonlight" QuestId="35174" TurnInName="Vindicator Maraad" TurnInId="79457" X="1852.775" Y="244.8105" Z="76.97448" />
+		<RecheckCheckpoints />
+
+		<PickUp QuestName="Build Your Barracks" QuestId="34587" GiverName="Baros Alexston" GiverId="77209" X="1865.999" Y="260.4644" Z="77.1776" />
+		<While Condition="DoQuest(34587)" >
+			<Code File="InteractWith" MobId="231855" NonCompeteDistance="0" InteractByLooting="true" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34587" QuestObjectiveIndex="1" X="1903.285" Y="236.0247" Z="77.60751" />
+			<Code File="UseItem" ItemId="111956" QuestId="34587" QuestObjectiveIndex="2" />
+
+			<Code File="InteractWith" MobId="81369" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34587" X="1868.666" Y="261.3354" Z="77.12529" />
+			<Code File="Misc\RunLua" Lua="C_Garrison.PlaceBuilding(23, 26);" QuestId="34587" />
+
+			<Code File="InteractWith" MobId="232651" NonCompeteDistance="0" WaitForNpcs="false" PreInteractMountStrategy="Dismount" QuestId="34587" QuestObjectiveIndex="5" X="1888.869" Y="242.719" Z="76.55524" />
+			<Code File="RunCode" Code="await SkipCutscene(1500);" />
+		</While>
+		<TurnIn QuestName="Build Your Barracks" QuestId="34587" TurnInName="Vindicator Maraad" TurnInId="79457" X="1852.672" Y="245.3419" Z="77.02358" />
+
+		<PickUp QuestName="Qiana Moonshadow" QuestId="34646" GiverName="Vindicator Maraad" GiverId="79457" X="1852.672" Y="245.3419" Z="77.02358" />
+		<Code File="InteractWith" MobId="79446" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34646" QuestObjectiveIndex="1" X="1358.125" Y="260.2008" Z="54.93652" />
+
+		<PickUp QuestName="A Matter of Life and Death" QuestId="33419" GiverName="Roona" GiverId="70902" X="1190.88" Y="719.2371" Z="112.559" />
+		<Code File="InteractWith" MobId="78889" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="33419" QuestObjectiveIndex="2" X="1140.666" Y="750.3815" Z="97.12473" />
+		<Code File="InteractWith" MobId="78890" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="33419" QuestObjectiveIndex="1" X="1137.999" Y="820.4667" Z="101.4473" />
+		<Code File="InteractWith" MobId="78891" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="33419" QuestObjectiveIndex="3" X="1105.745" Y="759.6339" Z="102.5932" />
+		<TurnIn QuestName="A Matter of Life and Death" QuestId="33419" TurnInName="Roona" TurnInId="70902" X="1190.448" Y="722.6288" Z="112.357" />
+
+		<While Condition="!QuestFlaggedCompleted(34504)" >
+			<Code File="InteractWith" MobIds="78904, 78903, 78902" NumOfTimes="40" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" TerminateWhen="IsObjectiveComplete(2, 34504) ? true : QuestFlaggedCompleted(34504)" >
+				<HuntingGrounds>
+					<Hotspot X="1190.26" Y="709.5089" Z="111.9825" />
+					<Hotspot X="1180.182" Y="843.5872" Z="97.21329" />
+					<Hotspot X="1078.926" Y="782.4187" Z="100.8398" />
+				</HuntingGrounds>
+			</Code>
+
+			<Code File="KillUntilComplete" MobId="76382" TerminateWhen="IsObjectiveComplete(1, 34504) ? true : QuestFlaggedCompleted(34504)" >
+				<HuntingGrounds>
+					<Hotspot X="1190.26" Y="709.5089" Z="111.9825" />
+					<Hotspot X="1180.182" Y="843.5872" Z="97.21329" />
+					<Hotspot X="1078.926" Y="782.4187" Z="100.8398" />
+				</HuntingGrounds>
+			</Code>
+		</While>
+
+		<TurnIn QuestName="Qiana Moonshadow" QuestId="34646" TurnInName="Qiana Moonshadow" TurnInId="81948" X="1846.608" Y="265.6099" Z="78.31462" />
+
+		<PickUp QuestName="Delegating on Draenor" QuestId="34692" GiverName="Lieutenant Thorn" GiverId="79953" X="1847.336" Y="267.1478" Z="78.31462" />
+		<While Condition="DoQuest(34692)" >
+			<Code File="RunCode" Type="Definition">
+				<![CDATA[
+					async Task DoMission(int missionID, params int[] followerList)
+					{
+						foreach (int follower in followerList)
+						{
+							string luaString = $@"
+								local missionID = {missionID};
+								local followerID = {follower};
+								local allFollowers = C_Garrison.GetFollowers(1);
+								for i=1,#allFollowers do
+									if (allFollowers[i].garrFollowerID == followerID)  then  
+										C_Garrison.AddFollowerToMission(missionID, allFollowers[i].followerID);
+										break;
+									end
+								end
+							";
+							Lua.DoString(luaString);
+							await Coroutine.Sleep(750);
+						}
+						await Coroutine.Sleep(1000);
+						Lua.DoString($"C_Garrison.StartMission({missionID});");
+						await Coroutine.Sleep(2500);
+						Lua.DoString("GarrisonMissionFrame.CloseButton:Click();");
+					}
+				]]>
+			</Code>
+			<Code File="InteractWith" MobId="81546" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34692" X="1847.336" Y="267.1478" Z="78.31462" />
+			<Code File="RunCode" Code="await DoMission(66, 34);" />
+		</While>
+		<TurnIn QuestName="Delegating on Draenor" QuestId="34692" TurnInName="Lieutenant Thorn" TurnInId="79953" X="1847.323" Y="265.3047" Z="78.31462" />
+
+		<PickUp QuestName="A Hero&apos;s Welcome" QuestId="33075" GiverName="Yrel" GiverId="80568" X="1859.522" Y="228.5942" Z="76.57353" />
+		<TurnIn QuestName="A Hero&apos;s Welcome" QuestId="33075" TurnInName="Samaara" TurnInId="75005" X="925.8044" Y="-813.1483" Z="-28.83306" />
+		<PickUp QuestName="Dark Enemies" QuestId="33765" GiverName="Samaara" GiverId="75005" X="925.8044" Y="-813.1483" Z="-28.83306" />
+		<PickUp QuestName="Think of the Children!" QuestId="33070" GiverName="Efee" GiverId="80196" X="977.0334" Y="-855.4263" Z="-31.17296" />
+		<PickUp QuestName="Closing the Door" QuestId="33905" GiverName="Vindicator Tenuum" GiverId="74343" X="993.3271" Y="-855.171" Z="-33.68774" />
+
+		<Code File="KillUntilComplete" MobId="80181" QuestId="33905" >
+			<HuntingGrounds>
+				<Hotspot X="1206.141" Y="-938.093" Z="-73.31255" />
+				<Hotspot X="1156.1" Y="-975.1137" Z="-80.05085" />
+				<Hotspot X="1175.464" Y="-1060.812" Z="-77.46068" />
+				<Hotspot X="1138.204" Y="-1160.13" Z="-64.16885" />
+				<Hotspot X="1145.856" Y="-1262.066" Z="-38.4742" />
+				<Hotspot X="1045.376" Y="-1274.512" Z="-25.47745" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="InteractWith" MobId="62769" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="33070" QuestObjectiveIndex="1" X="1281.667" Y="-1011.496" Z="-75.17802" />
+
+		<PickUp QuestName="In Need of a Hero" QuestId="33813" GiverName="Ariaana" GiverId="71502" X="1199.455" Y="-1216.947" Z="-47.55516" />
+		<While Condition="DoQuest(33813)" >
+			<Code File="InteractWith" MobId="230883" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33813" X="1206.588" Y="-1202.881" Z="-47.55516" TerminateWhen="HasItem(111908)" />
+			<MoveTo X="1206.588" Y="-1202.881" Z="-47.55516" />
+			<Code File="UseItemTargetLocation" ItemId="111908" UseType="PointToPoint" WaitTime="4000" QuestId="33813" QuestObjectiveIndex="1" X="1206.588" Y="-1202.881" Z="-47.55516" ClickToX="1193.093" ClickToY="-1221.047" ClickToZ="-47.55488" TerminateWhen="!HasItem(111908)" />
+			<Code File="UseItemTargetLocation" ItemId="111908" UseType="PointToPoint" WaitTime="4000" QuestId="33813" QuestObjectiveIndex="2" X="1206.588" Y="-1202.881" Z="-47.55516" ClickToX="1192.579" ClickToY="-1218.437" ClickToZ="-47.55488" TerminateWhen="!HasItem(111908)" />
+			<Code File="UseItemTargetLocation" ItemId="111908" UseType="PointToPoint" WaitTime="4000" QuestId="33813" QuestObjectiveIndex="3" X="1206.588" Y="-1202.881" Z="-47.55516" ClickToX="1189.29" ClickToY="-1217.401" ClickToZ="-46.34229" TerminateWhen="!HasItem(111908)" />
+		</While>
+		<TurnIn QuestName="In Need of a Hero" QuestId="33813" TurnInName="Ariaana" TurnInId="71502" X="1199.872" Y="-1216.445" Z="-47.55496" />
+
+		<Code File="InteractWith" MobId="64224" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="33070" QuestObjectiveIndex="2" X="1053.143" Y="-1206.485" Z="-43.89391" />
+
+		<Code File="KillUntilComplete" MobId="80162" QuestId="33765" >
+			<HuntingGrounds>
+				<Hotspot X="1206.521" Y="-968.7875" Z="-75.33047" />
+				<Hotspot X="1185.865" Y="-1109.04" Z="-72.10466" />
+				<Hotspot X="1089.933" Y="-1204.542" Z="-44.20374" />
+				<Hotspot X="1078.335" Y="-1280.054" Z="-27.91971" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="Dark Enemies" QuestId="33765" TurnInName="Prophet Velen" TurnInId="74043" X="938.3976" Y="-1021.21" Z="-0.9264211" />
+		<TurnIn QuestName="Think of the Children!" QuestId="33070" TurnInName="Prophet Velen" TurnInId="74043" X="938.3976" Y="-1021.21" Z="-0.9264211" />
+		<TurnIn QuestName="Closing the Door" QuestId="33905" TurnInName="Prophet Velen" TurnInId="74043" X="938.3976" Y="-1021.21" Z="-0.9264211" />
+		<RecheckCheckpoints />
+
+		<PickUp QuestName="Shadows Awaken" QuestId="34019" GiverName="Prophet Velen" GiverId="74043" X="938.3976" Y="-1021.21" Z="-0.9264211" />
+		<Code File="KillUntilComplete" MobId="75043" QuestId="34019" X="1003.108" Y="-1040.766" Z="6.937754" />
+		<TurnIn QuestName="Shadows Awaken" QuestId="34019" TurnInName="Prophet Velen" TurnInId="74043" X="993.3688" Y="-1034.958" Z="6.398535" />
+
+		<PickUp QuestName="Into Twilight" QuestId="33072" GiverName="Prophet Velen" GiverId="74043" X="993.3688" Y="-1034.958" Z="6.398535" />
+		<!-- <PickUp QuestName="The Southern Wilds" QuestId="35444" GiverName="Farmer Gehaar" GiverId="82256" X="937.364" Y="-1016.978" Z="-1.015294" /> Uncomment if we are doing more quests in this zone beyond the checkpoint 92.5 -->
+
+		<If Condition="NeedsQuest(34778) &amp;&amp; HasItem(110560) &amp;&amp; Unit(82256) != null" >
+			<Code File="RunCode" Code="
+				await CommonCoroutines.LandAndDismount();
+				Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 110560).Use();
+				await Coroutine.Sleep(500);
+				await Coroutine.Wait(7000, () =&gt; !Me.IsCasting);
+			" />
+		</If>
+
+		<PickUp QuestName="Migrant Workers" QuestId="34778" GiverName="Vindicator Maraad" GiverId="79457" X="1851.976" Y="247.0664" Z="77.21649" />
+		<Code File="InteractWith" MobId="81912" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34778" QuestObjectiveIndex="1" X="1856.468" Y="243.7795" Z="76.98661" />
+		<If Condition="QuestDone(34778)" >
+			<MoveTo X="1199.951" Y="-1479.347" Z="-7.146417" />
+			<TurnIn QuestName="Migrant Workers" QuestId="34778" TurnInName="Foreman Zipfizzle" TurnInId="81912" X="1199.951" Y="-1479.347" Z="-7.146417" />
+		</If>
+
+		<PickUp QuestName="Circle the Wagon" QuestId="34779" GiverName="Foreman Zipfizzle" GiverId="81912" X="1199.951" Y="-1479.347" Z="-7.146417" />
+		<While Condition="DoQuest(34779)" >
+			<Code File="KillUntilComplete" MobId="81906" QuestId="34779" QuestObjectiveIndex="2" X="1391.073" Y="-1166.986" Z="-13.03213" />
+			<Code File="EscortGroup" QuestId="34779" EscortCompleteWhen="DestinationReached" EscortCountMax="5" EscortNpcId="81850" EscortMaxFollowDistance="8" EscortMaxFightDistance="10" SearchForNpcsRadius="65" EscortCompleteX="1194.855" EscortCompleteY="-1467.868" EscortCompleteZ="-9.412585" >
+				<SearchPath>
+					<Hotspot X="1385.573" Y="-1167.992" Z="-12.85547" />
+					<Hotspot X="1391.1" Y="-1169.28" Z="-12.97862" />
+					<Hotspot X="1308.933" Y="-1247.476" Z="-16.03462" />
+					<Hotspot X="1227.461" Y="-1334.598" Z="-8.964642" />
+					<Hotspot X="1194.855" Y="-1467.868" Z="-9.412585" />
+				</SearchPath>
+			</Code>
+		</While>
+		<TurnIn QuestName="Circle the Wagon" QuestId="34779" TurnInName="Exarch Akama" TurnInId="80078" X="1193.431" Y="-1477.169" Z="-7.297888" />
+
+		<PickUp QuestName="Invisible Ramparts" QuestId="34780" GiverName="Exarch Hataaru" GiverId="80075" X="1203.148" Y="-1496.384" Z="-5.43911" />
+		<While Condition="DoQuest(34780)" >
+			<Code File="InteractWith" MobId="230856" NonCompeteDistance="0" QuestId="34780" X="1133.235" Y="-1536.701" Z="-5.831403" TerminateWhen="Me.HasAura(161644)" />
+			<Code File="InteractWith" MobId="80149" Range="2" NonCompeteDistance="0" QuestId="34780" QuestObjectiveIndex="3" X="1167.606" Y="-1495.588" Z="-5.428709" TerminateWhen="!Me.HasAura(161644)" />
+			<Code File="InteractWith" MobId="80149" Range="2" NonCompeteDistance="0" QuestId="34780" QuestObjectiveIndex="2" X="1181.816" Y="-1525.031" Z="-5.428925" TerminateWhen="!Me.HasAura(161644)" />
+			<Code File="InteractWith" MobId="80086" Range="2" NonCompeteDistance="0" QuestId="34780" QuestObjectiveIndex="1" X="1197.716" Y="-1498.676" Z="-5.428455" TerminateWhen="!Me.HasAura(161644)" />
+		</While>
+		<TurnIn QuestName="Invisible Ramparts" QuestId="34780" TurnInName="Defense Pylon Central Control Console" TurnInId="230933" X="1110.97" Y="-1546.179" Z="-5.228079" />
+
+		<PickUp QuestName="Defenstrations" QuestId="34781" GiverName="Defense Pylon Central Control Console" GiverId="230933" X="1110.97" Y="-1546.179" Z="-5.228079" />
+		<Code File="KillUntilComplete" MobId="82111" QuestId="34781" >
+			<HuntingGrounds>
+				<Hotspot X="1119.279" Y="-1496.076" Z="-5.198408" />
+				<Hotspot X="1183.547" Y="-1407.281" Z="-13.79228" />
+				<Hotspot X="1133.521" Y="-1406.159" Z="-14.45606" />
+			</HuntingGrounds>
+		</Code>
+		<TurnIn QuestName="Defenstrations" QuestId="34781" TurnInName="Defense Pylon Central Control Console" TurnInId="230933" X="1110.63" Y="-1547.007" Z="-5.227992" />
+
+		<PickUp QuestName="The Exarch Council" QuestId="34782" GiverName="Vindicator Maraad" GiverId="82348" X="1210.63" Y="-1495.129" Z="-4.797555" />
+		<TurnIn QuestName="The Exarch Council" QuestId="34782" TurnInName="Exarch Othaar" TurnInId="80076" X="1473.834" Y="-1703.853" Z="41.11523" />
+		<PickUp QuestName="Naielle, The Rangari" QuestId="34783" GiverName="Exarch Othaar" GiverId="80076" X="1473.834" Y="-1703.853" Z="41.11523" />
+		<PickUp QuestName="Hataaru, the Artificer" QuestId="34785" GiverName="Exarch Othaar" GiverId="80076" X="1473.834" Y="-1703.853" Z="41.11523" />
+		<TurnIn QuestName="Hataaru, the Artificer" QuestId="34785" TurnInName="Exarch Hataaru" TurnInId="80075" X="1336.706" Y="-1876.145" Z="27.37453" />
+		<RecheckCheckpoints />
+		<PickUp QuestName="Shut &apos;er Down" QuestId="35070" GiverName="Exarch Hataaru" GiverId="80075" X="1336.706" Y="-1876.145" Z="27.37453" />
+		<PickUp QuestName="Engorged Goren" QuestId="34786" GiverName="Apprentice Artificer Andren" GiverId="81140" X="1358.555" Y="-1874.292" Z="27.44447" />
+
+		<While Condition="DoQuest(34786, 35070)" >
+			<If Condition="!Me.IsIndoors" >
+				<MoveTo X="1383.295" Y="-1873.414" Z="29.21003" />
+			</If>
+			<Code File="InteractWith" MobId="231657" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" MovementBy="NavigatorOnly" QuestId="35070" QuestObjectiveIndex="1" X="1487.093" Y="-2048.966" Z="8.329079" />
+				<Code File="KillUntilComplete" MobIds="81156, 81157" QuestId="34786" >
+				<HuntingGrounds>
+					<Hotspot X="1473.184" Y="-2011.592" Z="2.471963" />
+					<Hotspot X="1469.533" Y="-1906.264" Z="-3.221392" />
+					<Hotspot X="1527.904" Y="-1937.542" Z="3.437305" />
+				</HuntingGrounds>
+			</Code>
+		</While>
+
+		<TurnIn QuestName="Engorged Goren" QuestId="34786" TurnInName="Apprentice Artificer Andren" TurnInId="81140" X="1359.832" Y="-1872.293" Z="27.43034" />
+		<TurnIn QuestName="Shut &apos;er Down" QuestId="35070" TurnInName="Exarch Hataaru" TurnInId="80075" X="1338.289" Y="-1876.164" Z="27.36387" />
+		<PickUp QuestName="The Big Haul" QuestId="33084" GiverName="Traevar Gunnermark" GiverId="74233" X="1017.574" Y="-1918.057" Z="0.4498203" />
+
+		<Code File="KillUntilComplete" MobIds="87698, 87699, 87700" QuestId="33084" >
+			<HuntingGrounds >
+				<Hotspot X="1209.273" Y="-2030.983" Z="16.22219" />
+				<Hotspot X="1081.957" Y="-2060.494" Z="16.04901" />
+				<Hotspot X="1078.166" Y="-1948.87" Z="3.683348" />
+				<Hotspot X="1161.93" Y="-1947.527" Z="15.78868" />
+				<Hotspot X="1030.195" Y="-1839.292" Z="1.179273" />
+				<Hotspot X="1088.651" Y="-1744.547" Z="10.47632" />
+				<Hotspot X="1149.227" Y="-1690.853" Z="16.87493" />
+				<Hotspot X="1097.235" Y="-1616.441" Z="2.837193" />
+				<Hotspot X="986.9693" Y="-1553.027" Z="-5.681083" />
+				<Hotspot X="880.5822" Y="-1547.989" Z="5.528929" />
+				<Hotspot X="931.2725" Y="-1632.799" Z="0.1003789" />
+				<Hotspot X="842.7148" Y="-1658.454" Z="9.133578" />
+				<Hotspot X="759.5899" Y="-1785.814" Z="18.72637" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="KillUntilComplete" TerminateWhen="QuestFlaggedCompleted(34496)" >
+			<HuntingGrounds >
+				<Hotspot X="1182.806" Y="-1734.944" Z="23.6609" />
+				<Hotspot X="1230.788" Y="-1852.281" Z="31.54876" />
+				<Hotspot X="1272.848" Y="-1979.138" Z="37.54411" />
+				<Hotspot X="1287.9" Y="-2068.656" Z="18.11333" />
+				<Hotspot X="1155.162" Y="-2098.14" Z="14.17126" />
+				<Hotspot X="1006.007" Y="-2039.844" Z="29.26867" />
+				<Hotspot X="920.0167" Y="-1988.103" Z="29.81363" />
+				<Hotspot X="816.1621" Y="-1923.818" Z="25.37957" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="75483" PursueWhen="IsObjectiveComplete(1, 34496) ? false : !QuestFlaggedCompleted(34496)" />
+				<PursueUnit Id="82354" PursueWhen="IsObjectiveComplete(2, 34496) ? false : !QuestFlaggedCompleted(34496)" />
+			</PursuitList>
+		</Code>
+
+		<TurnIn QuestName="The Big Haul" QuestId="33084" TurnInName="Traevar Gunnermark" TurnInId="74233" X="1018.952" Y="-1916.939" Z="0.3493008" />
+		<TurnIn QuestName="Naielle, The Rangari" QuestId="34783" TurnInName="Exarch Naielle" TurnInId="80079" X="1607.815" Y="-1518.488" Z="1.775801" />
+		<RecheckCheckpoints />
+		<PickUp QuestName="Fun with Fungus" QuestId="34784" GiverName="Exarch Naielle" GiverId="80079" X="1607.815" Y="-1518.488" Z="1.775801" />
+		<PickUp QuestName="The Sting" QuestId="34790" GiverName="Rangari Chel" GiverId="82537" X="1628.716" Y="-1532.621" Z="1.978642" />
+
+		<While Condition="DoQuest(34784)" >
+			<Code File="InteractWith" MobId="232533" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34784" QuestObjectiveIndex="1" X="1686.737" Y="-1349.735" Z="5.657737" TerminateWhen="Me.HasAura(165892)" />
+			<Code File="InteractWith" MobIds="82328" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34784" QuestObjectiveIndex="1" TerminateWhen="!Me.HasAura(165892)" >
+				<HuntingGrounds>
+					<Hotspot X="1707.438" Y="-1431.344" Z="1.889321" />
+					<Hotspot X="1789.169" Y="-1370.424" Z="-0.2837823" />
+					<Hotspot X="1715.252" Y="-1262.365" Z="-0.3901313" />
+					<Hotspot X="1608.585" Y="-1365.274" Z="-0.08412394" />
+				</HuntingGrounds>
+			</Code>
+		</While>
+
+		<Code File="KillUntilComplete" MobId="82323" QuestId="34790" QuestObjectiveIndex="1" >
+			<HuntingGrounds>
+				<Hotspot X="1707.438" Y="-1431.344" Z="1.889321" />
+				<Hotspot X="1789.169" Y="-1370.424" Z="-0.2837823" />
+				<Hotspot X="1715.252" Y="-1262.365" Z="-0.3901313" />
+				<Hotspot X="1608.585" Y="-1365.274" Z="-0.08412394" />
+			</HuntingGrounds>
+		</Code>
+
+		<TurnIn QuestName="The Sting" QuestId="34790" TurnInName="Rangari Chel" TurnInId="82537" X="1630.135" Y="-1528.842" Z="1.775748" />
+		<TurnIn QuestName="Fun with Fungus" QuestId="34784" TurnInName="Exarch Naielle" TurnInId="80079" X="1612.438" Y="-1519.165" Z="1.775748" />
+		<PickUp QuestName="Exarch Maladaar" QuestId="34787" GiverName="Exarch Akama" GiverId="80078" X="1609.415" Y="-1519.79" Z="1.775748" />
+		<TurnIn QuestName="Exarch Maladaar" QuestId="34787" TurnInName="Exarch Maladaar" TurnInId="80073" X="1306.678" Y="-1721.114" Z="44.80856" />
+		<PickUp QuestName="Trust No One" QuestId="35552" GiverName="Exarch Maladaar" GiverId="80073" X="1306.678" Y="-1721.114" Z="44.80856" />
+		<TurnIn QuestName="Trust No One" QuestId="35552" TurnInName="Shadow Council Tome of Curses" TurnInId="233229" X="1567.592" Y="-1816.876" Z="49.42265" />
+		<PickUp QuestName="Warning the Exarchs" QuestId="34791" GiverName="Shadow Council Tome of Curses" GiverId="233229" X="1567.592" Y="-1816.876" Z="49.42265" />
+		<TurnIn QuestName="Warning the Exarchs" QuestId="34791" TurnInName="Exarch Maladaar" TurnInId="80073" X="1489.457" Y="-1914.935" Z="67.46739" />
+		<RecheckCheckpoints />
+
+		<PickUp QuestName="Speaker for the Dead" QuestId="34789" GiverName="Exarch Maladaar" GiverId="80073" X="1489.457" Y="-1914.935" Z="67.46739" />
+		<While Condition="DoQuest(34789)" >
+			<Code File="InteractWith" MobId="88972" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34789" X="1491.398" Y="-2178.269" Z="88.85661" />
+			<Code File="KillUntilComplete" MobIds="82543, 82544" QuestId="34789" QuestObjectiveIndex="2" X="1490.191" Y="-2177.312" Z="88.92245" />
+		</While>
+		<TurnIn QuestName="Speaker for the Dead" QuestId="34789" TurnInName="Exarch Maladaar" TurnInId="88972" X="1490.589" Y="-2181.173" Z="88.78548" />
+
+		<PickUp QuestName="The Traitor&apos;s True Name" QuestId="34792" GiverName="Exarch Maladaar" GiverId="88972" X="1490.589" Y="-2181.173" Z="88.78548" />
+		<Code File="InteractWith" MobId="233077" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="34792" X="1741.752" Y="-1793.007" Z="156.3898" />
+		<Code File="KillUntilComplete" MobId="80076" QuestId="34792" QuestObjectiveIndex="3" X="1741.498" Y="-1792.585" Z="156.389" />
+		<TurnIn QuestName="The Traitor&apos;s True Name" QuestId="34792" TurnInName="Exarch Maladaar" TurnInId="80073" X="1491.49" Y="-1920.907" Z="67.46738" />
+
+		<PickUp QuestName="Friend of the Exarchs" QuestId="34788" GiverName="Exarch Naielle" GiverId="80079" X="1491.765" Y="-1918.331" Z="67.46738" />
+		<While Condition="DoQuest(34788)" >
+			<!-- Pick a follower, we're going to default to Onaala -->
+			<Code File="InteractWith" MobId="82492" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34788" X="1490.114" Y="-1913.928" Z="67.46738" />
+			<!--<Code File="InteractWith" MobId="82489" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34788" X="1490.114" Y="-1913.928" Z="67.46738" />
+			<Code File="InteractWith" MobId="82491" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34788" X="1490.114" Y="-1913.928" Z="67.46738" />-->
+			<Code File="Misc\RunLua" Lua="GossipTitleButton1:Click(); StaticPopup1Button1:Click();" />
+		</While>
+		<TurnIn QuestName="Friend of the Exarchs" QuestId="34788" TurnInName="Exarch Naielle" TurnInId="80079" X="1489.023" Y="-1912.556" Z="67.46738" />
+
+		<PickUp QuestName="Supply Drop" QuestId="35905" GiverName="Exarch Naielle" GiverId="80079" X="1488.537" Y="-1914.742" Z="67.46738" />
+		<If Condition="QuestDone(35905) &amp;&amp; HasItem(110560) &amp;&amp; Unit(80079) != null" >
+			<Code File="RunCode" Code="
+				await CommonCoroutines.LandAndDismount();
+				Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 110560).Use();
+				await Coroutine.Sleep(500);
+				await Coroutine.Wait(7000, () =&gt; !Me.IsCasting);
+			" />
+		</If>
+		<TurnIn QuestName="Supply Drop" QuestId="35905" TurnInName="Baros Alexston" TurnInId="77209" X="1866.355" Y="261.0831" Z="77.17674" />
+
+		<TurnIn QuestName="Into Twilight" QuestId="33072" TurnInName="Prophet Velen" TurnInId="79043" X="203.9582" Y="-449.4959" Z="-3.916171" />
+		<PickUp QuestName="The Clarity Elixir" QuestId="33076" GiverName="Prophet Velen" GiverId="79043" X="203.9582" Y="-449.4959" Z="-3.916171" />
+		<PickUp QuestName="Going Undercover" QuestId="33080" GiverName="Rangari Veka" GiverId="73425" X="212.105" Y="-453.7122" Z="-3.881621" />
+
+		<Code File="InteractWith" MobId="73106" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33080" X="219.963" Y="-457.4339" Z="-3.975341" TerminateWhen="Me.HasAura(150456) || HasItem(107076)" />
+
+		<PickUp QuestName="Loola&apos;s Lost Love" QuestId="34876" GiverName="Old Loola" GiverId="71641" X="199.0235" Y="-493.6591" Z="-5.229407" />
+		<PickUp QuestName="A Grandmother&apos;s Remedy" QuestId="33077" GiverName="Old Loola" GiverId="71641" X="199.0235" Y="-493.6591" Z="-5.229407" />
+		<PickUp QuestName="Rangari Roundup" QuestId="34897" GiverName="Rangari Navra" GiverId="80378" X="354.426" Y="-656.9927" Z="-24.8207" />
+
+		<Code File="InteractWith" MobId="80387" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="34897" QuestObjectiveIndex="1" X="310.9748" Y="-673.2375" Z="-26.06481" >
+			<HuntingGrounds>
+				<Hotspot X="310.7371" Y="-675.4448" Z="-26.25182" />
+				<Hotspot X="372.6157" Y="-857.4119" Z="-26.3535" />
+				<Hotspot X="479.0975" Y="-899.9123" Z="-25.67447" />
+			</HuntingGrounds>
+		</Code>
+
+		<Code File="InteractWith" MobId="223824" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33076" QuestObjectiveIndex="3" X="333.0156" Y="-902.7118" Z="-22.13266" />
+
+		<While Condition="DoQuest(34876, 33077)" >
+			<Code File="InteractWith" CollectionDistance="200" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" NumOfTimes="24" TerminateWhen="!DoQuest(34876, 33077)" >
+				<HuntingGrounds>
+					<Hotspot X="343.1956" Y="-947.8793" Z="-25.85631" />
+					<Hotspot X="392.3032" Y="-814.9129" Z="-25.7697" />
+					<Hotspot X="350.4981" Y="-635.0507" Z="-26.50383" />
+					<Hotspot X="504.3301" Y="-712.4501" Z="-24.8818" />
+					<Hotspot X="507.6741" Y="-852.5937" Z="-26.09062" />
+				</HuntingGrounds>
+				<PursuitList>
+					<PursueGameObject Id="230952" PursueWhen="DoQuest(34876)" />
+					<PursueUnit Id="75470" PursueWhen="DoQuest(33077)" />
+				</PursuitList>
+			</Code>
+		</While>
+
+		<Code File="KillUntilComplete" QuestId="33076" >
+			<HuntingGrounds>
+				<Hotspot X="343.1956" Y="-947.8793" Z="-25.85631" />
+				<Hotspot X="392.3032" Y="-814.9129" Z="-25.7697" />
+				<Hotspot X="350.4981" Y="-635.0507" Z="-26.50383" />
+				<Hotspot X="504.3301" Y="-712.4501" Z="-24.8818" />
+				<Hotspot X="507.6741" Y="-852.5937" Z="-26.09062" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="79020" PursueWhen="!IsObjectiveComplete(2, 33076)" />
+				<PursueUnit Id="75471" PursueWhen="!IsObjectiveComplete(3, 3333)" />
+			</PursuitList>
+		</Code>
+
+		<TurnIn QuestName="Rangari Roundup" QuestId="34897" TurnInName="Rangari Veka" TurnInId="73425" X="211.968" Y="-454.1327" Z="-3.888261" />
+		<TurnIn QuestName="Loola&apos;s Lost Love" QuestId="34876" TurnInName="Old Loola" TurnInId="71641" X="199.4699" Y="-493.2311" Z="-5.195141" />
+		<TurnIn QuestName="A Grandmother&apos;s Remedy" QuestId="33077" TurnInName="Old Loola" TurnInId="71641" X="199.4699" Y="-493.2311" Z="-5.195141" />
+		<TurnIn QuestName="The Clarity Elixir" QuestId="33076" TurnInName="Prophet Velen" TurnInId="79043" X="464.7472" Y="-96.41438" Z="92.58127" />
+		<RecheckCheckpoints />
+
+		<PickUp QuestName="The Fate of Karabor" QuestId="33059" GiverName="Prophet Velen" GiverId="79043" X="464.7472" Y="-96.41438" Z="92.58127" />
+		<While Condition="DoQuest(33059)" >
+			<If Condition="DoQuest(33059) &amp;&amp; !Me.HasAura(160941)" >
+				<MoveTo X="467.0155" Y="-96.08232" Z="92.77523" />
+				<Code File="UseItem" ItemId="111591" X="467.0155" Y="-96.08232" Z="92.77523" />
+				<Code File="WaitTimer" WaitTime="4500" />
+			</If>
+
+			<If Condition="CurrentScenarioStage == 1" >
+				<MoveTo X="578.4584" Y="-3085.131" Z="59.63446" />
+				<Code File="WaitTimer" WaitTime="16000" TerminateWhen="CurrentScenarioStage != 1" />
+			</If>
+
+			<Code File="KillUntilComplete" MobId="79560" X="578.4584" Y="-3085.131" Z="59.63446" TerminateWhen="CurrentScenarioStage != 2" />
+
+			<If Condition="CurrentScenarioStage == 3" >
+				<MoveTo X="578.6393" Y="-3048.73" Z="69.39349" />
+				<Code File="WaitTimer" WaitTime="60000" TerminateWhen="CurrentScenarioStage != 3" />
+			</If>
+
+			<Code File="InteractWith" MobId="79522" GossipOptions="1" NonCompeteDistance="0" X="579.3639" Y="-3041.015" Z="69.39631" TerminateWhen="CurrentScenarioStage != 4" />
+
+			<If Condition="CurrentScenarioStage == 0" >
+				<Code File="WaitTimer" WaitTime="60000" TerminateWhen="Unit(79522) == null || Unit(79522, u =&gt; u.IsDead) != null" />
+				<Code File="RunCode" Code="await SkipCutscene();" />
+			</If>
+		</While>
+		<TurnIn QuestName="The Fate of Karabor" QuestId="33059" TurnInName="Prophet Velen" TurnInId="79043" X="205.3908" Y="-448.5072" Z="-3.898378" />
+
+		<While Condition="DoQuest(33080)" >
+			<If Condition="!SpellManager.HasSpell(191645) &amp;&amp; !(Me.HasAura(150456) || Me.HasAura(148601) || Me.HasAura(148600))" >
+				<MoveTo X="4.963244" Y="-328.3651" Z="55.47688" />
+				<Code File="UseItem" ItemId="107076" X="4.963244" Y="-328.3651" Z="55.47688" TerminateWhen="Me.HasAura(150456) || Me.HasAura(148601) || Me.HasAura(148600)" />
+				<Code File="Hooks\Avoid" AvoidName="AvoidVoidWolf" ObjectType="Npc" ObjectId="78798" Radius="8" AvoidWhen="!UNIT.Aggro &amp;&amp; UNIT.IsAlive &amp;&amp; (Me.HasAura(150456) || Me.HasAura(148601) || Me.HasAura(148600))" />
+				<Code File="Hooks\DoWhen" ActivityName="UseDisguise" AllowUseWhileMounted="true" UseWhen="DoQuest(33080) &amp;&amp; !Me.HasAura(150456) &amp;&amp; !Me.HasAura(148601) &amp;&amp; !Me.HasAura(148600) &amp;&amp; Unit(79178, u =&gt; u.DistanceSqr &lt; 70f*70f) != null" >
+					<Code File="ForcedDismount" />
+					<Code File="UseItem" ItemId="107076" X="4.963244" Y="-328.3651" Z="55.47688" TerminateWhen="Me.HasAura(150456) || Me.HasAura(148601) || Me.HasAura(148600)" />
+				</Code>
+			</If>
+			<DisableBehavior Name="Pull" />
+			<Code File="InteractWith" MobId="73106" Range="5" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33080" QuestObjectiveIndex="1" X="220.8958" Y="-454.5955" Z="-3.551974" />
+			<Code File="InteractWith" MobId="74811" Range="5" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33080" QuestObjectiveIndex="2" X="14.46354" Y="-221.2587" Z="90.15543" />
+			<Code File="InteractWith" MobId="74811" Range="5" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33080" QuestObjectiveIndex="3" X="-83.50935" Y="-168.7972" Z="103.2403" />
+			<Code File="InteractWith" MobId="74811" Range="5" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33080" QuestObjectiveIndex="4" X="-146.2804" Y="-354.458" Z="103.1558" />
+			<Code File="InteractWith" MobId="74811" Range="5" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="33080" QuestObjectiveIndex="5" X="-268.0872" Y="-180.9171" Z="81.50096" />
+			<MoveTo X="-164.3993" Y="-23.49479" Z="90.11432" />
+			<EnableBehavior Name="Pull" />
+			<Code File="Hooks\Avoid" AvoidName="AvoidVoidWolf" Command="Remove" />
+			<Code File="Hooks\DoWhen" ActivityName="UseDisguise" Command="Remove" />
+		</While>
+
+		<TurnIn QuestName="Going Undercover" QuestId="33080" TurnInName="Yrel" TurnInId="74877" X="-166.6802" Y="-25.19147" Z="89.16287" />
+
+		<PickUp QuestName="Escape From Shaz&apos;gul" QuestId="33081" GiverName="Yrel" GiverId="74877" X="-166.6802" Y="-25.19147" Z="89.16287" />
+		<While Condition="DoQuest(33081)" >
+			<Code File="InteractWith" MobId="74877" GossipOptions="1,1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="33081" QuestObjectiveIndex="1" X="-166.2206" Y="-25.80928" Z="89.21873" />
+			<Code File="InteractWith" MobId="74877" GossipOptions="1" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="33081" QuestObjectiveIndex="2" X="-166.2206" Y="-25.80928" Z="89.21873" TerminateWhen="Unit(74877, u =&gt; u.HasAura(150697)) != null" />
+			<Code File="EscortGroup" QuestId="33081" EscortCompleteWhen="QuestObjectiveComplete" QuestObjectiveIndex="2" StartEscortGossipOptions="2,1" EscortCountMax="1" StartNpcId="74877" EscortNpcId="88864" EscortMaxFightDistance="15" SearchForNpcsRadius="75" >
+				<SearchPath>
+					<Hotspot X="-154.5448" Y="-79.76411" Z="88.47097" />
+					<Hotspot X="-200.2401" Y="-172.7134" Z="80.46567" />
+					<Hotspot X="-132.5764" Y="-244.9035" Z="90.1044" />
+					<Hotspot X="-132.5764" Y="-244.9035" Z="90.1044" />
+					<Hotspot X="-57.27397" Y="-241.1047" Z="90.07491" />
+					<Hotspot X="-37.75665" Y="-310.7561" Z="76.2085" />
+					<Hotspot X="3.810925" Y="-326.2653" Z="56.08627" />
+					<Hotspot X="90.96183" Y="-360.4988" Z="23.94069" />
+				</SearchPath>
+			</Code>
+		</While>
+		<TurnIn QuestName="Escape From Shaz&apos;gul" QuestId="33081" TurnInName="Yrel" TurnInId="76067" X="203.5808" Y="-452.8825" Z="-3.918164" />
+		<RecheckCheckpoints />
+
+		<!-- <PickUp QuestName="Chasing Shadows" QuestId="33586" GiverName="Prophet Velen" GiverId="79043" X="204.5594" Y="-448.9244" Z="-3.908734" /> Uncomment if we decide to quest past the checkpoint -->
+		<PickUp QuestName="Fast Expansion" QuestId="33814" GiverName="Scout Valdez" GiverId="81152" X="206.883" Y="-456.2876" Z="-3.969435" />
+		<PickUp QuestName="The Dark that Blinds Us" QuestId="33078" GiverName="Loreseeker Heidii" GiverId="74121" X="98.80927" Y="-552.0247" Z="18.78294" />
+
+		<Code File="InteractWith" MobId="224705" Range="8" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="33078" QuestObjectiveIndex="1" X="-40.16449" Y="-758.5936" Z="24.70023" />
+		<Code File="InteractWith" MobId="224706" Range="8" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="33078" QuestObjectiveIndex="2" X="16.10787" Y="-713.0391" Z="23.55025" />
+		<Code File="InteractWith" MobId="224708" Range="8" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="33078" QuestObjectiveIndex="3" X="-45.65149" Y="-664.2499" Z="24.90166" />
+		<Code File="InteractWith" MobId="224707" Range="8" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" InteractBlacklistTimeInSeconds="1" QuestId="33078" QuestObjectiveIndex="4" X="-172.091" Y="-710.9433" Z="5.181043" />
+
+		<Code File="KillUntilComplete" TerminateWhen="QuestFlaggedCompleted(34076)" >
+			<HuntingGrounds>
+				<Hotspot X="-294.7969" Y="-637.4805" Z="12.52834" />
+				<Hotspot X="-215.0377" Y="-803.6121" Z="16.85412" />
+				<Hotspot X="-143.8026" Y="-657.3083" Z="16.83846" />
+				<Hotspot X="-23.55259" Y="-616.5162" Z="18.91112" />
+				<Hotspot X="88.50594" Y="-725.222" Z="15.73898" />
+				<Hotspot X="25.45169" Y="-842.4455" Z="11.59031" />
+				<Hotspot X="187.5759" Y="-706.6865" Z="12.82429" />
+			</HuntingGrounds>
+			<PursuitList>
+				<PursueUnit Id="82196" PursueWhen="IsObjectiveComplete(1, 34076) ? false : !QuestFlaggedCompleted(34076)" />
+				<PursueUnit Id="82220" PursueWhen="IsObjectiveComplete(2, 34076) ? false : !QuestFlaggedCompleted(34076)" />
+				<PursueUnit Id="79148" PursueWhen="IsObjectiveComplete(3, 34076) ? false : !QuestFlaggedCompleted(34076)" />
+				<PursueUnit Id="79149" PursueWhen="IsObjectiveComplete(3, 34076) ? false : !QuestFlaggedCompleted(34076)" />
+			</PursuitList>
+		</Code>
+
+		<TurnIn QuestName="The Dark that Blinds Us" QuestId="33078" TurnInName="Loreseeker Heidii" TurnInId="74121" X="95.00212" Y="-557.7271" Z="18.56405" />
+
+		<!-- Can do Fionas quests and continue the quest line here if we need to -->
+
+		<If Condition="QuestDone(33814) &amp;&amp; HasItem(110560) &amp;&amp; Unit(74121) != null" >
+			<Code File="RunCode" Code="
+				await CommonCoroutines.LandAndDismount();
+				Me.BagItems.FirstOrDefault(x =&gt; x.Entry == 110560).Use();
+				await Coroutine.Sleep(500);
+				await Coroutine.Wait(7000, () =&gt; !Me.IsCasting);
+			" />
+		</If>
+
+		<TurnIn QuestName="Fast Expansion" QuestId="33814" TurnInName="Baros Alexston" TurnInId="77209" X="1866.873" Y="261.2481" Z="77.16909" />
+
+		<PickUp QuestName="Bigger is Better" QuestId="36592" GiverName="Baros Alexston" GiverId="77209" X="1866.873" Y="261.2481" Z="77.16909" />
+		<While Condition="DoQuest(36592)" >
+			<Code File="InteractWith" MobId="81369" NonCompeteDistance="0" PreInteractMountStrategy="Dismount" QuestId="36592" X="1866.873" Y="261.2481" Z="77.16909" />
+			<Code File="Misc\RunLua" WaitTime="2000" Lua="C_Garrison.UpgradeGarrison(1);" />
+			<Code File="RunCode" Code="await SkipCutscene();" />
+		</While>
+		<TurnIn QuestName="Bigger is Better" QuestId="36592" TurnInName="Baros Alexston" TurnInId="77209" X="1946.46" Y="325.3097" Z="90.29743" />
+
+		<Code File="LoadProfile" ProfileName="Gorgrond.xml" />
+
+
+	</QuestOrder>
+</HBProfile>
