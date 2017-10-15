@@ -111,6 +111,7 @@ private static async Task<bool> ProfileHook()
 		if (await GuildBankDepositor.Run())
 			return true;
 
+		ArtifactRelicsHandler.Run();
 		await UseArtifactPowerItems.Run();
 		return TreasureHunter.Run();
 	}
@@ -600,6 +601,92 @@ public static class DisableAddons
 ]]>
 		</Code>
 		<!--END DisableAddons-->
+		<!-- Equip Relic Items -->
+		<Code File="RunCode" Type="Definition">
+			<![CDATA[
+public static class ArtifactRelicsHandler
+{
+	private static readonly List<WoWGuid> s_relicItemBlacklist = new List<WoWGuid>();
+
+	public static void Run()
+	{
+		if (!Settings.Instance.EquipArtifactRelics)
+			return;
+
+		var RelicItem = StyxWoW.Me.BagItems.OrderByDescending(item => item.ItemInfo.Level).FirstOrDefault(item => !s_relicItemBlacklist.Contains(item.Guid) && item.ItemInfo.GemClass == WoWItemGemClass.ArtifactRelic);
+		if (RelicItem == null) return;
+
+		s_relicItemBlacklist.Add(RelicItem.Guid);
+		EquipRelicIfBetter(RelicItem);
+	}
+
+	private static string GetItemType(uint itemId)
+	{
+		return Lua.GetReturnVal<string>($"return GetItemInfo({itemId})", 6);
+	}
+
+	private static void EquipRelicIfBetter(WoWItem RelicItem)
+	{
+		int RelicItemLevel = RelicItem.ItemInfo.Level;
+		if (RelicItemLevel == null || RelicItemLevel == 0) return;
+		uint RelicItemId = RelicItem.Entry;
+
+		RelicItem.PickUp();
+
+		string GetApplicableSlot = $@"
+			local ITEM_LEVEL_PATTERN = ITEM_LEVEL:gsub(""%%d"", ""(%%d+)"")
+			local tooltip = CreateFrame(""GameTooltip"", ""iLevelScanTooltip"", nil, ""GameTooltipTemplate"")
+			tooltip:SetOwner(UIParent, ""ANCHOR_NONE"")
+			 
+			local function GetItemLevel(itemLink)
+				if not itemLink then return end
+			 
+				tooltip:ClearLines()
+				tooltip:SetHyperlink(itemLink)
+			 
+				for i = 2, tooltip:NumLines() do
+					local text = _G[""iLevelScanTooltipTextLeft""..i]:GetText()
+			 
+					if(text and text ~= """") then
+						local value = tonumber(text:match(ITEM_LEVEL_PATTERN))
+			 
+						if value then
+							return value
+						end
+					end
+				end
+			end
+			SocketInventoryItem(16);
+			for relicSlotIndex = 1, C_ArtifactUI.GetNumRelicSlots() do
+				if C_ArtifactUI.CanApplyRelicItemIDToSlot({RelicItemId}, relicSlotIndex) then
+					local _,_,_,equippedRelicLink = C_ArtifactUI.GetRelicInfo(relicSlotIndex);
+					if equippedRelicLink ~= nil then
+						local equippedRelicLevel = GetItemLevel(equippedRelicLink);
+						local _,_,bagRelicLink = GetCursorInfo();
+						local bagRelicLevel = GetItemLevel(bagRelicLink);
+						if bagRelicLevel > equippedRelicLevel then
+							return relicSlotIndex;
+						end
+						else
+							return relicSlotIndex;
+					end
+				end
+			end
+		";
+
+		int ApplicableSlot = Lua.GetReturnVal<int>(GetApplicableSlot, 0);
+		if (ApplicableSlot == 0)
+		{
+			Lua.DoString("HideUIPanel(ArtifactFrame); ClearCursor();");
+			return;
+		}
+		FancyLog.WriteYellow("[Relic Equipper]: ", $"Equipping relic {RelicItem.Name} because it scored a higher item level.");
+		Lua.DoString($"C_ArtifactUI.ApplyCursorRelicToSlot({ApplicableSlot}); HideUIPanel(ArtifactFrame); ClearCursor();");
+	}
+}
+]]>
+		</Code>
+		<!-- END Equip Relic Items -->
 		<!--FancyLog-->
 		<Code File="RunCode" Type="Definition">
 			<![CDATA[
@@ -870,6 +957,8 @@ public class Settings : GarrisonBuddy.JsonSettings<Settings>
 
 	private bool _disableAddons = true;
 
+	private bool _equipArtifactRelics = true;
+
 	private bool _findTreasureChests = true;
 
 	private bool _huntRareMobs = true;
@@ -912,6 +1001,15 @@ public class Settings : GarrisonBuddy.JsonSettings<Settings>
 	{
 		get => _disableAddons;
 		set => SetProperty(ref _disableAddons, value);
+	}
+
+	/// <summary>
+	///     Actively equip artifact relic items based off of the relic iLvl.
+	/// </summary>
+	public bool EquipArtifactRelics
+	{
+		get => _equipArtifactRelics;
+		set => SetProperty(ref _equipArtifactRelics, value);
 	}
 
 	/// <summary>
@@ -1191,9 +1289,19 @@ public static class SettingsView
 					</GroupBox>
 					<GroupBox Header=""Broken Isles (Legion)"" Grid.Row=""1"" Margin=""10"">
 						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width=""*"" />
+								<ColumnDefinition Width=""*"" />
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height=""*"" />
+							</Grid.RowDefinitions>
 							<CheckBox Content=""Use Artifact Power Items"" Grid.Column=""0"" Grid.Row=""0""
 									  Margin=""10, 2, 0, 0"" IsChecked=""{Binding Settings.UseArtifactPowerItems}""
 									  ToolTip=""Use Artifact Power items for the current weapon.""/>
+							<CheckBox Content=""Equip Artifact Relic Items"" Grid.Column=""1"" Grid.Row=""0""
+									  Margin=""10, 2, 0, 0"" IsChecked=""{Binding Settings.EquipArtifactRelics}""
+									  ToolTip=""Equip Artifact Relic items for the current weapon by the relic item level.""/>
 						</Grid>
 					</GroupBox>
 				</Grid>
