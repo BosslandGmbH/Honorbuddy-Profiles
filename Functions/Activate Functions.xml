@@ -1104,7 +1104,7 @@ public static class SettingsView
 			<RowDefinition Height=""*"" />
 			<RowDefinition Height=""*"" />
 		</Grid.RowDefinitions>
-		<Image Grid.Row=""0"" Margin=""0, 0, 0, 5"" Source=""https://cdn.pook.io/questing/header.jpg"" />
+		<Image x:Name=""HeaderImage"" Grid.Row=""0"" Margin=""0, 0, 0, 5"" Height=""146""/>
 		<Button Margin=""5"" x:Name=""DiscordButton"" Grid.Row=""0"" HorizontalAlignment=""Left"" VerticalAlignment=""Top""
 				ToolTip=""https://discord.gg/H3extPY"">
 			<StackPanel>
@@ -1359,7 +1359,7 @@ public static class SettingsView
 			SizeToContent = System.Windows.SizeToContent.WidthAndHeight,
 			ResizeMode = System.Windows.ResizeMode.NoResize,
 			WindowTransitionsEnabled = true,
-			Icon = GetWaspIcon()
+			Icon = GetWaspIcon(),
 		};
 
 		s_configWindow.Closed += (sender, args) =>
@@ -1489,7 +1489,25 @@ public static class SettingsView
 		var changelogTextBox = (System.Windows.Controls.RichTextBox)s_settingsControl.FindName("ChangelogTextBox");
 		await changelogTextBox.Dispatcher.BeginInvoke(new Action(async () =>
 		{
+			// For some reason setting the source directly in xaml broke. Loading manually.
+			var headerImage = (System.Windows.Controls.Image)s_settingsControl.FindName("HeaderImage");
+			using (var client = new System.Net.WebClient())
+			{
+				var str = await client.DownloadDataTaskAsync("https://cdn.pook.io/questing/header.jpg");
+				using (var stream = new MemoryStream(str))
+				{
+					var bitmap = new System.Windows.Media.Imaging.BitmapImage();
+					bitmap.BeginInit();
+					bitmap.StreamSource = stream;
+					bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+					bitmap.EndInit();
+					bitmap.Freeze();
+
+					headerImage.Source = bitmap;
+				}
+			}
 			changelogTextBox.Selection.Text = "Loading changelog...";
+			await Task.Delay(10000);
 			using (var client = new System.Net.WebClient())
 			{
 				string changelog = await client.DownloadStringTaskAsync("https://cdn.pook.io/questing/changelog.rtf");
@@ -1498,7 +1516,7 @@ public static class SettingsView
 					changelogTextBox.Selection.Load(stream, System.Windows.DataFormats.Rtf);
 				}
 			}
-		}));
+		}));		
 	}
 
 	private static async Task<bool> ShowMessageAsync(string title,
