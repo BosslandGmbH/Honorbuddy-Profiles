@@ -227,9 +227,18 @@
 						return netItem.CooldownTimeLeft == TimeSpan.Zero;
 					}
 				" />
-			<Code File="Hooks\DoWhen" ActivityName="NetFlamespitter" LogExecution="false" AllowUseDuringCombat="true" UseWhen="DoQuest(11889) &amp;&amp; IsNetReady() &amp;&amp; Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.Entry == 25582 &amp;&amp; Me.CurrentTarget.IsAlive &amp;&amp; Me.CurrentTarget.Z &gt;= 10 &amp;&amp; Me.CurrentTarget.DistanceSqr &lt; 80f*80f" >
+			<Code File="Hooks\DoWhen" ActivityName="NetFlamespitter" LogExecution="false" AllowUseDuringCombat="true" UseWhen="DoQuest(11889) &amp;&amp; IsNetReady() &amp;&amp;
+					((Me.CurrentTarget != null &amp;&amp; Me.CurrentTarget.Entry == 25582 &amp;&amp; Me.CurrentTarget.IsAlive &amp;&amp; Me.CurrentTarget.Z &gt;= 10 &amp;&amp; Me.CurrentTarget.DistanceSqr &lt; 80f*80f) ||
+					(Me.CurrentTarget == null))" >
+					<!-- Fix this mess later... -->
 				<DisableBehavior Name="Combat" />
-				<Code File="RunCode" Code="SpellManager.StopCasting(); await CommonCoroutines.StopMoving();" />
+				<Code File="RunCode" Code="
+					if (Me.CurrentTarget == null)
+					{
+						var flameSpitter = ObjectManager.GetObjectsOfType&lt;WoWUnit&gt;().FirstOrDefault(x =&gt; x.Entry == 25582 &amp;&amp; x.IsAlive &amp;&amp; x.Z &gt;= 10);
+						flameSpitter.Target();
+					}
+					SpellManager.StopCasting(); await CommonCoroutines.StopMoving();" />
 				<Code File="WaitTimer" WaitTime="500" TerminateWhen="!Me.IsCasting" />
 				<Code File="UseItem" ItemId="35278" MobId="25582" TerminateWhen="Me.CurrentTarget == null || Me.CurrentTarget.Entry != 25582 || Me.CurrentTarget.Z &lt; 10 || !IsNetReady()" />
 				<Code File="WaitTimer" WaitTime="5000" TerminateWhen="Me.CurrentTarget == null || Me.CurrentTarget.Z &lt; 10 || IsNetReady()" />
