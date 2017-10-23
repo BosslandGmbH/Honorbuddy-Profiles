@@ -215,18 +215,20 @@
 
 		<PickUp QuestName="Scratches" QuestId="10556" GiverName="Lashh'an Tome" GiverId="184825" X="1611.659" Y="6986.436" Z="190.0053" />
 		<While Condition="DoQuest(10556)" >
-			<Code File="Hooks\DoWhen" ActivityName="KeepBirdClose" LogExecution="false" AllowUseWhileMounted="true" UseWhen="Unit(21468, u =&gt; u.DistanceSqr &gt; 50f*50f) != null" >
+			<Code File="Hooks\DoWhen" ActivityName="KeepBirdClose" LogExecution="false" AllowUseWhileMounted="true" UseWhen="Unit(21468, u =&gt; u.DistanceSqr &gt; 40f*40f) != null" >
 				<Code File="Message" Text="Waiting for bird to catch up." />
 				<Code File="RunCode" Code="await CommonCoroutines.StopMoving();" />
 				<Code File="WaitTimer" WaitTime="20000" TerminateWhen="Unit(21468, u =&gt; u.DistanceSqr &lt;= 10f*10f) != null" />
 			</Code>
 			<If Condition="!Me.HasAura(36904)" >
 				<MoveTo X="1612" Y="6935.682" Z="159.1166" />
+				<UseMount Value="false" />
 				<Code File="ForcedDismount" />
 				<Code File="UseItem" ItemId="30530" X="1612" Y="6935.682" Z="159.1166" />
 			</If>
 			<MoveTo Nav="Run" X="2033.539" Y="6834.712" Z="173.6138" /> <!-- Nav="Run" to keep the bird from despawning. -->
-			<Code File="WaitTimer" QuestId="10556" WaitTime="30000" />
+			<Code File="WaitTimer" QuestId="10556" WaitTime="30000" TerminateWhen="Unit(21468) == null" />
+			<UseMount Value="true" />
 			<Code File="Hooks\DoWhen" ActivityName="KeepBirdClose" Command="Remove" />
 		</While>
 		<TurnIn QuestName="Scratches" QuestId="10556" TurnInName="Daranelle" TurnInId="21469" X="2032.976" Y="6834.82" Z="173.5729" />
