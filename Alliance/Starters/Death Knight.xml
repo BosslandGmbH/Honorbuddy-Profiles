@@ -383,7 +383,7 @@
 						if (_submittedScarlet != null && _submittedScarlet.IsValid)
 							return true;
 
-						if (StyxWoW.Me.Inventory.Equipped.MainHand == null || StyxWoW.Me.Inventory.Equipped.MainHand.Entry != 142274)
+						if (StyxWoW.Me.Inventory.Equipped.MainHand == null || !(StyxWoW.Me.Inventory.Equipped.MainHand.Entry == 142274 || StyxWoW.Me.Inventory.Equipped.MainHand.Entry == 39371))
 							return false;
 
 						if (Me.HealthPercent <= 30)
@@ -406,9 +406,14 @@
 				]]>
 			</Code>
 
-			<Code File="UseItem" ItemId="39418" TerminateWhen="HasItem(142274)" />
+			<Code File="UseItem" ItemId="39418" TerminateWhen="HasItem(142274) || HasItem(39371)" />
 			<Code File="UserSettings" AutoEquipWeapons="false" />
-			<Code File="EquipItem" ItemId="142274" />
+			<If Condition="HasItem(142274)" > <!-- Blood + Unholy -->
+				<Code File="EquipItem" ItemId="142274" />
+			</If>
+			<If Condition="HasItem(39371)" > <!-- Frost -->
+				<Code File="EquipItem" ItemId="39371" />
+			</If>
 			<DisableBehavior Name="Loot" />
 			<Code File="KillUntilComplete" MobIds="28610, 28936, 28939, 28940" QuestId="12720" >
 				<HuntingGrounds>
